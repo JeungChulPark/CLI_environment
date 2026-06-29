@@ -1,0 +1,23 @@
+# SAM-6D 파이프라인 설정 파일
+# 이 파일만 수정하면 run_pipeline.py / run_batch_inference_fast.py 실행 시 별도 인자 불필요
+
+# ── 단일 이미지 입력 (run_pipeline.py) ────────────────────
+cad_path:      "~/ros2_ws/sam6d_master/SAM-6D/Data/Example/obj_000005.ply"
+rgb_path:      "~/ros2_ws/sam6d_master/SAM-6D/Data/Example/rgb.png"
+depth_path:    "~/ros2_ws/sam6d_master/SAM-6D/Data/Example/depth.png"
+cam_path:      "~/ros2_ws/sam6d_master/SAM-6D/Data/Example/camera.json"
+template_dir:  "~/ros2_ws/sam6d_master/SAM-6D/Data/Example/outputs_obj5/templates"
+output_dir:    "~/ros2_ws/sam6d_master/SAM-6D/Data/Example/outputs_obj5"
+
+# ── 배치 입력/출력 (run_batch_inference_fast.py) ──────────
+rgb_dir:            "~/ros2_ws/sam6d_master/SAM-6D/Data/Example/rgb"
+depth_dir:          "~/ros2_ws/sam6d_master/SAM-6D/Data/Example/depth"
+batch_output_dir:   "~/ros2_ws/sam6d_master/SAM-6D/Data/Example/batch_outputs"
+# scene_camera_path: ""   # BOP 포맷 사용 시 cam_path 대신 여기에 지정
+
+# ── 모델 설정 ──────────────────────────────────────────────
+segmentor_model:        "fastsam"  # "sam" 또는 "fastsam"
+stability_score_thresh: 0.97       # SAM 마스크 안정성 임계값
+det_score_thresh:       0.2        # PEM 입력 detection score 임계값
+top_k_for_pem:          3          # ISM → PEM 전달 detection 수 상한 (N_inst 상한)
+quiet:                  false      # true: 콘솔 출력 억제 (로그는 txt 파일에만 저장)

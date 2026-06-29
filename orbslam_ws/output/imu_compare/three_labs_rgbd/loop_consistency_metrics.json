@@ -1,0 +1,38 @@
+{
+  "run": "three_labs_rgbd",
+  "method_B_odom_vs_optimized": {
+    "n_live": 4324,
+    "n_opt": 4324,
+    "n_matched": 3800,
+    "path_length_m": 29.770700744051926,
+    "disp_trans_m": {
+      "n": 3800,
+      "mean": 0.05918879171113277,
+      "median": 0.004623554496542363,
+      "p95": 0.3445614936015772,
+      "max": 0.40047995987217694
+    },
+    "disp_rot_deg": {
+      "n": 3800,
+      "mean": 1.9111064352159879,
+      "median": 0.15717892283715224,
+      "p95": 11.168849397282424,
+      "max": 13.221384241919075
+    },
+    "disp_trans_pct_of_path": 1.3452150935754892
+  },
+  "method_A_loop_gap": {
+    "n_loop_gap_lines": 1,
+    "n_loop_detected_msgs": 1,
+    "gap_trans_pre_opt_m": {
+      "n": 1,
+      "mean": 0.577156,
+      "median": 0.577156,
+      "p95": 0.577156,
+      "max": 0.577156
+    },
+    "gaps_raw_m": [
+      0.5772
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+# ---- Build products recreated by colcon ----
+**/build/
+**/install/
+**/log/
+**/__pycache__/
+*.pyc
+
+# ---- Large data & binary artifacts (kept out of this code-only repo) ----
+# ROS bags, point clouds, meshes, model weights, archives, dbs.
+*.db3
+*.db
+*.pcd
+*.ply
+*.orig_meter
+*.pth
+*.pt
+*.npy
+*.bag
+*.tar.gz
+*.tar.gz.*
+*.part_*
+*.part.*
+*.zip
+# ORB-SLAM3 vocabulary (large, download separately).
+orbslam_ws/src/ORB_SLAM3/Vocabulary/ORBvoc.txt
+
+# ---- Bulk data / generated output directories ----
+data_slam/
+**/data/ros2_bag/
+**/data/rgbd_bag/
+rtabmap_ws/data/
+slam_comparison_report/**/map_3d.*
+hdlgraphslam_ws/output/
+
+# ---- Logs & editor/tooling noise ----
+*.log
+.DS_Store
+*.swp
+.claude/
+_bmad/

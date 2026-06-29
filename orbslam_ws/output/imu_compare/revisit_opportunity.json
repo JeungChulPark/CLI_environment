@@ -1,0 +1,43 @@
+{
+  "orb_keyframes": {
+    "name": "ORB-SLAM3 keyframes (RGB-D)",
+    "n_poses": 144,
+    "duration_s": 145.84259700775146,
+    "revisit_pairs": 677,
+    "revisit_query_frames": 74,
+    "distinct_revisit_events": 17,
+    "params": {
+      "dt_min_s": 8.0,
+      "d_max_m": 0.5
+    },
+    "min_pair_dist_m": 0.008308349059229518,
+    "actual_loops": 1
+  },
+  "orb_camera_full": {
+    "name": "ORB-SLAM3 full frames (RGB-D)",
+    "n_poses": 3137,
+    "duration_s": 151.84833884239197,
+    "revisit_pairs": 545512,
+    "revisit_query_frames": 1907,
+    "distinct_revisit_events": 3,
+    "params": {
+      "dt_min_s": 8.0,
+      "d_max_m": 0.5
+    },
+    "min_pair_dist_m": 0.0007567422670176428
+  },
+  "rtab_nodes": {
+    "name": "RTAB-Map nodes (RGB-D)",
+    "n_poses": 140,
+    "duration_s": 151.24775767326355,
+    "revisit_pairs": 1057,
+    "revisit_query_frames": 92,
+    "distinct_revisit_events": 4,
+    "params": {
+      "dt_min_s": 8.0,
+      "d_max_m": 0.5
+    },
+    "min_pair_dist_m": 0.05669434221335863,
+    "actual_loops": 166
+  }
+}

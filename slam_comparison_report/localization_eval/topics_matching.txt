@@ -1,0 +1,53 @@
+# RGB-D topic matching (RGB-D-only; no odom/tf/GT input)
+RGB topic:        /camera/camera/color/image_raw
+Depth topic:      /camera/camera/aligned_depth_to_color/image_raw
+CameraInfo topic: /camera/camera/color/camera_info
+
+## SLAM_one_lap
+Duration:          36.631977743s
+Messages:          6534
+Topic information: Topic: /camera/camera/aligned_depth_to_color/camera_info | Type: sensor_msgs/msg/CameraInfo | Count: 1096 | Serialization Format: cdr
+                   Topic: /camera/camera/color/metadata | Type: realsense2_camera_msgs/msg/Metadata | Count: 1098 | Serialization Format: cdr
+                   Topic: /tf_static | Type: tf2_msgs/msg/TFMessage | Count: 1 | Serialization Format: cdr
+                   Topic: /camera/camera/aligned_depth_to_color/image_raw | Type: sensor_msgs/msg/Image | Count: 1047 | Serialization Format: cdr
+                   Topic: /camera/camera/color/camera_info | Type: sensor_msgs/msg/CameraInfo | Count: 1098 | Serialization Format: cdr
+                   Topic: /camera/camera/color/image_raw | Type: sensor_msgs/msg/Image | Count: 1095 | Serialization Format: cdr
+                   Topic: /camera/camera/depth/metadata | Type: realsense2_camera_msgs/msg/Metadata | Count: 1098 | Serialization Format: cdr
+                   Topic: /camera/camera/extrinsics/depth_to_color | Type: realsense2_camera_msgs/msg/Extrinsics | Count: 1 | Serialization Format: cdr
+
+## SLAM_one_lap_back_and_forth
+Duration:          73.773124961s
+Messages:          13189
+Topic information: Topic: /camera/camera/aligned_depth_to_color/camera_info | Type: sensor_msgs/msg/CameraInfo | Count: 2205 | Serialization Format: cdr
+                   Topic: /camera/camera/color/metadata | Type: realsense2_camera_msgs/msg/Metadata | Count: 2211 | Serialization Format: cdr
+                   Topic: /tf_static | Type: tf2_msgs/msg/TFMessage | Count: 1 | Serialization Format: cdr
+                   Topic: /camera/camera/aligned_depth_to_color/image_raw | Type: sensor_msgs/msg/Image | Count: 2140 | Serialization Format: cdr
+                   Topic: /camera/camera/color/camera_info | Type: sensor_msgs/msg/CameraInfo | Count: 2211 | Serialization Format: cdr
+                   Topic: /camera/camera/color/image_raw | Type: sensor_msgs/msg/Image | Count: 2209 | Serialization Format: cdr
+                   Topic: /camera/camera/depth/metadata | Type: realsense2_camera_msgs/msg/Metadata | Count: 2211 | Serialization Format: cdr
+                   Topic: /camera/camera/extrinsics/depth_to_color | Type: realsense2_camera_msgs/msg/Extrinsics | Count: 1 | Serialization Format: cdr
+
+## SLAM_forward_backward_repeat
+Duration:          87.106492484s
+Messages:          15590
+Topic information: Topic: /camera/camera/aligned_depth_to_color/camera_info | Type: sensor_msgs/msg/CameraInfo | Count: 2609 | Serialization Format: cdr
+                   Topic: /camera/camera/color/metadata | Type: realsense2_camera_msgs/msg/Metadata | Count: 2610 | Serialization Format: cdr
+                   Topic: /tf_static | Type: tf2_msgs/msg/TFMessage | Count: 1 | Serialization Format: cdr
+                   Topic: /camera/camera/aligned_depth_to_color/image_raw | Type: sensor_msgs/msg/Image | Count: 2542 | Serialization Format: cdr
+                   Topic: /camera/camera/color/camera_info | Type: sensor_msgs/msg/CameraInfo | Count: 2610 | Serialization Format: cdr
+                   Topic: /camera/camera/color/image_raw | Type: sensor_msgs/msg/Image | Count: 2607 | Serialization Format: cdr
+                   Topic: /camera/camera/depth/metadata | Type: realsense2_camera_msgs/msg/Metadata | Count: 2610 | Serialization Format: cdr
+                   Topic: /camera/camera/extrinsics/depth_to_color | Type: realsense2_camera_msgs/msg/Extrinsics | Count: 1 | Serialization Format: cdr
+
+## SLAM_three_laps
+Duration:          145.614042006s
+Messages:          26009
+Topic information: Topic: /camera/camera/aligned_depth_to_color/camera_info | Type: sensor_msgs/msg/CameraInfo | Count: 4361 | Serialization Format: cdr
+                   Topic: /camera/camera/color/metadata | Type: realsense2_camera_msgs/msg/Metadata | Count: 4363 | Serialization Format: cdr
+                   Topic: /tf_static | Type: tf2_msgs/msg/TFMessage | Count: 1 | Serialization Format: cdr
+                   Topic: /camera/camera/aligned_depth_to_color/image_raw | Type: sensor_msgs/msg/Image | Count: 4195 | Serialization Format: cdr
+                   Topic: /camera/camera/color/camera_info | Type: sensor_msgs/msg/CameraInfo | Count: 4363 | Serialization Format: cdr
+                   Topic: /camera/camera/color/image_raw | Type: sensor_msgs/msg/Image | Count: 4362 | Serialization Format: cdr
+                   Topic: /camera/camera/depth/metadata | Type: realsense2_camera_msgs/msg/Metadata | Count: 4363 | Serialization Format: cdr
+                   Topic: /camera/camera/extrinsics/depth_to_color | Type: realsense2_camera_msgs/msg/Extrinsics | Count: 1 | Serialization Format: cdr
+

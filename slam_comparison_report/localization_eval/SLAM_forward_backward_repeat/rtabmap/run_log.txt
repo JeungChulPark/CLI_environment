@@ -1,0 +1,25 @@
+# RTAB-Map RGB-D-only run log | SLAM_forward_backward_repeat | Fri Jun 19 04:35:08 PM KST 2026
+[run1] RTAB_OUTPUT_SUBDIR=loc_tmp_rtab RTAB_BAG_RATE=1.0 python3 rtabmap_ws/scripts/run_rtabmap_four_bags.py SLAM_forward_backward_repeat
+(bag rate=1.0, datasets=['SLAM_forward_backward_repeat'])
+=== RTAB-Map: SLAM_forward_backward_repeat ===
+    nodes=76 links=162 traj_rows=73 dense_points=969380
+
+=== RTAB-Map summary ===
+- [PASS] SLAM_forward_backward_repeat: nodes=76 traj=73 dense=969380 export_rc=0 -> /home/ldh9501/temp_ws/CLI_environment/rtabmap_ws/output/loc_tmp_rtab/SLAM_forward_backward_repeat
+[run1] -> 73 poses
+[run2] RTAB_OUTPUT_SUBDIR=loc_tmp_rtab RTAB_BAG_RATE=1.0 python3 rtabmap_ws/scripts/run_rtabmap_four_bags.py SLAM_forward_backward_repeat
+(bag rate=1.0, datasets=['SLAM_forward_backward_repeat'])
+=== RTAB-Map: SLAM_forward_backward_repeat ===
+    nodes=35 links=65 traj_rows=33 dense_points=428186
+
+=== RTAB-Map summary ===
+- [PASS] SLAM_forward_backward_repeat: nodes=35 traj=33 dense=428186 export_rc=0 -> /home/ldh9501/temp_ws/CLI_environment/rtabmap_ws/output/loc_tmp_rtab/SLAM_forward_backward_repeat
+[run2] -> 33 poses
+[run3] RTAB_OUTPUT_SUBDIR=loc_tmp_rtab RTAB_BAG_RATE=1.0 python3 rtabmap_ws/scripts/run_rtabmap_four_bags.py SLAM_forward_backward_repeat
+(bag rate=1.0, datasets=['SLAM_forward_backward_repeat'])
+=== RTAB-Map: SLAM_forward_backward_repeat ===
+    nodes=76 links=159 traj_rows=73 dense_points=979953
+
+=== RTAB-Map summary ===
+- [PASS] SLAM_forward_backward_repeat: nodes=76 traj=73 dense=979953 export_rc=0 -> /home/ldh9501/temp_ws/CLI_environment/rtabmap_ws/output/loc_tmp_rtab/SLAM_forward_backward_repeat
+[run3] -> 73 poses

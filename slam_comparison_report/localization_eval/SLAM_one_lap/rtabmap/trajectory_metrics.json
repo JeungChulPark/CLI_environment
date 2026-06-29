@@ -1,0 +1,230 @@
+{
+  "system": "rtab",
+  "dataset": "SLAM_one_lap",
+  "reference": {
+    "ref_run": "run1",
+    "ref_path": "rtab/SLAM_one_lap/run1/trajectory.txt",
+    "n_pose": 6
+  },
+  "n_new_runs": 3,
+  "alignment_note": "Sim3 (scale-incl) primary; SE3 also reported. est associated by relative-time nearest (|dt|<0.05s).",
+  "sparse_warning": true,
+  "runs": [
+    {
+      "new_run": "run1",
+      "src": "slam_comparison_report/localization_eval/SLAM_one_lap/rtabmap/new_runs/run1",
+      "n_pose_est": 26,
+      "coverage_frac": 1.0,
+      "success_rate_assoc": 1.0,
+      "n_matched": 6,
+      "status": "OK",
+      "sim3": {
+        "alignment": {
+          "type": "Sim3",
+          "scale": 0.48985229384986306
+        },
+        "ate_m": {
+          "mean": 0.07382927976961906,
+          "median": 0.06583505064715803,
+          "max": 0.1278438798954774,
+          "std": 0.03306638836906563,
+          "rmse": 0.0808959120788842,
+          "n": 6
+        },
+        "rot_err_deg": {
+          "mean": 30.163314048119556,
+          "median": 26.611449907930506,
+          "max": 49.828193131359306,
+          "std": 12.154008742724116,
+          "rmse": 32.519923783485424,
+          "n": 6
+        },
+        "rpe_trans_m": {
+          "mean": 0.08401809390046269,
+          "median": 0.10399335150610262,
+          "max": 0.13783371991593882,
+          "std": 0.043001367821458546,
+          "rmse": 0.0943830373381962,
+          "n": 5
+        }
+      },
+      "se3": {
+        "ate_m": {
+          "mean": 0.2598458138530824,
+          "median": 0.23882199560432832,
+          "max": 0.5740825889653101,
+          "std": 0.1595816497601739,
+          "rmse": 0.3049363046886178,
+          "n": 6
+        },
+        "rot_err_deg": {
+          "mean": 30.163314048119556,
+          "median": 26.611449907930506,
+          "max": 49.828193131359306,
+          "std": 12.154008742724116,
+          "rmse": 32.519923783485424,
+          "n": 6
+        }
+      },
+      "tracking": {
+        "n_gaps": 0,
+        "n_jumps": 0,
+        "median_dt": 1.1347661018371582,
+        "gaps": [],
+        "jumps": []
+      }
+    },
+    {
+      "new_run": "run2",
+      "src": "slam_comparison_report/localization_eval/SLAM_one_lap/rtabmap/new_runs/run2",
+      "n_pose_est": 11,
+      "coverage_frac": 1.0,
+      "success_rate_assoc": 1.0,
+      "n_matched": 6,
+      "status": "OK",
+      "sim3": {
+        "alignment": {
+          "type": "Sim3",
+          "scale": 0.46378991598241287
+        },
+        "ate_m": {
+          "mean": 0.061908723972158713,
+          "median": 0.05628598610297465,
+          "max": 0.11416345771084727,
+          "std": 0.027593206445588568,
+          "rmse": 0.06777960715296165,
+          "n": 6
+        },
+        "rot_err_deg": {
+          "mean": 25.144032473810626,
+          "median": 19.839311266117996,
+          "max": 48.21805294277391,
+          "std": 14.849438816736447,
+          "rmse": 29.201510272861615,
+          "n": 6
+        },
+        "rpe_trans_m": {
+          "mean": 0.06715215287437767,
+          "median": 0.04882507402439529,
+          "max": 0.15543986822476,
+          "std": 0.052037133442716293,
+          "rmse": 0.08495454603844842,
+          "n": 5
+        }
+      },
+      "se3": {
+        "ate_m": {
+          "mean": 0.28709626407857797,
+          "median": 0.25930931176145267,
+          "max": 0.6088385694463773,
+          "std": 0.17694917176456423,
+          "rmse": 0.3372466074492697,
+          "n": 6
+        },
+        "rot_err_deg": {
+          "mean": 25.144032473810626,
+          "median": 19.839311266117996,
+          "max": 48.21805294277391,
+          "std": 14.849438816736447,
+          "rmse": 29.201510272861615,
+          "n": 6
+        }
+      },
+      "tracking": {
+        "n_gaps": 0,
+        "n_jumps": 0,
+        "median_dt": 1.1517170667648315,
+        "gaps": [],
+        "jumps": []
+      }
+    },
+    {
+      "new_run": "run3",
+      "src": "slam_comparison_report/localization_eval/SLAM_one_lap/rtabmap/new_runs/run3",
+      "n_pose_est": 19,
+      "coverage_frac": 1.0,
+      "success_rate_assoc": 1.0,
+      "n_matched": 6,
+      "status": "OK",
+      "sim3": {
+        "alignment": {
+          "type": "Sim3",
+          "scale": 0.36674447187519327
+        },
+        "ate_m": {
+          "mean": 0.0339488152371503,
+          "median": 0.033901527138222934,
+          "max": 0.05739775675203503,
+          "std": 0.01565543384476006,
+          "rmse": 0.03738468489734569,
+          "n": 6
+        },
+        "rot_err_deg": {
+          "mean": 31.41378864704789,
+          "median": 26.198512695473404,
+          "max": 50.5390315721155,
+          "std": 12.911531175156973,
+          "rmse": 33.96371231842075,
+          "n": 6
+        },
+        "rpe_trans_m": {
+          "mean": 0.0329558843850721,
+          "median": 0.014954416583700336,
+          "max": 0.08728076873906562,
+          "std": 0.03003263450472038,
+          "rmse": 0.04458754815973132,
+          "n": 5
+        }
+      },
+      "se3": {
+        "ate_m": {
+          "mean": 0.44006272378981864,
+          "median": 0.4567502881744705,
+          "max": 0.8045997863018016,
+          "std": 0.24639950834051438,
+          "rmse": 0.5043490047375542,
+          "n": 6
+        },
+        "rot_err_deg": {
+          "mean": 31.41378864704789,
+          "median": 26.198512695473404,
+          "max": 50.5390315721155,
+          "std": 12.911531175156973,
+          "rmse": 33.96371231842075,
+          "n": 6
+        }
+      },
+      "tracking": {
+        "n_gaps": 0,
+        "n_jumps": 0,
+        "median_dt": 1.0680749416351318,
+        "gaps": [],
+        "jumps": []
+      }
+    }
+  ],
+  "aggregate": {
+    "n_runs_ok": 3,
+    "n_runs_total": 3,
+    "ate_rmse_m": {
+      "median": 0.06777960715296165,
+      "std": 0.018224268449509768,
+      "values": [
+        0.0808959120788842,
+        0.06777960715296165,
+        0.03738468489734569
+      ]
+    },
+    "assoc_success_rate": {
+      "median": 1.0
+    },
+    "rot_err_deg": {
+      "median": 26.198512695473404,
+      "values": [
+        26.611449907930506,
+        19.839311266117996,
+        26.198512695473404
+      ]
+    }
+  }
+}

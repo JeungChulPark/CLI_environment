@@ -1,0 +1,244 @@
+{
+  "system": "rtab",
+  "dataset": "SLAM_one_lap_back_and_forth",
+  "reference": {
+    "ref_run": "run4",
+    "ref_path": "rtab/SLAM_one_lap_back_and_forth/run4/trajectory.txt",
+    "n_pose": 61
+  },
+  "n_new_runs": 3,
+  "alignment_note": "Sim3 (scale-incl) primary; SE3 also reported. est associated by relative-time nearest (|dt|<0.05s).",
+  "sparse_warning": false,
+  "runs": [
+    {
+      "new_run": "run1",
+      "src": "slam_comparison_report/localization_eval/SLAM_one_lap_back_and_forth/rtabmap/new_runs/run1",
+      "n_pose_est": 55,
+      "coverage_frac": 0.9508,
+      "success_rate_assoc": 0.9508,
+      "n_matched": 58,
+      "status": "OK",
+      "sim3": {
+        "alignment": {
+          "type": "Sim3",
+          "scale": 0.9500589961818686
+        },
+        "ate_m": {
+          "mean": 0.3360422394468134,
+          "median": 0.2823498305646971,
+          "max": 0.7302037242784046,
+          "std": 0.17923374337108192,
+          "rmse": 0.38085314946215204,
+          "n": 58
+        },
+        "rot_err_deg": {
+          "mean": 23.366959286617337,
+          "median": 22.131718928667276,
+          "max": 55.27061425824554,
+          "std": 15.341089977617475,
+          "rmse": 27.952885861817343,
+          "n": 58
+        },
+        "rpe_trans_m": {
+          "mean": 0.05637509074469251,
+          "median": 0.04038783913395222,
+          "max": 0.40466957709563284,
+          "std": 0.06236246539770897,
+          "rmse": 0.08406680645149286,
+          "n": 57
+        }
+      },
+      "se3": {
+        "ate_m": {
+          "mean": 0.3375711750947502,
+          "median": 0.28011303297004164,
+          "max": 0.7193668010297601,
+          "std": 0.18757242178850125,
+          "rmse": 0.3861835207132147,
+          "n": 58
+        },
+        "rot_err_deg": {
+          "mean": 23.366959286617337,
+          "median": 22.131718928667276,
+          "max": 55.27061425824554,
+          "std": 15.341089977617475,
+          "rmse": 27.952885861817343,
+          "n": 58
+        }
+      },
+      "tracking": {
+        "n_gaps": 1,
+        "n_jumps": 0,
+        "median_dt": 1.1013860702514648,
+        "gaps": [
+          {
+            "i": 41,
+            "t0": 1781254392.231036,
+            "t1": 1781254397.837919,
+            "dt": 5.6068830490112305
+          }
+        ],
+        "jumps": []
+      }
+    },
+    {
+      "new_run": "run2",
+      "src": "slam_comparison_report/localization_eval/SLAM_one_lap_back_and_forth/rtabmap/new_runs/run2",
+      "n_pose_est": 57,
+      "coverage_frac": 0.9836,
+      "success_rate_assoc": 0.9836,
+      "n_matched": 60,
+      "status": "OK",
+      "sim3": {
+        "alignment": {
+          "type": "Sim3",
+          "scale": 1.0178784675085575
+        },
+        "ate_m": {
+          "mean": 0.03537772821397789,
+          "median": 0.032806445140610985,
+          "max": 0.09475648169663393,
+          "std": 0.022132785671711515,
+          "rmse": 0.04173061052958614,
+          "n": 60
+        },
+        "rot_err_deg": {
+          "mean": 4.737559610907909,
+          "median": 3.943625657877536,
+          "max": 14.22870740393816,
+          "std": 3.9427369885723587,
+          "rmse": 6.163574127725124,
+          "n": 60
+        },
+        "rpe_trans_m": {
+          "mean": 0.02091203641769223,
+          "median": 0.011203512499100426,
+          "max": 0.11346439795184202,
+          "std": 0.02460520905820107,
+          "rmse": 0.03229132360143613,
+          "n": 59
+        }
+      },
+      "se3": {
+        "ate_m": {
+          "mean": 0.041794102580409394,
+          "median": 0.03634407277106998,
+          "max": 0.10932203951780951,
+          "std": 0.022121345055206385,
+          "rmse": 0.04728742874753592,
+          "n": 60
+        },
+        "rot_err_deg": {
+          "mean": 4.737559610907909,
+          "median": 3.943625657877536,
+          "max": 14.22870740393816,
+          "std": 3.9427369885723587,
+          "rmse": 6.163574127725124,
+          "n": 60
+        }
+      },
+      "tracking": {
+        "n_gaps": 1,
+        "n_jumps": 0,
+        "median_dt": 1.0680605173110962,
+        "gaps": [
+          {
+            "i": 41,
+            "t0": 1781254391.897321,
+            "t1": 1781254397.036909,
+            "dt": 5.139588117599487
+          }
+        ],
+        "jumps": []
+      }
+    },
+    {
+      "new_run": "run3",
+      "src": "slam_comparison_report/localization_eval/SLAM_one_lap_back_and_forth/rtabmap/new_runs/run3",
+      "n_pose_est": 12,
+      "coverage_frac": 0.1967,
+      "success_rate_assoc": 0.1967,
+      "n_matched": 12,
+      "status": "OK",
+      "sim3": {
+        "alignment": {
+          "type": "Sim3",
+          "scale": 1.001215407115031
+        },
+        "ate_m": {
+          "mean": 0.016303446412072504,
+          "median": 0.0118911690781883,
+          "max": 0.031325918348236136,
+          "std": 0.009886376485887012,
+          "rmse": 0.019066798497178794,
+          "n": 12
+        },
+        "rot_err_deg": {
+          "mean": 2.7351439648168228,
+          "median": 2.751910805912333,
+          "max": 4.264513878560685,
+          "std": 0.879541349626976,
+          "rmse": 2.873082925008871,
+          "n": 12
+        },
+        "rpe_trans_m": {
+          "mean": 0.011292697855658073,
+          "median": 0.009404278787827791,
+          "max": 0.03525783401900037,
+          "std": 0.009502325160836529,
+          "rmse": 0.014758699411582697,
+          "n": 11
+        }
+      },
+      "se3": {
+        "ate_m": {
+          "mean": 0.016431209205053414,
+          "median": 0.012439796110586172,
+          "max": 0.032016337202815714,
+          "std": 0.009755434701591906,
+          "rmse": 0.019108980667666593,
+          "n": 12
+        },
+        "rot_err_deg": {
+          "mean": 2.7351439648168228,
+          "median": 2.751910805912333,
+          "max": 4.264513878560685,
+          "std": 0.879541349626976,
+          "rmse": 2.873082925008871,
+          "n": 12
+        }
+      },
+      "tracking": {
+        "n_gaps": 0,
+        "n_jumps": 0,
+        "median_dt": 1.1013951301574707,
+        "gaps": [],
+        "jumps": []
+      }
+    }
+  ],
+  "aggregate": {
+    "n_runs_ok": 3,
+    "n_runs_total": 3,
+    "ate_rmse_m": {
+      "median": 0.04173061052958614,
+      "std": 0.1654647020204547,
+      "values": [
+        0.38085314946215204,
+        0.04173061052958614,
+        0.019066798497178794
+      ]
+    },
+    "assoc_success_rate": {
+      "median": 0.9508
+    },
+    "rot_err_deg": {
+      "median": 3.943625657877536,
+      "values": [
+        22.131718928667276,
+        3.943625657877536,
+        2.751910805912333
+      ]
+    }
+  }
+}

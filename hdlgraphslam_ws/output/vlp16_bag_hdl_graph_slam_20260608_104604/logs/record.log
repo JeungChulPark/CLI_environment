@@ -1,0 +1,23 @@
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1780883167.696934663] [rosbag2_recorder]: Press SPACE for pausing/resuming
+[INFO] [1780883167.697728125] [rosbag2_storage]: Opened database '/home/etri/no_CLI_environment/hdlgraphslam_ws/output/vlp16_bag_hdl_graph_slam_20260608_104604/hdl_recorded_bag/hdl_recorded_bag_0.db3' for READ_WRITE.
+[INFO] [1780883167.698100007] [rosbag2_recorder]: Listening for topics...
+[INFO] [1780883167.698208409] [rosbag2_recorder]: Event publisher thread: Starting
+[INFO] [1780883167.699414670] [rosbag2_recorder]: Subscribed to topic '/tf'
+[INFO] [1780883167.699987108] [rosbag2_recorder]: Subscribed to topic '/scan_matching_odometry/debug'
+[INFO] [1780883167.700276095] [rosbag2_recorder]: Subscribed to topic '/tf_static'
+[INFO] [1780883167.700617756] [rosbag2_recorder]: Subscribed to topic '/prefiltering/debug'
+[INFO] [1780883167.701286546] [rosbag2_recorder]: Subscribed to topic '/hdl_graph_slam/map_points'
+[INFO] [1780883167.702543129] [rosbag2_recorder]: Subscribed to topic '/hdl_graph_slam/debug/loop_count'
+[INFO] [1780883167.703825774] [rosbag2_recorder]: Subscribed to topic '/odom'
+[INFO] [1780883167.704107713] [rosbag2_recorder]: Subscribed to topic '/hdl_graph_slam/debug/keyframe_count'
+[INFO] [1780883167.704362435] [rosbag2_recorder]: Subscribed to topic '/hdl_graph_slam/debug/graph_vertices'
+[INFO] [1780883167.704589637] [rosbag2_recorder]: Subscribed to topic '/hdl_graph_slam/debug/graph_edges'
+[INFO] [1780883167.704844932] [rosbag2_recorder]: Subscribed to topic '/hdl_graph_slam/debug/floor_constraint_count'
+[INFO] [1780883167.705085484] [rosbag2_recorder]: Subscribed to topic '/filtered_points'
+[INFO] [1780883167.705124010] [rosbag2_recorder]: Recording...
+[INFO] [1780883167.806283024] [rosbag2_recorder]: Subscribed to topic '/floor_detection/floor_coeffs'
+[INFO] [1780883169.523184822] [rosbag2_recorder]: Subscribed to topic '/clock'
+[INFO] [1780883169.523587954] [rosbag2_recorder]: Subscribed to topic '/velodyne_points'
+[INFO] [1780883283.944454811] [rosbag2_cpp]: Writing remaining messages from cache to the bag. It may take a while
+[INFO] [1780883283.945572126] [rosbag2_recorder]: Event publisher thread: Exiting
+[INFO] [1780883283.945760704] [rosbag2_recorder]: Recording stopped

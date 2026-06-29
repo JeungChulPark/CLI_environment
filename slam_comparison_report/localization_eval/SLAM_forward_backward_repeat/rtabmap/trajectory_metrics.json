@@ -1,0 +1,251 @@
+{
+  "system": "rtab",
+  "dataset": "SLAM_forward_backward_repeat",
+  "reference": {
+    "ref_run": "run5",
+    "ref_path": "rtab/SLAM_forward_backward_repeat/run5/trajectory.txt",
+    "n_pose": 75
+  },
+  "n_new_runs": 3,
+  "alignment_note": "Sim3 (scale-incl) primary; SE3 also reported. est associated by relative-time nearest (|dt|<0.05s).",
+  "sparse_warning": false,
+  "runs": [
+    {
+      "new_run": "run1",
+      "src": "slam_comparison_report/localization_eval/SLAM_forward_backward_repeat/rtabmap/new_runs/run1",
+      "n_pose_est": 73,
+      "coverage_frac": 0.9867,
+      "success_rate_assoc": 0.9867,
+      "n_matched": 74,
+      "status": "OK",
+      "sim3": {
+        "alignment": {
+          "type": "Sim3",
+          "scale": 1.0079900364123464
+        },
+        "ate_m": {
+          "mean": 0.09859212541141614,
+          "median": 0.09983452427753417,
+          "max": 0.1750543586211522,
+          "std": 0.03405580161828207,
+          "rmse": 0.10430822027531765,
+          "n": 74
+        },
+        "rot_err_deg": {
+          "mean": 5.512798466188368,
+          "median": 5.119001663996794,
+          "max": 13.990020606312209,
+          "std": 2.1401166224313126,
+          "rmse": 5.913632224480622,
+          "n": 74
+        },
+        "rpe_trans_m": {
+          "mean": 0.03627726701662461,
+          "median": 0.027971410457306528,
+          "max": 0.14449526848613195,
+          "std": 0.0312072662107226,
+          "rmse": 0.047853250323696805,
+          "n": 73
+        }
+      },
+      "se3": {
+        "ate_m": {
+          "mean": 0.09919847095151986,
+          "median": 0.10097962863740653,
+          "max": 0.17430984166567567,
+          "std": 0.034218751025651,
+          "rmse": 0.10493454893825493,
+          "n": 74
+        },
+        "rot_err_deg": {
+          "mean": 5.512798466188368,
+          "median": 5.119001663996794,
+          "max": 13.990020606312209,
+          "std": 2.1401166224313126,
+          "rmse": 5.913632224480622,
+          "n": 74
+        }
+      },
+      "tracking": {
+        "n_gaps": 1,
+        "n_jumps": 0,
+        "median_dt": 1.0680559873580933,
+        "gaps": [
+          {
+            "i": 0,
+            "t0": 1781254169.07524,
+            "t1": 1781254172.615295,
+            "dt": 3.5400550365448
+          }
+        ],
+        "jumps": []
+      }
+    },
+    {
+      "new_run": "run2",
+      "src": "slam_comparison_report/localization_eval/SLAM_forward_backward_repeat/rtabmap/new_runs/run2",
+      "n_pose_est": 33,
+      "coverage_frac": 0.4667,
+      "success_rate_assoc": 0.4667,
+      "n_matched": 35,
+      "status": "OK",
+      "sim3": {
+        "alignment": {
+          "type": "Sim3",
+          "scale": 1.0007243612816015
+        },
+        "ate_m": {
+          "mean": 0.07205207465476716,
+          "median": 0.07100238749761713,
+          "max": 0.16658190149929197,
+          "std": 0.029099781514493786,
+          "rmse": 0.0777064910174653,
+          "n": 35
+        },
+        "rot_err_deg": {
+          "mean": 3.579277390515671,
+          "median": 2.6143856359417077,
+          "max": 14.05545467885948,
+          "std": 2.6031212634992547,
+          "rmse": 4.425773034254991,
+          "n": 35
+        },
+        "rpe_trans_m": {
+          "mean": 0.02993710181509157,
+          "median": 0.02257889028089162,
+          "max": 0.12706983588483609,
+          "std": 0.028813738637840987,
+          "rmse": 0.04155071117775205,
+          "n": 34
+        }
+      },
+      "se3": {
+        "ate_m": {
+          "mean": 0.07209273332063561,
+          "median": 0.07055618923183558,
+          "max": 0.16636071972508223,
+          "std": 0.029015704901718134,
+          "rmse": 0.07771276168419106,
+          "n": 35
+        },
+        "rot_err_deg": {
+          "mean": 3.579277390515671,
+          "median": 2.6143856359417077,
+          "max": 14.05545467885948,
+          "std": 2.6031212634992547,
+          "rmse": 4.425773034254991,
+          "n": 35
+        }
+      },
+      "tracking": {
+        "n_gaps": 1,
+        "n_jumps": 0,
+        "median_dt": 1.118107557296753,
+        "gaps": [
+          {
+            "i": 0,
+            "t0": 1781254169.108723,
+            "t1": 1781254173.449492,
+            "dt": 4.340769052505493
+          }
+        ],
+        "jumps": []
+      }
+    },
+    {
+      "new_run": "run3",
+      "src": "slam_comparison_report/localization_eval/SLAM_forward_backward_repeat/rtabmap/new_runs/run3",
+      "n_pose_est": 73,
+      "coverage_frac": 0.9867,
+      "success_rate_assoc": 0.9867,
+      "n_matched": 74,
+      "status": "OK",
+      "sim3": {
+        "alignment": {
+          "type": "Sim3",
+          "scale": 1.010953367982569
+        },
+        "ate_m": {
+          "mean": 0.08352157027294703,
+          "median": 0.08116280685708069,
+          "max": 0.15114221356805274,
+          "std": 0.02883582556572259,
+          "rmse": 0.08835925269554745,
+          "n": 74
+        },
+        "rot_err_deg": {
+          "mean": 4.860751290715027,
+          "median": 2.966219407060051,
+          "max": 36.645193777159896,
+          "std": 5.66099394106914,
+          "rmse": 7.461484806056319,
+          "n": 74
+        },
+        "rpe_trans_m": {
+          "mean": 0.03856118772546632,
+          "median": 0.03348550182776,
+          "max": 0.12108592284292402,
+          "std": 0.03028255235002237,
+          "rmse": 0.0490305840841255,
+          "n": 73
+        }
+      },
+      "se3": {
+        "ate_m": {
+          "mean": 0.08456603470630078,
+          "median": 0.08492308009767727,
+          "max": 0.15381900358235767,
+          "std": 0.030019234396781214,
+          "rmse": 0.08973610566386399,
+          "n": 74
+        },
+        "rot_err_deg": {
+          "mean": 4.860751290715027,
+          "median": 2.966219407060051,
+          "max": 36.645193777159896,
+          "std": 5.66099394106914,
+          "rmse": 7.461484806056319,
+          "n": 74
+        }
+      },
+      "tracking": {
+        "n_gaps": 1,
+        "n_jumps": 0,
+        "median_dt": 1.068047046661377,
+        "gaps": [
+          {
+            "i": 0,
+            "t0": 1781254169.07524,
+            "t1": 1781254173.716441,
+            "dt": 4.641201019287109
+          }
+        ],
+        "jumps": []
+      }
+    }
+  ],
+  "aggregate": {
+    "n_runs_ok": 3,
+    "n_runs_total": 3,
+    "ate_rmse_m": {
+      "median": 0.08835925269554745,
+      "std": 0.01093162028113681,
+      "values": [
+        0.10430822027531765,
+        0.0777064910174653,
+        0.08835925269554745
+      ]
+    },
+    "assoc_success_rate": {
+      "median": 0.9867
+    },
+    "rot_err_deg": {
+      "median": 2.966219407060051,
+      "values": [
+        5.119001663996794,
+        2.6143856359417077,
+        2.966219407060051
+      ]
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "orb3": {
+    "SLAM_one_lap": {
+      "ref_run": "run3",
+      "ref_path": "orb3_easyLC/SLAM_one_lap/run3/trajectory.txt",
+      "n_pose": 1046
+    },
+    "SLAM_one_lap_back_and_forth": {
+      "ref_run": "run3",
+      "ref_path": "orb3_easyLC/SLAM_one_lap_back_and_forth/run3/trajectory.txt",
+      "n_pose": 2138
+    },
+    "SLAM_forward_backward_repeat": {
+      "ref_run": "run2",
+      "ref_path": "orb3_easyLC/SLAM_forward_backward_repeat/run2/trajectory.txt",
+      "n_pose": 2540
+    },
+    "SLAM_three_laps": {
+      "ref_run": "run3",
+      "ref_path": "orb3_easyLC/SLAM_three_laps/run3/trajectory.txt",
+      "n_pose": 4195
+    }
+  },
+  "rtab": {
+    "SLAM_one_lap": {
+      "ref_run": "run1",
+      "ref_path": "rtab/SLAM_one_lap/run1/trajectory.txt",
+      "n_pose": 6
+    },
+    "SLAM_one_lap_back_and_forth": {
+      "ref_run": "run4",
+      "ref_path": "rtab/SLAM_one_lap_back_and_forth/run4/trajectory.txt",
+      "n_pose": 61
+    },
+    "SLAM_forward_backward_repeat": {
+      "ref_run": "run5",
+      "ref_path": "rtab/SLAM_forward_backward_repeat/run5/trajectory.txt",
+      "n_pose": 75
+    },
+    "SLAM_three_laps": {
+      "ref_run": "run4",
+      "ref_path": "rtab/SLAM_three_laps/run4/trajectory.txt",
+      "n_pose": 109
+    }
+  }
+}

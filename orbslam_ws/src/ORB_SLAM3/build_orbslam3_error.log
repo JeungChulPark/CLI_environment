@@ -1,0 +1,48 @@
+Change Dir: '/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build'
+
+Run Build Command(s): /home/ldh9501/miniconda3/envs/orbslam3/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile -j1
+/home/ldh9501/miniconda3/envs/orbslam3/bin/cmake -S/home/ldh9501/orbslam3_ws/src/ORB_SLAM3 -B/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build --check-build-system CMakeFiles/Makefile.cmake 0
+/home/ldh9501/miniconda3/envs/orbslam3/bin/cmake -E cmake_progress_start /home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles /home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build//CMakeFiles/progress.marks
+/usr/bin/gmake  -f CMakeFiles/Makefile2 all
+gmake[1]: Entering directory '/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build'
+/usr/bin/gmake  -f CMakeFiles/ORB_SLAM3.dir/build.make CMakeFiles/ORB_SLAM3.dir/depend
+gmake[2]: Entering directory '/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build'
+cd /home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build && /home/ldh9501/miniconda3/envs/orbslam3/bin/cmake -E cmake_depends "Unix Makefiles" /home/ldh9501/orbslam3_ws/src/ORB_SLAM3 /home/ldh9501/orbslam3_ws/src/ORB_SLAM3 /home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build /home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build /home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/DependInfo.cmake "--color=" ORB_SLAM3
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/Atlas.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/CameraModels/KannalaBrandt8.cpp.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/CameraModels/Pinhole.cpp.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/Config.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/Converter.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/Frame.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/FrameDrawer.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/G2oTypes.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/GeometricTools.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/ImuTypes.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/KeyFrame.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/KeyFrameDatabase.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/LocalMapping.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/LoopClosing.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/MLPnPsolver.cpp.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/Map.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/MapDrawer.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/MapPoint.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/ORBextractor.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/ORBmatcher.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/OptimizableTypes.cpp.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/Optimizer.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/Settings.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/Sim3Solver.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/System.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/Tracking.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/TwoViewReconstruction.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Dependencies file "CMakeFiles/ORB_SLAM3.dir/src/Viewer.cc.o.d" is newer than depends file "/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build/CMakeFiles/ORB_SLAM3.dir/compiler_depend.internal".
+Consolidate compiler generated dependencies of target ORB_SLAM3
+gmake[2]: Leaving directory '/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build'
+/usr/bin/gmake  -f CMakeFiles/ORB_SLAM3.dir/build.make CMakeFiles/ORB_SLAM3.dir/build
+gmake[2]: Entering directory '/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build'
+gmake[2]: *** No rule to make target '/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/Thirdparty/DBoW2/lib/libDBoW2.so', needed by '/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/lib/libORB_SLAM3.so'.  Stop.
+gmake[2]: Leaving directory '/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build'
+gmake[1]: *** [CMakeFiles/Makefile2:181: CMakeFiles/ORB_SLAM3.dir/all] Error 2
+gmake[1]: Leaving directory '/home/ldh9501/orbslam3_ws/src/ORB_SLAM3/build'
+gmake: *** [Makefile:91: all] Error 2
+

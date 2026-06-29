@@ -1,0 +1,14 @@
+dataset: SLAM_0609
+
+bag:
+  path: /home/etri/ros2_bag_recording/output/SLAM_0609/bag
+  play: true
+  clock: true
+  rate: 0.5
+  start_delay: 5.0
+
+output:
+  dir: /home/etri/CLI_environment/rtabmap_ws/output/SLAM_0609_rtabmap
+  database: /home/etri/CLI_environment/rtabmap_ws/output/SLAM_0609_rtabmap/rtabmap.db
+  map_topic: /rtabmap/cloud_map
+  pose_topic: /rtabmap/pose

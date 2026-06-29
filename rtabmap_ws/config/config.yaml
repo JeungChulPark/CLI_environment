@@ -1,0 +1,20 @@
+dataset: indoor03
+
+input:
+  bag: /home/etri/convert_ros1bag_to_ros2bag/output/tiers/indoor03
+  rgb_topic: /cam_1/color/image_raw
+  depth_topic: /cam_1/depth/image_rect_raw
+  camera_intrinsics_json: /home/etri/CLI_environment/rtabmap_ws/config/tiers_l515_depth_aligned_intrinsics_approx.json
+  frame_id: cam_1_depth_optical_frame
+  gt_pose_topic: /vrpn_client_node/UWBTest/pose
+
+sync:
+  approx_sync: true
+  max_interval_sec: 0.05
+
+output:
+  dir: /home/etri/CLI_environment/rtabmap_ws/output/tiers/indoor03
+  database: /home/etri/CLI_environment/rtabmap_ws/output/tiers/indoor03/rtabmap.db
+  map_topic: /rtabmap/cloud_map
+  pose_topic: /rtabmap/pose
+  overwrite_database: false

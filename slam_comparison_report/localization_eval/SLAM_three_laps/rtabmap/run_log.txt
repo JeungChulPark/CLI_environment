@@ -1,0 +1,25 @@
+# RTAB-Map RGB-D-only run log | SLAM_three_laps | Fri Jun 19 04:41:15 PM KST 2026
+[run1] RTAB_OUTPUT_SUBDIR=loc_tmp_rtab RTAB_BAG_RATE=1.0 python3 rtabmap_ws/scripts/run_rtabmap_four_bags.py SLAM_three_laps
+(bag rate=1.0, datasets=['SLAM_three_laps'])
+=== RTAB-Map: SLAM_three_laps ===
+    nodes=110 links=351 traj_rows=107 dense_points=1123224
+
+=== RTAB-Map summary ===
+- [PASS] SLAM_three_laps: nodes=110 traj=107 dense=1123224 export_rc=0 -> /home/ldh9501/temp_ws/CLI_environment/rtabmap_ws/output/loc_tmp_rtab/SLAM_three_laps
+[run1] -> 107 poses
+[run2] RTAB_OUTPUT_SUBDIR=loc_tmp_rtab RTAB_BAG_RATE=1.0 python3 rtabmap_ws/scripts/run_rtabmap_four_bags.py SLAM_three_laps
+(bag rate=1.0, datasets=['SLAM_three_laps'])
+=== RTAB-Map: SLAM_three_laps ===
+    nodes=98 links=256 traj_rows=96 dense_points=1057302
+
+=== RTAB-Map summary ===
+- [PASS] SLAM_three_laps: nodes=98 traj=96 dense=1057302 export_rc=0 -> /home/ldh9501/temp_ws/CLI_environment/rtabmap_ws/output/loc_tmp_rtab/SLAM_three_laps
+[run2] -> 96 poses
+[run3] RTAB_OUTPUT_SUBDIR=loc_tmp_rtab RTAB_BAG_RATE=1.0 python3 rtabmap_ws/scripts/run_rtabmap_four_bags.py SLAM_three_laps
+(bag rate=1.0, datasets=['SLAM_three_laps'])
+=== RTAB-Map: SLAM_three_laps ===
+    nodes=103 links=313 traj_rows=100 dense_points=1108306
+
+=== RTAB-Map summary ===
+- [PASS] SLAM_three_laps: nodes=103 traj=100 dense=1108306 export_rc=0 -> /home/ldh9501/temp_ws/CLI_environment/rtabmap_ws/output/loc_tmp_rtab/SLAM_three_laps
+[run3] -> 100 poses

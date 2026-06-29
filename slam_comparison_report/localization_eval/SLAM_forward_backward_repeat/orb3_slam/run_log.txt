@@ -1,0 +1,22 @@
+# ORB3-SLAM RGB-D-only run log | SLAM_forward_backward_repeat | Fri Jun 19 04:13:20 PM KST 2026
+[run1] ORB_OUTPUT_SUBDIR=loc_tmp_orb ORB_BAG_RATE=1.0 ORB_DISABLE_DENSE=1 python3 orbslam_ws/scripts/run_orbslam_four_bags.py SLAM_forward_backward_repeat
+=== ORB-SLAM3: SLAM_forward_backward_repeat ===
+    rc=0 elapsed=105.0s traj_rows=1190 kf_rows=66 map_lines=8224
+
+=== ORB-SLAM3 summary ===
+- [PASS] SLAM_forward_backward_repeat: rc=0 traj=1190 kf=66 map_pcd_lines=8224 -> /home/ldh9501/temp_ws/CLI_environment/orbslam_ws/output/loc_tmp_orb/SLAM_forward_backward_repeat
+[run1] -> 1190 poses
+[run2] ORB_OUTPUT_SUBDIR=loc_tmp_orb ORB_BAG_RATE=1.0 ORB_DISABLE_DENSE=1 python3 orbslam_ws/scripts/run_orbslam_four_bags.py SLAM_forward_backward_repeat
+=== ORB-SLAM3: SLAM_forward_backward_repeat ===
+    rc=0 elapsed=101.7s traj_rows=1526 kf_rows=82 map_lines=9539
+
+=== ORB-SLAM3 summary ===
+- [PASS] SLAM_forward_backward_repeat: rc=0 traj=1526 kf=82 map_pcd_lines=9539 -> /home/ldh9501/temp_ws/CLI_environment/orbslam_ws/output/loc_tmp_orb/SLAM_forward_backward_repeat
+[run2] -> 1526 poses
+[run3] ORB_OUTPUT_SUBDIR=loc_tmp_orb ORB_BAG_RATE=1.0 ORB_DISABLE_DENSE=1 python3 orbslam_ws/scripts/run_orbslam_four_bags.py SLAM_forward_backward_repeat
+=== ORB-SLAM3: SLAM_forward_backward_repeat ===
+    rc=0 elapsed=101.4s traj_rows=1681 kf_rows=87 map_lines=10544
+
+=== ORB-SLAM3 summary ===
+- [PASS] SLAM_forward_backward_repeat: rc=0 traj=1681 kf=87 map_pcd_lines=10544 -> /home/ldh9501/temp_ws/CLI_environment/orbslam_ws/output/loc_tmp_orb/SLAM_forward_backward_repeat
+[run3] -> 1681 poses

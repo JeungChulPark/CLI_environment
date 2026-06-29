@@ -1,0 +1,25 @@
+# RTAB-Map RGB-D-only run log | SLAM_one_lap | Fri Jun 19 04:26:34 PM KST 2026
+[run1] RTAB_OUTPUT_SUBDIR=loc_tmp_rtab RTAB_BAG_RATE=1.0 python3 rtabmap_ws/scripts/run_rtabmap_four_bags.py SLAM_one_lap
+(bag rate=1.0, datasets=['SLAM_one_lap'])
+=== RTAB-Map: SLAM_one_lap ===
+    nodes=32 links=58 traj_rows=26 dense_points=364483
+
+=== RTAB-Map summary ===
+- [PASS] SLAM_one_lap: nodes=32 traj=26 dense=364483 export_rc=0 -> /home/ldh9501/temp_ws/CLI_environment/rtabmap_ws/output/loc_tmp_rtab/SLAM_one_lap
+[run1] -> 26 poses
+[run2] RTAB_OUTPUT_SUBDIR=loc_tmp_rtab RTAB_BAG_RATE=1.0 python3 rtabmap_ws/scripts/run_rtabmap_four_bags.py SLAM_one_lap
+(bag rate=1.0, datasets=['SLAM_one_lap'])
+=== RTAB-Map: SLAM_one_lap ===
+    nodes=11 links=20 traj_rows=11 dense_points=151997
+
+=== RTAB-Map summary ===
+- [PASS] SLAM_one_lap: nodes=11 traj=11 dense=151997 export_rc=0 -> /home/ldh9501/temp_ws/CLI_environment/rtabmap_ws/output/loc_tmp_rtab/SLAM_one_lap
+[run2] -> 11 poses
+[run3] RTAB_OUTPUT_SUBDIR=loc_tmp_rtab RTAB_BAG_RATE=1.0 python3 rtabmap_ws/scripts/run_rtabmap_four_bags.py SLAM_one_lap
+(bag rate=1.0, datasets=['SLAM_one_lap'])
+=== RTAB-Map: SLAM_one_lap ===
+    nodes=20 links=36 traj_rows=19 dense_points=263287
+
+=== RTAB-Map summary ===
+- [PASS] SLAM_one_lap: nodes=20 traj=19 dense=263287 export_rc=0 -> /home/ldh9501/temp_ws/CLI_environment/rtabmap_ws/output/loc_tmp_rtab/SLAM_one_lap
+[run3] -> 19 poses

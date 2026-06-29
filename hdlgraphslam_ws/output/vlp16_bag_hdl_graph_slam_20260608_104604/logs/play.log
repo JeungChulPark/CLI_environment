@@ -1,0 +1,9 @@
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1780883169.486094689] [rosbag2_storage]: Opened database '/home/etri/no_CLI_environment/hdlgraphslam_ws/data/vlp16_bag/bag_0.db3' for READ_ONLY.
+[INFO] [1780883169.486137607] [rosbag2_player]: Set rate to 0.5
+[INFO] [1780883169.491527744] [rosbag2_player]: Adding keyboard callbacks.
+[INFO] [1780883169.491546900] [rosbag2_player]: Press SPACE for Pause/Resume
+[INFO] [1780883169.491551631] [rosbag2_player]: Press CURSOR_RIGHT for Play Next Message
+[INFO] [1780883169.491555271] [rosbag2_player]: Press CURSOR_UP for Increase Rate 10%
+[INFO] [1780883169.491558536] [rosbag2_player]: Press CURSOR_DOWN for Decrease Rate 10%
+[INFO] [1780883169.491789704] [rosbag2_storage]: Opened database '/home/etri/no_CLI_environment/hdlgraphslam_ws/data/vlp16_bag/bag_0.db3' for READ_ONLY.
+[INFO] [1780883283.863263566] [rclcpp]: signal_handler(SIGINT/SIGTERM)

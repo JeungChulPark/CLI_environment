@@ -1,0 +1,44 @@
+dataset: vlp16_d455f_20260601_142612
+
+bag:
+  path: /home/etri/ros2_bag_recording/output/latest_vlp16_d455f/bag
+  play: true
+  clock: true
+  rate: 0.5
+  start_delay: 5.0
+
+input:
+  rgb_topic: /camera/camera/color/image_raw
+  depth_topic: /camera/camera/aligned_depth_to_color/image_raw
+  camera_info_topic: /camera/camera/color/camera_info
+  frame_id: camera_color_optical_frame
+
+sync:
+  approx_sync: true
+  approx_rgbd_sync: true
+  max_interval_sec: 0.05
+  queue_size: 60
+  topic_queue_size: 60
+  qos: 1
+
+rtabmap:
+  visual_odometry: true
+  icp_odometry: false
+  rgbd_sync: true
+  rtabmap_viz: false
+  rviz: false
+  delete_db_on_start: true
+  namespace: rtabmap
+  map_frame_id: map
+  odom_topic: odom
+  subscribe_scan_cloud: false
+  scan_cloud_topic: /velodyne_points
+
+output:
+  dir: auto
+  map_topic: /rtabmap/cloud_map
+  pose_topic: /rtabmap/pose
+
+publishers:
+  map_assembler: true
+  tf_to_pose: true
