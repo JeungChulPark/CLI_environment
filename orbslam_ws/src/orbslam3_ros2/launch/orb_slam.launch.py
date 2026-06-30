@@ -92,6 +92,10 @@ def _default_config():
             "pcd_output_path": "orbslam3_dense_map.pcd",
             "save_ply": False,
             "ply_output_path": "orbslam3_dense_map.ply",
+            # Ghosting fix: rebuild the saved dense map at shutdown using the
+            # optimized (post loop-closure / BA) per-frame poses. Default ON.
+            "reproject_optimized": True,
+            "reproject_max_points": 80000000,
         },
         "output": {
             "dir": str(workspace / "output" / "orbslam3_config_run"),
@@ -245,6 +249,10 @@ def _launch_setup(context, *args, **kwargs):
                 "dense_map_pcd_output_path": str(dense_map_pcd_path),
                 "dense_map_save_ply": _as_bool(cfg["dense_map"]["save_ply"]),
                 "dense_map_ply_output_path": str(dense_map_ply_path),
+                "dense_map_reproject_optimized": _as_bool(
+                    cfg["dense_map"].get("reproject_optimized", True)),
+                "dense_map_reproject_max_points": int(
+                    cfg["dense_map"].get("reproject_max_points", 80000000)),
             }
         ],
     )

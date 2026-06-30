@@ -6,6 +6,7 @@
   #include <numeric>
   #include <vector>
   #include <fstream>
+  #include <sstream>
   #include <iomanip>
   #include <functional>
   #include <limits>
@@ -196,6 +197,23 @@
         "orbslam3_dense_map.ply"
       );
 
+      // FIX (ghosting): when true, the SAVED dense map is rebuilt at shutdown by
+      // reprojecting per-frame depth with the OPTIMIZED (post loop-closure / BA)
+      // camera poses instead of the live front-end poses used during runtime.
+      // This removes duplicated/ghosted geometry caused by accumulating points at
+      // pre-loop-closure positions that are never re-integrated. Default ON so it
+      // applies to every future run (incl. newly collected data) automatically.
+      dense_map_reproject_optimized_ = this->declare_parameter<bool>(
+        "dense_map_reproject_optimized",
+        true
+      );
+
+      // Safety cap on buffered per-frame points (only used when reprojection is
+      // ON). Prevents OOM on very long sequences; if hit, buffering stops and the
+      // saved map covers only the buffered portion (a warning is logged).
+      dense_map_reproject_max_points_ = static_cast<size_t>(std::max<long>(0, static_cast<long>(
+        this->declare_parameter<int>("dense_map_reproject_max_points", 80000000))));
+
       tracking_state_pub_ = this->create_publisher<std_msgs::msg::String>(
         "/orbslam3/tracking_state",
         10
@@ -297,10 +315,12 @@
         RCLCPP_INFO(this->get_logger(), "Shutting down ORB-SLAM3.");
         slam_->Shutdown();
         saveMapPointsOnShutdown();
-        saveDenseMapOnShutdown();
+        // Save the optimized (post loop-closure / BA) trajectory FIRST so the
+        // dense-map reprojection below can read the corrected per-frame poses.
         slam_->SaveTrajectoryTUM("CameraTrajectory.txt");
         slam_->SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
         slam_->SaveLoopEdges("loop_edges.txt");
+        saveDenseMapOnShutdown();
       }
       if (!track_times_ms_.empty()) {
         std::vector<double> v = track_times_ms_;
@@ -402,7 +422,7 @@
 
       const Sophus::SE3f Twc = Tcw.inverse();
       publishPose(rgb_msg->header.stamp, Twc);
-      accumulateDenseMapIfNeeded(rgb, depth, Twc);
+      accumulateDenseMapIfNeeded(rgb, depth, Twc, timestamp);
       publishDenseMapIfNeeded(rgb_msg->header.stamp, timestamp);
       publishMapPointsIfNeeded(rgb_msg->header.stamp, timestamp); // for core accessor
 
@@ -571,6 +591,16 @@
       uint32_t count{0};
     };
 
+    // One strided RGB-D frame's depth points in CAMERA-LOCAL coordinates, tagged
+    // with the frame timestamp. Buffered during runtime and reprojected at
+    // shutdown with the optimized per-frame pose (ghosting fix).
+    struct DenseFrame
+    {
+      double timestamp{0.0};
+      std::vector<float> xyz;     // 3 * N camera-local coordinates
+      std::vector<uint8_t> rgb;   // 3 * N colors (r,g,b)
+    };
+
     bool loadDenseCameraSettings()
     {
       cv::FileStorage fs(settings_path_, cv::FileStorage::READ);
@@ -610,7 +640,8 @@
     void accumulateDenseMapIfNeeded(
       const cv::Mat & rgb,
       const cv::Mat & depth,
-      const Sophus::SE3f & Twc)
+      const Sophus::SE3f & Twc,
+      double timestamp)
     {
       if (!dense_map_enabled_) {
         return;
@@ -637,6 +668,14 @@
       const Eigen::Matrix3f Rwc = Twc.rotationMatrix();
       const Eigen::Vector3f twc = Twc.translation();
 
+      // Per-frame camera-local points, buffered for optimized-pose reprojection
+      // at shutdown (the ghosting fix). Built only when reprojection is enabled.
+      DenseFrame frame;
+      const bool buffering = dense_map_reproject_optimized_;
+      if (buffering) {
+        frame.timestamp = timestamp;
+      }
+
       std::lock_guard<std::mutex> lock(dense_map_mutex_);
       for (int v = 0; v < depth.rows; v += dense_map_pixel_stride_) {
         for (int u = 0; u < depth.cols; u += dense_map_pixel_stride_) {
@@ -647,8 +686,24 @@
 
           const float x = static_cast<float>((static_cast<double>(u) - dense_camera_cx_) * z / dense_camera_fx_);
           const float y = static_cast<float>((static_cast<double>(v) - dense_camera_cy_) * z / dense_camera_fy_);
-          const Eigen::Vector3f point_world = Rwc * Eigen::Vector3f(x, y, z) + twc;
 
+          float r = 255.0f;
+          float g = 255.0f;
+          float b = 255.0f;
+          readBgrColor(rgb, v, u, r, g, b);
+
+          if (buffering) {
+            frame.xyz.push_back(x);
+            frame.xyz.push_back(y);
+            frame.xyz.push_back(z);
+            frame.rgb.push_back(static_cast<uint8_t>(std::max(0.0f, std::min(255.0f, r))));
+            frame.rgb.push_back(static_cast<uint8_t>(std::max(0.0f, std::min(255.0f, g))));
+            frame.rgb.push_back(static_cast<uint8_t>(std::max(0.0f, std::min(255.0f, b))));
+          }
+
+          // Live (front-end pose) world voxel map -- kept for real-time publishing
+          // and as the legacy fallback when reprojection is disabled.
+          const Eigen::Vector3f point_world = Rwc * Eigen::Vector3f(x, y, z) + twc;
           const DenseVoxelKey key{
             static_cast<int64_t>(std::floor(static_cast<double>(point_world.x()) / dense_map_voxel_size_)),
             static_cast<int64_t>(std::floor(static_cast<double>(point_world.y()) / dense_map_voxel_size_)),
@@ -666,7 +721,9 @@
             point.y = point_world.y();
             point.z = point_world.z();
             point.count = 1;
-            readBgrColor(rgb, v, u, point.r, point.g, point.b);
+            point.r = r;
+            point.g = g;
+            point.b = b;
             dense_map_.emplace(key, point);
             continue;
           }
@@ -677,17 +734,29 @@
           point.x = (point.x * count + point_world.x()) / next_count;
           point.y = (point.y * count + point_world.y()) / next_count;
           point.z = (point.z * count + point_world.z()) / next_count;
-
-          float r = 255.0f;
-          float g = 255.0f;
-          float b = 255.0f;
-          readBgrColor(rgb, v, u, r, g, b);
           point.r = (point.r * count + r) / next_count;
           point.g = (point.g * count + g) / next_count;
           point.b = (point.b * count + b) / next_count;
           if (point.count < std::numeric_limits<uint32_t>::max()) {
             ++point.count;
           }
+        }
+      }
+
+      if (buffering && !frame.xyz.empty()) {
+        const size_t n_pts = frame.xyz.size() / 3;
+        std::lock_guard<std::mutex> flock(dense_frames_mutex_);
+        if (dense_map_reproject_max_points_ == 0 ||
+            dense_reproject_point_count_ + n_pts <= dense_map_reproject_max_points_) {
+          dense_reproject_point_count_ += n_pts;
+          dense_frames_.push_back(std::move(frame));
+        } else if (!dense_reproject_cap_warned_) {
+          RCLCPP_WARN(
+            this->get_logger(),
+            "Dense-map reprojection buffer cap (%zu pts) reached; saved dense map "
+            "will cover only the buffered portion.",
+            dense_map_reproject_max_points_);
+          dense_reproject_cap_warned_ = true;
         }
       }
     }
@@ -925,13 +994,149 @@
         return;
       }
 
-      const std::vector<DensePoint> points = denseMapSnapshot();
+      std::vector<DensePoint> points;
+      if (dense_map_reproject_optimized_) {
+        points = buildReprojectedDenseMap("CameraTrajectory.txt");
+        if (points.empty()) {
+          RCLCPP_WARN(
+            this->get_logger(),
+            "Optimized-pose reprojection produced no points; falling back to the "
+            "live (front-end pose) dense map.");
+          points = denseMapSnapshot();
+        }
+      } else {
+        points = denseMapSnapshot();
+      }
+
       if (dense_map_save_pcd_) {
         saveDenseMapPcd(points);
       }
       if (dense_map_save_ply_) {
         saveDenseMapPly(points);
       }
+    }
+
+    // Ghosting fix: rebuild the dense map from buffered per-frame camera-local
+    // points using the OPTIMIZED per-frame poses written to `traj_path`
+    // (TUM: "ts tx ty tz qx qy qz qw", camera-to-world Twc). Loop-closure / BA
+    // corrections are baked into those poses, so revisited geometry lands in the
+    // same voxels instead of duplicating.
+    std::vector<DensePoint> buildReprojectedDenseMap(const std::string & traj_path)
+    {
+      // 1) parse optimized trajectory: sorted (timestamp, Twc)
+      std::vector<std::pair<double, Sophus::SE3f>> traj;
+      {
+        std::ifstream tf(traj_path);
+        if (!tf) {
+          RCLCPP_ERROR(this->get_logger(),
+            "Reprojection: cannot open trajectory %s", traj_path.c_str());
+          return {};
+        }
+        std::string line;
+        while (std::getline(tf, line)) {
+          if (line.empty() || line[0] == '#') {
+            continue;
+          }
+          std::istringstream ss(line);
+          double t, tx, ty, tz, qx, qy, qz, qw;
+          if (!(ss >> t >> tx >> ty >> tz >> qx >> qy >> qz >> qw)) {
+            continue;
+          }
+          Eigen::Quaternionf q(static_cast<float>(qw), static_cast<float>(qx),
+                               static_cast<float>(qy), static_cast<float>(qz));
+          q.normalize();
+          Sophus::SE3f Twc(q, Eigen::Vector3f(
+            static_cast<float>(tx), static_cast<float>(ty), static_cast<float>(tz)));
+          traj.emplace_back(t, Twc);
+        }
+      }
+      if (traj.empty()) {
+        return {};
+      }
+      std::sort(traj.begin(), traj.end(),
+                [](const auto & a, const auto & b) { return a.first < b.first; });
+      std::vector<double> traj_ts;
+      traj_ts.reserve(traj.size());
+      for (const auto & e : traj) {
+        traj_ts.push_back(e.first);
+      }
+
+      // 2) reproject each buffered frame with its optimized pose, voxel-average
+      const double kMatchTolSec = 0.02;  // unambiguous at typical 30 Hz framerate
+      std::unordered_map<DenseVoxelKey, DensePoint, DenseVoxelKeyHash> rebuilt;
+      size_t matched = 0;
+      size_t dropped = 0;
+      std::lock_guard<std::mutex> flock(dense_frames_mutex_);
+      for (const auto & frame : dense_frames_) {
+        auto it = std::lower_bound(traj_ts.begin(), traj_ts.end(), frame.timestamp);
+        size_t best = (it == traj_ts.end()) ? traj_ts.size() - 1 : (it - traj_ts.begin());
+        if (best > 0 &&
+            std::abs(traj_ts[best - 1] - frame.timestamp) < std::abs(traj_ts[best] - frame.timestamp)) {
+          --best;
+        }
+        if (std::abs(traj_ts[best] - frame.timestamp) > kMatchTolSec) {
+          ++dropped;
+          continue;  // frame was lost / not localized in the optimized trajectory
+        }
+        ++matched;
+        const Sophus::SE3f & Twc = traj[best].second;
+        const Eigen::Matrix3f Rwc = Twc.rotationMatrix();
+        const Eigen::Vector3f twc = Twc.translation();
+        const size_t n = frame.xyz.size() / 3;
+        for (size_t i = 0; i < n; ++i) {
+          const Eigen::Vector3f p_local(frame.xyz[3 * i], frame.xyz[3 * i + 1], frame.xyz[3 * i + 2]);
+          const Eigen::Vector3f pw = Rwc * p_local + twc;
+          const DenseVoxelKey key{
+            static_cast<int64_t>(std::floor(static_cast<double>(pw.x()) / dense_map_voxel_size_)),
+            static_cast<int64_t>(std::floor(static_cast<double>(pw.y()) / dense_map_voxel_size_)),
+            static_cast<int64_t>(std::floor(static_cast<double>(pw.z()) / dense_map_voxel_size_))
+          };
+          const float r = static_cast<float>(frame.rgb[3 * i]);
+          const float g = static_cast<float>(frame.rgb[3 * i + 1]);
+          const float b = static_cast<float>(frame.rgb[3 * i + 2]);
+          auto iter = rebuilt.find(key);
+          if (iter == rebuilt.end()) {
+            if (dense_map_max_points_ > 0 && rebuilt.size() >= dense_map_max_points_) {
+              continue;
+            }
+            DensePoint point;
+            point.x = pw.x();
+            point.y = pw.y();
+            point.z = pw.z();
+            point.r = r;
+            point.g = g;
+            point.b = b;
+            point.count = 1;
+            rebuilt.emplace(key, point);
+            continue;
+          }
+          DensePoint & point = iter->second;
+          const float count = static_cast<float>(point.count);
+          const float next_count = count + 1.0f;
+          point.x = (point.x * count + pw.x()) / next_count;
+          point.y = (point.y * count + pw.y()) / next_count;
+          point.z = (point.z * count + pw.z()) / next_count;
+          point.r = (point.r * count + r) / next_count;
+          point.g = (point.g * count + g) / next_count;
+          point.b = (point.b * count + b) / next_count;
+          if (point.count < std::numeric_limits<uint32_t>::max()) {
+            ++point.count;
+          }
+        }
+      }
+
+      RCLCPP_INFO(
+        this->get_logger(),
+        "Dense map reprojected with optimized poses: %zu/%zu frames matched "
+        "(%zu dropped), %zu voxels.",
+        matched, dense_frames_.size(), dropped, rebuilt.size());
+
+      std::vector<DensePoint> points;
+      points.reserve(rebuilt.size());
+      for (const auto & item : rebuilt) {
+        points.push_back(item.second);
+      }
+      return points;
     }
 
     void saveDenseMapPcd(const std::vector<DensePoint> & points)
@@ -1056,6 +1261,14 @@
     double dense_depth_factor_{1000.0};
     size_t dense_map_max_points_{2000000};
     size_t dense_frame_count_{0};
+
+    // Ghosting fix (optimized-pose reprojection of the saved dense map).
+    bool dense_map_reproject_optimized_{true};
+    size_t dense_map_reproject_max_points_{80000000};
+    size_t dense_reproject_point_count_{0};
+    bool dense_reproject_cap_warned_{false};
+    mutable std::mutex dense_frames_mutex_;
+    std::vector<DenseFrame> dense_frames_;
 
     std::mutex slam_mutex_;
     std::unique_ptr<ORB_SLAM3::System> slam_;
