@@ -1,0 +1,32 @@
+# realsense_A.yaml — RealSense 파라미터 (D435i 현재검증 / 최종 D455f 공용)
+#   node: /cam_A/camera  →  /**: 와일드카드로 매칭
+#
+# TODO(실기): realsense-ros 버전에 따라 프로파일 파라미터명이 다르다.
+#   구버전: depth_module.profile / rgb_camera.profile
+#   신버전(4.51+): depth_module.depth_profile / rgb_camera.color_profile
+#   → `ros2 param list /cam_A/camera` 로 실제명 확인 후 아래를 맞춰라.
+/**:
+  ros__parameters:
+    # ---- 스트림 활성화 ----
+    enable_color: true
+    enable_depth: true
+    enable_gyro: true            # D435i/D455 내장 IMU
+    enable_accel: true
+    unite_imu_method: 2          # 2 = linear_interpolation (/cam_A/imu 단일 토픽)
+
+    # ---- 해상도/프레임 (대역폭 검증 기준값) ----
+    depth_module.depth_profile: 848x480x30
+    rgb_camera.color_profile: 848x480x30
+
+    # ---- ★ 타임스탬프 도메인 (핵심) ----
+    depth_module.global_time_enabled: true   # 카메라 stamp를 호스트 epoch로 변환
+    rgb_camera.global_time_enabled: true
+    enable_sync: true                        # depth/color 프레임 host-side 그룹핑
+
+    # ---- 정렬 depth (오프라인 융합 편의) ----
+    align_depth.enable: true                 # /cam_A/aligned_depth_to_color/image_raw 생성
+
+    # ---- HW sync (지금 카메라 1대라 미사용) ----
+    # 최종 2대 통합 시: A=master → depth_module.inter_cam_sync_mode: 1
+    #                   B=slave  → depth_module.inter_cam_sync_mode: 2 (color까지면 3)
+    # depth_module.inter_cam_sync_mode: 0

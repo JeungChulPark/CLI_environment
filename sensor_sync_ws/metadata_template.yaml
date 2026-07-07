@@ -1,0 +1,31 @@
+# metadata_template.yaml — 각 세션 bag 옆에 복사해 채운다 (재현성)
+session:
+  date: ""                       # YYYY-MM-DD HH:MM
+  site: "current"                # current | other | final
+  operator: ""
+environment:
+  os: "Ubuntu 24.04"
+  ros_distro: "jazzy"
+  rmw: "rmw_fastrtps_cpp"        # 최종 통합 시 A/B 통일 필수
+sensors:
+  realsense:
+    model: "D435i"               # 최종: D455f
+    profile: "848x480x30"
+    global_time_enabled: true
+    inter_cam_sync_mode: 0       # 최종 A=1(master)/B=2(slave)
+  velodyne:
+    model: "VLP-16"
+    gps_time: false
+    ip: "192.168.1.201"          # 실제값 확인
+  xsens: null                    # 현재 사이트엔 없음(다른쪽)
+  husky: null                    # 현재 사이트엔 없음
+time_sync:
+  method: "none"                 # 현재 단일머신. 2대: chrony | ptp
+  nic_phc: ""                    # V0 ethtool -T 결과
+  clock_offset_pre: ""           # chronyc tracking (2대)
+  clock_offset_post: ""
+calib:
+  T_camB_camA: "calib/T_camB_camA.yaml"   # ★ 최종 필수(SAM→맵)
+verification:
+  drop_rate: ""                  # V4 결과
+  notes: ""

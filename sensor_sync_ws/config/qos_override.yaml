@@ -1,0 +1,14 @@
+# qos_override.yaml — ros2 bag record 드롭 방지용 QoS 오버라이드
+#   사용: ros2 bag record --qos-profile-overrides-path config/qos_override.yaml ...
+/velodyne_points:
+  reliability: reliable
+  history: keep_all
+  depth: 100
+/cam_A/color/image_raw:
+  reliability: reliable
+  history: keep_last
+  depth: 30
+/cam_A/aligned_depth_to_color/image_raw:
+  reliability: reliable
+  history: keep_last
+  depth: 30
