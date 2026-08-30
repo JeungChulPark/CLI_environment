@@ -361,11 +361,34 @@ void Sim3Solver::ComputeSim3(Eigen::Matrix3f &P1, Eigen::Matrix3f &P2)
 
     Eigen::Vector3f vec = evec.block<3,1>(1,maxIndex); //extract imaginary part of the quaternion (sin*axis)
 
-    // Rotation angle. sin is the norm of the imaginary part, cos is the real part
-    double ang=atan2(vec.norm(),evec(0,maxIndex));
+    // UPSTREAM BUG GUARD -------------------------------------------------------
+    // The line "vec = 2*ang*vec/vec.norm()" divides by the norm of the quaternion's
+    // imaginary part. That norm is EXACTLY zero whenever the optimal rotation
+    // between the two point sets is the identity: then M is symmetric, so
+    // N12=N13=N14=0 and the leading eigenvector is exactly (1,0,0,0). 0/0 -> NaN,
+    // and Sophus::SO3f::exp(NaN) calls ensure() which ABORTS THE WHOLE PROCESS
+    // ("SO3::exp failed! omega: -nan -nan -nan"). An identity rotation is a
+    // perfectly legitimate outcome -- it is what revisiting a place with the same
+    // heading looks like -- so it must not kill the run.
+    // Reachable only from LoopClosing (loop/merge Sim3 verification), which is why
+    // this only ever crashed MAPPING runs, never localization-only runs.
+    const float vecNorm = vec.norm();
+    if(!std::isfinite(vecNorm) || vecNorm < 1e-7f || !evec.allFinite())
+    {
+        std::cout << "[sim3-guard] ComputeSim3: degenerate/identity rotation "
+                  << "(|imag|=" << vecNorm << ") -> using R = I "
+                  << "(upstream would divide by zero and abort)" << std::endl;
+        mR12i = Eigen::Matrix3f::Identity();
+    }
+    else
+    {
+        // Rotation angle. sin is the norm of the imaginary part, cos is the real part
+        double ang=atan2(vecNorm,evec(0,maxIndex));
 
-    vec = 2*ang*vec/vec.norm(); //Angle-axis representation. quaternion angle is the half
-    mR12i = Sophus::SO3f::exp(vec).matrix();
+        vec = 2*ang*vec/vecNorm; //Angle-axis representation. quaternion angle is the half
+        mR12i = Sophus::SO3f::exp(vec).matrix();
+    }
+    // --------------------------------------------------------------------------
 
     // Step 5: Rotate set 2
     Eigen::Matrix3f P3 = mR12i*Pr2;

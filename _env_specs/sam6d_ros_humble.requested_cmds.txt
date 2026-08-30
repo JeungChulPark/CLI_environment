@@ -1,0 +1,3 @@
+create -y -n sam6d_ros_humble -c conda-forge -c robostack-humble --strict-channel-priority python=3.11 pip colcon-common-extensions ros-humble-ros-base ros-humble-cv-bridge ros-humble-vision-msgs ros-humble-message-filters ros-humble-tf2-ros ros-humble-rmw-cyclonedds-cpp
+install -y -c conda-forge --strict-channel-priority scipy pillow pandas scikit-image trimesh imageio pyyaml tqdm matplotlib ruamel.yaml hydra-core hydra-colorlog omegaconf einops timm gdown distinctipy pycocotools pynvml gpustat ninja cmake
+install -y -c conda-forge --strict-channel-priority cuda-nvcc cuda-cudart-dev libcublas-dev libcusparse-dev libcusolver-dev

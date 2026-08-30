@@ -1,0 +1,44 @@
+point_cloud_xyz:
+  ros__parameters:
+    decimation: 2
+    max_depth: 4.5
+    min_depth: 0.35
+    voxel_size: 0.03
+    approx_sync: false
+    qos: 2
+
+obstacles_detection:
+  ros__parameters:
+    frame_id: base_link
+    map_frame_id: odom
+    wait_for_transform: 0.3
+    Grid/3D: "true"
+    Grid/RangeMin: "0.35"
+    Grid/RangeMax: "4.5"
+    Grid/CellSize: "0.04"
+    Grid/PreVoxelFiltering: "true"
+    Grid/NormalsSegmentation: "false"
+    Grid/MaxGroundHeight: "0.06"
+    Grid/MaxObstacleHeight: "1.5"
+    Grid/MinClusterSize: "8"
+    Grid/ClusterRadius: "0.08"
+    Grid/NoiseFilteringRadius: "0.08"
+    Grid/NoiseFilteringMinNeighbors: "5"
+
+# Project the filtered-resolution RGB-D cloud into a planar scan for
+# RTAB-Map scan matching. The cloud is transformed to base_link first so
+# height limits follow REP-103 (z up), not the optical-frame axes.
+pointcloud_to_laserscan:
+  ros__parameters:
+    target_frame: base_link
+    transform_tolerance: 0.1
+    min_height: 0.05
+    max_height: 1.5
+    angle_min: -1.5708
+    angle_max: 1.5708
+    angle_increment: 0.0087
+    scan_time: 0.0333
+    range_min: 0.35
+    range_max: 4.5
+    use_inf: true
+    inf_epsilon: 1.0

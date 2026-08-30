@@ -1,0 +1,128 @@
+[
+ {
+  "object": "Bear",
+  "frame": 1588,
+  "ref_frame": 1598,
+  "u": 625.0,
+  "v": 164.2,
+  "z": 0.592,
+  "frame_luma": 75.46
+ },
+ {
+  "object": "Bear",
+  "frame": 1590,
+  "ref_frame": 1598,
+  "u": 602.7,
+  "v": 164.0,
+  "z": 0.612,
+  "frame_luma": 74.99
+ },
+ {
+  "object": "Dinosaur",
+  "frame": 626,
+  "ref_frame": 624,
+  "u": 190.0,
+  "v": 269.8,
+  "z": 0.846,
+  "frame_luma": 84.75
+ },
+ {
+  "object": "Dinosaur",
+  "frame": 632,
+  "ref_frame": 630,
+  "u": 179.2,
+  "v": 271.4,
+  "z": 0.863,
+  "frame_luma": 84.28
+ },
+ {
+  "object": "Febreze_high",
+  "frame": 1594,
+  "ref_frame": 1604,
+  "u": 625.1,
+  "v": 163.1,
+  "z": 0.474,
+  "frame_luma": 72.88
+ },
+ {
+  "object": "Febreze_high",
+  "frame": 1518,
+  "ref_frame": 1502,
+  "u": 598.6,
+  "v": 159.3,
+  "z": 0.576,
+  "frame_luma": 74.23
+ },
+ {
+  "object": "Rabbit",
+  "frame": 4298,
+  "ref_frame": 4296,
+  "u": 343.0,
+  "v": 78.9,
+  "z": 0.462,
+  "frame_luma": 72.43
+ },
+ {
+  "object": "Rabbit",
+  "frame": 4300,
+  "ref_frame": 4302,
+  "u": 333.2,
+  "v": 78.2,
+  "z": 0.461,
+  "frame_luma": 72.19
+ },
+ {
+  "object": "Sikhye_high",
+  "frame": 3008,
+  "ref_frame": 3006,
+  "u": 360.8,
+  "v": 309.3,
+  "z": 0.686,
+  "frame_luma": 72.93
+ },
+ {
+  "object": "Sikhye_high",
+  "frame": 3148,
+  "ref_frame": 3146,
+  "u": 95.5,
+  "v": 247.6,
+  "z": 1.068,
+  "frame_luma": 79.76
+ },
+ {
+  "object": "choco_hazelnut_high",
+  "frame": 3216,
+  "ref_frame": 3214,
+  "u": 426.1,
+  "v": 86.5,
+  "z": 1.032,
+  "frame_luma": 80.49
+ },
+ {
+  "object": "choco_hazelnut_high",
+  "frame": 3220,
+  "ref_frame": 3214,
+  "u": 454.3,
+  "v": 86.3,
+  "z": 1.001,
+  "frame_luma": 80.49
+ },
+ {
+  "object": "milk",
+  "frame": 3722,
+  "ref_frame": 3720,
+  "u": 49.0,
+  "v": 291.6,
+  "z": 0.901,
+  "frame_luma": 73.66
+ },
+ {
+  "object": "milk",
+  "frame": 3824,
+  "ref_frame": 3820,
+  "u": 185.1,
+  "v": 234.1,
+  "z": 1.424,
+  "frame_luma": 81.54
+ }
+]

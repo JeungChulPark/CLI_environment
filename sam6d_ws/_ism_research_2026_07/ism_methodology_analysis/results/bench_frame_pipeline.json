@@ -1,0 +1,57 @@
+{
+  "P0_total": {
+    "n": 27,
+    "median_ms": 76.75,
+    "mean_ms": 79.13,
+    "p90_ms": 91.63
+  },
+  "P0_yolo": {
+    "n": 27,
+    "median_ms": 63.16,
+    "mean_ms": 63.65,
+    "p90_ms": 67.25
+  },
+  "P0_recognize": {
+    "n": 27,
+    "median_ms": 14.39,
+    "mean_ms": 15.48,
+    "p90_ms": 24.74
+  },
+  "P1_total": {
+    "n": 27,
+    "median_ms": 13.32,
+    "mean_ms": 15.74,
+    "p90_ms": 25.72
+  },
+  "P1_yolo": {
+    "n": 27,
+    "median_ms": 7.02,
+    "mean_ms": 7.29,
+    "p90_ms": 8.22
+  },
+  "P1_recognize": {
+    "n": 27,
+    "median_ms": 5.93,
+    "mean_ms": 8.46,
+    "p90_ms": 18.01
+  },
+  "counts_per_frame": {
+    "P0_dino_fwd": {
+      "mean": 3.44,
+      "median": 3
+    },
+    "P0_sam_calls": {
+      "mean": 0.26,
+      "median": 0
+    },
+    "P1_dino_fwd": {
+      "mean": 5.22,
+      "median": 5
+    },
+    "P1_sam_calls": {
+      "mean": 0.19,
+      "median": 0
+    }
+  },
+  "decision_same_frames": "26/27"
+}

@@ -1898,6 +1898,14 @@ void Tracking::Track()
 
     if(mState==NOT_INITIALIZED)
     {
+        // Localization-only on a prior (loaded) map: adopt that map and let the
+        // NEXT frame relocalize into it, instead of initializing a new map here.
+        if(ActivatePriorMapForLocalization())
+        {
+            mLastFrame = Frame(mCurrentFrame);
+            return;
+        }
+
         if(mSensor==System::STEREO || mSensor==System::RGBD || mSensor==System::IMU_STEREO || mSensor==System::IMU_RGBD)
         {
             StereoInitialization();
@@ -2036,10 +2044,26 @@ void Tracking::Track()
         else
         {
             // Localization Mode: Local Mapping is deactivated (TODO Not available in inertial mode)
-            if(mState==LOST)
+            //
+            // mbVO == true means "fewer than 10 matches to MAP points", i.e. the
+            // camera is no longer anchored to the prior map and stock ORB-SLAM3
+            // dead-reckons on temporal matches (its "pass through unmapped area"
+            // feature). For "where am I inside this known map?" that fallback is
+            // harmful: the pose silently stops being a map pose and drifts (0807
+            // sessions diverged to hundreds of km, and it never re-anchored).
+            // On a prior map we would rather have NO pose than a fictional one,
+            // so treat unanchored as LOST and keep relocalizing.
+            const bool bUnanchored = mbVO && IsLocalizingOnPriorMap();
+            if(mState==LOST || bUnanchored)
             {
                 if(mSensor == System::IMU_MONOCULAR || mSensor == System::IMU_STEREO || mSensor == System::IMU_RGBD)
                     Verbose::PrintMess("IMU. State LOST", Verbose::VERBOSITY_NORMAL);
+                if(bUnanchored && mState!=LOST)
+                {
+                    mState = LOST;
+                    cout << "[ORB-SLAM3] localization-only: lost anchor to the prior map "
+                         << "(VO fallback suppressed); relocalizing..." << endl;
+                }
                 bOK = Relocalization();
             }
             else
@@ -2270,6 +2294,19 @@ void Tracking::Track()
         // Reset if the camera get lost soon after initialization
         if(mState==LOST)
         {
+            // Localization-only on a PRIOR map: never abandon or rebuild that map.
+            // Staying LOST sends the next frame back into Relocalization(), which is
+            // the desired "keep looking for where I am inside the known map"
+            // behaviour. Without this the stock escalation below (CreateMapInAtlas /
+            // ResetActiveMap) starts fresh maps whose poses are meaningless in the
+            // prior map frame, and fights ActivatePriorMapForLocalization frame
+            // after frame.
+            if(IsLocalizingOnPriorMap())
+            {
+                mLastFrame = Frame(mCurrentFrame);
+                return;
+            }
+
             if(pCurrentMap->KeyFramesInMap()<=10)
             {
                 mpSystem->ResetActiveMap();
@@ -2331,6 +2368,51 @@ void Tracking::Track()
 #endif
 }
 
+
+bool Tracking::IsLocalizingOnPriorMap() const
+{
+    return mbOnlyTracking && mpSystem && mpSystem->HasLoadedAtlas();
+}
+
+bool Tracking::ActivatePriorMapForLocalization()
+{
+    // Only for localization-only runs on an Atlas loaded from file.
+    if(!IsLocalizingOnPriorMap())
+        return false;
+
+    // If the active map already holds keyframes we are not on the empty map that
+    // System created after loading -> nothing to do (also makes this idempotent).
+    Map* pCurrent = mpAtlas->GetCurrentMap();
+    if(pCurrent && !pCurrent->GetAllKeyFrames().empty())
+        return false;
+
+    // Adopt the largest loaded map as the active one.
+    Map* pBest = static_cast<Map*>(NULL);
+    size_t nBest = 0;
+    vector<Map*> vpMaps = mpAtlas->GetAllMaps();
+    for(size_t i = 0; i < vpMaps.size(); i++)
+    {
+        const size_t nKFs = vpMaps[i]->GetAllKeyFrames().size();
+        if(nKFs > nBest)
+        {
+            nBest = nKFs;
+            pBest = vpMaps[i];
+        }
+    }
+    if(!pBest)
+    {
+        cout << "[ORB-SLAM3] localization-only: no prior map with keyframes found "
+             << "in the loaded Atlas." << endl;
+        return false;
+    }
+
+    mpAtlas->ChangeMap(pBest);
+    mState = LOST;   // next frame goes through Relocalization() against this map
+    cout << "[ORB-SLAM3] localization-only: activated prior map id=" << pBest->GetId()
+         << " (" << nBest << " keyframes, "
+         << pBest->GetAllMapPoints().size() << " map points); relocalizing..." << endl;
+    return true;
+}
 
 void Tracking::StereoInitialization()
 {
@@ -3616,16 +3698,51 @@ bool Tracking::Relocalization()
     // Track Lost: Query KeyFrame Database for keyframe candidates for relocalisation
     vector<KeyFrame*> vpCandidateKFs = mpKeyFrameDB->DetectRelocalizationCandidates(&mCurrentFrame, mpAtlas->GetCurrentMap());
 
+    // --- diagnosis instrumentation ----------------------------------------
+    // Which stage loses a relocalization attempt?
+    //   noCandidate      : the map holds no keyframe that looks like this view
+    //                      (-> the MAP is too thin / this place was never mapped)
+    //   candFewMatches   : BoW says "similar place" but < 15 feature matches
+    //   geomFail         : PnP RANSAC found no pose with >= 50 inliers
+    //   success          : relocalized
+    static long nRelocCall = 0, nRelocNoCand = 0, nRelocFewMatch = 0,
+                nRelocGeomFail = 0, nRelocOk = 0, nCandSum = 0;
+    static long nGeomNoPose = 0, nGeomLt10 = 0, nGeomLt20 = 0, nGeomLt30 = 0,
+                nGeomGe30 = 0, nGeomBestSum = 0;
+    ++nRelocCall;
+    nCandSum += static_cast<long>(vpCandidateKFs.size());
+    if(nRelocCall % 200 == 0)
+        cout << "[reloc-stats] calls=" << nRelocCall
+             << " noCandidate=" << nRelocNoCand
+             << " candFewMatches=" << nRelocFewMatch
+             << " geomFail=" << nRelocGeomFail
+             << " success=" << nRelocOk
+             << " avgCandidates=" << (double)nCandSum / (double)nRelocCall << endl;
+
     if(vpCandidateKFs.empty()) {
+        ++nRelocNoCand;
         Verbose::PrintMess("There are not candidates", Verbose::VERBOSITY_NORMAL);
         return false;
     }
 
     const int nKFs = vpCandidateKFs.size();
 
+    // Relocalization gates. Stock ORB-SLAM3 tunes these for "recover from a brief
+    // loss inside the map you are currently building", where the query view is
+    // almost identical to a recent keyframe. Localizing a LATER session in a prior
+    // map is harder (different route/lighting/layout), and the 0807 diagnosis showed
+    // 77% of attempts dying at the feature-matching gate while BoW always returned
+    // ~43 candidates -- i.e. the place IS in the map, the gates are just tight.
+    // Relaxed only for prior-map localization; normal SLAM keeps stock values.
+    const bool bPriorMapLoc = IsLocalizingOnPriorMap();
+    const float fMatchRatio = bPriorMapLoc ? 0.90f : 0.75f;
+    const int   nMinMatches = bPriorMapLoc ? 12    : 15;
+    const int   nMinInliers = bPriorMapLoc ? 30    : 50;
+    const int   nRefineFloor = nMinInliers * 3 / 5;   // 18 relaxed / 30 stock
+
     // We perform first an ORB matching with each candidate
     // If enough matches are found we setup a PnP solver
-    ORBmatcher matcher(0.75,true);
+    ORBmatcher matcher(fMatchRatio,true);
 
     vector<MLPnPsolver*> vpMLPnPsolvers;
     vpMLPnPsolvers.resize(nKFs);
@@ -3646,7 +3763,7 @@ bool Tracking::Relocalization()
         else
         {
             int nmatches = matcher.SearchByBoW(pKF,mCurrentFrame,vvpMapPointMatches[i]);
-            if(nmatches<15)
+            if(nmatches<nMinMatches)
             {
                 vbDiscarded[i] = true;
                 continue;
@@ -3660,6 +3777,16 @@ bool Tracking::Relocalization()
             }
         }
     }
+
+    // How many BoW candidates survived the feature-matching stage? (nCandidates is
+    // decremented later by the RANSAC loop, so snapshot it for the diagnosis.)
+    const int nCandAfterBoW = nCandidates;
+
+    // How far do FAILING attempts get? nBestGoodThisCall = most inliers any
+    // candidate reached. Near nMinInliers -> the gate is the problem; near zero
+    // -> there are no true correspondences to be found (appearance changed).
+    int nBestGoodThisCall = 0;
+    int nPoseFromRansac = 0;
 
     // Alternatively perform some iterations of P4P RANSAC
     // Until we found a camera pose supported by enough inliers
@@ -3711,7 +3838,9 @@ bool Tracking::Relocalization()
                         mCurrentFrame.mvpMapPoints[j]=NULL;
                 }
 
+                ++nPoseFromRansac;
                 int nGood = Optimizer::PoseOptimization(&mCurrentFrame);
+                if(nGood>nBestGoodThisCall) nBestGoodThisCall = nGood;
 
                 if(nGood<10)
                     continue;
@@ -3721,17 +3850,17 @@ bool Tracking::Relocalization()
                         mCurrentFrame.mvpMapPoints[io]=static_cast<MapPoint*>(NULL);
 
                 // If few inliers, search by projection in a coarse window and optimize again
-                if(nGood<50)
+                if(nGood<nMinInliers)
                 {
                     int nadditional =matcher2.SearchByProjection(mCurrentFrame,vpCandidateKFs[i],sFound,10,100);
 
-                    if(nadditional+nGood>=50)
+                    if(nadditional+nGood>=nMinInliers)
                     {
                         nGood = Optimizer::PoseOptimization(&mCurrentFrame);
 
                         // If many inliers but still not enough, search by projection again in a narrower window
                         // the camera has been already optimized with many points
-                        if(nGood>30 && nGood<50)
+                        if(nGood>nRefineFloor && nGood<nMinInliers)
                         {
                             sFound.clear();
                             for(int ip =0; ip<mCurrentFrame.N; ip++)
@@ -3740,7 +3869,7 @@ bool Tracking::Relocalization()
                             nadditional =matcher2.SearchByProjection(mCurrentFrame,vpCandidateKFs[i],sFound,3,64);
 
                             // Final optimization
-                            if(nGood+nadditional>=50)
+                            if(nGood+nadditional>=nMinInliers)
                             {
                                 nGood = Optimizer::PoseOptimization(&mCurrentFrame);
 
@@ -3753,8 +3882,10 @@ bool Tracking::Relocalization()
                 }
 
 
+                if(nGood>nBestGoodThisCall) nBestGoodThisCall = nGood;
+
                 // If the pose is supported by enough inliers stop ransacs and continue
-                if(nGood>=50)
+                if(nGood>=nMinInliers)
                 {
                     bMatch = true;
                     break;
@@ -3765,10 +3896,31 @@ bool Tracking::Relocalization()
 
     if(!bMatch)
     {
+        if(nCandAfterBoW == 0)
+            ++nRelocFewMatch;   // BoW-similar keyframes existed but matched too few features
+        else
+        {
+            ++nRelocGeomFail;   // matches existed but no pose reached nMinInliers
+            // how close did the best attempt get?
+            if(nPoseFromRansac == 0)      ++nGeomNoPose;   // RANSAC never even found a pose
+            else if(nBestGoodThisCall<10) ++nGeomLt10;
+            else if(nBestGoodThisCall<20) ++nGeomLt20;
+            else if(nBestGoodThisCall<30) ++nGeomLt30;
+            else                          ++nGeomGe30;
+            nGeomBestSum += nBestGoodThisCall;
+            if(nRelocGeomFail % 500 == 0)
+                cout << "[reloc-inliers] geomFail=" << nRelocGeomFail
+                     << " | noPose=" << nGeomNoPose
+                     << " <10=" << nGeomLt10 << " 10-19=" << nGeomLt20
+                     << " 20-29=" << nGeomLt30 << " >=30=" << nGeomGe30
+                     << " | avgBestInliers=" << (double)nGeomBestSum/(double)nRelocGeomFail
+                     << " (need " << nMinInliers << ")" << endl;
+        }
         return false;
     }
     else
     {
+        ++nRelocOk;
         mnLastRelocFrameId = mCurrentFrame.mnId;
         cout << "Relocalized!!" << endl;
         return true;

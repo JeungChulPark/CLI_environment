@@ -1,0 +1,102 @@
+# Timestamp policy shared by the V3 launch files and verifier.
+#
+# Laptop A is the rig clock/camera master.  Laptop B records independently as
+# the camera slave, while Chrony keeps both host clocks on a comparable epoch.
+# The profiles below deliberately keep Xsens and VLP-16 on host-derived time.
+
+active_profile: software_single_host
+
+profiles:
+  software_single_host:
+    role: standalone
+    camera_fps: 30
+    require_chrony_sync: false
+    realsense:
+      enable_sync: true
+      align_depth: true
+      global_time_enabled: true
+      inter_cam_sync_mode: 0
+      allowed_inter_cam_sync_modes: [0]
+      # A standalone camera does not need matched exposure with a second rig.
+      # Auto exposure prevents near-black RGB frames in changing indoor light.
+      manual_exposure: false
+      depth_exposure_us: 8500
+      color_exposure: 166
+    xsens:
+      model: MTi-630-8A1G6
+      output_rate_hz: 150.0
+      time_option: 2
+    velodyne_vlp16:
+      gps_time: false
+      time_offset: 0.0
+      timestamp_first_packet: true
+
+  dual_camera_master:
+    role: master
+    camera_fps: 30
+    require_chrony_sync: true
+    realsense:
+      enable_sync: true
+      align_depth: true
+      global_time_enabled: true
+      inter_cam_sync_mode: 1
+      allowed_inter_cam_sync_modes: [1]
+      manual_exposure: true
+      depth_exposure_us: 8500
+      color_exposure: 166
+    xsens:
+      model: MTi-630-8A1G6
+      output_rate_hz: 150.0
+      time_option: 2
+    velodyne_vlp16:
+      gps_time: false
+      time_offset: 0.0
+      timestamp_first_packet: true
+
+  dual_camera_slave:
+    role: slave
+    camera_fps: 30
+    require_chrony_sync: true
+    realsense:
+      enable_sync: true
+      align_depth: true
+      global_time_enabled: true
+      inter_cam_sync_mode: 2
+      # Mode 2 is the conservative default. Mode 3 (full slave) may be used
+      # after validating support on the exact D455f firmware/wrapper pair.
+      allowed_inter_cam_sync_modes: [2, 3]
+      manual_exposure: true
+      depth_exposure_us: 8500
+      color_exposure: 166
+    xsens:
+      model: MTi-630-8A1G6
+      output_rate_hz: 150.0
+      time_option: 2
+    velodyne_vlp16:
+      gps_time: false
+      time_offset: 0.0
+      timestamp_first_packet: true
+
+rtabmap:
+  start_lidar: true
+  scan_topic: /scan
+  approx_sync: true
+  rgbd_max_interval: 0.02
+  # The installed RTAB-Map common RGBD/odom/scan subscriber has no hard
+  # max-interval control. The verifier below is the acceptance gate.
+  sensor_fusion_max_interval: 0.04
+
+verification:
+  duration_sec: 120.0
+  warmup_sec: 10.0
+  minimum_coverage: 0.99
+  # Xsens option 2 can deliver a short USB batch roughly every 40 ms. These
+  # thresholds tolerate that observed callback behavior while staying inside
+  # the RTAB-Map fusion window.
+  camera_imu_p95_ms: 20.0
+  camera_imu_p99_ms: 25.0
+  lidar_camera_p95_ms: 25.0
+  lidar_camera_p99_ms: 40.0
+  triple_span_p95_ms: 35.0
+  triple_span_p99_ms: 40.0
+  maximum_relative_drift_ppm: 20.0

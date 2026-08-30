@@ -1,0 +1,127 @@
+{
+  "iou_0.3": {
+    "proposal_groups": 12053,
+    "multi_class_high_score": 1190,
+    "multi_class_high_rate": 0.0987,
+    "multi_class_accepted": 1108,
+    "multi_class_accept_rate": 0.0919,
+    "3plus_class_accepted": 190,
+    "mean_accepted_per_group": 0.562,
+    "top1_top2_gap_median": 0.1333,
+    "top1_top2_gap_p10": 0.0155,
+    "co_accepted_pairs": {
+      "Febreze_high+saffron": 597,
+      "Bear+Rabbit": 283,
+      "Bear+Dinosaur": 279,
+      "Dinosaur+Rabbit": 214,
+      "choco_hazelnut_high+milk": 68,
+      "Sikhye_high+saffron": 13,
+      "Sauce_high+saffron": 9,
+      "Sauce_high+Sikhye_high": 8,
+      "milk+saffron": 8,
+      "Febreze_high+Sauce_high": 4,
+      "Sikhye_high+milk": 2,
+      "Sauce_high+milk": 1,
+      "Febreze_high+milk": 1,
+      "Mugcup_high+Sikhye_high": 1
+    }
+  },
+  "iou_0.5": {
+    "proposal_groups": 12504,
+    "multi_class_high_score": 1180,
+    "multi_class_high_rate": 0.0944,
+    "multi_class_accepted": 1098,
+    "multi_class_accept_rate": 0.0878,
+    "3plus_class_accepted": 189,
+    "mean_accepted_per_group": 0.541,
+    "top1_top2_gap_median": 0.133,
+    "top1_top2_gap_p10": 0.0156,
+    "co_accepted_pairs": {
+      "Febreze_high+saffron": 597,
+      "Bear+Rabbit": 283,
+      "Bear+Dinosaur": 279,
+      "Dinosaur+Rabbit": 214,
+      "choco_hazelnut_high+milk": 65,
+      "Sikhye_high+saffron": 13,
+      "Sauce_high+saffron": 9,
+      "Sauce_high+Sikhye_high": 8,
+      "Febreze_high+Sauce_high": 4,
+      "Sikhye_high+milk": 2,
+      "Sauce_high+milk": 1,
+      "milk+saffron": 1
+    }
+  },
+  "iou_0.7": {
+    "proposal_groups": 12715,
+    "multi_class_high_score": 1178,
+    "multi_class_high_rate": 0.0926,
+    "multi_class_accepted": 1093,
+    "multi_class_accept_rate": 0.086,
+    "3plus_class_accepted": 189,
+    "mean_accepted_per_group": 0.532,
+    "top1_top2_gap_median": 0.1324,
+    "top1_top2_gap_p10": 0.0157,
+    "co_accepted_pairs": {
+      "Febreze_high+saffron": 595,
+      "Bear+Rabbit": 283,
+      "Bear+Dinosaur": 279,
+      "Dinosaur+Rabbit": 214,
+      "choco_hazelnut_high+milk": 64,
+      "Sikhye_high+saffron": 13,
+      "Sauce_high+saffron": 9,
+      "Sauce_high+Sikhye_high": 7,
+      "Febreze_high+Sauce_high": 4,
+      "Sikhye_high+milk": 2,
+      "Sauce_high+milk": 1
+    }
+  },
+  "per_dataset_iou0.5": {
+    "sam_105018": {
+      "groups": 1331,
+      "multi_accept": 71,
+      "rate": 0.0533
+    },
+    "sam_105314": {
+      "groups": 3164,
+      "multi_accept": 255,
+      "rate": 0.0806
+    },
+    "sam_105652": {
+      "groups": 2802,
+      "multi_accept": 277,
+      "rate": 0.0989
+    },
+    "sam_110104": {
+      "groups": 2919,
+      "multi_accept": 320,
+      "rate": 0.1096
+    },
+    "sam_110532": {
+      "groups": 814,
+      "multi_accept": 58,
+      "rate": 0.0713
+    },
+    "sam_110633": {
+      "groups": 1474,
+      "multi_accept": 117,
+      "rate": 0.0794
+    }
+  },
+  "baseline": {
+    "candidate_groups": 16549,
+    "semantic_winners": 16549,
+    "accepted_detections": 6770,
+    "accepted_per_object": {
+      "saffron": 985,
+      "Febreze_high": 984,
+      "Bear": 799,
+      "choco_hazelnut_high": 783,
+      "Sikhye_high": 698,
+      "Sauce_high": 636,
+      "milk": 554,
+      "Rabbit": 462,
+      "Mugcup_high": 448,
+      "Dinosaur": 421
+    }
+  }
+}

@@ -1,0 +1,84 @@
+# conda env `sam6d` — SAM-6D 실시간 노드용 (ROS 2 JAZZY)
+#
+# 목적: SAM-6D(ISM+PEM)를 ROS 2 Jazzy 위에서 실시간 노드로 돌린다.
+#       기존 sam6d_ros_humble(=Humble) + sam_yolo(=YOLO 사이드카) 2개 환경을 대체한다.
+#       ★ YOLO-World가 이 환경에 직접 들어가므로 유닉스 소켓 사이드카가 필요 없다.
+#
+# 구축·검증: 2026-08-13, 워크스테이션(RTX PRO 6000 Blackwell, 드라이버 580.159.04).
+# 검증 결과: 강체 3종(saffron/Sikhye_high/Sauce_high) PEM 포즈가 sam6d_ros_humble과
+#            score 소수점 6자리까지 동일, 위치 차 0.0002 mm 이하. bag 재생→구독→디코딩 동작.
+# 크기: 약 17 GB.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 1) 베이스 환경 (conda-forge + robostack-jazzy)
+# ─────────────────────────────────────────────────────────────────────────────
+mamba create -n sam6d -y --override-channels \
+  -c conda-forge -c robostack-jazzy \
+  python=3.12 \
+  ros-jazzy-desktop ros-jazzy-vision-msgs ros-jazzy-rosbag2-storage-mcap \
+  "pytorch=2.7.1=cuda129*" torchvision \
+  cuda-nvcc=12.9 cuda-cudart-dev=12.9 cuda-cccl \
+  compilers cmake ninja pkg-config colcon-common-extensions catkin_pkg empy lark \
+  numpy scipy pillow pyyaml
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 2) CUDA dev 헤더 — pointnet2 컴파일에 필수 (없으면 cusparse.h not found)
+# ─────────────────────────────────────────────────────────────────────────────
+mamba install -n sam6d -y --override-channels -c conda-forge \
+  libcusparse-dev libcublas-dev libcusolver-dev libcufft-dev libcurand-dev
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 3) 파이썬 의존성 (conda 우선 — numpy2 ABI에 맞춰 빌드된 것)
+#    trimesh/timm은 humble 환경과 같은 버전으로 고정한다(trimesh 5는 API 변동 위험).
+# ─────────────────────────────────────────────────────────────────────────────
+mamba install -n sam6d -y --override-channels -c conda-forge \
+  polars psutil requests tqdm py-cpuinfo "trimesh=4.12.2" scikit-image imageio \
+  einops pycocotools "timm=1.0.26"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 4) pip (--no-deps: conda가 넣은 torch/opencv를 pip이 덮어쓰지 않게)
+# ─────────────────────────────────────────────────────────────────────────────
+conda activate sam6d
+pip install --no-deps "ultralytics==8.4.64" ultralytics-thop "segment-anything==1.0" distinctipy
+pip install "gorilla-core==0.2.7.8"      # deps 필요(addict/lmdb/tensorboardX/yapf 등)
+# YOLO-World가 첫 실행 때 CLIP을 자동 설치한다. 오프라인 노트북이면 미리 깔아둘 것:
+pip install clip ftfy regex
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 5) pointnet2 CUDA 확장 재빌드 (PEM 필수)
+#    ★★ 반드시 `conda activate sam6d` 상태에서 할 것 ★★
+#    conda-forge torch는 헤더 경로를 CONDA_PREFIX 기준으로 해석한다. env의 pip
+#    바이너리를 직접 부르면(예: ~/miniconda3/envs/sam6d/bin/pip) CONDA_PREFIX가
+#    base로 잡혀 `fatal error: torch/all.h: No such file or directory` 가 난다.
+#    거기서 -I 를 억지로 넣으면 이번엔 nvcc가 gcc14 libstdc++ 헤더를 파싱하다
+#    `error: type name is not allowed (__is_array)` 로 2차 실패한다. activate가 정답.
+#
+#    TORCH_CUDA_ARCH_LIST: 이식 대상 노트북 GPU를 모르므로 여러 아키텍처를 함께 굽는다.
+#      8.6=RTX30 / 8.9=RTX40·Ada / 9.0=Hopper / 12.0=Blackwell(+PTX=미래 GPU 대비)
+conda activate sam6d
+cd <repo>/sam6d_ws/sam6d_master/SAM-6D/Pose_Estimation_Model/model/pointnet2
+export TORCH_CUDA_ARCH_LIST="8.6;8.9;9.0;12.0+PTX" MAX_JOBS=16 CUDA_HOME=$CONDA_PREFIX
+pip install --no-build-isolation .
+#    확인:
+python -c "from pointnet2 import _ext; import torch; \
+           print(_ext.furthest_point_sampling(torch.rand(1,100,3,device='cuda').contiguous(),16).shape)"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 6) 동작 확인 (권장 순서)
+# ─────────────────────────────────────────────────────────────────────────────
+# (a) ROS + torch
+python -c "import rclpy, cv_bridge, message_filters, torch; \
+           from vision_msgs.msg import Detection3DArray; print(torch.cuda.is_available())"
+# (b) ISM 모델 3종 로드 (DINOv2 / MobileSAM / YOLO-World) — 사이드카 없이
+# (c) PEM 1프레임 추론 후 humble 결과와 대조 (강체 객체로 할 것. 인형은 원래 해가 불안정하다)
+# (d) bag 재생 구독:  ros2 bag play <sam bag> --clock   +   rclpy 구독 노드
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 주의사항
+# ─────────────────────────────────────────────────────────────────────────────
+# * numpy는 2.5.2다(humble 환경은 1.26.4). RoboStack Jazzy 패키지가 numpy2 빌드
+#   (`np2py312`)라 선택지가 없다. ISM/PEM 실측상 문제 없었다.
+# * ROS_DOMAIN_ID를 분리할 것. ORB-SLAM3 실시간이 71을 쓰므로 SAM은 72 권장.
+# * rosbag2(Jazzy)는 기존 v5 sqlite3 bag을 그대로 읽는다(0807 세션에서 확인).
+#   단 velodyne bag은 별건이다(v9 문제는 hdl 쪽 기록 참조).
+# * 기존 sam6d_ros_humble / sam_yolo 는 손대지 않았다. 오프라인 배치 경로는 계속 그 환경을 쓴다.

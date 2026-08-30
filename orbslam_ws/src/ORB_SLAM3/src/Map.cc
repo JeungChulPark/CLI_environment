@@ -359,7 +359,22 @@ void Map::SetLastMapChange(int currentChangeId)
 void Map::PreSave(std::set<GeometricCamera*> &spCams)
 {
     int nMPWithoutObs = 0;
-    for(MapPoint* pMPi : mspMapPoints)
+
+    // UPSTREAM BUG FIX (iterator invalidation) --------------------------------
+    // The loop below calls MapPoint::EraseObservation(), which drops the point's
+    // observation count; at <= 2 observations it calls SetBadFlag() ->
+    // Map::EraseMapPoint() -> mspMapPoints.erase(pMP). Erasing from the very set
+    // that the range-for is iterating invalidates the iterator, and the next ++
+    // walks a freed red-black-tree node:
+    //     std::_Rb_tree_increment  <-  Map::PreSave (this line)  <-  Atlas::PreSave
+    //     <- System::SaveAtlas  <-  System::Shutdown        (SIGSEGV, map lost)
+    // Observed in 2 of 3 mapping runs; whether it fires depends on how many points
+    // fall below the observation threshold while saving, hence the intermittency.
+    // Iterating a snapshot is safe: EraseMapPoint() only removes the pointer from
+    // the set (see its own TODO), the MapPoint object itself is not deleted, and
+    // the isBad() check below skips anything that goes bad during the loop.
+    const std::set<MapPoint*> spMapPointsAtEntry = mspMapPoints;
+    for(MapPoint* pMPi : spMapPointsAtEntry)
     {
         if(!pMPi || pMPi->isBad())
             continue;

@@ -1,0 +1,180 @@
+{
+  "gt_rank": {
+    "appe_n": 350,
+    "appe_top1": 319,
+    "appe_top2": 335,
+    "appe_top3": 340,
+    "appe_out": 10,
+    "sem_n": 350,
+    "sem_top1": 318,
+    "sem_top2": 331,
+    "sem_top3": 341,
+    "sem_out": 9,
+    "yolo_n": 350,
+    "yolo_top1": 261,
+    "yolo_top2": 311,
+    "yolo_top3": 334,
+    "yolo_out": 16,
+    "hsvreal_n": 350,
+    "hsvreal_top1": 335,
+    "hsvreal_top2": 340,
+    "hsvreal_top3": 340,
+    "hsvreal_out": 10,
+    "appe_wrongtop1_gt_top2": 16,
+    "appe_wrongtop1_gt_top3": 5
+  },
+  "fusion_lodo": {
+    "S0_baseline_appe": {
+      "TP": 262,
+      "FP": 43,
+      "FN": 30,
+      "TN": 201,
+      "precision": 0.859,
+      "recall": 0.8973,
+      "f1": 0.8777,
+      "top_confusions": {
+        "Dinosaur->Bear": 12,
+        "Rabbit->Bear": 7,
+        "Dinosaur->Rabbit": 6,
+        "Rabbit->Dinosaur": 4,
+        "saffron->Febreze_high": 4,
+        "carton->choco_hazelnut_high": 2
+      }
+    },
+    "S1_sem": {
+      "TP": 248,
+      "FP": 49,
+      "FN": 44,
+      "TN": 195,
+      "precision": 0.835,
+      "recall": 0.8493,
+      "f1": 0.8421,
+      "top_confusions": {
+        "Febreze_high->saffron": 13,
+        "Dinosaur->Bear": 11,
+        "Rabbit->Bear": 6,
+        "Dinosaur->Rabbit": 4,
+        "Rabbit->Dinosaur": 4,
+        "carton->choco_hazelnut_high": 4
+      }
+    },
+    "S2_hsv_real": {
+      "TP": 264,
+      "FP": 28,
+      "FN": 28,
+      "TN": 216,
+      "precision": 0.9041,
+      "recall": 0.9041,
+      "f1": 0.9041,
+      "top_confusions": {
+        "Febreze_high->saffron": 16,
+        "Sauce_high->Febreze_high": 5,
+        "Dinosaur->Bear": 2,
+        "carton->choco_hazelnut_high": 1,
+        "saffron->milk": 1,
+        "saffron->Sikhye_high": 1
+      }
+    },
+    "S3_hsv_render": {
+      "TP": 266,
+      "FP": 47,
+      "FN": 26,
+      "TN": 197,
+      "precision": 0.8498,
+      "recall": 0.911,
+      "f1": 0.8793,
+      "top_confusions": {
+        "Sikhye_high->Sauce_high": 16,
+        "saffron->Sauce_high": 11,
+        "Sikhye_high->saffron": 5,
+        "Sauce_high->Febreze_high": 4,
+        "Febreze_high->milk": 2,
+        "Sauce_high->saffron": 2
+      }
+    },
+    "S4_sem+appe": {
+      "TP": 261,
+      "FP": 37,
+      "FN": 31,
+      "TN": 207,
+      "precision": 0.8758,
+      "recall": 0.8938,
+      "f1": 0.8847,
+      "top_confusions": {
+        "Dinosaur->Bear": 11,
+        "Rabbit->Bear": 7,
+        "Dinosaur->Rabbit": 6,
+        "Rabbit->Dinosaur": 4,
+        "Bear->Rabbit": 2,
+        "Febreze_high->saffron": 2
+      }
+    },
+    "S5_sem+hsv": {
+      "TP": 273,
+      "FP": 31,
+      "FN": 19,
+      "TN": 213,
+      "precision": 0.898,
+      "recall": 0.9349,
+      "f1": 0.9161,
+      "top_confusions": {
+        "Febreze_high->saffron": 14,
+        "carton->milk": 4,
+        "Dinosaur->Bear": 2,
+        "Sauce_high->Febreze_high": 2,
+        "carton->choco_hazelnut_high": 2,
+        "saffron->milk": 1
+      }
+    },
+    "S6_appe+hsv": {
+      "TP": 279,
+      "FP": 16,
+      "FN": 13,
+      "TN": 228,
+      "precision": 0.9458,
+      "recall": 0.9555,
+      "f1": 0.9506,
+      "top_confusions": {
+        "Febreze_high->saffron": 4,
+        "Dinosaur->Bear": 2,
+        "carton->milk": 2,
+        "Sauce_high->Febreze_high": 2,
+        "saffron->milk": 1,
+        "Dinosaur->Rabbit": 1
+      }
+    },
+    "S7_sem+appe+hsv": {
+      "TP": 276,
+      "FP": 20,
+      "FN": 16,
+      "TN": 224,
+      "precision": 0.9324,
+      "recall": 0.9452,
+      "f1": 0.9388,
+      "top_confusions": {
+        "Febreze_high->saffron": 9,
+        "carton->milk": 2,
+        "saffron->Febreze_high": 2,
+        "carton->choco_hazelnut_high": 1,
+        "saffron->milk": 1,
+        "Dinosaur->Rabbit": 1
+      }
+    },
+    "S0_operational_fixed_gate": {
+      "TP": 275,
+      "FP": 104,
+      "FN": 17,
+      "TN": 140,
+      "precision": 0.7256,
+      "recall": 0.9418,
+      "top_confusions": {
+        "saffron->Febreze_high": 36,
+        "carton->choco_hazelnut_high": 22,
+        "Dinosaur->Bear": 12,
+        "Rabbit->Bear": 7,
+        "Febreze_high->saffron": 7,
+        "Dinosaur->Rabbit": 6
+      }
+    }
+  }
+}

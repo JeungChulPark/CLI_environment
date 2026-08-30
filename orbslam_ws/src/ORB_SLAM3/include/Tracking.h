@@ -200,6 +200,21 @@ protected:
     // Map initialization for stereo and RGB-D
     void StereoInitialization();
 
+    // Localization-only on a PRIOR map: when the Atlas was loaded from file the
+    // System constructor leaves an EMPTY map active (System.cc CreateNewMap after
+    // LoadAtlas), so StereoInitialization would start a brand new map at identity
+    // and Relocalization could never find candidates (DetectRelocalizationCandidates
+    // filters by current map). This switches the active map to the loaded one and
+    // hands the next frame to Relocalization instead. Mapping runs are untouched:
+    // it only fires when mbOnlyTracking is set AND an Atlas was loaded from file.
+    bool ActivatePriorMapForLocalization();
+
+    // True while this run is "estimate my pose inside a previously built map":
+    // localization-only tracking (local mapping stopped) on an Atlas loaded from
+    // file. In that mode the map must never be abandoned or rebuilt -- losing
+    // tracking means "keep relocalizing", not "start a new map".
+    bool IsLocalizingOnPriorMap() const;
+
     // Map initialization for monocular
     void MonocularInitialization();
     //void CreateNewMapPoints();

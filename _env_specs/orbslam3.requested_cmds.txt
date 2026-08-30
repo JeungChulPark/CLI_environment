@@ -1,0 +1,8 @@
+# cmd: mamba create -n orbslam3 --override-channels -c conda-forge -c robostack-humble --strict-channel-priority python=3.11 pip git wget cmake ninja make cxx-compiler colcon-common-extensions ros-humble-ros-base opencv eigen boost-cpp suitesparse
+# cmd: mamba install -n orbslam3 --override-channels -c conda-forge -c robostack-humble ros-humble-cv-bridge
+# cmd: mamba install -c conda-forge -c robostack-humble --strict-channel-priority ros-humble-image-transport
+# cmd: mamba install -c conda-forge --strict-channel-priority libboost-devel libboost-headers libboost
+# cmd: mamba install -c conda-forge eigen=3.4.0
+# cmd: mamba install -n orbslam3 -c conda-forge --strict-channel-priority cmake ninja pkg-config git eigen glew libgl-devel libegl-devel xorg-libx11 xorg-libxrandr xorg-libxinerama xorg-libxcursor xorg-libxi
+# cmd: mamba install -n orbslam3 -c conda-forge --strict-channel-priority libgl-devel libopengl-devel libegl-devel
+# cmd: mamba install -n orbslam3 -c conda-forge --strict-channel-priority epoxy

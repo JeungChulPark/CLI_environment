@@ -1,0 +1,86 @@
+[
+ {
+  "object": "Bear",
+  "frame": 1588,
+  "prompt": "brown bear doll",
+  "luma": 75.46,
+  "z": 0.592,
+  "deployed": 0,
+  "multilabel": 0,
+  "brightened": 0,
+  "conf_ml": 0.0,
+  "png": "Bear_f001588.png"
+ },
+ {
+  "object": "Dinosaur",
+  "frame": 626,
+  "prompt": "green dinosaur doll",
+  "luma": 84.75,
+  "z": 0.846,
+  "deployed": 0,
+  "multilabel": 1,
+  "brightened": 0,
+  "conf_ml": 0.1861,
+  "png": "Dinosaur_f000626.png"
+ },
+ {
+  "object": "Febreze_high",
+  "frame": 1594,
+  "prompt": "febreze spray bottle",
+  "luma": 72.88,
+  "z": 0.474,
+  "deployed": 0,
+  "multilabel": 0,
+  "brightened": 0,
+  "conf_ml": 0.0,
+  "png": "Febreze_high_f001594.png"
+ },
+ {
+  "object": "Rabbit",
+  "frame": 4298,
+  "prompt": "white rabbit doll",
+  "luma": 72.43,
+  "z": 0.462,
+  "deployed": 0,
+  "multilabel": 1,
+  "brightened": 1,
+  "conf_ml": 0.0911,
+  "png": "Rabbit_f004298.png"
+ },
+ {
+  "object": "Sikhye_high",
+  "frame": 3008,
+  "prompt": "yellow can",
+  "luma": 72.93,
+  "z": 0.686,
+  "deployed": 0,
+  "multilabel": 1,
+  "brightened": 0,
+  "conf_ml": 0.3808,
+  "png": "Sikhye_high_f003008.png"
+ },
+ {
+  "object": "choco_hazelnut_high",
+  "frame": 3216,
+  "prompt": "maroon box",
+  "luma": 80.49,
+  "z": 1.032,
+  "deployed": 0,
+  "multilabel": 0,
+  "brightened": 0,
+  "conf_ml": 0.0,
+  "png": "choco_hazelnut_high_f003216.png"
+ },
+ {
+  "object": "milk",
+  "frame": 3722,
+  "prompt": "milk carton",
+  "luma": 73.66,
+  "z": 0.901,
+  "deployed": 0,
+  "multilabel": 0,
+  "brightened": 0,
+  "conf_ml": 0.0,
+  "png": "milk_f003722.png"
+ }
+]

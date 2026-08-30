@@ -1,0 +1,105 @@
+/**:
+  ros__parameters:
+    frame_id: base_link
+    odom_frame_id: odom
+    map_frame_id: map
+
+    subscribe_rgbd: true
+    subscribe_rgb: false
+    subscribe_depth: false
+    subscribe_odom: true
+    subscribe_scan: true
+    subscribe_odom_info: false
+    approx_sync: true
+    # Kept for tools that support this parameter. The installed RTAB-Map
+    # common RGBD/odom/scan subscriber does not enforce it, so the external
+    # triple_sync_verifier is the acceptance gate.
+    approx_sync_max_interval: 0.04
+
+    # The shared rgbd_sync node consumes only the native RealSense streams.
+    # RTAB-Map and RTAB-MapViz both consume its single synchronized output.
+    rgb_image_transport: raw
+    depth_image_transport: raw
+
+    topic_queue_size: 30
+    sync_queue_size: 30
+    qos: 1
+    qos_image: 1
+    qos_camera_info: 1
+    qos_odom: 1
+    qos_scan: 2
+    wait_for_transform: 0.3
+
+    publish_tf: true
+    use_action_for_goal: false
+
+    Mem/IncrementalMemory: "true"
+    Mem/InitWMWithAllNodes: "false"
+    Mem/RehearsalSimilarity: "0.45"
+    Mem/NotLinkedNodesKept: "false"
+
+    Odom/ResetCountdown: "1"
+
+    Grid/FromDepth: "true"
+    Grid/Sensor: "2"
+    Grid/3D: "false"
+    Grid/RayTracing: "true"
+    Grid/Scan2dUnknownSpaceFilled: "false"
+    Grid/RangeMin: "0.35"
+    Grid/RangeMax: "5.0"
+    Grid/CellSize: "0.05"
+    Grid/DepthDecimation: "2"
+    Grid/NormalsSegmentation: "false"
+    Grid/MaxGroundHeight: "0.05"
+    Grid/MaxObstacleHeight: "1.5"
+    Grid/MinClusterSize: "10"
+    Grid/NoiseFilteringRadius: "0.08"
+    Grid/NoiseFilteringMinNeighbors: "2"
+
+    RGBD/LinearUpdate: "0.08"
+    RGBD/AngularUpdate: "0.04"
+    RGBD/NeighborLinkRefining: "true"
+    RGBD/LocalBundleOnLoopClosure: "false"
+    RGBD/LoopCovLimited: "false"
+    RGBD/OptimizeFromGraphEnd: "false"
+    RGBD/ProximityBySpace: "true"
+    RGBD/ProximityByTime: "false"
+    RGBD/ProximityAngle: "180"
+    RGBD/ProximityOdomGuess: "true"
+    RGBD/ProximityPathFilteringRadius: "1.0"
+    RGBD/ProximityPathMaxNeighbors: "10"
+    RGBD/ProximityMaxGraphDepth: "0"
+    RGBD/CreateOccupancyGrid: "true"
+    RGBD/OptimizeMaxError: "3.0"
+
+    Reg/Strategy: "2"
+    Reg/Force3DoF: "true"
+
+    Icp/CorrespondenceRatio: "0.10"
+    Icp/MaxCorrespondenceDistance: "0.30"
+    Icp/MaxTranslation: "1.0"
+    Icp/MaxRotation: "1.0"
+    Icp/PointToPlane: "false"
+    Icp/VoxelSize: "0.05"
+
+    Vis/FeatureType: "1"
+    Vis/MaxFeatures: "1500"
+    Vis/MinInliers: "15"
+    Vis/InlierDistance: "0.10"
+
+    Kp/DetectorStrategy: "1"
+    Kp/MaxFeatures: "1500"
+
+    SIFT/RootSIFT: "true"
+
+    Rtabmap/DetectionRate: "3.0"
+    Rtabmap/LoopThr: "0.11"
+    Rtabmap/TimeThr: "0"
+    Optimizer/Strategy: "1"
+    Optimizer/Iterations: "300"
+    Optimizer/Robust: "true"
+    Optimizer/GravitySigma: "0"
+
+    Cloud/Assemble: "true"
+    Cloud/OutputVoxelized: "true"
+    Cloud/VoxelSize: "0.03"

@@ -1,0 +1,41 @@
+{
+  "prompts": [
+    "milk carton",
+    "maroon box",
+    "febreze spray bottle",
+    "mug cup",
+    "white jug",
+    "orange bottle",
+    "yellow can",
+    "brown bear doll",
+    "white rabbit doll",
+    "green dinosaur doll"
+  ],
+  "imgsz": 960,
+  "conf": 0.02,
+  "frames_steady": 27,
+  "A_10_separate_passes": {
+    "n": 27,
+    "median_ms": 59.83,
+    "mean_ms": 59.73,
+    "p90_ms": 60.73
+  },
+  "B_1_shared_pass": {
+    "n": 27,
+    "median_ms": 6.32,
+    "mean_ms": 6.29,
+    "p90_ms": 6.48
+  },
+  "C_1_shared_multilabel": {
+    "n": 27,
+    "median_ms": 6.3,
+    "mean_ms": 6.33,
+    "p90_ms": 6.56
+  },
+  "recall_vs_A": {
+    "B": 0.8298,
+    "C": 0.9894,
+    "reference_boxes": 94
+  },
+  "C_boxes_not_in_A": 55
+}

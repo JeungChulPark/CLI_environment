@@ -1,0 +1,4 @@
+template PROTO max|op-research| = 0.000e+00  (10 objects, [42,128] each)
+candidates compared = 18060
+max |score_op - score_research| = 0.000e+00
+would_hsv_reject flips @ t=0.1214 = 0  (100% PARITY)

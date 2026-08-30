@@ -25,6 +25,8 @@ def generate_launch_description():
     scan_reg_maximum_iterations = LaunchConfiguration("scan_reg_maximum_iterations")
     scan_reg_max_optimizer_iterations = LaunchConfiguration("scan_reg_max_optimizer_iterations")
     scan_reg_correspondence_randomness = LaunchConfiguration("scan_reg_correspondence_randomness")
+    graph_keyframe_delta_trans = LaunchConfiguration("graph_keyframe_delta_trans")
+    graph_keyframe_delta_angle = LaunchConfiguration("graph_keyframe_delta_angle")
 
     common_params = {
         "use_sim_time": use_sim_time,
@@ -50,6 +52,12 @@ def generate_launch_description():
             DeclareLaunchArgument("scan_reg_maximum_iterations", default_value="64"),
             DeclareLaunchArgument("scan_reg_max_optimizer_iterations", default_value="20"),
             DeclareLaunchArgument("scan_reg_correspondence_randomness", default_value="20"),
+            # graph_slam_node's own keyframe gate. Its code defaults are 2.0 m /
+            # 2.0 rad (115 deg), which on a 174 s indoor run yields ~30 graph
+            # nodes — too coarse to serve as a reference trajectory and too few
+            # to give the loop detector much to work with.
+            DeclareLaunchArgument("graph_keyframe_delta_trans", default_value="2.0"),
+            DeclareLaunchArgument("graph_keyframe_delta_angle", default_value="2.0"),
             Node(
                 package="tf2_ros",
                 executable="static_transform_publisher",
@@ -130,6 +138,10 @@ def generate_launch_description():
                         "points_topic": points_topic,
                         "points_qos": filtered_points_qos,
                         "published_odom_topic": "/odom",
+                        "keyframe_delta_trans": ParameterValue(graph_keyframe_delta_trans,
+                                                               value_type=float),
+                        "keyframe_delta_angle": ParameterValue(graph_keyframe_delta_angle,
+                                                               value_type=float),
                         "use_const_inf_matrix": True,
                         "publish_map_odom_tf": True,
                         "publish_map_points": True,

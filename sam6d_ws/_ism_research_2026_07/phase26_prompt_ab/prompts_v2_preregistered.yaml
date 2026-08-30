@@ -1,0 +1,37 @@
+# 프롬프트 재설계 v2 — **평가 전 사전 등록** (2026-07-23)
+#
+# 원칙
+#  1. 혼동 쌍에서 갈리는 **판별 특징**(색·재질·특징 부위)을 넣는다.
+#  2. 여러 클래스가 공유하는 상위 범주어("doll", "box", "bottle" 단독)를 줄인다.
+#     — 확정 데이터상 'doll' 이 인형 3종을, 'box' 가 초코↔택배박스를 묶고 있다.
+#  3. 짧은 명사구 유지(YOLO-World 는 장문에 약함).
+#  4. 이 파일은 평가 **이전에** 고정한다. 결과를 보고 프롬프트를 고치지 않는다.
+#     (고치면 사람이 하는 과적합 = GT-fit 이 되어 INV 위반)
+#
+# 근거: 사람 확정 GT(275건 후보판정 + 144건 혼동 메모)
+#   Sauce ← Sikhye 24 · Dinosaur ← Bear 18 · choco ← 택배박스 17
+#   Rabbit ← Dinosaur 10 · Mugcup ← Sikhye 9 · milk ← 택배박스 5
+
+prompts_v2:
+  # YOLO 실패율 최상위 3종 (프롬프트 수정의 주 표적)
+  Sauce_high:          "brown squeeze bottle with white cap"   # was: orange bottle  (← Sikhye 24)
+  choco_hazelnut_high: "flat dark red snack box"               # was: maroon box     (← 택배박스 17)
+  Rabbit:              "white plush rabbit with long ears"     # was: white rabbit doll (← Dino/Bear 14)
+
+  # 혼동 상대편도 함께 분리해야 효과가 난다
+  Sikhye_high:         "yellow aluminum drink can"             # was: yellow can
+  Dinosaur:            "green plush dinosaur"                  # was: green dinosaur doll
+  Bear:                "tan plush teddy bear"                  # was: brown bear doll
+  Mugcup_high:         "pink ceramic mug with handle"          # was: mug cup        (← Sikhye 9)
+  milk:                "white paper milk carton"               # was: milk carton    (← 택배박스 5)
+
+  # 상대적으로 안정적이나 표현만 구체화
+  saffron:             "large beige plastic jug with handle"   # was: white jug
+  Febreze_high:        "blue trigger spray bottle"             # was: febreze spray bottle
+
+# 평가 계약
+#  - 비교: A(현행 프롬프트) vs B(v2)  — 둘 다 per-prompt 패스, imgsz 960, conf 0.02, top_k 3
+#  - 후단 게이트(semantic 0.35 / appe 0.55 / HSV 0.1214)와 템플릿은 **불변**
+#  - 판정 기준: **FP <= 86 유지하면서 TP 증가** (사용자 지정)
+#  - 클래스별로도 보고 — 특정 클래스만 좋아지고 나머지가 나빠지면 채택하지 않는다
+#  - 6개 데이터셋 전부에서 측정, 위치검증된 GT 기준

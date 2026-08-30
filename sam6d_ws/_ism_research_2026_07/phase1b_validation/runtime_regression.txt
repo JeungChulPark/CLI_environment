@@ -1,0 +1,7 @@
+dataset=sam_110633  frames=30  objects=10  (frame,obj) pairs checked=300
+decision mismatches (accepted/decision/num_proposals) = 0
+box mismatches=0  best_sem mismatches=0  masked_appe mismatches=0
+accepted candidates (B) = 58  |  of those with hsv_score logged = 58
+recognize_frame total: OFF=0.801s  ON=0.693s  added=-0.108s
+added latency per frame (median-ish avg) = -3.59 ms/frame
+VERDICT: PASS - shadow ON == OFF decisions

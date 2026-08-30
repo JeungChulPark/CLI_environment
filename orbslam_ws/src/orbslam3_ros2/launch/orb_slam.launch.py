@@ -71,6 +71,7 @@ def _default_config():
         },
         "runtime": {
             "use_imu": False,
+            "localization_mode": False,
             "sync_queue_size": 60,
             "publish_map_points": True,
             "map_points_topic": "/orbslam3/map_points",
@@ -227,6 +228,7 @@ def _launch_setup(context, *args, **kwargs):
                 "depth_topic": str(cfg["topics"]["depth"]),
                 "imu_topic": str(cfg["topics"].get("imu", "/camera/camera/imu")),
                 "use_imu": _as_bool(cfg["runtime"].get("use_imu", False)),
+                "localization_mode": _as_bool(cfg["runtime"].get("localization_mode", False)),
                 "world_frame": str(cfg["frames"]["world"]),
                 "camera_frame": str(cfg["frames"]["camera"]),
                 "sync_queue_size": int(cfg["runtime"]["sync_queue_size"]),

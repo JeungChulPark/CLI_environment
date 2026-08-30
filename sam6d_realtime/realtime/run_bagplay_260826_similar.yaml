@@ -1,0 +1,38 @@
+# 260826_etri_similarObject — 변환본 bag 자동 재생판 (run_bagplay_split.yaml 기반)
+#
+#   conda activate sam6d && export ROS_DOMAIN_ID=72
+#   ros2 launch realtime/launch/sam6d_split.launch.py \
+#       config:=realtime/run_bagplay_260826_similar.yaml
+#
+# 수신·추론 노드가 뜨고 추론이 READY 를 쓰면 launch 가 bag 을 --clock 으로 재생한다.
+
+topics:
+  rgb: /camera/camera/color/image_raw
+  depth: /camera/camera/aligned_depth_to_color/image_raw
+  caminfo: /camera/camera/color/camera_info
+
+ism:
+  config: configs/yolo_ism_objects.yaml
+  objects: []                 # 비우면 config 의 활성 객체 전부
+
+runtime:
+  device: cuda:0
+  use_sim_time: true          # bag 을 --clock 으로 재생하므로 true
+  sync_slop: 0.02
+  sync_queue: 30
+  qos_reliability: reliable   # ⚠ best_effort 면 대량 유실된다 (NOTES 24절)
+  qos_depth: 30
+  det_score_thresh: 0.2
+  status_period_s: 1.0
+  idle_exit_s: 30             # 첫 프레임을 받은 뒤 입력이 끊기면 추론이 스스로 종료
+
+output:
+  dir: output/bagplay_260826_similar
+  diagnostics: true
+
+bag:
+  play: true                  # READY 게이트 뒤에 launch 가 직접 재생한다
+  path: /mnt/synology/Dataset/data_slam_converted/260826_RGBD_data/260826_etri_similarObject/SAM
+  rate: 1.0
+  clock: true
+  ready_timeout: 600          # 모델 적재를 기다리는 상한 [s]

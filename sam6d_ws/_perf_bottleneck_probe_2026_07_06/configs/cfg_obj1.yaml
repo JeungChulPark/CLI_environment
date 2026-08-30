@@ -1,0 +1,107 @@
+# PERF-PROBE config variant (copy of configs/yolo_ism_objects.yaml)
+defaults:
+  weights: yolov8m-worldv2.pt
+  device: cuda:0
+  top_k: 3
+  score_threshold: 0.02
+  imgsz: 960
+  similarity_threshold: 0.35
+  use_mask: true
+  appe_gate: 0.55
+  match_topk: 5
+  seg_weights: mobile_sam.pt
+  stride: 10
+objects:
+- name: milk
+  yolo_prompt: milk carton
+  object_id: Milk_scaled_195mm
+  template_dir: sam6d_master/SAM-6D/Data/custom/Milk_scaled_195mm/templates
+  cad_ply: data/cad/milk/Milk.ply
+  enabled: true
+- name: choco_hazelnut_high
+  yolo_prompt: maroon box
+  object_id: choco_hazelnut_color_high
+  template_dir: template/choco_hazelnut_color_high/templates
+  cad_ply: data/cad/choco_hazelnut_color_high/choco_hazelnut_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: choco_hazelnut_low
+  yolo_prompt: brown box
+  object_id: choco_hazelnut_color_low
+  template_dir: template/choco_hazelnut_color_low/templates
+  cad_ply: data/cad/choco_hazelnut_color_low/choco_hazelnut_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: Febreze_high
+  yolo_prompt: febreze spray bottle
+  object_id: Febreze_high
+  template_dir: template/Febreze_high/templates
+  cad_ply: data/cad/Febreze_high/Febreze_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: Febreze_low
+  yolo_prompt: febreze spray bottle
+  object_id: Febreze_low
+  template_dir: template/Febreze_low/templates
+  cad_ply: data/cad/Febreze_low/Febreze_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: Mugcup_high
+  yolo_prompt: mug cup
+  object_id: Mugcup_color_high
+  template_dir: template/Mugcup_color_high/templates
+  cad_ply: data/cad/Mugcup_color_high/Mugcup_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: Mugcup_low
+  yolo_prompt: mug cup
+  object_id: Mugcup_color_low
+  template_dir: template/Mugcup_color_low/templates
+  cad_ply: data/cad/Mugcup_color_low/Mugcup_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: saffron
+  yolo_prompt: white jug
+  object_id: saffron
+  template_dir: template/saffron/templates
+  cad_ply: data/cad/saffron/saffron_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: Sauce_high
+  yolo_prompt: orange bottle
+  object_id: Sauce_high
+  template_dir: template/Sauce_high/templates
+  cad_ply: data/cad/Sauce_high/Sauce_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: Sauce_low
+  yolo_prompt: brown bottle
+  object_id: Sauce_low
+  template_dir: template/Sauce_low/templates
+  cad_ply: data/cad/Sauce_low/Sauce_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: Sikhye_high
+  yolo_prompt: yellow can
+  object_id: Sikhye_high
+  template_dir: template/Sikhye_high/templates
+  cad_ply: data/cad/Sikhye_high/Sikhye_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: Sikhye_low
+  yolo_prompt: yellow can
+  object_id: Sikhye_low
+  template_dir: template/Sikhye_low/templates
+  cad_ply: data/cad/Sikhye_low/Sikhye_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: Bear
+  yolo_prompt: brown bear doll
+  score_threshold: 0.35
+  object_id: Bear
+  template_dir: template/Bear/templates
+  cad_ply: data/cad/Bear/bear_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: Rabbit
+  yolo_prompt: white rabbit doll
+  score_threshold: 0.3
+  object_id: Rabbit
+  template_dir: template/Rabbit/templates
+  cad_ply: data/cad/Rabbit/Rabbit_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: Dinosaur
+  yolo_prompt: green dinosaur doll
+  score_threshold: 0.3
+  object_id: Dinosaur
+  template_dir: template/Dinosaur/templates
+  cad_ply: data/cad/Dinosaur/Dinosaur_color_with_normal_vertexcolor.ply
+  enabled: false

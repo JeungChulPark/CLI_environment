@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Nav2 lifecycle transitions are ROS services.  nav2_lifecycle_manager uses
+  SystemDefaultsQoS for its service clients, so Fast DDS normally gives their
+  reply readers a bounded KEEP_LAST history.  A dropped change_state reply
+  leaves the lifecycle manager waiting forever even though the server reached
+  the requested state.
+
+  The generic "client" profiles are the Fast DDS fallback profiles for ROS 2
+  service-client request writers and reply readers.  KEEP_ALL prevents another
+  service response from evicting the lifecycle transition response.  This file
+  deliberately does not set RMW_FASTRTPS_USE_QOS_FROM_XML: rmw_fastrtps keeps
+  its safe PREALLOCATED_WITH_REALLOC memory policy while still honoring this
+  QoS for endpoints created with SystemDefaultsQoS.
+-->
+<profiles xmlns="http://www.eprosima.com/XMLSchemas/fastRTPS_Profiles">
+  <data_writer profile_name="client">
+    <topic>
+      <historyQos>
+        <kind>KEEP_ALL</kind>
+      </historyQos>
+    </topic>
+  </data_writer>
+
+  <data_reader profile_name="client">
+    <topic>
+      <historyQos>
+        <kind>KEEP_ALL</kind>
+      </historyQos>
+    </topic>
+  </data_reader>
+</profiles>

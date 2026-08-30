@@ -1,0 +1,3 @@
+deployment_t_hsv=0.12140
+LOO t* range=[0.12140,0.12140] mean=0.12140
+held-out FP reduced in all 6 folds=True

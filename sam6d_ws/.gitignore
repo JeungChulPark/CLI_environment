@@ -1,0 +1,63 @@
+# ===== Large data / datasets (절대 GitHub 불가) =====
+data/
+output/
+outputs/
+outputs*/
+
+# ===== Model weights & checkpoints =====
+weights/
+**/checkpoints/
+*.pt
+*.pth
+*.onnx
+*.engine
+*.trt
+*.caffemodel
+*.h5
+*.ckpt
+*.safetensors
+
+# ===== ROS2 bags / pointclouds / CAD (대용량 바이너리) =====
+*.db3
+*.bag
+*.pcd
+*.ply
+*.mcap
+
+# ===== Archives =====
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+
+# ===== ROS2 / colcon build artifacts =====
+build/
+install/
+log/
+COLCON_IGNORE
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+*.so
+.venv/
+venv/
+env/
+
+# ===== Generated SAM-6D templates (렌더 결과물, 재생성 가능, 대용량 2.2G) =====
+template/
+
+# ===== Agent tooling / frameworks (프로젝트 소스 아님) =====
+.claude/
+.agents/
+_bmad/
+
+# ===== Editor / OS =====
+.vscode/
+.idea/
+.DS_Store
+*.swp

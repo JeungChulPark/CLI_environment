@@ -1,0 +1,50 @@
+{
+  "n_dinov2_forward_per_frame": {
+    "n": 57,
+    "median_ms": 5,
+    "mean_ms": 4.579,
+    "p90_ms": 8
+  },
+  "n_mobilesam_calls_per_frame": {
+    "n": 57,
+    "median_ms": 0,
+    "mean_ms": 1.158,
+    "p90_ms": 3
+  },
+  "preprocess": {
+    "n": 66,
+    "median_ms": 0.58,
+    "mean_ms": 0.588,
+    "p90_ms": 0.656
+  },
+  "yolo_world": {
+    "n": 66,
+    "median_ms": 65.359,
+    "mean_ms": 65.7,
+    "p90_ms": 68.089
+  },
+  "dinov2_per_object": {
+    "n": 66,
+    "median_ms": 3.879,
+    "mean_ms": 4.891,
+    "p90_ms": 9.859
+  },
+  "mobilesam_per_box": {
+    "n": 66,
+    "median_ms": 10.924,
+    "mean_ms": 11.085,
+    "p90_ms": 12.221
+  },
+  "appe_1tpl_cpu_ragged": {
+    "n": 66,
+    "median_ms": 0.167,
+    "mean_ms": 0.161,
+    "p90_ms": 0.202
+  },
+  "appe_42tpl_gpu_flat": {
+    "n": 66,
+    "median_ms": 0.193,
+    "mean_ms": 0.198,
+    "p90_ms": 0.221
+  }
+}

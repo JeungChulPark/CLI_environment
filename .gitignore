@@ -38,3 +38,47 @@ hdlgraphslam_ws/output/
 *.swp
 .claude/
 _bmad/
+
+# ---- Added 2026-08-30: large outputs / data / build products (not uploaded) ----
+.vscode/
+.pytest_cache/
+*.npz
+*.ts
+*.part-*
+*.pre_*
+*.bak
+# integration pipeline: raw bags + run outputs
+integration/data/
+integration/output/
+# SLAM run outputs (multi-GB)
+output_slam/
+orbslam_ws/output/
+orbslam_ws/build_jazzy/
+orbslam_ws/install_jazzy/
+# upstream ORB_SLAM3 clone used for the Jazzy build (git clone UZ-SLAMLab/ORB_SLAM3)
+orbslam_ws/src/orbslam3_core/
+# object memory run outputs
+objectmemory_ws/output/
+# sam6d_realtime: bags, templates, checkpoints, run outputs
+sam6d_realtime/data/
+sam6d_realtime/template/
+sam6d_realtime/sam6d_master/
+sam6d_realtime/sam6d_master.old_backup/
+sam6d_realtime/output/
+sam6d_realtime/outputs/
+sam6d_realtime/assets/
+sam6d_realtime/temp/
+# sam6d_ws research/probe outputs (keep scripts + reports, drop images/tensors/csv)
+sam6d_ws/_ism_research_2026_07/**/*.png
+sam6d_ws/_ism_research_2026_07/**/*.jpg
+sam6d_ws/_ism_research_2026_07/**/*.csv
+sam6d_ws/_perf_bottleneck_probe_2026_07_06/outputs/
+sam6d_ws/_perf_bottleneck_probe_2026_07_06/frames/
+sam6d_ws/sam6d_master/SAM-6D/Pose_Estimation_Model/runs/
+# PDF duplicates of the html reports
+html/*.pdf
+rtabmap_imu_ws/src/mapping_manager/script_navigatable_v3/data/
+orbslam_ws/src/ORB_SLAM3/Vocabulary/ORBvoc.txt.tar.gz
+# dangling symlinks to another machine's data paths
+objectmemory_ws/input/*/pem
+objectmemory_ws/input/260804_SAM_longcircle2/

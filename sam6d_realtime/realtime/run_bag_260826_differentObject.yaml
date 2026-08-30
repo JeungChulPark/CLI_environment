@@ -1,0 +1,35 @@
+# 260826 260826_etri_differentObject — 단일 프로세스판(sam6d_realtime.launch.py) bag 재생 설정
+#   변환본: /home/jucpark/DeepLearning/Datasets/data_slam_converted/260826_etri_differentObject/SLAM
+#   conda activate sam6d && export ROS_DOMAIN_ID=72
+#   ros2 launch realtime/launch/sam6d_realtime.launch.py config:=realtime/run_bag_260826_differentObject.yaml
+
+topics:
+  rgb: /camera/camera/color/image_raw
+  depth: /camera/camera/aligned_depth_to_color/image_raw
+  caminfo: /camera/camera/color/camera_info
+
+ism:
+  config: configs/yolo_ism_objects.yaml
+  objects: []                 # 비우면 config 의 활성 객체 전부(9개)
+
+runtime:
+  device: cuda:0
+  use_sim_time: true          # bag play --clock
+  sync_slop: 0.02
+  sync_queue: 2
+  det_score_thresh: 0.2
+  status_period_s: 1.0
+  # sam6d_master 동기화(2026-08-29)로 verify 기본값(독립 검증 ON) 복원
+
+output:
+  dir: output/rt_260826_differentObject
+  overlay_every: 20
+  write_jsonl: true
+  diagnostics: true
+
+bag:
+  play: true
+  path: /home/jucpark/DeepLearning/Datasets/data_slam_converted/260826_etri_differentObject/SLAM
+  rate: 1.0
+  clock: true
+  ready_timeout: 600

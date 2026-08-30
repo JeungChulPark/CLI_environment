@@ -1,0 +1,6 @@
+name: sam_yolo
+channels:
+  - defaults
+dependencies:
+  - python=3.11
+prefix: /home/ldh9501/miniconda3/envs/sam_yolo

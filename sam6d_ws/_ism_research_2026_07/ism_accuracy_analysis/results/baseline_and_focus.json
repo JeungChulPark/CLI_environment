@@ -1,0 +1,289 @@
+{
+  "B0": {
+    "overall": {
+      "TP": 220,
+      "FP": 44,
+      "FN": 18,
+      "TN": 84
+    },
+    "prf": {
+      "precision": 0.8333,
+      "recall": 0.9244,
+      "f1": 0.8765
+    },
+    "per_object": {
+      "milk": {
+        "TP": 37,
+        "FP": 0,
+        "FN": 3,
+        "TN": 10,
+        "precision": 1.0,
+        "recall": 0.925,
+        "f1": 0.961
+      },
+      "choco_hazelnut_high": {
+        "TP": 12,
+        "FP": 5,
+        "FN": 2,
+        "TN": 16,
+        "precision": 0.7059,
+        "recall": 0.8571,
+        "f1": 0.7742
+      },
+      "Febreze_high": {
+        "TP": 22,
+        "FP": 20,
+        "FN": 2,
+        "TN": 13,
+        "precision": 0.5238,
+        "recall": 0.9167,
+        "f1": 0.6667
+      },
+      "saffron": {
+        "TP": 35,
+        "FP": 3,
+        "FN": 0,
+        "TN": 21,
+        "precision": 0.9211,
+        "recall": 1.0,
+        "f1": 0.9589
+      },
+      "Bear": {
+        "TP": 36,
+        "FP": 6,
+        "FN": 1,
+        "TN": 0,
+        "precision": 0.8571,
+        "recall": 0.973,
+        "f1": 0.9114
+      },
+      "Sauce_high": {
+        "TP": 19,
+        "FP": 1,
+        "FN": 0,
+        "TN": 21,
+        "precision": 0.95,
+        "recall": 1.0,
+        "f1": 0.9744
+      },
+      "Rabbit": {
+        "TP": 13,
+        "FP": 4,
+        "FN": 6,
+        "TN": 0,
+        "precision": 0.7647,
+        "recall": 0.6842,
+        "f1": 0.7222
+      },
+      "Dinosaur": {
+        "TP": 6,
+        "FP": 5,
+        "FN": 1,
+        "TN": 0,
+        "precision": 0.5455,
+        "recall": 0.8571,
+        "f1": 0.6667
+      },
+      "Mugcup_high": {
+        "TP": 23,
+        "FP": 0,
+        "FN": 1,
+        "TN": 0,
+        "precision": 1.0,
+        "recall": 0.9583,
+        "f1": 0.9787
+      },
+      "Sikhye_high": {
+        "TP": 17,
+        "FP": 0,
+        "FN": 2,
+        "TN": 3,
+        "precision": 1.0,
+        "recall": 0.8947,
+        "f1": 0.9444
+      }
+    },
+    "confusion_true_to_pred": {
+      "saffron->Febreze_high": 20,
+      "Bear->Rabbit": 2,
+      "Bear->Dinosaur": 4,
+      "Febreze_high->saffron": 3,
+      "Rabbit->Bear": 3,
+      "Rabbit->Dinosaur": 1,
+      "Dinosaur->Rabbit": 2,
+      "Dinosaur->Bear": 3,
+      "carton->choco_hazelnut_high": 5,
+      "Sikhye_high->Sauce_high": 1
+    }
+  },
+  "choco_vs_carton": {
+    "sem_top1": {
+      "auc_choco_vs_carton": 0.912,
+      "choco_med": 0.531,
+      "carton_med": 0.426
+    },
+    "sem_top3": {
+      "auc_choco_vs_carton": 0.887,
+      "choco_med": 0.508,
+      "carton_med": 0.403
+    },
+    "sem_top5": {
+      "auc_choco_vs_carton": 0.92,
+      "choco_med": 0.495,
+      "carton_med": 0.39
+    },
+    "sem_median": {
+      "auc_choco_vs_carton": 0.983,
+      "choco_med": 0.389,
+      "carton_med": 0.195
+    },
+    "sem_softmax": {
+      "auc_choco_vs_carton": 0.87,
+      "choco_med": 0.465,
+      "carton_med": 0.372
+    },
+    "sem_mean": {
+      "auc_choco_vs_carton": 0.992,
+      "choco_med": 0.391,
+      "carton_med": 0.215
+    },
+    "sem_margin12": {
+      "auc_choco_vs_carton": 0.605,
+      "choco_med": 0.02,
+      "carton_med": 0.02
+    },
+    "appe11_clstop1": {
+      "auc_choco_vs_carton": 0.878,
+      "choco_med": 0.624,
+      "carton_med": 0.539
+    },
+    "appe11_max42": {
+      "auc_choco_vs_carton": 0.87,
+      "choco_med": 0.638,
+      "carton_med": 0.543
+    },
+    "appe11_mean42": {
+      "auc_choco_vs_carton": 0.916,
+      "choco_med": 0.527,
+      "carton_med": 0.444
+    },
+    "appe11_top5cls": {
+      "auc_choco_vs_carton": 0.87,
+      "choco_med": 0.63,
+      "carton_med": 0.542
+    },
+    "appe9_max42": {
+      "auc_choco_vs_carton": 0.92,
+      "choco_med": 0.672,
+      "carton_med": 0.605
+    },
+    "appe9_clstop1": {
+      "auc_choco_vs_carton": 0.874,
+      "choco_med": 0.64,
+      "carton_med": 0.556
+    },
+    "appe2_max42": {
+      "auc_choco_vs_carton": 0.088,
+      "choco_med": 0.695,
+      "carton_med": 0.72
+    },
+    "appe2_clstop1": {
+      "auc_choco_vs_carton": 0.429,
+      "choco_med": 0.624,
+      "carton_med": 0.643
+    },
+    "appe2_mean42": {
+      "auc_choco_vs_carton": 0.147,
+      "choco_med": 0.612,
+      "carton_med": 0.629
+    },
+    "color_hsv_masked": {
+      "auc_choco_vs_carton": 0.912,
+      "choco_med": 0.579,
+      "carton_med": 0.416
+    },
+    "color_hsv_bbox": {
+      "auc_choco_vs_carton": 0.92,
+      "choco_med": 0.571,
+      "carton_med": 0.436
+    },
+    "color_labmom_dist": {
+      "auc_choco_vs_carton": 0.147,
+      "choco_med": 20.178,
+      "carton_med": 33.608
+    },
+    "yolo_conf": {
+      "auc_choco_vs_carton": 0.374,
+      "choco_med": 0.04,
+      "carton_med": 0.064
+    }
+  },
+  "dolls": {
+    "Bear": {
+      "sem_top1": 0.91,
+      "sem_top3": 0.905,
+      "sem_top5": 0.905,
+      "sem_median": 0.86,
+      "sem_softmax": 0.905,
+      "sem_mean": 0.874,
+      "sem_margin12": 0.631,
+      "appe11_clstop1": 0.865,
+      "appe11_max42": 0.838,
+      "appe11_mean42": 0.874,
+      "appe11_top5cls": 0.842,
+      "appe9_max42": 0.845,
+      "appe9_clstop1": 0.842,
+      "appe2_max42": 1.0,
+      "appe2_clstop1": 0.95,
+      "appe2_mean42": 1.0,
+      "color_hsv_masked": 0.991,
+      "color_hsv_bbox": 0.455,
+      "color_labmom_dist": 0.631,
+      "yolo_conf": 0.946
+    },
+    "Rabbit": {
+      "sem_top1": 0.895,
+      "sem_top3": 0.895,
+      "sem_top5": 0.895,
+      "sem_median": 0.934,
+      "sem_softmax": 0.895,
+      "sem_mean": 0.921,
+      "sem_margin12": 0.507,
+      "appe11_clstop1": 0.408,
+      "appe11_max42": 0.447,
+      "appe11_mean42": 0.487,
+      "appe11_top5cls": 0.447,
+      "appe9_max42": 0.592,
+      "appe9_clstop1": 0.513,
+      "appe2_max42": 1.0,
+      "appe2_clstop1": 1.0,
+      "appe2_mean42": 1.0,
+      "color_hsv_masked": 0.987,
+      "color_hsv_bbox": 0.934,
+      "color_labmom_dist": 0.013,
+      "yolo_conf": 0.921
+    },
+    "Dinosaur": {
+      "sem_top1": 0.686,
+      "sem_top3": 0.643,
+      "sem_top5": 0.657,
+      "sem_median": 0.971,
+      "sem_softmax": 0.657,
+      "sem_mean": 0.971,
+      "sem_margin12": 0.486,
+      "appe11_clstop1": 0.429,
+      "appe11_max42": 0.457,
+      "appe11_mean42": 0.657,
+      "appe11_top5cls": 0.457,
+      "appe9_max42": 0.743,
+      "appe9_clstop1": 0.629,
+      "appe2_max42": 1.0,
+      "appe2_clstop1": 1.0,
+      "appe2_mean42": 1.0,
+      "color_hsv_masked": 1.0,
+      "color_hsv_bbox": 1.0,
+      "color_labmom_dist": 0.457,
+      "yolo_conf": 0.914
+    }
+  }
+}

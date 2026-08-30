@@ -1,0 +1,81 @@
+/**:
+  ros__parameters:
+    frame_id: base_link
+    odom_frame_id: odom
+    map_frame_id: map
+
+    subscribe_rgbd: true
+    subscribe_rgb: false
+    subscribe_depth: false
+    subscribe_odom: true
+    subscribe_scan: true
+    subscribe_odom_info: false
+    approx_sync: true
+    approx_sync_max_interval: 0.04
+
+    rgb_image_transport: raw
+    depth_image_transport: raw
+
+    topic_queue_size: 30
+    sync_queue_size: 30
+    qos: 1
+    qos_image: 1
+    qos_camera_info: 1
+    qos_odom: 1
+    qos_scan: 2
+    wait_for_transform: 0.3
+
+    publish_tf: true
+    use_action_for_goal: false
+    pub_loc_pose_only_when_localizing: false
+
+    Mem/IncrementalMemory: "false"
+    Mem/InitWMWithAllNodes: "true"
+    Mem/NotLinkedNodesKept: "false"
+
+    Grid/FromDepth: "false"
+    RGBD/CreateOccupancyGrid: "false"
+
+    Reg/Strategy: "2"
+    Reg/Force3DoF: "true"
+
+    Icp/CorrespondenceRatio: "0.10"
+    Icp/MaxCorrespondenceDistance: "0.30"
+    Icp/MaxTranslation: "1.0"
+    Icp/MaxRotation: "1.0"
+    Icp/PointToPlane: "false"
+    Icp/VoxelSize: "0.05"
+
+    RGBD/LinearUpdate: "0.08"
+    RGBD/AngularUpdate: "0.04"
+    RGBD/NeighborLinkRefining: "true"
+    RGBD/LocalBundleOnLoopClosure: "false"
+    RGBD/LoopCovLimited: "false"
+    RGBD/OptimizeFromGraphEnd: "false"
+    RGBD/OptimizeMaxError: "3.0"
+    RGBD/StartAtOrigin: "false"
+    RGBD/ProximityBySpace: "true"
+    RGBD/ProximityAngle: "180"
+    RGBD/ProximityOdomGuess: "true"
+    RGBD/ProximityPathFilteringRadius: "1.0"
+    RGBD/ProximityPathMaxNeighbors: "10"
+    RGBD/ProximityMaxGraphDepth: "0"
+
+    Vis/FeatureType: "1"
+    Vis/MaxFeatures: "1200"
+    Vis/MinInliers: "15"
+    Vis/InlierDistance: "0.10"
+    Vis/CorType: "0"
+
+    Kp/DetectorStrategy: "1"
+    Kp/MaxFeatures: "1200"
+
+    SIFT/RootSIFT: "true"
+
+    Rtabmap/DetectionRate: "5.0"
+    Rtabmap/LoopThr: "0.11"
+    Rtabmap/TimeThr: "0"
+    Optimizer/Strategy: "1"
+    Optimizer/Iterations: "300"
+    Optimizer/Robust: "false"
+    Optimizer/GravitySigma: "0"

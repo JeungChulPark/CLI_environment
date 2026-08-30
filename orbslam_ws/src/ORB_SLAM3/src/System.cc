@@ -530,20 +530,48 @@ void System::Shutdown()
             usleep(5000);
     }*/
 
-    // Wait until all thread have effectively stopped
-    /*while(!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished() || mpLoopCloser->isRunningGBA())
+    // Wait until all threads have effectively stopped.
+    //
+    // UPSTREAM BUG: this loop ships COMMENTED OUT, so RequestFinish() only raises a
+    // flag and Shutdown() walks straight into SaveAtlas() while Local Mapping and
+    // Loop Closing are still inserting/culling keyframes and running global BA on
+    // the very maps being serialised. Atlas::PreSave() then dereferences objects
+    // another thread is deleting -> intermittent SIGSEGV right after "Shutdown" and
+    // before "Starting to write the save binary file" (observed 4 times in ~10
+    // mapping runs; it disappears under gdb because the timing changes). Even when
+    // it does not crash, the map can be serialised from a half-modified Atlas.
+    // Waiting here is what upstream intended; the timeout keeps a stuck GBA from
+    // hanging the shutdown forever.
     {
-        if(!mpLocalMapper->isFinished())
-            cout << "mpLocalMapper is not finished" << endl;*/
-        /*if(!mpLoopCloser->isFinished())
-            cout << "mpLoopCloser is not finished" << endl;
-        if(mpLoopCloser->isRunningGBA()){
-            cout << "mpLoopCloser is running GBA" << endl;
-            cout << "break anyway..." << endl;
-            break;
-        }*/
-        /*usleep(5000);
-    }*/
+        const int wait_timeout_ms = 30000;
+        const int poll_ms = 5;
+        int waited_ms = 0;
+        bool reported = false;
+        while(!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished() ||
+              mpLoopCloser->isRunningGBA())
+        {
+            if(!reported)
+            {
+                cout << "Shutdown: waiting for background threads"
+                     << " (localMapper=" << (mpLocalMapper->isFinished() ? "done" : "busy")
+                     << ", loopCloser=" << (mpLoopCloser->isFinished() ? "done" : "busy")
+                     << ", GBA=" << (mpLoopCloser->isRunningGBA() ? "running" : "idle")
+                     << ") ..." << endl;
+                reported = true;
+            }
+            usleep(poll_ms * 1000);
+            waited_ms += poll_ms;
+            if(waited_ms >= wait_timeout_ms)
+            {
+                cout << "Shutdown: WARNING - background threads still busy after "
+                     << (wait_timeout_ms / 1000) << " s; saving anyway." << endl;
+                break;
+            }
+        }
+        if(reported)
+            cout << "Shutdown: background threads stopped after "
+                 << waited_ms << " ms." << endl;
+    }
 
     if(!mStrSaveAtlasToFile.empty())
     {

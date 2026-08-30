@@ -1,0 +1,112 @@
+{
+  "Bear": {
+    "frames": 2596,
+    "raw_zero": 777,
+    "post_zero": 951,
+    "topk_zero": 1494,
+    "removed_by_conf_or_nms": 174,
+    "removed_by_score_threshold": 543,
+    "truncated_by_topk": 0,
+    "raw_zero_rate": 0.2993,
+    "topk_zero_rate": 0.5755
+  },
+  "Dinosaur": {
+    "frames": 2596,
+    "raw_zero": 806,
+    "post_zero": 1015,
+    "topk_zero": 1780,
+    "removed_by_conf_or_nms": 209,
+    "removed_by_score_threshold": 765,
+    "truncated_by_topk": 4,
+    "raw_zero_rate": 0.3105,
+    "topk_zero_rate": 0.6857
+  },
+  "Febreze_high": {
+    "frames": 2596,
+    "raw_zero": 103,
+    "post_zero": 529,
+    "topk_zero": 529,
+    "removed_by_conf_or_nms": 426,
+    "removed_by_score_threshold": 0,
+    "truncated_by_topk": 368,
+    "raw_zero_rate": 0.0397,
+    "topk_zero_rate": 0.2038
+  },
+  "Mugcup_high": {
+    "frames": 2596,
+    "raw_zero": 12,
+    "post_zero": 332,
+    "topk_zero": 332,
+    "removed_by_conf_or_nms": 320,
+    "removed_by_score_threshold": 0,
+    "truncated_by_topk": 644,
+    "raw_zero_rate": 0.0046,
+    "topk_zero_rate": 0.1279
+  },
+  "Rabbit": {
+    "frames": 2596,
+    "raw_zero": 454,
+    "post_zero": 870,
+    "topk_zero": 1913,
+    "removed_by_conf_or_nms": 416,
+    "removed_by_score_threshold": 1043,
+    "truncated_by_topk": 0,
+    "raw_zero_rate": 0.1749,
+    "topk_zero_rate": 0.7369
+  },
+  "Sauce_high": {
+    "frames": 2596,
+    "raw_zero": 270,
+    "post_zero": 664,
+    "topk_zero": 664,
+    "removed_by_conf_or_nms": 394,
+    "removed_by_score_threshold": 0,
+    "truncated_by_topk": 69,
+    "raw_zero_rate": 0.104,
+    "topk_zero_rate": 0.2558
+  },
+  "Sikhye_high": {
+    "frames": 2596,
+    "raw_zero": 215,
+    "post_zero": 1092,
+    "topk_zero": 1092,
+    "removed_by_conf_or_nms": 877,
+    "removed_by_score_threshold": 0,
+    "truncated_by_topk": 49,
+    "raw_zero_rate": 0.0828,
+    "topk_zero_rate": 0.4206
+  },
+  "choco_hazelnut_high": {
+    "frames": 2596,
+    "raw_zero": 5,
+    "post_zero": 615,
+    "topk_zero": 615,
+    "removed_by_conf_or_nms": 610,
+    "removed_by_score_threshold": 0,
+    "truncated_by_topk": 216,
+    "raw_zero_rate": 0.0019,
+    "topk_zero_rate": 0.2369
+  },
+  "milk": {
+    "frames": 2596,
+    "raw_zero": 97,
+    "post_zero": 770,
+    "topk_zero": 770,
+    "removed_by_conf_or_nms": 673,
+    "removed_by_score_threshold": 0,
+    "truncated_by_topk": 113,
+    "raw_zero_rate": 0.0374,
+    "topk_zero_rate": 0.2966
+  },
+  "saffron": {
+    "frames": 2596,
+    "raw_zero": 9,
+    "post_zero": 222,
+    "topk_zero": 222,
+    "removed_by_conf_or_nms": 213,
+    "removed_by_score_threshold": 0,
+    "truncated_by_topk": 1133,
+    "raw_zero_rate": 0.0035,
+    "topk_zero_rate": 0.0855
+  }
+}

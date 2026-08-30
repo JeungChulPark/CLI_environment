@@ -1,0 +1,54 @@
+{
+  "milk": {
+    "interior_frames": 2584,
+    "Y2_conf_or_nms": 72,
+    "isolated_dropout": 72
+  },
+  "choco_hazelnut_high": {
+    "interior_frames": 2584,
+    "Y2_conf_or_nms": 40,
+    "isolated_dropout": 40
+  },
+  "Febreze_high": {
+    "interior_frames": 2584,
+    "Y2_conf_or_nms": 42,
+    "isolated_dropout": 42
+  },
+  "Mugcup_high": {
+    "interior_frames": 2584,
+    "Y2_conf_or_nms": 59,
+    "isolated_dropout": 59
+  },
+  "saffron": {
+    "interior_frames": 2584,
+    "Y2_conf_or_nms": 29,
+    "isolated_dropout": 30,
+    "Y1_raw_none": 1
+  },
+  "Sauce_high": {
+    "interior_frames": 2584,
+    "Y2_conf_or_nms": 34,
+    "isolated_dropout": 34
+  },
+  "Sikhye_high": {
+    "interior_frames": 2584,
+    "Y2_conf_or_nms": 38,
+    "isolated_dropout": 38
+  },
+  "Bear": {
+    "interior_frames": 2584,
+    "Y3_score_threshold": 27,
+    "isolated_dropout": 28,
+    "Y2_conf_or_nms": 1
+  },
+  "Rabbit": {
+    "interior_frames": 2584,
+    "Y3_score_threshold": 48,
+    "isolated_dropout": 48
+  },
+  "Dinosaur": {
+    "interior_frames": 2584,
+    "Y3_score_threshold": 19,
+    "isolated_dropout": 19
+  }
+}

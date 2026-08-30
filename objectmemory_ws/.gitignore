@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# Large regenerable visualization artifacts (frames + GIFs).
+# Run reports (output/**/*.md) are kept as they are the narrative results.
+output/**/*.png
+output/**/*.gif
+
+# Editor / OS
+.vscode/
+.DS_Store

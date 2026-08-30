@@ -1,0 +1,36 @@
+{
+  "lowsat_objects": [
+    "Rabbit"
+  ],
+  "saturation": {
+    "Bear": 76.79215238095239,
+    "Rabbit": 2.4273440476190475,
+    "Dinosaur": 91.58070357142857,
+    "milk": 36.24167976190476,
+    "choco_hazelnut_high": 114.85117380952381,
+    "Febreze_high": 50.08025238095238,
+    "Mugcup_high": 56.4872380952381,
+    "saffron": 50.507111904761906,
+    "Sauce_high": 74.78906666666667,
+    "Sikhye_high": 147.56777857142856
+  },
+  "best": {
+    "reference": "H5",
+    "space": "hs",
+    "lowsat": "svfall",
+    "mean_auroc": 0.9673,
+    "min_object_auroc": 0.9222,
+    "min_object": "Sauce_high",
+    "mean_prauc": 0.8095,
+    "auroc_Bear": 0.9827,
+    "auroc_Rabbit": 0.9844,
+    "auroc_Dinosaur": 0.9991,
+    "auroc_milk": 0.9237,
+    "auroc_choco_hazelnut_high": 0.98,
+    "auroc_Febreze_high": 0.9936,
+    "auroc_Mugcup_high": 0.9888,
+    "auroc_saffron": 0.9318,
+    "auroc_Sauce_high": 0.9222,
+    "auroc_Sikhye_high": 0.9672
+  }
+}

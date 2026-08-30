@@ -84,6 +84,16 @@
         "/camera/camera/imu"
       );
 
+      // When true, the System is switched to pure LOCALIZATION mode right after
+      // construction: local mapping + loop closing are disabled so a previously
+      // loaded Atlas (via System.LoadAtlasFromFile in the settings YAML) stays
+      // FIXED and the incoming sequence only relocalizes + tracks against it.
+      // This is the "estimate current pose inside a prior map" workflow.
+      localization_mode_ = this->declare_parameter<bool>(
+        "localization_mode",
+        false
+      );
+
       world_frame_ = this->declare_parameter<std::string>(
         "world_frame",
         "map"
@@ -268,6 +278,14 @@
         sensor_mode,
         false
       );
+
+      if (localization_mode_) {
+        // Disable local mapping + loop closing; only relocalization + tracking
+        // run against the (loaded) Atlas. The prior map is not modified.
+        slam_->ActivateLocalizationMode();
+        RCLCPP_INFO(this->get_logger(),
+          "LOCALIZATION mode ACTIVE: prior Atlas is fixed; estimating pose against it.");
+      }
 
       if (use_imu_) {
         // IMU is published BEST_EFFORT by the RealSense driver / rosbag; match it.
@@ -1224,6 +1242,7 @@
     std::string depth_topic_;
     std::string imu_topic_;
     bool use_imu_{false};
+    bool localization_mode_{false};
     std::string world_frame_;
     std::string camera_frame_;
     std::string map_points_topic_; // for core accessor

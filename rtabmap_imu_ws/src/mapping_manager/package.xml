@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<package format="3">
+
+  <name>mapping_manager</name>
+  <version>0.0.1</version>
+
+  <description>
+    Mapping Manager
+  </description>
+
+  <maintainer email="robot@robot.com">
+    robot
+  </maintainer>
+
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>
+    ament_python
+  </buildtool_depend>
+
+  <depend>rclpy</depend>
+  <depend>std_srvs</depend>
+
+  <exec_depend>robot_localization</exec_depend>
+  <exec_depend>rtabmap_ros</exec_depend>
+  <exec_depend>realsense2_camera</exec_depend>
+  <exec_depend>compressed_image_transport</exec_depend>
+  <exec_depend>compressed_depth_image_transport</exec_depend>
+  <exec_depend>rosbag2_transport</exec_depend>
+  <exec_depend>rosbag2_storage_default_plugins</exec_depend>
+  <exec_depend>xsens_mti_ros2_driver</exec_depend>
+  <exec_depend>teleop_twist_keyboard</exec_depend>
+  <exec_depend>pointcloud_to_laserscan</exec_depend>
+  <exec_depend>velodyne_driver</exec_depend>
+  <exec_depend>velodyne_pointcloud</exec_depend>
+  <exec_depend>velodyne_laserscan</exec_depend>
+
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+
+</package>

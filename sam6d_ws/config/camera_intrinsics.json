@@ -1,0 +1,17 @@
+{
+  "_source": "extracted from ROS2 bag /camera/camera/color/camera_info (RealSense, aligned_depth_to_color uses identical K). Replace manually if a different calibration is needed.",
+  "_date": "2026-06-16",
+  "width": 640,
+  "height": 480,
+  "fx": 386.08,
+  "fy": 385.51,
+  "cx": 322.78,
+  "cy": 250.28,
+  "K": [386.08, 0.0, 322.78, 0.0, 385.51, 250.28, 0.0, 0.0, 1.0],
+  "depth_scale": 0.001,
+  "depth_encoding": "16UC1",
+  "depth_unit": "millimeter",
+  "depth_topic": "/camera/camera/aligned_depth_to_color/image_raw",
+  "color_topic": "/camera/camera/color/image_raw",
+  "notes": "depth is ALIGNED to color (aligned_depth_to_color), so color K applies directly to the depth image; no extra warp needed. depth_scale converts raw uint16 -> meters."
+}

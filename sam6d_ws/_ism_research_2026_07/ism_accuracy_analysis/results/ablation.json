@@ -1,0 +1,1454 @@
+{
+  "experiments": {
+    "B0": {
+      "desc": "\ud604\uc7ac \uc6b4\uc601 \uc810\uc218 (appe11 @ CLS-top1 view)",
+      "recalibrated": {
+        "TP": 61,
+        "FP": 8,
+        "FN": 19,
+        "TN": 39,
+        "precision": 0.8841,
+        "recall": 0.7625,
+        "f1": 0.8188,
+        "carton_to_choco_FP": 0,
+        "doll_confusion_FP": 5,
+        "saffron_to_febreze_FP": 3,
+        "confusion": {
+          "saffron->Febreze_high": 3,
+          "Bear->Dinosaur": 2,
+          "Bear->Rabbit": 1,
+          "Dinosaur->Bear": 1,
+          "Rabbit->Bear": 1
+        },
+        "thresholds": {
+          "Bear": 0.6217,
+          "Dinosaur": 0.5559,
+          "Febreze_high": 0.5901,
+          "Mugcup_high": 0.5117,
+          "Rabbit": 0.456,
+          "Sauce_high": 0.5719,
+          "Sikhye_high": 0.5978,
+          "choco_hazelnut_high": 0.6028,
+          "milk": 0.6072,
+          "saffron": 0.6249
+        }
+      },
+      "fixed_threshold": {
+        "TP": 72,
+        "FP": 18,
+        "FN": 8,
+        "TN": 29,
+        "precision": 0.8,
+        "recall": 0.9,
+        "f1": 0.8471,
+        "carton_to_choco_FP": 1,
+        "doll_confusion_FP": 5,
+        "saffron_to_febreze_FP": 11,
+        "confusion": {
+          "saffron->Febreze_high": 11,
+          "Bear->Dinosaur": 2,
+          "Bear->Rabbit": 1,
+          "Dinosaur->Bear": 1,
+          "Sikhye_high->Sauce_high": 1,
+          "carton->choco_hazelnut_high": 1,
+          "Rabbit->Bear": 1
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 6,
+          "FN": 2,
+          "FP": 2
+        },
+        "Dinosaur": {
+          "FP": 2,
+          "TP": 2,
+          "FN": 1
+        },
+        "Febreze_high": {
+          "TN": 17,
+          "TP": 3,
+          "FP": 3,
+          "FN": 1
+        },
+        "Mugcup_high": {
+          "TP": 1
+        },
+        "Rabbit": {
+          "FP": 1,
+          "TP": 4
+        },
+        "Sauce_high": {
+          "TN": 10,
+          "TP": 4,
+          "FN": 2
+        },
+        "Sikhye_high": {
+          "TP": 6,
+          "FN": 2
+        },
+        "choco_hazelnut_high": {
+          "FN": 2,
+          "TP": 5,
+          "TN": 8
+        },
+        "milk": {
+          "FN": 7,
+          "TP": 8,
+          "TN": 2
+        },
+        "saffron": {
+          "TP": 22,
+          "TN": 2,
+          "FN": 2
+        }
+      }
+    },
+    "B1": {
+      "desc": "= B0, \uac1d\uccb4\ubcc4 threshold \uc7ac\ubcf4\uc815",
+      "recalibrated": {
+        "TP": 61,
+        "FP": 8,
+        "FN": 19,
+        "TN": 39,
+        "precision": 0.8841,
+        "recall": 0.7625,
+        "f1": 0.8188,
+        "carton_to_choco_FP": 0,
+        "doll_confusion_FP": 5,
+        "saffron_to_febreze_FP": 3,
+        "confusion": {
+          "saffron->Febreze_high": 3,
+          "Bear->Dinosaur": 2,
+          "Bear->Rabbit": 1,
+          "Dinosaur->Bear": 1,
+          "Rabbit->Bear": 1
+        },
+        "thresholds": {
+          "Bear": 0.6217,
+          "Dinosaur": 0.5559,
+          "Febreze_high": 0.5901,
+          "Mugcup_high": 0.5117,
+          "Rabbit": 0.456,
+          "Sauce_high": 0.5719,
+          "Sikhye_high": 0.5978,
+          "choco_hazelnut_high": 0.6028,
+          "milk": 0.6072,
+          "saffron": 0.6249
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 6,
+          "FN": 2,
+          "FP": 2
+        },
+        "Dinosaur": {
+          "FP": 2,
+          "TP": 2,
+          "FN": 1
+        },
+        "Febreze_high": {
+          "TN": 17,
+          "TP": 3,
+          "FP": 3,
+          "FN": 1
+        },
+        "Mugcup_high": {
+          "TP": 1
+        },
+        "Rabbit": {
+          "FP": 1,
+          "TP": 4
+        },
+        "Sauce_high": {
+          "TN": 10,
+          "TP": 4,
+          "FN": 2
+        },
+        "Sikhye_high": {
+          "TP": 6,
+          "FN": 2
+        },
+        "choco_hazelnut_high": {
+          "FN": 2,
+          "TP": 5,
+          "TN": 8
+        },
+        "milk": {
+          "FN": 7,
+          "TP": 8,
+          "TN": 2
+        },
+        "saffron": {
+          "TP": 22,
+          "TN": 2,
+          "FN": 2
+        }
+      }
+    },
+    "B2": {
+      "desc": "class margin (appe11 best - 2nd class)",
+      "recalibrated": {
+        "TP": 77,
+        "FP": 11,
+        "FN": 3,
+        "TN": 36,
+        "precision": 0.875,
+        "recall": 0.9625,
+        "f1": 0.9167,
+        "carton_to_choco_FP": 0,
+        "doll_confusion_FP": 1,
+        "saffron_to_febreze_FP": 8,
+        "confusion": {
+          "saffron->Febreze_high": 8,
+          "Bear->Dinosaur": 1,
+          "Sikhye_high->Sauce_high": 1,
+          "saffron->milk": 1
+        },
+        "thresholds": {
+          "Bear": 0.0169,
+          "Dinosaur": -0.0546,
+          "Febreze_high": -0.15,
+          "Mugcup_high": 0.0977,
+          "Rabbit": -0.0197,
+          "Sauce_high": -0.112,
+          "Sikhye_high": 0.0047,
+          "choco_hazelnut_high": 0.0314,
+          "milk": -0.0248,
+          "saffron": -0.0094
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 6,
+          "FN": 2,
+          "TN": 2
+        },
+        "Dinosaur": {
+          "FP": 1,
+          "TN": 1,
+          "TP": 3
+        },
+        "Febreze_high": {
+          "FP": 8,
+          "TN": 12,
+          "TP": 4
+        },
+        "Mugcup_high": {
+          "TP": 1
+        },
+        "Rabbit": {
+          "TN": 1,
+          "TP": 4
+        },
+        "Sauce_high": {
+          "TN": 9,
+          "FP": 1,
+          "TP": 6
+        },
+        "Sikhye_high": {
+          "TP": 8
+        },
+        "choco_hazelnut_high": {
+          "TP": 6,
+          "FN": 1,
+          "TN": 8
+        },
+        "milk": {
+          "TP": 15,
+          "TN": 1,
+          "FP": 1
+        },
+        "saffron": {
+          "TP": 24,
+          "TN": 2
+        }
+      }
+    },
+    "B2b": {
+      "desc": "class margin (sem_mean best - 2nd class)",
+      "recalibrated": {
+        "TP": 77,
+        "FP": 10,
+        "FN": 3,
+        "TN": 37,
+        "precision": 0.8851,
+        "recall": 0.9625,
+        "f1": 0.9222,
+        "carton_to_choco_FP": 0,
+        "doll_confusion_FP": 3,
+        "saffron_to_febreze_FP": 6,
+        "confusion": {
+          "saffron->Febreze_high": 6,
+          "Bear->Dinosaur": 2,
+          "Dinosaur->Bear": 1,
+          "carton->milk": 1
+        },
+        "thresholds": {
+          "Bear": 0.0045,
+          "Dinosaur": -0.1382,
+          "Febreze_high": -0.078,
+          "Mugcup_high": 0.064,
+          "Rabbit": -0.0042,
+          "Sauce_high": 0.0857,
+          "Sikhye_high": -0.1601,
+          "choco_hazelnut_high": 0.0649,
+          "milk": -0.004,
+          "saffron": -0.062
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 8,
+          "FP": 1,
+          "TN": 1
+        },
+        "Dinosaur": {
+          "FP": 2,
+          "TP": 3
+        },
+        "Febreze_high": {
+          "FP": 6,
+          "TN": 14,
+          "TP": 4
+        },
+        "Mugcup_high": {
+          "TP": 1
+        },
+        "Rabbit": {
+          "TN": 1,
+          "TP": 4
+        },
+        "Sauce_high": {
+          "TN": 10,
+          "TP": 6
+        },
+        "Sikhye_high": {
+          "TP": 8
+        },
+        "choco_hazelnut_high": {
+          "FN": 2,
+          "TP": 5,
+          "TN": 8
+        },
+        "milk": {
+          "TP": 15,
+          "FP": 1,
+          "TN": 1
+        },
+        "saffron": {
+          "TP": 23,
+          "TN": 2,
+          "FN": 1
+        }
+      }
+    },
+    "B3": {
+      "desc": "negative prototype (appe11 - max neg patch cos)",
+      "recalibrated": {
+        "TP": 74,
+        "FP": 12,
+        "FN": 6,
+        "TN": 35,
+        "precision": 0.8605,
+        "recall": 0.925,
+        "f1": 0.8916,
+        "carton_to_choco_FP": 0,
+        "doll_confusion_FP": 3,
+        "saffron_to_febreze_FP": 6,
+        "confusion": {
+          "saffron->Febreze_high": 6,
+          "Bear->Dinosaur": 2,
+          "milk->Sauce_high": 1,
+          "Bear->Rabbit": 1,
+          "Sikhye_high->Sauce_high": 1,
+          "saffron->Sauce_high": 1
+        },
+        "thresholds": {
+          "Bear": -0.2444,
+          "Dinosaur": -0.3,
+          "Febreze_high": -0.2394,
+          "Mugcup_high": 0.5117,
+          "Rabbit": -0.3029,
+          "Sauce_high": -0.2699,
+          "Sikhye_high": -0.0074,
+          "choco_hazelnut_high": -0.2364,
+          "milk": -0.115,
+          "saffron": -0.1086
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 8,
+          "TN": 2
+        },
+        "Dinosaur": {
+          "FP": 2,
+          "TP": 3
+        },
+        "Febreze_high": {
+          "FP": 6,
+          "TN": 14,
+          "TP": 4
+        },
+        "Mugcup_high": {
+          "TP": 1
+        },
+        "Rabbit": {
+          "FP": 1,
+          "TP": 4
+        },
+        "Sauce_high": {
+          "TN": 7,
+          "FP": 3,
+          "TP": 6
+        },
+        "Sikhye_high": {
+          "TP": 7,
+          "FN": 1
+        },
+        "choco_hazelnut_high": {
+          "TP": 7,
+          "TN": 8
+        },
+        "milk": {
+          "TP": 10,
+          "FN": 5,
+          "TN": 2
+        },
+        "saffron": {
+          "TP": 24,
+          "TN": 2
+        }
+      }
+    },
+    "B3b": {
+      "desc": "negative prototype (color - max neg color)",
+      "recalibrated": {
+        "TP": 76,
+        "FP": 10,
+        "FN": 4,
+        "TN": 37,
+        "precision": 0.8837,
+        "recall": 0.95,
+        "f1": 0.9157,
+        "carton_to_choco_FP": 1,
+        "doll_confusion_FP": 2,
+        "saffron_to_febreze_FP": 0,
+        "confusion": {
+          "saffron->Sauce_high": 4,
+          "Sikhye_high->Sauce_high": 2,
+          "milk->Sauce_high": 1,
+          "Dinosaur->Bear": 1,
+          "carton->choco_hazelnut_high": 1,
+          "Rabbit->Bear": 1
+        },
+        "thresholds": {
+          "Bear": -0.6324,
+          "Dinosaur": -0.0006,
+          "Febreze_high": -0.1757,
+          "Mugcup_high": 0.5396,
+          "Rabbit": 0.0163,
+          "Sauce_high": -0.4036,
+          "Sikhye_high": -0.6539,
+          "choco_hazelnut_high": -0.0725,
+          "milk": -0.47,
+          "saffron": -0.4271
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 8,
+          "FP": 2
+        },
+        "Dinosaur": {
+          "TN": 2,
+          "TP": 3
+        },
+        "Febreze_high": {
+          "TN": 20,
+          "TP": 4
+        },
+        "Mugcup_high": {
+          "FN": 1
+        },
+        "Rabbit": {
+          "TN": 1,
+          "TP": 4
+        },
+        "Sauce_high": {
+          "TN": 3,
+          "FP": 7,
+          "TP": 6
+        },
+        "Sikhye_high": {
+          "TP": 8
+        },
+        "choco_hazelnut_high": {
+          "FN": 3,
+          "TP": 4,
+          "TN": 7,
+          "FP": 1
+        },
+        "milk": {
+          "TP": 15,
+          "TN": 2
+        },
+        "saffron": {
+          "TP": 24,
+          "TN": 2
+        }
+      }
+    },
+    "B4": {
+      "desc": "masked HSV color \ub2e8\ub3c5",
+      "recalibrated": {
+        "TP": 67,
+        "FP": 12,
+        "FN": 13,
+        "TN": 35,
+        "precision": 0.8481,
+        "recall": 0.8375,
+        "f1": 0.8428,
+        "carton_to_choco_FP": 1,
+        "doll_confusion_FP": 1,
+        "saffron_to_febreze_FP": 0,
+        "confusion": {
+          "saffron->Sauce_high": 6,
+          "Sikhye_high->Sauce_high": 3,
+          "milk->Sauce_high": 1,
+          "Bear->Rabbit": 1,
+          "carton->choco_hazelnut_high": 1
+        },
+        "thresholds": {
+          "Bear": 0.0326,
+          "Dinosaur": 0.2796,
+          "Febreze_high": 0.2526,
+          "Mugcup_high": 0.5396,
+          "Rabbit": 0.0163,
+          "Sauce_high": 0.2235,
+          "Sikhye_high": 0.0912,
+          "choco_hazelnut_high": 0.5555,
+          "milk": 0.2432,
+          "saffron": 0.1477
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 8,
+          "TN": 2
+        },
+        "Dinosaur": {
+          "TN": 2,
+          "TP": 1,
+          "FN": 2
+        },
+        "Febreze_high": {
+          "TN": 20,
+          "TP": 4
+        },
+        "Mugcup_high": {
+          "FN": 1
+        },
+        "Rabbit": {
+          "FP": 1,
+          "TP": 4
+        },
+        "Sauce_high": {
+          "FP": 10,
+          "TP": 6
+        },
+        "Sikhye_high": {
+          "TP": 7,
+          "FN": 1
+        },
+        "choco_hazelnut_high": {
+          "FN": 3,
+          "TP": 4,
+          "TN": 7,
+          "FP": 1
+        },
+        "milk": {
+          "TP": 11,
+          "FN": 4,
+          "TN": 2
+        },
+        "saffron": {
+          "TP": 22,
+          "TN": 2,
+          "FN": 2
+        }
+      }
+    },
+    "B4b": {
+      "desc": "appe11 + color \uade0\ub4f1 \uac00\uc911",
+      "recalibrated": {
+        "TP": 65,
+        "FP": 3,
+        "FN": 15,
+        "TN": 44,
+        "precision": 0.9559,
+        "recall": 0.8125,
+        "f1": 0.8784,
+        "carton_to_choco_FP": 1,
+        "doll_confusion_FP": 1,
+        "saffron_to_febreze_FP": 0,
+        "confusion": {
+          "Bear->Rabbit": 1,
+          "carton->choco_hazelnut_high": 1,
+          "Sikhye_high->Sauce_high": 1
+        },
+        "thresholds": {
+          "Bear": 0.3351,
+          "Dinosaur": 0.4177,
+          "Febreze_high": 0.421,
+          "Mugcup_high": 0.5537,
+          "Rabbit": 0.3291,
+          "Sauce_high": 0.4293,
+          "Sikhye_high": 0.3799,
+          "choco_hazelnut_high": 0.5173,
+          "milk": 0.4325,
+          "saffron": 0.4119
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 8,
+          "TN": 2
+        },
+        "Dinosaur": {
+          "TN": 2,
+          "TP": 1,
+          "FN": 2
+        },
+        "Febreze_high": {
+          "TN": 20,
+          "TP": 4
+        },
+        "Mugcup_high": {
+          "FN": 1
+        },
+        "Rabbit": {
+          "FP": 1,
+          "TP": 4
+        },
+        "Sauce_high": {
+          "TN": 9,
+          "TP": 5,
+          "FN": 1,
+          "FP": 1
+        },
+        "Sikhye_high": {
+          "TP": 6,
+          "FN": 2
+        },
+        "choco_hazelnut_high": {
+          "TP": 6,
+          "FN": 1,
+          "TN": 7,
+          "FP": 1
+        },
+        "milk": {
+          "FN": 6,
+          "TP": 9,
+          "TN": 2
+        },
+        "saffron": {
+          "TP": 22,
+          "TN": 2,
+          "FN": 2
+        }
+      }
+    },
+    "B5": {
+      "desc": "DINOv2 block2 masked patch \ub2e8\ub3c5",
+      "recalibrated": {
+        "TP": 61,
+        "FP": 9,
+        "FN": 19,
+        "TN": 38,
+        "precision": 0.8714,
+        "recall": 0.7625,
+        "f1": 0.8133,
+        "carton_to_choco_FP": 6,
+        "doll_confusion_FP": 0,
+        "saffron_to_febreze_FP": 1,
+        "confusion": {
+          "carton->choco_hazelnut_high": 6,
+          "saffron->Febreze_high": 1,
+          "Sikhye_high->Sauce_high": 1,
+          "other->choco_hazelnut_high": 1
+        },
+        "thresholds": {
+          "Bear": 0.7444,
+          "Dinosaur": 0.7545,
+          "Febreze_high": 0.701,
+          "Mugcup_high": 0.737,
+          "Rabbit": 0.7557,
+          "Sauce_high": 0.7079,
+          "Sikhye_high": 0.697,
+          "choco_hazelnut_high": 0.6599,
+          "milk": 0.6749,
+          "saffron": 0.7461
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 7,
+          "FN": 1,
+          "TN": 2
+        },
+        "Dinosaur": {
+          "TN": 2,
+          "TP": 2,
+          "FN": 1
+        },
+        "Febreze_high": {
+          "TN": 19,
+          "FN": 3,
+          "FP": 1,
+          "TP": 1
+        },
+        "Mugcup_high": {
+          "FN": 1
+        },
+        "Rabbit": {
+          "TN": 1,
+          "TP": 3,
+          "FN": 1
+        },
+        "Sauce_high": {
+          "TN": 9,
+          "FN": 2,
+          "TP": 4,
+          "FP": 1
+        },
+        "Sikhye_high": {
+          "TP": 8
+        },
+        "choco_hazelnut_high": {
+          "TP": 7,
+          "FP": 7,
+          "TN": 1
+        },
+        "milk": {
+          "TP": 10,
+          "FN": 5,
+          "TN": 2
+        },
+        "saffron": {
+          "TP": 19,
+          "FN": 5,
+          "TN": 2
+        }
+      }
+    },
+    "B6": {
+      "desc": "block2 + block11 (42-view max) \uade0\ub4f1",
+      "recalibrated": {
+        "TP": 67,
+        "FP": 7,
+        "FN": 13,
+        "TN": 40,
+        "precision": 0.9054,
+        "recall": 0.8375,
+        "f1": 0.8701,
+        "carton_to_choco_FP": 0,
+        "doll_confusion_FP": 2,
+        "saffron_to_febreze_FP": 4,
+        "confusion": {
+          "saffron->Febreze_high": 4,
+          "Bear->Rabbit": 1,
+          "Dinosaur->Bear": 1,
+          "Sikhye_high->Sauce_high": 1
+        },
+        "thresholds": {
+          "Bear": 0.68,
+          "Dinosaur": 0.6702,
+          "Febreze_high": 0.6284,
+          "Mugcup_high": 0.6603,
+          "Rabbit": 0.6195,
+          "Sauce_high": 0.6173,
+          "Sikhye_high": 0.5923,
+          "choco_hazelnut_high": 0.6622,
+          "milk": 0.6462,
+          "saffron": 0.6295
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 6,
+          "FN": 2,
+          "FP": 1,
+          "TN": 1
+        },
+        "Dinosaur": {
+          "TN": 2,
+          "TP": 2,
+          "FN": 1
+        },
+        "Febreze_high": {
+          "TN": 16,
+          "TP": 4,
+          "FP": 4
+        },
+        "Mugcup_high": {
+          "FN": 1
+        },
+        "Rabbit": {
+          "FP": 1,
+          "TP": 4
+        },
+        "Sauce_high": {
+          "TN": 9,
+          "TP": 6,
+          "FP": 1
+        },
+        "Sikhye_high": {
+          "TP": 8
+        },
+        "choco_hazelnut_high": {
+          "FN": 3,
+          "TP": 4,
+          "TN": 8
+        },
+        "milk": {
+          "FN": 6,
+          "TP": 9,
+          "TN": 2
+        },
+        "saffron": {
+          "TP": 24,
+          "TN": 2
+        }
+      }
+    },
+    "B7": {
+      "desc": "semantic \uc120\ud0dd/\uac8c\uc774\ud2b8\ub97c sem_mean(42\ud3c9\uade0)\uc73c\ub85c \uad50\uccb4",
+      "recalibrated": {
+        "TP": 50,
+        "FP": 0,
+        "FN": 11,
+        "TN": 18,
+        "precision": 1.0,
+        "recall": 0.8197,
+        "f1": 0.9009,
+        "carton_to_choco_FP": 0,
+        "doll_confusion_FP": 0,
+        "saffron_to_febreze_FP": 0,
+        "confusion": {},
+        "thresholds": {
+          "Bear": 0.6591,
+          "Dinosaur": 0.0,
+          "Febreze_high": 0.6076,
+          "Mugcup_high": 0.6484,
+          "Rabbit": 0.4808,
+          "Sauce_high": 0.5947,
+          "Sikhye_high": 0.5978,
+          "choco_hazelnut_high": 0.6028,
+          "milk": 0.6435,
+          "saffron": 0.6249
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 3,
+          "FN": 1
+        },
+        "Febreze_high": {
+          "TN": 17,
+          "TP": 3
+        },
+        "Rabbit": {
+          "TP": 4
+        },
+        "Sauce_high": {
+          "TP": 3,
+          "FN": 2
+        },
+        "Sikhye_high": {
+          "TP": 6,
+          "FN": 1
+        },
+        "choco_hazelnut_high": {
+          "TP": 4
+        },
+        "milk": {
+          "FN": 6,
+          "TP": 6
+        },
+        "saffron": {
+          "TP": 21,
+          "TN": 1,
+          "FN": 1
+        }
+      }
+    },
+    "B7b": {
+      "desc": "sem_mean \uc790\uccb4\ub97c \uac8c\uc774\ud2b8\ub85c",
+      "recalibrated": {
+        "TP": 52,
+        "FP": 3,
+        "FN": 9,
+        "TN": 15,
+        "precision": 0.9455,
+        "recall": 0.8525,
+        "f1": 0.8966,
+        "carton_to_choco_FP": 0,
+        "doll_confusion_FP": 0,
+        "saffron_to_febreze_FP": 2,
+        "confusion": {
+          "saffron->Febreze_high": 2,
+          "Febreze_high->saffron": 1
+        },
+        "thresholds": {
+          "Bear": 0.3575,
+          "Dinosaur": 0.0,
+          "Febreze_high": 0.4394,
+          "Mugcup_high": 0.3559,
+          "Rabbit": 0.3538,
+          "Sauce_high": 0.3505,
+          "Sikhye_high": 0.4134,
+          "choco_hazelnut_high": 0.4159,
+          "milk": 0.3883,
+          "saffron": 0.369
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 4
+        },
+        "Febreze_high": {
+          "TN": 15,
+          "FP": 2,
+          "TP": 3
+        },
+        "Rabbit": {
+          "TP": 4
+        },
+        "Sauce_high": {
+          "TP": 5
+        },
+        "Sikhye_high": {
+          "TP": 6,
+          "FN": 1
+        },
+        "choco_hazelnut_high": {
+          "FN": 3,
+          "TP": 1
+        },
+        "milk": {
+          "FN": 4,
+          "TP": 8
+        },
+        "saffron": {
+          "TP": 21,
+          "FP": 1,
+          "FN": 1
+        }
+      }
+    },
+    "B8": {
+      "desc": "appe view-margin (max42 - mean42)",
+      "recalibrated": {
+        "TP": 48,
+        "FP": 16,
+        "FN": 32,
+        "TN": 31,
+        "precision": 0.75,
+        "recall": 0.6,
+        "f1": 0.6667,
+        "carton_to_choco_FP": 5,
+        "doll_confusion_FP": 5,
+        "saffron_to_febreze_FP": 3,
+        "confusion": {
+          "carton->choco_hazelnut_high": 5,
+          "saffron->Febreze_high": 3,
+          "Bear->Dinosaur": 2,
+          "other->choco_hazelnut_high": 2,
+          "Bear->Rabbit": 1,
+          "Dinosaur->Bear": 1,
+          "saffron->milk": 1,
+          "Rabbit->Bear": 1
+        },
+        "thresholds": {
+          "Bear": 0.1038,
+          "Dinosaur": 0.1055,
+          "Febreze_high": 0.0945,
+          "Mugcup_high": 0.0864,
+          "Rabbit": 0.0829,
+          "Sauce_high": 0.1028,
+          "Sikhye_high": 0.0697,
+          "choco_hazelnut_high": 0.0775,
+          "milk": 0.132,
+          "saffron": 0.1492
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 4,
+          "FN": 4,
+          "FP": 2
+        },
+        "Dinosaur": {
+          "FP": 2,
+          "TP": 2,
+          "FN": 1
+        },
+        "Febreze_high": {
+          "TN": 17,
+          "TP": 3,
+          "FN": 1,
+          "FP": 3
+        },
+        "Mugcup_high": {
+          "TP": 1
+        },
+        "Rabbit": {
+          "FP": 1,
+          "TP": 3,
+          "FN": 1
+        },
+        "Sauce_high": {
+          "TN": 10,
+          "TP": 4,
+          "FN": 2
+        },
+        "Sikhye_high": {
+          "TP": 8
+        },
+        "choco_hazelnut_high": {
+          "FN": 1,
+          "TP": 6,
+          "FP": 7,
+          "TN": 1
+        },
+        "milk": {
+          "FN": 10,
+          "TP": 5,
+          "TN": 1,
+          "FP": 1
+        },
+        "saffron": {
+          "FN": 12,
+          "TP": 12,
+          "TN": 2
+        }
+      }
+    },
+    "B10": {
+      "desc": "\uad8c\uc7a5\uc870\ud569: sem_mean \uc120\ud0dd + (sem_mean+color)/2 \uac8c\uc774\ud2b8",
+      "recalibrated": {
+        "TP": 53,
+        "FP": 4,
+        "FN": 8,
+        "TN": 14,
+        "precision": 0.9298,
+        "recall": 0.8689,
+        "f1": 0.8983,
+        "carton_to_choco_FP": 0,
+        "doll_confusion_FP": 0,
+        "saffron_to_febreze_FP": 4,
+        "confusion": {
+          "saffron->Febreze_high": 4
+        },
+        "thresholds": {
+          "Bear": 0.1767,
+          "Dinosaur": 0.0,
+          "Febreze_high": 0.2606,
+          "Mugcup_high": 0.5127,
+          "Rabbit": 0.185,
+          "Sauce_high": 0.287,
+          "Sikhye_high": 0.2316,
+          "choco_hazelnut_high": 0.4701,
+          "milk": 0.3246,
+          "saffron": 0.2839
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 4
+        },
+        "Febreze_high": {
+          "FP": 4,
+          "TN": 13,
+          "TP": 3
+        },
+        "Rabbit": {
+          "TP": 4
+        },
+        "Sauce_high": {
+          "TP": 5
+        },
+        "Sikhye_high": {
+          "TP": 7
+        },
+        "choco_hazelnut_high": {
+          "TP": 3,
+          "FN": 1
+        },
+        "milk": {
+          "FN": 5,
+          "TP": 7
+        },
+        "saffron": {
+          "TP": 20,
+          "TN": 1,
+          "FN": 2
+        }
+      }
+    },
+    "B10b": {
+      "desc": "\uad8c\uc7a5\uc870\ud569+appe11 3\ud56d \ud3c9\uade0",
+      "recalibrated": {
+        "TP": 54,
+        "FP": 4,
+        "FN": 7,
+        "TN": 14,
+        "precision": 0.931,
+        "recall": 0.8852,
+        "f1": 0.9076,
+        "carton_to_choco_FP": 0,
+        "doll_confusion_FP": 0,
+        "saffron_to_febreze_FP": 3,
+        "confusion": {
+          "saffron->Febreze_high": 3,
+          "Febreze_high->saffron": 1
+        },
+        "thresholds": {
+          "Bear": 0.3141,
+          "Dinosaur": 0.0,
+          "Febreze_high": 0.3698,
+          "Mugcup_high": 0.5589,
+          "Rabbit": 0.366,
+          "Sauce_high": 0.422,
+          "Sikhye_high": 0.4032,
+          "choco_hazelnut_high": 0.5303,
+          "milk": 0.4309,
+          "saffron": 0.2996
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 4
+        },
+        "Febreze_high": {
+          "TN": 14,
+          "TP": 3,
+          "FP": 3
+        },
+        "Rabbit": {
+          "TP": 4
+        },
+        "Sauce_high": {
+          "TP": 4,
+          "FN": 1
+        },
+        "Sikhye_high": {
+          "TP": 6,
+          "FN": 1
+        },
+        "choco_hazelnut_high": {
+          "TP": 3,
+          "FN": 1
+        },
+        "milk": {
+          "FN": 4,
+          "TP": 8
+        },
+        "saffron": {
+          "TP": 22,
+          "FP": 1
+        }
+      }
+    },
+    "B11": {
+      "desc": "sem_mean \uc120\ud0dd + (sem_mean AND class margin) \uacb0\ud569",
+      "recalibrated": {
+        "TP": 53,
+        "FP": 2,
+        "FN": 8,
+        "TN": 16,
+        "precision": 0.9636,
+        "recall": 0.8689,
+        "f1": 0.9138,
+        "carton_to_choco_FP": 0,
+        "doll_confusion_FP": 0,
+        "saffron_to_febreze_FP": 1,
+        "confusion": {
+          "Febreze_high->saffron": 1,
+          "saffron->Febreze_high": 1
+        },
+        "thresholds": {
+          "Bear": 0.3575,
+          "Dinosaur": 0.0,
+          "Febreze_high": 0.4082,
+          "Mugcup_high": 0.3559,
+          "Rabbit": 0.3538,
+          "Sauce_high": 0.3505,
+          "Sikhye_high": 0.4134,
+          "choco_hazelnut_high": 0.4159,
+          "milk": 0.3883,
+          "saffron": 0.3027
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 4
+        },
+        "Febreze_high": {
+          "TN": 16,
+          "TP": 3,
+          "FP": 1
+        },
+        "Rabbit": {
+          "TP": 4
+        },
+        "Sauce_high": {
+          "TP": 5
+        },
+        "Sikhye_high": {
+          "TP": 6,
+          "FN": 1
+        },
+        "choco_hazelnut_high": {
+          "FN": 3,
+          "TP": 1
+        },
+        "milk": {
+          "FN": 4,
+          "TP": 8
+        },
+        "saffron": {
+          "TP": 22,
+          "FP": 1
+        }
+      }
+    },
+    "B12": {
+      "desc": "sem_mean \uc120\ud0dd + (sem_mean + class margin)/2",
+      "recalibrated": {
+        "TP": 55,
+        "FP": 1,
+        "FN": 6,
+        "TN": 17,
+        "precision": 0.9821,
+        "recall": 0.9016,
+        "f1": 0.9402,
+        "carton_to_choco_FP": 0,
+        "doll_confusion_FP": 0,
+        "saffron_to_febreze_FP": 0,
+        "confusion": {
+          "Febreze_high->saffron": 1
+        },
+        "thresholds": {
+          "Bear": 0.2157,
+          "Dinosaur": 0.0,
+          "Febreze_high": 0.2309,
+          "Mugcup_high": 0.2314,
+          "Rabbit": 0.1993,
+          "Sauce_high": 0.2281,
+          "Sikhye_high": 0.1548,
+          "choco_hazelnut_high": 0.2668,
+          "milk": 0.2601,
+          "saffron": 0.0777
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 2,
+          "FN": 2
+        },
+        "Febreze_high": {
+          "TN": 17,
+          "TP": 3
+        },
+        "Rabbit": {
+          "TP": 4
+        },
+        "Sauce_high": {
+          "TP": 5
+        },
+        "Sikhye_high": {
+          "TP": 7
+        },
+        "choco_hazelnut_high": {
+          "TP": 4
+        },
+        "milk": {
+          "FN": 4,
+          "TP": 8
+        },
+        "saffron": {
+          "TP": 22,
+          "FP": 1
+        }
+      }
+    },
+    "B13": {
+      "desc": "sem_mean \uc120\ud0dd + (sem_mean + color + margin)/3",
+      "recalibrated": {
+        "TP": 54,
+        "FP": 1,
+        "FN": 7,
+        "TN": 17,
+        "precision": 0.9818,
+        "recall": 0.8852,
+        "f1": 0.931,
+        "carton_to_choco_FP": 0,
+        "doll_confusion_FP": 0,
+        "saffron_to_febreze_FP": 0,
+        "confusion": {
+          "Febreze_high->saffron": 1
+        },
+        "thresholds": {
+          "Bear": 0.1547,
+          "Dinosaur": 0.0,
+          "Febreze_high": 0.2759,
+          "Mugcup_high": 0.3774,
+          "Rabbit": 0.1383,
+          "Sauce_high": 0.2266,
+          "Sikhye_high": 0.2341,
+          "choco_hazelnut_high": 0.3699,
+          "milk": 0.2676,
+          "saffron": 0.0529
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 4
+        },
+        "Febreze_high": {
+          "TN": 17,
+          "TP": 3
+        },
+        "Rabbit": {
+          "TP": 4
+        },
+        "Sauce_high": {
+          "TP": 5
+        },
+        "Sikhye_high": {
+          "TP": 6,
+          "FN": 1
+        },
+        "choco_hazelnut_high": {
+          "TP": 3,
+          "FN": 1
+        },
+        "milk": {
+          "FN": 5,
+          "TP": 7
+        },
+        "saffron": {
+          "TP": 22,
+          "FP": 1
+        }
+      }
+    },
+    "B14": {
+      "desc": "sem_mean \uc120\ud0dd + (sem_mean + appe11)/2  (color \uc5c6\uc74c)",
+      "recalibrated": {
+        "TP": 52,
+        "FP": 2,
+        "FN": 9,
+        "TN": 16,
+        "precision": 0.963,
+        "recall": 0.8525,
+        "f1": 0.9043,
+        "carton_to_choco_FP": 0,
+        "doll_confusion_FP": 0,
+        "saffron_to_febreze_FP": 1,
+        "confusion": {
+          "Febreze_high->saffron": 1,
+          "saffron->Febreze_high": 1
+        },
+        "thresholds": {
+          "Bear": 0.4706,
+          "Dinosaur": 0.0,
+          "Febreze_high": 0.5122,
+          "Mugcup_high": 0.5036,
+          "Rabbit": 0.4245,
+          "Sauce_high": 0.5075,
+          "Sikhye_high": 0.5056,
+          "choco_hazelnut_high": 0.5093,
+          "milk": 0.5159,
+          "saffron": 0.4477
+        }
+      },
+      "per_object": {
+        "Bear": {
+          "TP": 4
+        },
+        "Febreze_high": {
+          "TN": 16,
+          "TP": 3,
+          "FP": 1
+        },
+        "Rabbit": {
+          "TP": 4
+        },
+        "Sauce_high": {
+          "TP": 3,
+          "FN": 2
+        },
+        "Sikhye_high": {
+          "TP": 6,
+          "FN": 1
+        },
+        "choco_hazelnut_high": {
+          "TP": 2,
+          "FN": 2
+        },
+        "milk": {
+          "FN": 4,
+          "TP": 8
+        },
+        "saffron": {
+          "TP": 22,
+          "FP": 1
+        }
+      }
+    }
+  },
+  "complementarity": {
+    "appe11_errors": 27,
+    "color_errors": 25,
+    "block2_errors": 28,
+    "sem_mean_errors": 12,
+    "appe11 \u2229 color": 7,
+    "appe11 only": 20,
+    "color only": 18,
+    "appe11 \u2229 block2": 8,
+    "block2 fixes appe11": 19,
+    "block2 breaks": 20,
+    "color fixes appe11": 20,
+    "color breaks": 18,
+    "appe11 \u2229 sem_mean": 5,
+    "sem_mean fixes appe11": 22,
+    "sem_mean breaks": 7
+  },
+  "score_correlation": {
+    "appe11_clstop1 ~ appe2_max42": 0.664,
+    "appe11_clstop1 ~ color_hsv_masked": 0.302,
+    "appe11_clstop1 ~ sem_mean": 0.864,
+    "appe2_max42 ~ color_hsv_masked": 0.386,
+    "appe2_max42 ~ sem_mean": 0.533,
+    "color_hsv_masked ~ sem_mean": 0.315
+  },
+  "split": {
+    "calib": [
+      "SAM_circle",
+      "SAM_loop2",
+      "SAM_occlusion",
+      "sam_105314"
+    ],
+    "eval": [
+      "SAM_loop1",
+      "sam_110633"
+    ],
+    "calib_decisions": 239,
+    "eval_decisions": 127
+  }
+}

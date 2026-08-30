@@ -1,0 +1,29 @@
+name: hdl_graph_slam_humble
+channels:
+  - defaults
+dependencies:
+  - ros-humble-ros-base
+  - ros-dev-tools
+  - colcon-common-extensions
+  - cmake
+  - ninja
+  - pkg-config
+  - python=3.11
+  - pcl=1.15.0
+  - eigen-abi=3.4.0.100
+  - g2o
+  - suitesparse
+  - scipy
+  - pyyaml
+  - ros-humble-pcl-ros
+  - ros-humble-pcl-conversions
+  - ros-humble-geodesy
+  - ros-humble-geographic-msgs
+  - ros-humble-nmea-msgs
+  - ros-humble-interactive-markers
+  - ros-humble-message-filters
+  - ros-humble-tf2-ros
+  - ros-humble-tf2-geometry-msgs
+  - ros-humble-rosbag2
+  - ros-humble-rosbag2-storage-mcap
+prefix: /home/ldh9501/miniconda3/envs/hdl_graph_slam_humble

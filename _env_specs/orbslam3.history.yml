@@ -1,0 +1,34 @@
+name: orbslam3
+channels:
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - git
+  - wget
+  - cmake
+  - ninja
+  - make
+  - cxx-compiler
+  - colcon-common-extensions
+  - ros-humble-ros-base
+  - opencv
+  - eigen
+  - suitesparse
+  - ros-humble-cv-bridge
+  - ros-humble-image-transport
+  - libboost-devel
+  - libboost-headers
+  - libboost
+  - pkg-config
+  - glew
+  - libgl-devel
+  - libegl-devel
+  - xorg-libx11
+  - xorg-libxrandr
+  - xorg-libxinerama
+  - xorg-libxcursor
+  - xorg-libxi
+  - libopengl-devel
+  - epoxy
+prefix: /home/ldh9501/miniconda3/envs/orbslam3

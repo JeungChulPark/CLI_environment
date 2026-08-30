@@ -1,0 +1,28 @@
+# Pose đo trên Husky A200 theo base_link và REP-103:
+# x trước, y trái, z lên; góc tính bằng radian.
+#
+# Mốc đo là mặt đáy bên trong khoang trống của Husky. Trong URDF A200, mốc
+# này tương ứng với mặt phẳng base_link; không trừ khoảng cách tới mặt đất.
+# Camera: x=+0.09 m, cao 0.715 m từ mặt đáy khoang, nhìn thẳng phía trước.
+# IMU: ngay trên camera 0.04 m; trục x trước, y phải, z xuống. Vì y/z của
+# IMU ngược REP-103 nên base_link -> imu_link quay roll=pi quanh trục x.
+
+camera:
+  parent_frame: base_link
+  child_frame: camera_link
+  x: 0.09
+  y: 0.0
+  z: 0.715
+  roll: 0.0
+  pitch: 0.0
+  yaw: 0.0
+
+imu:
+  parent_frame: base_link
+  child_frame: imu_link
+  x: 0.09
+  y: 0.0
+  z: 0.755
+  roll: 3.141592653589793
+  pitch: 0.0
+  yaw: 0.0

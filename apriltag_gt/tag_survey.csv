@@ -1,0 +1,12 @@
+# AprilTag 측량 기록. 한 줄 = 태그 1개.
+# frame       : 측량 기준 좌표계 이름 (예: room_corner_NE). 모든 태그가 같아야 한다.
+# tag_id      : 인쇄한 시트의 ID. 중복 금지.
+# edge_mm     : 인쇄 후 실측한 검은 사각형 바깥 변 길이. 흰 여백 제외. 0.5mm 단위.
+# x,y,z       : 태그 중심 위치 [m]. REP-103 (x 앞, y 왼쪽, z 위).
+# normal_yaw  : 태그 정면이 향하는 방향 [deg]. 기준계 x축에서 반시계 양수.
+# normal_pitch: 태그가 위/아래로 기운 각 [deg]. 벽에 수직으로 붙였으면 0.
+# survey      : total_station | laser | tape | ba_scaled
+# sigma_mm    : 이 태그 위치의 측량 불확실도 추정 [mm]. 모르면 방법별 기본값(3/15/40).
+# note        : 부착 위치 설명. 나중에 이상치를 추적할 때 쓴다.
+frame,tag_id,edge_mm,x,y,z,normal_yaw,normal_pitch,survey,sigma_mm,note
+room_corner_NE,0,300.0,0.000,0.000,1.000,0.0,0.0,laser,15,EXAMPLE-ROW-DELETE-ME

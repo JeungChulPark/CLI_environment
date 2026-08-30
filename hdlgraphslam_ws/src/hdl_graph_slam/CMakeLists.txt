@@ -211,7 +211,9 @@ install(DIRECTORY include/
   DESTINATION include
 )
 
-install(DIRECTORY launch rviz config
+# upstream also installs rviz/, but this port carries only the runtime nodes
+# (see package.xml) and has no rviz/ directory — listing it fails the install step
+install(DIRECTORY launch config
   DESTINATION share/${PROJECT_NAME}
 )
 

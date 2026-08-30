@@ -1,0 +1,69 @@
+# Velodyne VLP-16 local configuration.
+# LiDAR nằm giữa Husky và cao 0.855 m từ mặt đáy bên trong khoang trống.
+# Mặt đáy khoang là mốc base_link trong URDF A200 nên dùng trực tiếp z=0.855 m.
+#
+# Networking defaults match the Velodyne ROS package defaults:
+#   sensor IP: 192.168.1.201
+#   UDP port: 2368
+
+driver:
+  device_ip: 192.168.1.201
+  port: 2368
+  rpm: 600.0
+  frame_id: velodyne
+  # All supported profiles stamp packets from the host clock.
+  gps_time: false
+  time_offset: 0.0
+  timestamp_first_packet: true
+
+transform:
+  min_range: 0.9
+  # Keep VLP-16 ICP local to the Husky. Returns farther than 3 m are removed
+  # before /velodyne_points is converted to /scan.
+  max_range: 3.0
+  # Publish only valid returns inside min/max_range. The organized 1824x16
+  # cloud padded filtered points with NaNs, producing 642 KB messages that
+  # starved Nav2's costmap and collision monitor. The compact cloud keeps all
+  # valid VLP-16 rings at the native ~10 Hz while reducing the observed
+  # message size to about 145 KB.
+  organize_cloud: false
+  # velodyne_pointcloud 2.5.1 passes target_frame/fixed_frame to configure()
+  # in the opposite order. With odom/base_link configured here, the installed
+  # node actually published the cloud in odom and velodyne_laserscan projected
+  # ranges around the odom origin. Leave both empty so the cloud and /scan stay
+  # in the body-fixed velodyne frame; downstream consumers use the static
+  # base_link -> velodyne transform below.
+  fixed_frame: ""
+  target_frame: ""
+
+laser_scan:
+  # Build the planar scan from every VLP-16 ring after transforming the cloud
+  # to base_link. The previous automatic single-ring choice selected ring 8:
+  # in the mapping bag its median was only 8/898 finite bins and 43.7% of
+  # scans were empty. This height-filtered projection has median 144 bins and
+  # no empty scans on the same recorded clouds.
+  mode: all_rings
+  # Retained as a diagnostic fallback: ring 7 is denser than automatic ring 8.
+  ring: 7
+  target_frame: base_link
+  transform_tolerance: 0.1
+  min_height: 0.20
+  max_height: 1.20
+  angle_min: -3.14159265
+  angle_max: 3.14159265
+  resolution: 0.007
+  scan_time: 0.05
+  range_min: 0.9
+  range_max: 3.0
+  use_inf: true
+  inf_epsilon: 1.0
+
+extrinsics:
+  parent_frame: base_link
+  child_frame: velodyne
+  x: 0.0
+  y: 0.0
+  z: 0.855
+  roll: 0.0
+  pitch: 0.0
+  yaw: 0.0
