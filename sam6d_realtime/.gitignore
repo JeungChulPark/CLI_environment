@@ -28,3 +28,9 @@ venv/
 .vscode/
 .idea/
 *.swp
+
+# Added 2026-08-30: scratch evals, backups of edited sources, stale copy of SAM-6D
+temp/
+sam6d_master.old_backup/
+*.pre_*
+*.bak
