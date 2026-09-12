@@ -1,0 +1,76 @@
+Phase 2 / P0-2: use hardware POPCNT for the Hamming distance.
+
+ORBmatcher::DescriptorDistance() is the single hottest function in ORB-SLAM3 -
+it is called from 20 sites and runs millions of times per second. The stock
+implementation uses the SWAR bit-hack popcount (~40 ALU ops per 256-bit
+descriptor). The target CPU has hardware POPCNT and -march=native already
+enables it, so __builtin_popcountll lowers to 4 POPCNT instructions.
+
+Results are bit-identical. No call site needs to change, because the cv::Mat
+overload is kept and simply forwards.
+
+Additionally a raw-pointer overload is added so the hottest inner loops can
+stop constructing a cv::Mat header (which carries an atomic refcount
+increment/decrement) for every single descriptor comparison - see patch 03b.
+
+--- a/include/ORBmatcher.h
++++ b/include/ORBmatcher.h
+@@ -39,6 +39,11 @@
+         // Computes the Hamming distance between two ORB descriptors
+         static int DescriptorDistance(const cv::Mat &a, const cv::Mat &b);
+
++        // PERF: raw-pointer overload for hot inner loops. Avoids constructing
++        // a cv::Mat header (and its atomic refcount inc/dec) per comparison.
++        // Both pointers must address 32 contiguous bytes (one ORB descriptor).
++        static int DescriptorDistance(const unsigned char *pa, const unsigned char *pb);
++
+         // Search matches between Frame keypoints and projected MapPoints. Returns number of matches
+         // Used to track the local map (Tracking)
+         int SearchByProjection(Frame &F, const std::vector<MapPoint*> &vpMapPoints, const float th=3, const bool bFarPoints = false, const float thFarPoints = 50.0f);
+--- a/src/ORBmatcher.cc
++++ b/src/ORBmatcher.cc
+@@ -2053,24 +2053,34 @@
+
+
+-// Bit set count operation from
+-// http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
+-    int ORBmatcher::DescriptorDistance(const cv::Mat &a, const cv::Mat &b)
++// PERF: the original used the SWAR bit-hack popcount from
++// http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
++// The target CPU has hardware POPCNT (already selected by -march=native), so
++// __builtin_popcountll compiles to 4 POPCNT instructions instead of ~40 ALU
++// ops. The result is bit-identical. This is the hottest function in the whole
++// system, so this single change is worth more than it looks.
++    int ORBmatcher::DescriptorDistance(const unsigned char *pa, const unsigned char *pb)
+     {
+-        const int *pa = a.ptr<int32_t>();
+-        const int *pb = b.ptr<int32_t>();
+-
+-        int dist=0;
+-
+-        for(int i=0; i<8; i++, pa++, pb++)
+-        {
+-            unsigned  int v = *pa ^ *pb;
+-            v = v - ((v >> 1) & 0x55555555);
+-            v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
+-            dist += (((v + (v >> 4)) & 0xF0F0F0F) * 0x1010101) >> 24;
+-        }
+-
+-        return dist;
++        // A 32-byte ORB descriptor read as 4 x uint64. memcpy is the portable
++        // spelling of an unaligned load; gcc/clang lower it to plain movq.
++        uint64_t va[4], vb[4];
++        memcpy(va, pa, 32);
++        memcpy(vb, pb, 32);
++        return __builtin_popcountll(va[0] ^ vb[0])
++             + __builtin_popcountll(va[1] ^ vb[1])
++             + __builtin_popcountll(va[2] ^ vb[2])
++             + __builtin_popcountll(va[3] ^ vb[3]);
++    }
++
++    int ORBmatcher::DescriptorDistance(const cv::Mat &a, const cv::Mat &b)
++    {
++        return DescriptorDistance(a.ptr<unsigned char>(), b.ptr<unsigned char>());
+     }
+
+ } //namespace ORB_SLAM

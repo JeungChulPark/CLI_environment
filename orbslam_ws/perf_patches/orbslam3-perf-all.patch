@@ -1,0 +1,424 @@
+diff -u -r -N a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2026-09-12 11:03:33.310319190 +0900
++++ b/CMakeLists.txt	2026-09-12 11:03:33.320888157 +0900
+@@ -15,6 +15,51 @@
+ set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=native")
+ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
+ 
++# ---------------------------------------------------------------------------
++# Performance / profiling options
++# ---------------------------------------------------------------------------
++# Flags deliberately NOT enabled, and why:
++#  * -ffast-math / -funsafe-math-optimizations: UNSAFE for this codebase. It
++#    implies -ffinite-math-only, letting the compiler assume no NaN/Inf.
++#    ORB-SLAM3 and g2o gate outlier rejection on chi2 and NaN comparisons,
++#    so this can silently turn outlier rejection into a no-op. Do not use.
++#  * -mavx512f and friends: the target CPU (i9-12900HK, Alder Lake) has NO
++#    AVX-512 - it is fused off. Forcing it yields SIGILL. -march=native
++#    already selects AVX2 + FMA + POPCNT, which is what this code benefits
++#    from (see ORBmatcher::DescriptorDistance).
++#  * -flto: safe, but ORB_SLAM3 is a shared library consumed through a
++#    prebuilt .so path, so cross-TU inlining stops at the library boundary.
++#    Little upside for a long rebuild; enable only if measured to help.
++
++# Per-stage tracking timers. The #ifdef REGISTER_TIMES instrumentation
++# already present in Tracking.cc / Frame.cc was never switched on.
++option(ORBSLAM3_REGISTER_TIMES "Enable stock per-stage tracking timers" OFF)
++if(ORBSLAM3_REGISTER_TIMES)
++  add_definitions(-DREGISTER_TIMES)
++  message(STATUS "REGISTER_TIMES enabled")
++endif()
++
++# Fine-grained per-frame profiler (include/StageTimer.h). Prints a per-frame
++# breakdown plus p50/p95/max, which is what a hard 33.33 ms budget needs.
++option(ORBSLAM3_PROFILE "Enable per-frame stage profiler" OFF)
++if(ORBSLAM3_PROFILE)
++  add_definitions(-DORBSLAM3_PROFILE)
++  message(STATUS "ORBSLAM3_PROFILE enabled (per-frame stage breakdown)")
++endif()
++
++# Parallel ORB extraction across pyramid levels. Keep this well below the
++# core count: LocalMapping and LoopClosing need cores too, and oversubscribing
++# makes tracking p95 worse even when the mean improves.
++set(ORBEXTRACTOR_OMP_THREADS "4" CACHE STRING
++    "Threads for per-pyramid-level ORB extraction (unset/1 = serial)")
++find_package(OpenMP)
++if(OpenMP_CXX_FOUND)
++  add_definitions(-DORBEXTRACTOR_OMP_THREADS=${ORBEXTRACTOR_OMP_THREADS})
++  message(STATUS "OpenMP found; ORB extraction threads = ${ORBEXTRACTOR_OMP_THREADS}")
++else()
++  message(STATUS "OpenMP NOT found; ORB extraction stays serial")
++endif()
++
+ # Require C++14. This is the unique standard that works here:
+ #  - conda Pangolin/sigslot headers need C++14 type traits (std::decay_t etc.),
+ #    so C++11 fails to compile them;
+@@ -134,6 +179,10 @@
+ -lcrypto
+ )
+ 
++if(OpenMP_CXX_FOUND)
++  target_link_libraries(${ORB_SLAM3_TARGET} OpenMP::OpenMP_CXX)
++endif()
++
+ # If RealSense SDK is found the library is added and its examples compiled
+ if(realsense2_FOUND)
+     include_directories(${ORB_SLAM3_TARGET}
+diff -u -r -N a/include/MapPoint.h b/include/MapPoint.h
+--- a/include/MapPoint.h	2026-09-12 11:03:33.310319190 +0900
++++ b/include/MapPoint.h	2026-09-12 11:03:33.310319190 +0900
+@@ -120,6 +120,19 @@
+     KeyFrame* GetReferenceKeyFrame();
+ 
+     std::map<KeyFrame*,std::tuple<int,int>> GetObservations();
++
++    // PERF: Tracking::UpdateLocalKeyFrames() only needs to tally which
++    // KeyFrames observe this point. GetObservations() returns the whole
++    // std::map BY VALUE - a full red-black-tree deep copy, one node
++    // allocation per observation, for every matched map point every
++    // frame. This accumulates in place under the same lock, allocating
++    // nothing. No other lock is taken inside, so it cannot deadlock.
++    void AccumulateObservingKeyFrames(std::map<KeyFrame*,int> &counter);
++
++    // PERF: non-allocating variant of GetDescriptor() for match loops.
++    // Copies the 32 descriptor bytes into caller-provided storage.
++    void CopyDescriptorTo(unsigned char *dst32);
++
+     int Observations();
+ 
+     void AddObservation(KeyFrame* pKF,int idx);
+diff -u -r -N a/include/ORBextractor.h b/include/ORBextractor.h
+--- a/include/ORBextractor.h	2026-09-12 11:03:33.310319190 +0900
++++ b/include/ORBextractor.h	2026-09-12 11:03:33.320888157 +0900
+@@ -82,6 +82,13 @@
+ 
+     std::vector<cv::Mat> mvImagePyramid;
+ 
++    // PERF: persistent per-level scratch buffers for the pre-descriptor
++    // Gaussian blur. The original allocated a fresh clone() per level per
++    // frame. copyTo() into a buffer of identical size/type reuses the
++    // allocation and, exactly like clone(), yields a standalone Mat - so
++    // BORDER_REFLECT_101 stays ROI-isolated and descriptors stay identical.
++    std::vector<cv::Mat> mvBlurBuffer;
++
+ protected:
+ 
+     void ComputePyramid(cv::Mat image);
+diff -u -r -N a/include/ORBmatcher.h b/include/ORBmatcher.h
+--- a/include/ORBmatcher.h	2026-09-12 11:03:33.310319190 +0900
++++ b/include/ORBmatcher.h	2026-09-12 11:03:33.310319190 +0900
+@@ -42,6 +42,11 @@
+         // Computes the Hamming distance between two ORB descriptors
+         static int DescriptorDistance(const cv::Mat &a, const cv::Mat &b);
+ 
++        // PERF: raw-pointer overload for hot inner loops. Avoids constructing a
++        // cv::Mat header (and its atomic refcount inc/dec) per comparison.
++        // Both pointers must address 32 contiguous bytes (one ORB descriptor).
++        static int DescriptorDistance(const unsigned char *pa, const unsigned char *pb);
++
+         // Search matches between Frame keypoints and projected MapPoints. Returns number of matches
+         // Used to track the local map (Tracking)
+         int SearchByProjection(Frame &F, const std::vector<MapPoint*> &vpMapPoints, const float th=3, const bool bFarPoints = false, const float thFarPoints = 50.0f);
+diff -u -r -N a/src/Frame.cc b/src/Frame.cc
+--- a/src/Frame.cc	2026-09-12 11:03:33.299750225 +0900
++++ b/src/Frame.cc	2026-09-12 11:03:33.310319190 +0900
+@@ -657,7 +657,10 @@
+ vector<size_t> Frame::GetFeaturesInArea(const float &x, const float  &y, const float  &r, const int minLevel, const int maxLevel, const bool bRight) const
+ {
+     vector<size_t> vIndices;
+-    vIndices.reserve(N);
++    // PERF: called once per visible local MapPoint per frame (~1-3k calls).
++    // reserve(N) heap-allocated N*8 bytes on every call, although a search
++    // window realistically returns O(10) indices.
++    vIndices.reserve(32);
+ 
+     float factorX = r;
+     float factorY = r;
+@@ -692,7 +695,9 @@
+     {
+         for(int iy = nMinCellY; iy<=nMaxCellY; iy++)
+         {
+-            const vector<size_t> vCell = (!bRight) ? mGrid[ix][iy] : mGridRight[ix][iy];
++            // PERF: was a by-value copy of the grid cell (the '&' was missing),
++            // i.e. one heap allocation per visited cell, ~9-25 cells per call.
++            const vector<size_t> &vCell = (!bRight) ? mGrid[ix][iy] : mGridRight[ix][iy];
+             if(vCell.empty())
+                 continue;
+ 
+diff -u -r -N a/src/MapPoint.cc b/src/MapPoint.cc
+--- a/src/MapPoint.cc	2026-09-12 11:03:33.310319190 +0900
++++ b/src/MapPoint.cc	2026-09-12 11:03:33.310319190 +0900
+@@ -17,6 +17,8 @@
+ */
+ 
+ #include "MapPoint.h"
++
++#include <cstring>   // PERF: memcpy in CopyDescriptorTo
+ #include "ORBmatcher.h"
+ 
+ #include<mutex>
+@@ -207,6 +209,14 @@
+     return mObservations;
+ }
+ 
++void MapPoint::AccumulateObservingKeyFrames(std::map<KeyFrame*,int> &counter)
++{
++    unique_lock<mutex> lock(mMutexFeatures);
++    for(std::map<KeyFrame*,std::tuple<int,int>>::const_iterator it=mObservations.begin(),
++            itend=mObservations.end(); it!=itend; it++)
++        counter[it->first]++;
++}
++
+ int MapPoint::Observations()
+ {
+     unique_lock<mutex> lock(mMutexFeatures);
+@@ -408,6 +418,13 @@
+     return mDescriptor.clone();
+ }
+ 
++void MapPoint::CopyDescriptorTo(unsigned char *dst32)
++{
++    unique_lock<mutex> lock(mMutexFeatures);
++    // mDescriptor is always 1x32 CV_8U (see ComputeDistinctiveDescriptors).
++    memcpy(dst32, mDescriptor.ptr<unsigned char>(), 32);
++}
++
+ tuple<int,int> MapPoint::GetIndexInKeyFrame(KeyFrame *pKF)
+ {
+     unique_lock<mutex> lock(mMutexFeatures);
+diff -u -r -N a/src/ORBextractor.cc b/src/ORBextractor.cc
+--- a/src/ORBextractor.cc	2026-09-12 11:03:33.310319190 +0900
++++ b/src/ORBextractor.cc	2026-09-12 11:03:33.320888157 +0900
+@@ -430,6 +430,7 @@
+         }
+ 
+         mvImagePyramid.resize(nlevels);
++        mvBlurBuffer.resize(nlevels);
+ 
+         mnFeaturesPerLevel.resize(nlevels);
+         float factor = 1.0f / scaleFactor;
+@@ -784,6 +785,15 @@
+ 
+         const float W = 35;
+ 
++        // PERF: each iteration reads only mvImagePyramid[level] and writes only
++        // allKeypoints[level]; DistributeOctTree() mutates no member state. The
++        // levels are therefore fully independent. FAST + octree distribution
++        // dominate extraction cost, so this is the best parallelization point
++        // in the extractor. allKeypoints is pre-sized above, so no reallocation
++        // races are possible.
++#if defined(_OPENMP) && defined(ORBEXTRACTOR_OMP_THREADS)
++#pragma omp parallel for schedule(dynamic) num_threads(ORBEXTRACTOR_OMP_THREADS)
++#endif
+         for (int level = 0; level < nlevels; ++level)
+         {
+             const int minBorderX = EDGE_THRESHOLD-3;
+@@ -891,6 +901,11 @@
+         }
+ 
+         // compute orientations
++        // PERF: computeOrientation() is a free function reading the image and
++        // writing only allKeypoints[level] -> independent per level.
++#if defined(_OPENMP) && defined(ORBEXTRACTOR_OMP_THREADS)
++#pragma omp parallel for schedule(dynamic) num_threads(ORBEXTRACTOR_OMP_THREADS)
++#endif
+         for (int level = 0; level < nlevels; ++level)
+             computeOrientation(mvImagePyramid[level], allKeypoints[level], umax);
+     }
+@@ -1120,6 +1135,32 @@
+         int offset = 0;
+         //Modified for speeding up stereo fisheye matching
+         int monoIndex = 0, stereoIndex = nkeypoints-1;
++
++        // PERF pass 1 (parallel): the per-level Gaussian blur and descriptor
++        // computation are independent. Only the scatter in pass 2 carries state
++        // across levels (offset / monoIndex / stereoIndex), so that stays serial.
++        vector<Mat> vLevelDesc(nlevels);
++#if defined(_OPENMP) && defined(ORBEXTRACTOR_OMP_THREADS)
++#pragma omp parallel for schedule(dynamic) num_threads(ORBEXTRACTOR_OMP_THREADS)
++#endif
++        for (int level = 0; level < nlevels; ++level)
++        {
++            const int nkeypointsLevel = (int)allKeypoints[level].size();
++            if(nkeypointsLevel==0)
++                continue;
++
++            // preprocess the resized image.
++            // copyTo() into the persistent buffer replaces clone(): it reuses the
++            // allocation across frames and still yields a standalone Mat, so
++            // BORDER_REFLECT_101 remains ROI-isolated exactly as before.
++            mvImagePyramid[level].copyTo(mvBlurBuffer[level]);
++            GaussianBlur(mvBlurBuffer[level], mvBlurBuffer[level], Size(7, 7), 2, 2, BORDER_REFLECT_101);
++
++            vLevelDesc[level] = cv::Mat(nkeypointsLevel, 32, CV_8U);
++            computeDescriptors(mvBlurBuffer[level], allKeypoints[level], vLevelDesc[level], pattern);
++        }
++
++        // PERF pass 2 (serial): keypoint rescaling and scatter into the output.
+         for (int level = 0; level < nlevels; ++level)
+         {
+             vector<KeyPoint>& keypoints = allKeypoints[level];
+@@ -1128,14 +1169,7 @@
+             if(nkeypointsLevel==0)
+                 continue;
+ 
+-            // preprocess the resized image
+-            Mat workingMat = mvImagePyramid[level].clone();
+-            GaussianBlur(workingMat, workingMat, Size(7, 7), 2, 2, BORDER_REFLECT_101);
+-
+-            // Compute the descriptors
+-            //Mat desc = descriptors.rowRange(offset, offset + nkeypointsLevel);
+-            Mat desc = cv::Mat(nkeypointsLevel, 32, CV_8U);
+-            computeDescriptors(workingMat, keypoints, desc, pattern);
++            Mat &desc = vLevelDesc[level];
+ 
+             offset += nkeypointsLevel;
+ 
+diff -u -r -N a/src/ORBmatcher.cc b/src/ORBmatcher.cc
+--- a/src/ORBmatcher.cc	2026-09-12 11:03:33.310319190 +0900
++++ b/src/ORBmatcher.cc	2026-09-12 11:03:33.310319190 +0900
+@@ -19,6 +19,9 @@
+ 
+ #include "ORBmatcher.h"
+ 
++#include <cstring>   // PERF: memcpy in DescriptorDistance
++#include <cstdint>
++
+ #include<limits.h>
+ 
+ #include<opencv2/core/core.hpp>
+@@ -72,7 +75,12 @@
+                         F.GetFeaturesInArea(pMP->mTrackProjX,pMP->mTrackProjY,r*F.mvScaleFactors[nPredictedLevel],nPredictedLevel-1,nPredictedLevel);
+ 
+                 if(!vIndices.empty()){
+-                    const cv::Mat MPdescriptor = pMP->GetDescriptor();
++                    // PERF: MapPoint::GetDescriptor() returns mDescriptor.clone(),
++                    // i.e. a heap allocation per visible map point per frame. Copy
++                    // the 32 bytes into a stack buffer under the same lock instead.
++                    unsigned char aMPdesc[32];
++                    pMP->CopyDescriptorTo(aMPdesc);
++                    const unsigned char *pMPdesc = aMPdesc;
+ 
+                     int bestDist=256;
+                     int bestLevel= -1;
+@@ -96,9 +104,9 @@
+                                 continue;
+                         }
+ 
+-                        const cv::Mat &d = F.mDescriptors.row(idx);
+-
+-                        const int dist = DescriptorDistance(MPdescriptor,d);
++                        // PERF: Mat::row() builds a cv::Mat header per comparison,
++                        // including an atomic refcount inc/dec. Use the raw row.
++                        const int dist = DescriptorDistance(pMPdesc, F.mDescriptors.ptr<unsigned char>(idx));
+ 
+                         if(dist<bestDist)
+                         {
+@@ -2053,24 +2061,28 @@
+     }
+ 
+ 
+-// Bit set count operation from
++// PERF: the original used the SWAR bit-hack popcount from
+ // http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
+-    int ORBmatcher::DescriptorDistance(const cv::Mat &a, const cv::Mat &b)
++// The target CPU has hardware POPCNT (already selected by -march=native), so
++// __builtin_popcountll lowers to 4 POPCNT instructions instead of ~40 ALU ops.
++// The result is bit-identical. This is the hottest function in the system:
++// it is reached from 20 call sites and runs millions of times per second.
++    int ORBmatcher::DescriptorDistance(const unsigned char *pa, const unsigned char *pb)
+     {
+-        const int *pa = a.ptr<int32_t>();
+-        const int *pb = b.ptr<int32_t>();
+-
+-        int dist=0;
+-
+-        for(int i=0; i<8; i++, pa++, pb++)
+-        {
+-            unsigned  int v = *pa ^ *pb;
+-            v = v - ((v >> 1) & 0x55555555);
+-            v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
+-            dist += (((v + (v >> 4)) & 0xF0F0F0F) * 0x1010101) >> 24;
+-        }
++        // A 32-byte ORB descriptor read as 4 x uint64. memcpy is the portable
++        // spelling of a possibly-unaligned load; gcc/clang lower it to movq.
++        uint64_t va[4], vb[4];
++        memcpy(va, pa, 32);
++        memcpy(vb, pb, 32);
++        return __builtin_popcountll(va[0] ^ vb[0])
++             + __builtin_popcountll(va[1] ^ vb[1])
++             + __builtin_popcountll(va[2] ^ vb[2])
++             + __builtin_popcountll(va[3] ^ vb[3]);
++    }
+ 
+-        return dist;
++    int ORBmatcher::DescriptorDistance(const cv::Mat &a, const cv::Mat &b)
++    {
++        return DescriptorDistance(a.ptr<unsigned char>(), b.ptr<unsigned char>());
+     }
+ 
+ } //namespace ORB_SLAM
+diff -u -r -N a/src/Tracking.cc b/src/Tracking.cc
+--- a/src/Tracking.cc	2026-09-12 11:03:33.310319190 +0900
++++ b/src/Tracking.cc	2026-09-12 11:03:33.320888157 +0900
+@@ -2221,10 +2221,20 @@
+         vdLMTrack_ms.push_back(timeLMTrack);
+ #endif
+ 
+-        // Update drawer
+-        mpFrameDrawer->Update(this);
+-        if(mCurrentFrame.isSet())
+-            mpMapDrawer->SetCurrentCameraPose(mCurrentFrame.GetPose());
++        // PERF: FrameDrawer::Update() deep-copies the entire Frame (descriptor
++        // clone + all 64*48 grid cell vectors + mmProjectPoints/mmMatchedInImage
++        // maps) plus the whole local map point vector, every single frame.
++        // Nothing reads any of it when the Pangolin viewer is disabled, which is
++        // this project's configuration (config/no_cli_rgbd.yaml has
++        // visualization.enabled=false). mpViewer stays NULL unless System was
++        // constructed with bUseViewer=true (System.cc:229-236).
++        if(mpViewer)
++        {
++            // Update drawer
++            mpFrameDrawer->Update(this);
++            if(mCurrentFrame.isSet())
++                mpMapDrawer->SetCurrentCameraPose(mCurrentFrame.GetPose());
++        }
+ 
+         if(bOK || mState==RECENTLY_LOST)
+         {
+@@ -3461,7 +3471,10 @@
+             pMP->IncreaseVisible();
+             nToMatch++;
+         }
+-        if(pMP->mbTrackInView)
++        // PERF: mmProjectPoints' only consumer is FrameDrawer (FrameDrawer.cc:89
++        // and :393). One red-black-tree insert per visible local map point per
++        // frame, then deep-copied again by every Frame copy. Waste when headless.
++        if(mpViewer && pMP->mbTrackInView)
+         {
+             mCurrentFrame.mmProjectPoints[pMP->mnId] = cv::Point2f(pMP->mTrackProjX, pMP->mTrackProjY);
+         }
+@@ -3549,9 +3562,8 @@
+             {
+                 if(!pMP->isBad())
+                 {
+-                    const map<KeyFrame*,tuple<int,int>> observations = pMP->GetObservations();
+-                    for(map<KeyFrame*,tuple<int,int>>::const_iterator it=observations.begin(), itend=observations.end(); it!=itend; it++)
+-                        keyframeCounter[it->first]++;
++                    // PERF: was a full std::map deep copy per map point per frame.
++                    pMP->AccumulateObservingKeyFrames(keyframeCounter);
+                 }
+                 else
+                 {
+@@ -3572,9 +3584,8 @@
+                     continue;
+                 if(!pMP->isBad())
+                 {
+-                    const map<KeyFrame*,tuple<int,int>> observations = pMP->GetObservations();
+-                    for(map<KeyFrame*,tuple<int,int>>::const_iterator it=observations.begin(), itend=observations.end(); it!=itend; it++)
+-                        keyframeCounter[it->first]++;
++                    // PERF: was a full std::map deep copy per map point per frame.
++                    pMP->AccumulateObservingKeyFrames(keyframeCounter);
+                 }
+                 else
+                 {

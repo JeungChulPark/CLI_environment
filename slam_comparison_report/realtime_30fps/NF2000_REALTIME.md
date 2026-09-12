@@ -61,7 +61,8 @@ dense solver로 돈다.
 | 4 | `Frame.cc:657` `Frame::GetFeaturesInArea()` | `vIndices.reserve(N)`가 **매 호출 N*8 바이트 힙 할당**(실제 반환은 O(10)개). 그리고 `const vector<size_t> vCell = ...` 의 `&` 누락으로 **방문 셀마다 값복사**(호출당 9~25셀). |
 | 5 | `ORBmatcher.cc:2053` `ORBmatcher::DescriptorDistance()` | SWAR 비트핵 popcount → `__builtin_popcountll`. 20개 호출 지점에서 초당 수백만 회 실행. 별도 마이크로벤치에서 **1.62~1.94배** 확인. |
 | 6 | `Frame.cc:512` `Frame::isInFrustum()` **(이번 추가)** | `GetWorldPos` / `GetMaxDistanceInvariance` / `GetMinDistanceInvariance` / `GetNormal`이 **모두 같은 `mMutexPos`를 각각** 잡는다. 로컬 맵 포인트마다 프레임당 실행되므로 nFeatures 2000에서 프레임당 수천 번의 중복 잠금. `MapPoint::GetFrustumData()` 하나로 통합. |
-| 7 | `ORBextractor.cc` | octree 노드 벡터 `reserve`. |
+| 7 | `ORBextractor.cc` `ExtractorNode::DivideNode()` | 자식 노드마다 부모 전체 크기를 `reserve`해 분할마다 4배 과할당. 평균적으로 자식은 부모의 1/4을 받으므로 `vKeys.size()/4 + 8`로 변경. 용량 힌트만 바뀌므로 keypoint는 동일. |
+| 8 | `ORBextractor.cc` 레벨 루프 3곳 | **피라미드 레벨 단위 OpenMP 병렬화**. FAST+octree, orientation, blur+descriptor 루프를 `#pragma omp parallel for num_threads(ORBEXTRACTOR_OMP_THREADS)`(기본 4)로 실행. 레벨 간 의존이 없어 결과는 동일하며, descriptor를 최종 배열로 모으는 scatter만 직렬로 남긴다. **스레드 수를 4로 고정하는 것이 필수다**(6장 참조). |
 
 6번의 동등성 근거: 네 접근자가 반환하는 것은 각각 `mWorldPos`, `mNormalVector`,
 `0.8f*mfMinDistance`, `1.2f*mfMaxDistance`이고 모두 `mMutexPos` 아래에서만 쓰인다.
@@ -103,12 +104,28 @@ Optimizer.PoseEarlyExit: 1                # outlier 집합이 안정되면 조�
 | Pose prediction | 4.41 | 3.85 | -13% |
 | LM track | 8.95 | 7.51 | -16% |
 
-ORB extraction 구간이 절반 이하가 된 것은 extraction 알고리즘이 빨라져서가 아니라,
-수정 1번(프레임당 Frame 전체 deep copy)이 그 측정 구간 안에 계상되어 있었기 때문으로 본다.
+ORB extraction이 절반 이하가 된 주된 이유는 **패치가 피라미드 레벨 단위 OpenMP 병렬화를
+함께 켜기 때문**이다. `CMakeLists.txt`에 `ORBEXTRACTOR_OMP_THREADS`(기본 4)가 추가되고,
+`ORBextractor.cc`의 FAST+octree / orientation / descriptor 세 루프가
+`#pragma omp parallel for num_threads(4)`로 돈다. A/B/C 빌드의 컴파일 플래그에
+`-DORBEXTRACTOR_OMP_THREADS=4`가 실제로 들어가 있음을 확인했다.
+
+레벨은 서로 독립이다 — 각 반복은 `mvImagePyramid[level]`만 읽고 `allKeypoints[level]`만
+쓰며, `DistributeOctTree()`는 멤버 상태를 바꾸지 않는다. 8.46 → 3.63 ms(약 2.3배)는
+4스레드 병렬화로 설명되는 크기다(가장 큰 레벨이 하한).
+
+스레드 수를 4로 **명시**한 것이 중요하다. 이 머신에서 별도로 측정한 WSL2의 OpenMP
+parallel region 진입 비용은 20스레드 3.7858 ms vs 4스레드 0.0015 ms로 **2500배** 차이가
+난다. 기본값(논리 CPU 20개)에 맡겼다면 병렬화가 오히려 손해였을 것이다.
+
+> 주의: 이 절의 A/B/C 수치는 "결과 보존 수정"과 "OpenMP 병렬화"가 **함께 적용된** 값이다.
+> 둘을 분리하려면 `-DORBEXTRACTOR_OMP_THREADS=1`로 다시 빌드해 측정해야 한다. 아래
+> "기여도 분해"의 A 항목도 같은 이유로 두 요인의 합이다.
 
 ### 기여도 분해
 
-- **결과 보존 수정(A)**: 24.68 → 16.34 ms = **-8.34 ms, 전체 이득의 90%**
+- **결과 보존 수정 + OpenMP 레벨 병렬화(A)**: 24.68 → 16.34 ms = **-8.34 ms, 전체 이득의 90%**
+  (두 요인의 합. 분리 측정은 하지 않았다.)
 - 반복 축소(B): 16.34 → 16.37 ms = **0 (효과 없음)**
 - 조기 종료(C): 16.37 → 15.38 ms = **-0.99 ms, 이득의 10%**
 
@@ -146,6 +163,12 @@ Optimizer.PoseEarlyExit: 1
 `PoseIterations` 축소는 **B가 A보다 나아지지 않았으므로 넣지 않아도 된다.**
 조기 종료는 "수렴 후 동일 엣지 집합 재최적화"만 건너뛰므로 반복 축소보다 안전하고,
 실측 이득도 그쪽에서 나왔다. 반복 축소까지 쓸 경우 ATE 회귀를 함께 볼 것.
+
+빌드 옵션 (기본값 4, 그대로 두면 된다):
+
+```bash
+-DORBEXTRACTOR_OMP_THREADS=4   # 피라미드 레벨 병렬 추출. 1이면 직렬
+```
 
 실행 환경도 함께 지킬 것 (별도 실측 근거):
 

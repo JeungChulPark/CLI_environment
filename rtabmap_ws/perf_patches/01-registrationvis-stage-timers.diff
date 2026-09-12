@@ -1,0 +1,88 @@
+Phase 11 -- per-stage timers inside RegistrationVis::computeTransformationImpl.
+
+WHY: RTAB-Map already has excellent timing coverage -- 21 `Timing/*` and 17 `TimingMem/*`
+keys in corelib/include/rtabmap/core/Statistics.h:158-197 -- but ALL of it is on the
+mapping thread, which runs at Rtabmap/DetectionRate (default 1 Hz).
+
+On the 30 Hz odometry thread you get exactly two numbers:
+    OdometryInfo::timeEstimation   (OdometryInfo.h:64, set at Odometry.cpp:819)
+    RegistrationInfo::totalTime    (RegistrationInfo.h:79)
+Both are whole-frame. There is no breakdown of the stage that consumes 80-90% of it.
+
+This patch adds 8 fields to RegistrationInfo and populates them in RegistrationVis.
+Cost: ~16 UTimer::ticks() calls per frame. MEASURED on this machine, gettimeofday is
+15.71 ns/call (vDSO works under WSL2), so the added cost is ~0.0003 ms/frame.
+
+--- a/corelib/include/rtabmap/core/RegistrationInfo.h
++++ b/corelib/include/rtabmap/core/RegistrationInfo.h
+@@ (in the ctor initializer list, alongside totalTime(0.0))
++		timeDecimation(0.0f),
++		timeKeypointsFrom(0.0f),
++		timeKeypointsTo(0.0f),
++		timeDescriptors(0.0f),
++		timeKeypoints3D(0.0f),
++		timeGuessProjection(0.0f),
++		timeMatching(0.0f),
++		timeMotionEstimation(0.0f),
+@@ (in copyWithoutData(), alongside output.icpRMS = icpRMS;)
++		output.timeDecimation       = timeDecimation;
++		output.timeKeypointsFrom    = timeKeypointsFrom;
++		output.timeKeypointsTo      = timeKeypointsTo;
++		output.timeDescriptors      = timeDescriptors;
++		output.timeKeypoints3D      = timeKeypoints3D;
++		output.timeGuessProjection  = timeGuessProjection;
++		output.timeMatching         = timeMatching;
++		output.timeMotionEstimation = timeMotionEstimation;
+@@ (in the member block, after `double totalTime;`)
++	// Per-stage breakdown of computeTransformationImpl (seconds).
++	// Only RegistrationVis populates these; RegistrationIcp leaves them at 0.
++	float timeDecimation;
++	float timeKeypointsFrom;
++	float timeKeypointsTo;
++	float timeDescriptors;
++	float timeKeypoints3D;
++	float timeGuessProjection;
++	float timeMatching;
++	float timeMotionEstimation;
+
+--- a/corelib/src/RegistrationVis.cpp
++++ b/corelib/src/RegistrationVis.cpp
+@@ near the top of computeTransformationImpl (currently begins at :305)
++	UTimer stageTimer;      // reset at each stage boundary via ticks()
+@@ around :455  kptsFrom = _detectorFrom->generateKeypoints(...)
++	info.timeKeypointsFrom = stageTimer.ticks();
+@@ around :821  kptsTo = _detectorTo->generateKeypoints(...)
++	info.timeKeypointsTo = stageTimer.ticks();
+@@ around :863/:888  generateDescriptors(imageFrom/imageTo, ...)
++	info.timeDescriptors += stageTimer.ticks();
+@@ around :921/:957  generateKeypoints3D(...)
++	info.timeKeypoints3D += stageTimer.ticks();
+@@ around :1038-1081  cv::projectPoints + rtflann::Index::buildIndex
++	info.timeGuessProjection = stageTimer.ticks();
+@@ after the matching loop closes (after :1380 / :1500)
++	info.timeMatching = stageTimer.ticks();
+@@ around :1741/:1777/:1839  util3d::estimateMotion3DTo2D / estimateMotion3DTo3D
++	info.timeMotionEstimation = stageTimer.ticks();
+
+OPTIONAL -- surface them over ROS so you can `ros2 topic echo` them:
+
+--- a/rtabmap_msgs/msg/OdomInfo.msg
++++ b/rtabmap_msgs/msg/OdomInfo.msg
+@@ after `float32 time_particle_filtering`
++float32 time_keypoints_from
++float32 time_keypoints_to
++float32 time_descriptors
++float32 time_keypoints_3d
++float32 time_guess_projection
++float32 time_matching
++float32 time_motion_estimation
+
+and mirror them in rtabmap_conversions::odomInfoToROS
+(rtabmap_conversions/src/MsgConversion.cpp:1760-1839) in the CHEAP section, i.e. BEFORE
+the `if(!ignoreData)` block at :1823 -- so they are present on /odom_info_lite and you
+never have to subscribe to the expensive full /odom_info to read timings.
+
+NOTE ON MESSAGE COMPATIBILITY: adding fields to OdomInfo.msg changes the message hash.
+Every node in the graph must be rebuilt together. If that is unacceptable, skip the .msg
+part and read the fields from the RegistrationInfo inside the process instead, or dump
+them with ULogger at UINFO level.

@@ -1,0 +1,39 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SLAM Latency Study</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<style>
+:root{--bg:#f7f7f5;--panel:#fcfcfb;--ink:#1b1d21;--ink-2:#4a4e56;--ink-3:#767b85;--rule:#dedfda;--s1:#2F6FD0}
+@media(prefers-color-scheme:dark){:root{--bg:#14161a;--panel:#1b1e23;--ink:#eceef1;--ink-2:#b3b9c2;--ink-3:#828a95;--rule:#2d323a;--s1:#4A85DD}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;
+ padding:44px 20px;line-height:1.6}
+.w{max-width:760px;margin:0 auto}
+h1{font-family:"IBM Plex Sans Condensed",sans-serif;font-size:34px;font-weight:700;margin:0 0 8px;letter-spacing:-.02em}
+p.lede{color:var(--ink-2);margin:0 0 28px;max-width:60ch}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+ul{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+a.card{display:block;background:var(--panel);border:1px solid var(--rule);border-radius:3px;
+ padding:16px 18px;text-decoration:none;color:inherit;border-left:3px solid var(--s1)}
+a.card:hover{border-color:var(--s1)}
+a.card b{font-family:"IBM Plex Sans Condensed",sans-serif;font-size:17px;font-weight:600;display:block}
+a.card span{font-size:13.5px;color:var(--ink-2)}
+footer{margin-top:32px;font-size:12px;color:var(--ink-3);border-top:1px solid var(--rule);padding-top:16px}
+code{font-family:"IBM Plex Mono",monospace;font-size:12.5px}
+</style></head><body><div class="w">
+<div class="eyebrow">260826_etri_eightcircle_dark · i9-12900HK · WSL2 · CPU only</div>
+<h1>SLAM Latency Study</h1>
+<p class="lede">Measured runs of ORB-SLAM3 and RTAB-Map over the same 285-second RealSense D455F
+sequence, against the 33.33 ms frame budget a 30 FPS camera allows.</p>
+<ul>
+<li><a class="card" href="playback/"><b>Tracking Playback at 30 Hz</b>
+<span>The camera stream at its true rate, with the pose and the per-frame cost it produced.</span></a></li>
+<li><a class="card" href="features/"><b>1250 vs 2000 Features</b>
+<span>Denser map at the same drift — and, after the tracking-path fixes, lower latency too.</span></a></li>
+<li><a class="card" href="map3d/"><b>Eight-Circle Map Reconstruction</b>
+<span>Sparse map and every estimated pose, 30 Hz and 15 Hz replays side by side.</span></a></li>
+<li><a class="card" href="latency_comparison.html"><b>Frame Budget 33.33 ms</b>
+<span>Per-frame latency of all three runs: distribution, tail, and stage breakdown.</span></a></li>
+</ul>
+<footer>Served locally from <code>slam_comparison_report/realtime_30fps/viz/</code></footer>
+</div></body></html>

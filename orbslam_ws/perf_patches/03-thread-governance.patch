@@ -1,0 +1,104 @@
+diff -u -r -N a/include/System.h b/include/System.h
+--- a/include/System.h	2026-09-12 12:05:30.540763714 +0900
++++ b/include/System.h	2026-09-12 12:05:30.551248687 +0900
+@@ -202,6 +202,10 @@
+ 
+ private:
+ 
++    // PERF/WSL2: pin the OpenMP and OpenCV thread pools to a small team and
++    // pay the pool-spawn cost at construction time. See src/System.cc.
++    static void ConfigureThreadPools();
++
+     void SaveAtlas(int type);
+     bool LoadAtlas(int type);
+ 
+diff -u -r -N a/src/System.cc b/src/System.cc
+--- a/src/System.cc	2026-09-12 12:05:30.540763714 +0900
++++ b/src/System.cc	2026-09-12 12:05:30.551248687 +0900
+@@ -21,6 +21,11 @@
+ #include "System.h"
+ #include "Converter.h"
+ #include <thread>
++#include <cstdlib>
++#include <opencv2/core/utility.hpp>   // PERF: cv::setNumThreads
++#ifdef _OPENMP
++#include <omp.h>
++#endif
+ #include <pangolin/pangolin.h>
+ #include <iomanip>
+ #include <openssl/md5.h>
+@@ -38,11 +43,74 @@
+ 
+ Verbose::eLevel Verbose::th = Verbose::VERBOSITY_NORMAL;
+ 
++// ---------------------------------------------------------------------------
++// PERF / WSL2: thread-pool governance.
++//
++// MEASURED on this machine (i9-12900HK, 20 logical CPUs, WSL2):
++//   first  #pragma omp parallel region .... 10.508 ms   (pool spawn)
++//   warm   region, default 20 threads ..... 3.7858 ms   PER REGION
++//   warm   region,  8 threads ............. 0.0033 ms
++//   warm   region,  4 threads ............. 0.0015 ms
++//   warm   region,  2 threads ............. 0.0053 ms
++//
++// Letting OpenMP default to 20 threads costs ~3.8 ms of fork/join barrier
++// PER parallel region.  The per-pyramid-level parallelism added by
++// orbslam3-perf-all.patch opens three regions per ORBextractor call, so the
++// default would burn ~11 ms/frame doing nothing but synchronising.  Worse,
++// OpenCV keeps its OWN pool (resize / GaussianBlur / FAST all use
++// cv::parallel_for_); if both pools default to 20 the machine is oversubscribed
++// 2x and the tracking p95 gets much worse than the mean suggests.
++//
++// So: pin both pools to the same small size, and pay the one-time spawn cost
++// here in the constructor instead of on the first tracked frame.
++// Override with ORBSLAM3_NUM_THREADS=<n> (0 = leave both pools untouched).
++void System::ConfigureThreadPools()
++{
++    int n = 4;
++    if(const char* e = std::getenv("ORBSLAM3_NUM_THREADS"))
++    {
++        const int v = atoi(e);
++        if(v == 0)
++        {
++            cout << "[PERF] ORBSLAM3_NUM_THREADS=0: thread pools left at their defaults." << endl;
++            return;
++        }
++        if(v > 0)
++            n = v;
++    }
++
++    // OpenCV's internal pool. Tracking, LocalMapping and LoopClosing all run
++    // OpenCV code concurrently, so an unbounded OpenCV pool per thread is the
++    // single easiest way to destroy p99 on this box.
++    cv::setNumThreads(n);
++
++#ifdef _OPENMP
++    omp_set_num_threads(n);
++    omp_set_dynamic(0);          // never let the runtime pick a bigger team
++    // Warm-up: force the pool to exist now (10.5 ms measured) so the first
++    // tracked frame does not eat it.
++    volatile double warm = 0.0;
++    #pragma omp parallel for reduction(+:warm) num_threads(n)
++    for(int i = 0; i < n * 64; i++)
++        warm += 1.0;
++    (void)warm;
++    cout << "[PERF] thread pools pinned to " << n
++         << " (OpenMP + OpenCV), OpenMP pool warmed up." << endl;
++#else
++    cout << "[PERF] OpenCV thread pool pinned to " << n
++         << " (no OpenMP in this build)." << endl;
++#endif
++}
++
+ System::System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor,
+                const bool bUseViewer, const int initFr, const string &strSequence):
+     mSensor(sensor), mpViewer(static_cast<Viewer*>(NULL)), mbReset(false), mbResetActiveMap(false),
+     mbActivateLocalizationMode(false), mbDeactivateLocalizationMode(false), mbShutDown(false)
+ {
++    // PERF: must run before any ORBextractor / OpenCV work. See the
++    // measurement notes on ConfigureThreadPools() above.
++    ConfigureThreadPools();
++
+     // Output welcome message
+     cout << endl <<
+     "ORB-SLAM3 Copyright (C) 2017-2020 Carlos Campos, Richard Elvira, Juan J. Gómez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza." << endl <<

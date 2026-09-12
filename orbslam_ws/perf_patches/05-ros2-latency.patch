@@ -1,0 +1,146 @@
+diff -u -r -N a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2026-09-12 12:05:30.551248687 +0900
++++ b/CMakeLists.txt	2026-09-12 12:05:30.551248687 +0900
+@@ -1,8 +1,22 @@
+ cmake_minimum_required(VERSION 3.8)
+   project(orbslam3_ros2)
+ 
++  # PERF: this package shipped with no build type and no optimisation flags, so
++  # rgbd_node.cpp - which contains the per-pixel dense-map unprojection loop -
++  # was compiled at whatever the caller happened to pass. README.md does pass
++  # -DCMAKE_BUILD_TYPE=Release, but nothing here enforces it, and plain Release
++  # still gives no -march=native (so no AVX2/FMA for that loop).
++  # NOTE: -ffast-math is deliberately NOT used anywhere in this project; see the
++  # analysis in perf_patches/AGENT1_ORBSLAM3_REALTIME_REPORT.md section A4.
++  if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
++    set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
++    message(WARNING "orbslam3_ros2: CMAKE_BUILD_TYPE was empty; forcing Release.")
++  endif()
++
+   if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+     add_compile_options(-Wall -Wextra -Wpedantic)
++    add_compile_options($<$<CONFIG:Release>:-march=native>)
++    add_compile_options($<$<CONFIG:Release>:-mtune=native>)
+   endif()
+ 
+   set(CMAKE_CXX_STANDARD 14)
+diff -u -r -N a/src/rgbd_node.cpp b/src/rgbd_node.cpp
+--- a/src/rgbd_node.cpp	2026-09-12 12:05:30.551248687 +0900
++++ b/src/rgbd_node.cpp	2026-09-12 12:05:30.551248687 +0900
+@@ -10,8 +10,10 @@
+   #include <iomanip>
+   #include <functional>
+   #include <limits>
++  #include <condition_variable>   // LATENCY: background publisher thread
+   #include <memory>
+   #include <mutex>
++  #include <thread>
+   #include <string>
+   #include <unordered_map>
+ 
+@@ -329,6 +331,9 @@
+ 
+     ~RgbdNode() override
+     {
++      // LATENCY: join the background publisher before anything it touches
++      // (the SLAM system, the dense map) is torn down.
++      stopBackgroundPublish();
+       if (slam_) {
+         RCLCPP_INFO(this->get_logger(), "Shutting down ORB-SLAM3.");
+         slam_->Shutdown();
+@@ -441,8 +446,14 @@
+       const Sophus::SE3f Twc = Tcw.inverse();
+       publishPose(rgb_msg->header.stamp, Twc);
+       accumulateDenseMapIfNeeded(rgb, depth, Twc, timestamp);
+-      publishDenseMapIfNeeded(rgb_msg->header.stamp, timestamp);
+-      publishMapPointsIfNeeded(rgb_msg->header.stamp, timestamp); // for core accessor
++      // LATENCY: publishDenseMapIfNeeded() snapshots the whole voxel map and
++      // serialises up to dense_map_max_points (2,000,000 in
++      // config/no_cli_rgbd.yaml) x 16 B = 32 MB into a PointCloud2. Doing that
++      // inline here stalls the tracking callback for hundreds of milliseconds
++      // on one frame in ~60, which by itself sets the p99 end-to-end latency.
++      // Hand both publishers to a single background thread instead; if it is
++      // still busy we simply skip this round rather than queue up work.
++      requestBackgroundPublish(rgb_msg->header.stamp, timestamp);
+ 
+       state_msg.data = "tracking";
+       tracking_state_pub_->publish(state_msg);
+@@ -453,6 +464,62 @@
+       }
+     }
+ 
++    // LATENCY: single background publisher thread. It owns the expensive
++    // PointCloud2 serialisation so the RGB-D sync callback never pays for it.
++    // Deliberately drop-on-busy: the dense map is a monitoring output, and a
++    // queue here would only convert a latency spike into unbounded memory.
++    void requestBackgroundPublish(const builtin_interfaces::msg::Time & stamp, double timestamp_sec)
++    {
++      {
++        std::lock_guard<std::mutex> lock(bg_publish_mutex_);
++        if (bg_publish_pending_) {
++          return;                       // previous round still running: skip
++        }
++        bg_publish_pending_ = true;
++        bg_publish_stamp_ = stamp;
++        bg_publish_time_sec_ = timestamp_sec;
++      }
++      if (!bg_publish_thread_.joinable()) {
++        bg_publish_thread_ = std::thread(&RgbdNode::backgroundPublishLoop, this);
++      }
++      bg_publish_cv_.notify_one();
++    }
++
++    void backgroundPublishLoop()
++    {
++      for (;;) {
++        builtin_interfaces::msg::Time stamp;
++        double timestamp_sec = 0.0;
++        {
++          std::unique_lock<std::mutex> lock(bg_publish_mutex_);
++          bg_publish_cv_.wait(lock, [this]{ return bg_publish_pending_ || bg_publish_stop_; });
++          if (bg_publish_stop_) {
++            return;
++          }
++          stamp = bg_publish_stamp_;
++          timestamp_sec = bg_publish_time_sec_;
++        }
++        publishDenseMapIfNeeded(stamp, timestamp_sec);
++        publishMapPointsIfNeeded(stamp, timestamp_sec);
++        {
++          std::lock_guard<std::mutex> lock(bg_publish_mutex_);
++          bg_publish_pending_ = false;
++        }
++      }
++    }
++
++    void stopBackgroundPublish()
++    {
++      {
++        std::lock_guard<std::mutex> lock(bg_publish_mutex_);
++        bg_publish_stop_ = true;
++      }
++      bg_publish_cv_.notify_all();
++      if (bg_publish_thread_.joinable()) {
++        bg_publish_thread_.join();
++      }
++    }
++
+     bool imageToBgr(const sensor_msgs::msg::Image::ConstSharedPtr & msg, cv::Mat & out) const
+     {
+       if (msg->encoding == "bgr8") {
+@@ -1311,6 +1378,15 @@
+     // for core accessor
+     rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr map_points_pub_;
+     rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr dense_map_pub_;
++
++    // LATENCY: background publisher state (see requestBackgroundPublish).
++    std::thread bg_publish_thread_;
++    mutable std::mutex bg_publish_mutex_;
++    std::condition_variable bg_publish_cv_;
++    bool bg_publish_pending_{false};
++    bool bg_publish_stop_{false};
++    builtin_interfaces::msg::Time bg_publish_stamp_;
++    double bg_publish_time_sec_{0.0};
+   };
+ 
+   int main(int argc, char ** argv)

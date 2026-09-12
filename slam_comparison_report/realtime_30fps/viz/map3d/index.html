@@ -1,0 +1,451 @@
+<title>Eight-Circle Map Reconstruction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f7f7f5; --panel:#fcfcfb; --panel-2:#f1f1ee; --scene:#f3f3f0;
+  --ink:#1b1d21; --ink-2:#4a4e56; --ink-3:#767b85;
+  --rule:#dedfda; --rule-2:#ebebe7;
+  --s1:#2F6FD0; --s2:#0E9E86;
+  --pt:#8d93a0; --kf:#C08A2A; --cam:#B3261E; --grid:#e2e2dd;
+  --shadow:0 1px 2px rgba(20,22,26,.05), 0 8px 20px -14px rgba(20,22,26,.22);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161a; --panel:#1b1e23; --panel-2:#22262c; --scene:#111318;
+    --ink:#eceef1; --ink-2:#b3b9c2; --ink-3:#828a95;
+    --rule:#2d323a; --rule-2:#242931;
+    --s1:#4A85DD; --s2:#12A98C;
+    --pt:#6b727f; --kf:#D3A04A; --cam:#E8705F; --grid:#242930;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 24px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14161a; --panel:#1b1e23; --panel-2:#22262c; --scene:#111318;
+  --ink:#eceef1; --ink-2:#b3b9c2; --ink-3:#828a95;
+  --rule:#2d323a; --rule-2:#242931;
+  --s1:#4A85DD; --s2:#12A98C;
+  --pt:#6b727f; --kf:#D3A04A; --cam:#E8705F; --grid:#242930;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 24px -16px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:15px; line-height:1.6; -webkit-font-smoothing:antialiased;
+  padding-inline:20px; padding-block:0}
+.wrap{max-width:1160px; margin:0 auto}
+h1,h2,h3{font-family:"IBM Plex Sans Condensed","IBM Plex Sans",sans-serif; margin:0; text-wrap:balance}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace; font-variant-numeric:tabular-nums}
+.eyebrow{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink-3)}
+
+header{padding-block:42px 24px; border-bottom:1px solid var(--rule)}
+header h1{font-size:clamp(28px,4.4vw,44px); font-weight:700; letter-spacing:-.02em; line-height:1.08; margin-block:10px 12px}
+header p{margin:0; color:var(--ink-2); max-width:64ch}
+
+/* controls */
+.bar{display:flex; flex-wrap:wrap; gap:14px 22px; align-items:center;
+  padding-block:16px; border-bottom:1px solid var(--rule-2); margin-bottom:18px}
+.bar .grp{display:flex; gap:8px; align-items:center}
+.bar label{font-size:12.5px; color:var(--ink-3)}
+button.seg{background:var(--panel); border:1px solid var(--rule); color:var(--ink-2);
+  font:inherit; font-size:12.5px; padding:5px 11px; border-radius:2px; cursor:pointer}
+button.seg[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+button.seg:focus-visible{outline:2px solid var(--s1); outline-offset:2px}
+input[type=range]{accent-color:var(--s1); width:min(340px,46vw)}
+.readout{font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink-2);
+  font-variant-numeric:tabular-nums; min-width:190px}
+
+/* scenes */
+.scenes{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+@media(max-width:880px){.scenes{grid-template-columns:1fr}}
+.scene{background:var(--panel); border:1px solid var(--rule); border-radius:3px;
+  box-shadow:var(--shadow); overflow:hidden; position:relative}
+.scene .hd{display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+  padding:12px 14px 10px; border-bottom:1px solid var(--rule-2)}
+.scene .hd .nm{font-family:"IBM Plex Sans Condensed",sans-serif; font-weight:600; font-size:16px;
+  display:flex; align-items:center; gap:8px}
+.scene .hd .nm .sw{width:13px;height:3px;border-radius:2px;background:var(--c)}
+.scene .hd .rt{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-3)}
+.scene canvas{display:block; width:100%; background:var(--scene); cursor:grab; touch-action:none}
+.scene canvas:active{cursor:grabbing}
+.scene .ft{display:flex; flex-wrap:wrap; gap:4px 16px; padding:10px 14px 12px;
+  border-top:1px solid var(--rule-2); font-size:12px; color:var(--ink-3)}
+.scene .ft b{font-family:"IBM Plex Mono",monospace; font-weight:500; color:var(--ink-2)}
+
+.hint{font-size:12px; color:var(--ink-3); margin-top:10px}
+.key{display:flex; flex-wrap:wrap; gap:6px 18px; margin-top:14px; font-size:12.5px; color:var(--ink-2)}
+.key span{display:inline-flex; align-items:center; gap:7px}
+.key i{width:10px;height:10px;border-radius:2px;display:inline-block}
+
+section{margin-block:34px}
+.shead{display:flex; align-items:baseline; justify-content:space-between; gap:18px;
+  border-bottom:1px solid var(--rule); padding-bottom:9px; margin-bottom:16px; flex-wrap:wrap}
+.shead h2{font-size:20px; font-weight:600; letter-spacing:-.01em}
+.shead p{margin:0; font-size:12.5px; color:var(--ink-3); max-width:56ch}
+
+.tw{overflow-x:auto; border:1px solid var(--rule); border-radius:3px; background:var(--panel)}
+table{border-collapse:collapse; width:100%; min-width:540px; font-size:13.5px}
+th,td{padding:9px 14px; text-align:right; border-bottom:1px solid var(--rule-2); white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--ink-3); font-weight:500; background:var(--panel-2)}
+tbody td{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; color:var(--ink-2)}
+tbody td:first-child{font-family:"IBM Plex Sans",sans-serif; color:var(--ink); font-weight:500}
+tbody tr:last-child td{border-bottom:0}
+
+.callout{background:var(--panel); border:1px solid var(--rule); border-left:3px solid var(--s1);
+  border-radius:3px; padding:16px 18px; margin-block:18px}
+.callout h3{font-size:15px; font-weight:600; margin-bottom:5px}
+.callout p{margin:0; font-size:13.5px; color:var(--ink-2)}
+.callout p+p{margin-top:8px}
+.callout code{font-family:"IBM Plex Mono",monospace; font-size:12.5px; background:var(--panel-2);
+  padding:1px 5px; border-radius:2px}
+
+footer{border-top:1px solid var(--rule); margin-top:40px; padding-block:18px 38px;
+  font-size:12px; color:var(--ink-3)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">ORB-SLAM3 · 260826_etri_eightcircle_dark</div>
+  <h1>Eight-Circle Map Reconstruction</h1>
+  <p>The sparse map and every estimated camera pose from the same 285-second RGB-D sequence,
+     replayed twice — once at the recorded 30 Hz, once at half speed. Drag to orbit, scroll to zoom,
+     and scrub the slider to walk the camera along its own trajectory.</p>
+</header>
+
+<div class="bar">
+  <div class="grp">
+    <label for="view">View</label>
+    <button class="seg" id="v-persp" aria-pressed="true" type="button">Perspective</button>
+    <button class="seg" id="v-top" aria-pressed="false" type="button">Top</button>
+    <button class="seg" id="v-side" aria-pressed="false" type="button">Side</button>
+  </div>
+  <div class="grp">
+    <label for="pts">Map points</label>
+    <button class="seg" id="pts" aria-pressed="true" type="button">Shown</button>
+  </div>
+  <div class="grp" style="flex:1; min-width:260px">
+    <label for="frame">Frame</label>
+    <input type="range" id="frame" min="0" max="100" value="100" step="1">
+    <span class="readout" id="ro"></span>
+  </div>
+</div>
+
+<div class="scenes" id="scenes"></div>
+
+<div class="key">
+  <span><i style="background:var(--pt)"></i>map point</span>
+  <span><i style="background:var(--kf)"></i>keyframe</span>
+  <span><i style="background:var(--cam)"></i>camera at selected frame</span>
+  <span style="color:var(--ink-3)">grid = 1 m</span>
+</div>
+<p class="hint">Drag to orbit · scroll to zoom · shift-drag to pan · both scenes share one camera</p>
+
+<section>
+  <div class="shead">
+    <h2>What the two runs produced</h2>
+    <p>Path length and closure gap are comparable without alignment; absolute poses are not.</p>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr>
+        <th>Run</th><th>Frames</th><th>Keyframes</th><th>Map points</th>
+        <th>Path length</th><th>Closure gap</th><th>Extent X · Y · Z</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</section>
+
+<div class="callout">
+  <h3>Halving the input rate changed the map almost not at all</h3>
+  <p>Path length differs by <b class="mono">5 cm in 37 m</b> (0.13%) and the start-to-end closure gap
+     by <b class="mono">1 mm</b>. On an eight-figure course that returns to its origin, that closure
+     gap is the accumulated drift — so both runs drifted by the same
+     <b class="mono">~27 cm over 37 m</b>, roughly 0.7% of path length.</p>
+  <p>The half-speed run did build a slightly denser map (159 keyframes and 12.6k points against 152
+     and 12.1k). More wall-clock time per frame lets Local Mapping finish more of its work between
+     frames, so marginally more keyframes survive culling — but it bought no measurable accuracy.</p>
+</div>
+
+<div class="callout" style="border-left-color:var(--ink-3)">
+  <h3>The two scenes are not in a shared coordinate frame</h3>
+  <p>ORB-SLAM3 starts each session's map at identity from its own first frame, so a pose-by-pose
+     difference between the runs would measure nothing but that arbitrary origin. Each scene is drawn
+     in its own frame; only scale-independent quantities are compared above. The world axes follow the
+     first camera's optical frame — <code>+x</code> right, <code>+y</code> down, <code>+z</code> forward —
+     so the viewer treats <code>xz</code> as the ground plane and <code>-y</code> as up.</p>
+  <p>Both runs also created <b>two</b> maps: tracking was lost once and re-initialised. The point cloud
+     here is what <code>GetAllMapPointsWorld()</code> returned at shutdown.</p>
+</div>
+
+<footer>
+  Sparse map from <span class="mono">save_map_points_on_shutdown</span>; poses from
+  <span class="mono">CameraTrajectory.txt</span> (TUM format, every 3rd frame plotted) ·
+  RealSense D455F 640×480 RGB-D, depth reprojected into the colour frame ·
+  <span class="mono">nFeatures 1250</span>, 8 pyramid levels · CPU only
+</footer>
+</div>
+
+<script>
+const RUNS=[["orb10","--s1"],["orb05","--s2"]];
+let D=null, showPts=true, tFrac=1;
+const cam={az:-0.62, el:0.42, dist:1, tgt:[0,0,0], panx:0, pany:0};
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const dpr=()=>Math.min(devicePixelRatio||1,2);
+
+/* ---- ORB-SLAM3 world (x right, y down, z fwd) -> viewer (x right, y up, z fwd) ---- */
+const toView=p=>[p[0], -p[1], p[2]];
+
+function quatRot(q,v){ // q = [x,y,z,w]
+  const [x,y,z,w]=q, [a,b,c]=v;
+  const ix= w*a + y*c - z*b, iy= w*b + z*a - x*c,
+        iz= w*c + x*b - y*a, iw= -x*a - y*b - z*c;
+  return [ ix*w + iw*-x + iy*-z - iz*-y,
+           iy*w + iw*-y + iz*-x - ix*-z,
+           iz*w + iw*-z + ix*-y - iy*-x ];
+}
+
+function makeCam(w,h){
+  const ce=Math.cos(cam.el), se=Math.sin(cam.el), ca=Math.cos(cam.az), sa=Math.sin(cam.az);
+  const dir=[ce*sa, se, ce*ca];
+  const eye=[cam.tgt[0]+dir[0]*cam.dist, cam.tgt[1]+dir[1]*cam.dist, cam.tgt[2]+dir[2]*cam.dist];
+  const f=[-dir[0],-dir[1],-dir[2]];
+  let up=[0,1,0];
+  if(Math.abs(se)>0.995) up=[ca,0,-sa];
+  let s=[f[1]*up[2]-f[2]*up[1], f[2]*up[0]-f[0]*up[2], f[0]*up[1]-f[1]*up[0]];
+  const sl=Math.hypot(...s); s=s.map(v=>v/sl);
+  const u=[s[1]*f[2]-s[2]*f[1], s[2]*f[0]-s[0]*f[2], s[0]*f[1]-s[1]*f[0]];
+  const foc=Math.min(w,h)*1.15;
+  return {eye,s,u,f,foc,w,h};
+}
+function proj(C,P){
+  const d=[P[0]-C.eye[0], P[1]-C.eye[1], P[2]-C.eye[2]];
+  const z = d[0]*C.f[0]+d[1]*C.f[1]+d[2]*C.f[2];
+  if(z<=0.02) return null;
+  const x = d[0]*C.s[0]+d[1]*C.s[1]+d[2]*C.s[2];
+  const y = d[0]*C.u[0]+d[1]*C.u[1]+d[2]*C.u[2];
+  return [C.w/2 + (x/z)*C.foc + cam.panx, C.h/2 - (y/z)*C.foc + cam.pany, z];
+}
+
+function bounds(run){
+  const all=run.traj.concat(run.points);
+  const lo=[1e9,1e9,1e9], hi=[-1e9,-1e9,-1e9];
+  all.forEach(p=>{const v=toView(p); for(let i=0;i<3;i++){ if(v[i]<lo[i])lo[i]=v[i]; if(v[i]>hi[i])hi[i]=v[i]; }});
+  return {lo,hi,c:[0,1,2].map(i=>(lo[i]+hi[i])/2), r:Math.max(...[0,1,2].map(i=>hi[i]-lo[i]))/2};
+}
+
+function drawScene(key,color){
+  const run=D.runs[key];
+  const cv=document.getElementById("cv-"+key);
+  const rect=cv.getBoundingClientRect();
+  const d=dpr(), H=360;
+  cv.width=Math.round(rect.width*d); cv.height=Math.round(H*d);
+  cv.style.height=H+"px";
+  const x=cv.getContext("2d"); x.setTransform(d,0,0,d,0,0);
+  const w=rect.width, h=H;
+  x.clearRect(0,0,w,h);
+
+  const B=run._b;
+  cam.tgt=B.c;
+  const C=makeCam(w,h);
+
+  /* ground grid at the floor level, 1 m spacing */
+  const gy=B.lo[1];
+  const g0=Math.floor(B.lo[0])-1, g1=Math.ceil(B.hi[0])+1;
+  const h0=Math.floor(B.lo[2])-1, h1=Math.ceil(B.hi[2])+1;
+  x.strokeStyle=css("--grid"); x.lineWidth=1;
+  for(let i=g0;i<=g1;i++){
+    const a=proj(C,[i,gy,h0]), b=proj(C,[i,gy,h1]);
+    if(a&&b){ x.beginPath(); x.moveTo(a[0],a[1]); x.lineTo(b[0],b[1]); x.stroke(); }
+  }
+  for(let k=h0;k<=h1;k++){
+    const a=proj(C,[g0,gy,k]), b=proj(C,[g1,gy,k]);
+    if(a&&b){ x.beginPath(); x.moveTo(a[0],a[1]); x.lineTo(b[0],b[1]); x.stroke(); }
+  }
+
+  /* map points, far-to-near so nearer points win */
+  if(showPts){
+    const pc=css("--pt");
+    const buf=[];
+    for(const p of run.points){ const q=proj(C,toView(p)); if(q) buf.push(q); }
+    buf.sort((a,b)=>b[2]-a[2]);
+    for(const q of buf){
+      const t=Math.max(0,Math.min(1,(q[2]-cam.dist*0.3)/(cam.dist*1.9)));
+      x.globalAlpha=0.85-0.6*t;
+      const s=Math.max(1,2.1-1.1*t);
+      x.fillStyle=pc; x.fillRect(q[0]-s/2,q[1]-s/2,s,s);
+    }
+    x.globalAlpha=1;
+  }
+
+  /* trajectory up to the selected frame */
+  const N=run.traj.length;
+  const upto=Math.max(1,Math.round(tFrac*(N-1)));
+  x.strokeStyle=css(color); x.lineWidth=2; x.lineJoin="round"; x.beginPath();
+  let started=false;
+  for(let i=0;i<=upto;i++){
+    const q=proj(C,toView(run.traj[i]));
+    if(!q){ started=false; continue; }
+    if(started) x.lineTo(q[0],q[1]); else { x.moveTo(q[0],q[1]); started=true; }
+  }
+  x.stroke();
+  /* the not-yet-reached remainder, faint */
+  if(upto<N-1){
+    x.globalAlpha=.22; x.beginPath(); started=false;
+    for(let i=upto;i<N;i++){
+      const q=proj(C,toView(run.traj[i]));
+      if(!q){ started=false; continue; }
+      if(started) x.lineTo(q[0],q[1]); else { x.moveTo(q[0],q[1]); started=true; }
+    }
+    x.stroke(); x.globalAlpha=1;
+  }
+
+  /* keyframes */
+  x.fillStyle=css("--kf");
+  for(const p of run.kf){
+    const q=proj(C,toView(p)); if(!q) continue;
+    x.beginPath(); x.moveTo(q[0],q[1]-2.6); x.lineTo(q[0]+2.6,q[1]);
+    x.lineTo(q[0],q[1]+2.6); x.lineTo(q[0]-2.6,q[1]); x.closePath(); x.fill();
+  }
+
+  /* camera frustum at the selected frame */
+  const P=run.traj[upto], Q=run.quat[upto];
+  const o=toView(P);
+  const sc=Math.max(0.06, B.r*0.075);
+  const corners=[[-0.6,-0.45,1],[0.6,-0.45,1],[0.6,0.45,1],[-0.6,0.45,1]]
+    .map(c=>{ const r=quatRot(Q,[c[0]*sc,c[1]*sc,c[2]*sc]); const v=toView([P[0]+r[0],P[1]+r[1],P[2]+r[2]]); return proj(C,v); });
+  const oc=proj(C,o);
+  if(oc && corners.every(Boolean)){
+    x.strokeStyle=css("--cam"); x.lineWidth=1.6;
+    x.beginPath();
+    corners.forEach((c,i)=>{ i?x.lineTo(c[0],c[1]):x.moveTo(c[0],c[1]); });
+    x.closePath(); x.stroke();
+    x.beginPath();
+    corners.forEach(c=>{ x.moveTo(oc[0],oc[1]); x.lineTo(c[0],c[1]); });
+    x.stroke();
+    x.fillStyle=css("--cam");
+    x.beginPath(); x.arc(oc[0],oc[1],3,0,7); x.fill();
+  }
+
+  /* scale bar: 1 m at the target depth */
+  const a=proj(C,[B.c[0]-0.5,gy,B.c[2]]), b=proj(C,[B.c[0]+0.5,gy,B.c[2]]);
+  if(a&&b){
+    const px=Math.hypot(b[0]-a[0],b[1]-a[1]);
+    x.strokeStyle=css("--ink-3"); x.lineWidth=1.5;
+    x.beginPath(); x.moveTo(14,h-16); x.lineTo(14+px,h-16); x.stroke();
+    x.beginPath(); x.moveTo(14,h-20); x.lineTo(14,h-12); x.moveTo(14+px,h-20); x.lineTo(14+px,h-12); x.stroke();
+    x.fillStyle=css("--ink-3"); x.font='500 10.5px "IBM Plex Mono", monospace';
+    x.textAlign="left"; x.textBaseline="bottom"; x.fillText("1 m", 14, h-22);
+  }
+}
+
+function draw(){ RUNS.forEach(([k,c])=>drawScene(k,c)); }
+
+function readout(){
+  const run=D.runs.orb10;
+  const N=run.traj.length, i=Math.max(1,Math.round(tFrac*(N-1)));
+  const t=run.t[i];
+  document.getElementById("ro").textContent =
+    `t = ${t.toFixed(1)} s · frame ${(i*run.stride).toLocaleString()} / ${run.metrics.frames.toLocaleString()}`;
+}
+
+function build(){
+  document.getElementById("scenes").innerHTML = RUNS.map(([k,c])=>{
+    const r=D.runs[k], m=r.metrics;
+    return `<div class="scene" style="--c:var(${c})">
+      <div class="hd">
+        <span class="nm"><span class="sw"></span>${r.label}</span>
+        <span class="rt">${r.rate} input</span>
+      </div>
+      <canvas id="cv-${k}" height="360"></canvas>
+      <div class="ft">
+        <span>map points <b>${m.map_points.toLocaleString()}</b></span>
+        <span>keyframes <b>${m.keyframes}</b></span>
+        <span>path <b>${m.path_len_m.toFixed(2)} m</b></span>
+        <span>closure <b>${(m.closure_gap_m*100).toFixed(1)} cm</b></span>
+      </div>
+    </div>`;
+  }).join("");
+
+  document.getElementById("tbody").innerHTML = RUNS.map(([k])=>{
+    const r=D.runs[k], m=r.metrics;
+    return `<tr>
+      <td>${r.label} · ${r.rate}</td>
+      <td>${m.frames.toLocaleString()}</td>
+      <td>${m.keyframes}</td>
+      <td>${m.map_points.toLocaleString()}</td>
+      <td>${m.path_len_m.toFixed(2)} m</td>
+      <td>${(m.closure_gap_m*100).toFixed(1)} cm</td>
+      <td>${m.extent_m.map(v=>v.toFixed(2)).join(" · ")} m</td>
+    </tr>`;
+  }).join("");
+
+  RUNS.forEach(([k])=>{ D.runs[k]._b = bounds(D.runs[k]); });
+  cam.dist = D.runs.orb10._b.r * 3.1;
+}
+
+function wire(){
+  const scenes=document.getElementById("scenes");
+  let drag=null;
+  scenes.addEventListener("pointerdown",e=>{
+    if(e.target.tagName!=="CANVAS") return;
+    drag={x:e.clientX,y:e.clientY,shift:e.shiftKey,az:cam.az,el:cam.el,px:cam.panx,py:cam.pany};
+    e.target.setPointerCapture(e.pointerId);
+  });
+  scenes.addEventListener("pointermove",e=>{
+    if(!drag) return;
+    const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
+    if(drag.shift){ cam.panx=drag.px+dx; cam.pany=drag.py+dy; }
+    else{
+      cam.az=drag.az - dx*0.0055;
+      cam.el=Math.max(-1.45,Math.min(1.45, drag.el + dy*0.0055));
+    }
+    draw();
+  });
+  addEventListener("pointerup",()=>{drag=null});
+  scenes.addEventListener("wheel",e=>{
+    if(e.target.tagName!=="CANVAS") return;
+    e.preventDefault();
+    cam.dist=Math.max(0.4,Math.min(60, cam.dist*(1+Math.sign(e.deltaY)*0.12)));
+    draw();
+  },{passive:false});
+
+  const seg=(id,fn)=>document.getElementById(id).addEventListener("click",fn);
+  const setView=(which)=>{
+    ["v-persp","v-top","v-side"].forEach(i=>
+      document.getElementById(i).setAttribute("aria-pressed", String(i==="v-"+which)));
+    if(which==="persp"){ cam.az=-0.62; cam.el=0.42; }
+    if(which==="top"){ cam.az=0; cam.el=1.44; }
+    if(which==="side"){ cam.az=0; cam.el=0.02; }
+    cam.panx=0; cam.pany=0;
+    cam.dist=D.runs.orb10._b.r*3.1;
+    draw();
+  };
+  seg("v-persp",()=>setView("persp"));
+  seg("v-top",()=>setView("top"));
+  seg("v-side",()=>setView("side"));
+  seg("pts",()=>{
+    showPts=!showPts;
+    const b=document.getElementById("pts");
+    b.setAttribute("aria-pressed",String(showPts));
+    b.textContent = showPts ? "Shown" : "Hidden";
+    draw();
+  });
+  const fr=document.getElementById("frame");
+  fr.addEventListener("input",()=>{ tFrac=+fr.value/100; readout(); draw(); });
+
+  let rt; addEventListener("resize",()=>{ clearTimeout(rt); rt=setTimeout(draw,120); });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>setTimeout(draw,60));
+  new MutationObserver(()=>setTimeout(draw,60))
+    .observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+}
+
+fetch("map.json").then(r=>r.json()).then(d=>{
+  D=d; build(); wire(); readout(); draw();
+});
+</script>

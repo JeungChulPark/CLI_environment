@@ -1,0 +1,55 @@
+Phase 10 — hoist cv::BFMatcher construction out of the per-keypoint matching loops.
+
+Behaviour-preserving: the matcher's two ctor arguments (norm type and crossCheck) are
+loop-invariant. `descriptors` is allocated once before the loop
+(RegistrationVis.cpp:1104 / :1243 `cv::Mat descriptors(10, descriptorsTo.cols, descriptorsTo.type());`)
+so `descriptors.type()` is fixed, and `_nnType` is a member set in parseParameters.
+
+Currently the matcher is constructed once per keypoint. With ~1000-1500 projected
+keypoints per frame at 640x480 that is 1000-1500 constructions (each doing an
+allocation and a cv::Ptr<BFMatcherImpl> create) per odometry frame.
+
+Estimated saving: 0.2-0.8 ms/frame. Accuracy impact: none.
+
+Apply to: rtabmap_ws/src/rtabmap/corelib/src/RegistrationVis.cpp
+
+--- a/corelib/src/RegistrationVis.cpp
++++ b/corelib/src/RegistrationVis.cpp
+@@ -1104,6 +1104,9 @@
+ 							cv::Mat descriptors(10, descriptorsTo.cols, descriptorsTo.type());
++							// Loop-invariant: norm type depends only on descriptors.type(),
++							// crossCheck only on _nnType. Hoisted out of the per-keypoint loop.
++							cv::BFMatcher matcher(descriptors.type()==CV_8U?cv::NORM_HAMMING:cv::NORM_L2SQR, _nnType == 5);
+ 							for(unsigned int i = 0; i < pointsToMat.rows; ++i)
+ 							{
+ 								int matchedIndex = -1;
+@@ -1120,7 +1123,6 @@
+ 									descriptorsIndices.resize(oi);
+ 									UASSERT(oi >=2);
+ 
+-									cv::BFMatcher matcher(descriptors.type()==CV_8U?cv::NORM_HAMMING:cv::NORM_L2SQR, _nnType == 5);
+ 									if(_nnType == 5) // bruteforce cross check
+ 									{
+ 										std::vector<cv::DMatch> matches;
+@@ -1243,6 +1245,8 @@
+ 							cv::Mat descriptors(10, descriptorsTo.cols, descriptorsTo.type());
++							// Loop-invariant - see note above.
++							cv::BFMatcher matcher(descriptors.type()==CV_8U?cv::NORM_HAMMING:cv::NORM_L2SQR, _nnType==5);
+ 							for(unsigned int i = 0; i < cornersProjectedMat.rows; ++i)
+ 							{
+ 								int matchedIndexFrom = projectedIndexToDescIndex[i];
+@@ -1272,7 +1276,6 @@
+ 										bruteForceDescCopy += bruteForceTimer.ticks();
+ 										UASSERT(oi >=2);
+ 
+-										cv::BFMatcher matcher(descriptors.type()==CV_8U?cv::NORM_HAMMING:cv::NORM_L2SQR, _nnType==5);
+ 										if(_nnType==5) // bruteforce cross check
+ 										{
+ 											std::vector<cv::DMatch> matches;
+
+CAVEAT — verify before applying:
+  `descriptors.resize(indices[i].size())` is called inside the loop when a window holds
+  more candidates than the current allocation. cv::Mat::resize() preserves type, so the
+  hoisted matcher stays valid. But confirm on your OpenCV version that BFMatcher holds
+  no reference to the train matrix across calls (it does not in 4.x -- the train matrix
+  is passed per match()/knnMatch() call).

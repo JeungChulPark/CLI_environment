@@ -1,0 +1,40 @@
+Phase 2 / P0-1: remove per-call heap allocations from the hottest function on
+the tracking critical path.
+
+Frame::GetFeaturesInArea() is called once per visible local MapPoint per frame
+(~1-3k calls/frame at 640x480 with nFeatures=1250). Two defects:
+
+  1. vIndices.reserve(N) heap-allocates N*8 bytes on EVERY call, although a
+     search window realistically returns O(10) indices.
+  2. `const vector<size_t> vCell = ...` is a by-value copy of the grid cell -
+     the '&' is missing. That is one more heap allocation per visited cell,
+     and a call spans ~9-25 cells.
+
+Combined this is on the order of 10k-30k malloc/free pairs per frame.
+Both fixes are behaviour-preserving (bit-identical results).
+
+--- a/src/Frame.cc
++++ b/src/Frame.cc
+@@ -657,7 +657,10 @@
+ vector<size_t> Frame::GetFeaturesInArea(const float &x, const float  &y, const float  &r, const int minLevel, const int maxLevel, const bool bRight) const
+ {
+     vector<size_t> vIndices;
+-    vIndices.reserve(N);
++    // PERF: called once per visible local MapPoint per frame (~1-3k calls).
++    // reserve(N) heap-allocated N*8 bytes every call; a search window
++    // realistically returns O(10) indices.
++    vIndices.reserve(32);
+
+     float factorX = r;
+     float factorY = r;
+@@ -692,7 +695,9 @@
+     {
+         for(int iy = nMinCellY; iy<=nMaxCellY; iy++)
+         {
+-            const vector<size_t> vCell = (!bRight) ? mGrid[ix][iy] : mGridRight[ix][iy];
++            // PERF: was a by-value copy of the grid cell (missing '&'), i.e.
++            // one heap allocation per visited cell, ~9-25 cells per call.
++            const vector<size_t> &vCell = (!bRight) ? mGrid[ix][iy] : mGridRight[ix][iy];
+             if(vCell.empty())
+                 continue;
+
