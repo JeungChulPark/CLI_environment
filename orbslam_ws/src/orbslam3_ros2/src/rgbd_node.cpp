@@ -347,9 +347,24 @@
         const double mean = sum / v.size();
         const double median = v[v.size() / 2];
         const double p95 = v[static_cast<size_t>(v.size() * 0.95)];
+        const double p99 = v[static_cast<size_t>(v.size() * 0.99)];
         RCLCPP_INFO(this->get_logger(),
-          "TIMING: frames_tracked=%zu track_ms mean=%.1f median=%.1f p95=%.1f max=%.1f min=%.1f mean_fps=%.1f",
-          v.size(), mean, median, p95, v.back(), v.front(), 1000.0 / mean);
+          "TIMING: frames_tracked=%zu track_ms mean=%.1f median=%.1f p95=%.1f p99=%.1f max=%.1f min=%.1f mean_fps=%.1f",
+          v.size(), mean, median, p95, p99, v.back(), v.front(), 1000.0 / mean);
+
+        std::ofstream tf("TrackPerFrame.csv");
+        tf << "frame,stamp,track_ms,state,no_pose\n";
+        tf << std::fixed << std::setprecision(6);
+        for (size_t i = 0; i < track_times_ms_.size(); ++i) {
+          tf << i << ","
+             << (i < track_stamps_.size() ? track_stamps_[i] : 0.0) << ","
+             << track_times_ms_[i] << ","
+             << (i < track_states_.size() ? track_states_[i] : -1) << ","
+             << (i < track_lost_.size() ? track_lost_[i] : 0) << "\n";
+        }
+        tf.close();
+        RCLCPP_INFO(this->get_logger(), "wrote TrackPerFrame.csv (%zu rows)",
+                    track_times_ms_.size());
       }
     }
 
@@ -426,8 +441,19 @@
         std::lock_guard<std::mutex> lock(slam_mutex_);
         const auto _t0 = std::chrono::steady_clock::now();
         Tcw = slam_->TrackRGBD(rgb, depth, timestamp, imu_meas);
-        track_times_ms_.push_back(
-          std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - _t0).count());
+        double _ms =
+          std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - _t0).count();
+        track_times_ms_.push_back(_ms);
+        track_stamps_.push_back(timestamp);
+        // Tracking::eTrackingState -- 2 = OK, 3 = RECENTLY_LOST, 4 = LOST,
+        // 1 = NOT_INITIALIZED. Recorded per frame so a replay can show exactly
+        // where tracking degraded rather than only that it happened.
+        track_states_.push_back(slam_->GetTrackingState());
+        track_lost_.push_back(Tcw.matrix().isZero(0) ? 1 : 0);
+        // Without this the REGISTER_TIMES vectors never get a total, so
+        // TrackingTimeStats.txt is written with only its header row and
+        // ExecMean.txt reports "Total Tracking: -nan".
+        slam_->InsertTrackTime(_ms);
       }
 
       std_msgs::msg::String state_msg;
@@ -1254,6 +1280,9 @@
     int sync_queue_size_{30};
     size_t frame_count_{0};
     std::vector<double> track_times_ms_;  // per-frame TrackRGBD wall time
+    std::vector<double> track_stamps_;    // matching frame timestamps
+    std::vector<int> track_states_;       // ORB-SLAM3 eTrackingState per frame
+    std::vector<int> track_lost_;         // 1 when TrackRGBD returned no pose
     std::ofstream live_traj_file_;        // [METRIC#2/method B] pre-loop front-end live pose
 
     // for core accessor
