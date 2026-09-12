@@ -81,6 +81,13 @@ TrackLocalMapStats.txt
 TrackingTimeStats.txt
 time*
 Time*
+# ...but those two patterns also swallow four legitimate Thirdparty sources,
+# which is why a fresh clone fails to build with "Cannot find source file:
+# DUtils/Timestamp.cpp" and "g2o/stuff/timeutil.cpp". Keep them tracked.
+!Thirdparty/DBoW2/DUtils/Timestamp.cpp
+!Thirdparty/DBoW2/DUtils/Timestamp.h
+!Thirdparty/g2o/g2o/stuff/timeutil.cpp
+!Thirdparty/g2o/g2o/stuff/timeutil.h
 Table_Euroc
 Table_TUMVI_rooms/
 *.pyc
