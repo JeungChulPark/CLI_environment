@@ -516,8 +516,14 @@ bool Frame::isInFrustum(MapPoint *pMP, float viewingCosLimit)
         pMP->mTrackProjX = -1;
         pMP->mTrackProjY = -1;
 
-        // 3D in absolute coordinates
-        Eigen::Matrix<float,3,1> P = pMP->GetWorldPos();
+        // PERF: one lock instead of four. GetWorldPos / GetMaxDistanceInvariance /
+        // GetMinDistanceInvariance / GetNormal all take the same mMutexPos, and
+        // this function runs once per local map point per frame. Values and order
+        // of use are unchanged, so the result is bit-identical.
+        Eigen::Matrix<float,3,1> P;
+        Eigen::Vector3f Pn;
+        float minDistance, maxDistance;
+        pMP->GetFrustumData(P, Pn, minDistance, maxDistance);
 
         // 3D in camera coordinates
         const Eigen::Matrix<float,3,1> Pc = mRcw * P + mtcw;
@@ -540,17 +546,14 @@ bool Frame::isInFrustum(MapPoint *pMP, float viewingCosLimit)
         pMP->mTrackProjY = uv(1);
 
         // Check distance is in the scale invariance region of the MapPoint
-        const float maxDistance = pMP->GetMaxDistanceInvariance();
-        const float minDistance = pMP->GetMinDistanceInvariance();
+        // (fetched above, together with the position and normal, under one lock)
         const Eigen::Vector3f PO = P - mOw;
         const float dist = PO.norm();
 
         if(dist<minDistance || dist>maxDistance)
             return false;
 
-        // Check viewing angle
-        Eigen::Vector3f Pn = pMP->GetNormal();
-
+        // Check viewing angle (normal fetched above under the same lock)
         const float viewCos = PO.dot(Pn)/dist;
 
         if(viewCos<viewingCosLimit)
@@ -657,7 +660,10 @@ Eigen::Vector3f Frame::inRefCoordinates(Eigen::Vector3f pCw)
 vector<size_t> Frame::GetFeaturesInArea(const float &x, const float  &y, const float  &r, const int minLevel, const int maxLevel, const bool bRight) const
 {
     vector<size_t> vIndices;
-    vIndices.reserve(N);
+    // PERF: called once per visible local MapPoint per frame (~1-3k calls).
+    // reserve(N) heap-allocated N*8 bytes on every call, although a search
+    // window realistically returns O(10) indices.
+    vIndices.reserve(32);
 
     float factorX = r;
     float factorY = r;
@@ -692,7 +698,9 @@ vector<size_t> Frame::GetFeaturesInArea(const float &x, const float  &y, const f
     {
         for(int iy = nMinCellY; iy<=nMaxCellY; iy++)
         {
-            const vector<size_t> vCell = (!bRight) ? mGrid[ix][iy] : mGridRight[ix][iy];
+            // PERF: was a by-value copy of the grid cell (the '&' was missing),
+            // i.e. one heap allocation per visited cell, ~9-25 cells per call.
+            const vector<size_t> &vCell = (!bRight) ? mGrid[ix][iy] : mGridRight[ix][iy];
             if(vCell.empty())
                 continue;
 

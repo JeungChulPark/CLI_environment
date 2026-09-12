@@ -15,6 +15,51 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall   -O3")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=native")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
 
+# ---------------------------------------------------------------------------
+# Performance / profiling options
+# ---------------------------------------------------------------------------
+# Flags deliberately NOT enabled, and why:
+#  * -ffast-math / -funsafe-math-optimizations: UNSAFE for this codebase. It
+#    implies -ffinite-math-only, letting the compiler assume no NaN/Inf.
+#    ORB-SLAM3 and g2o gate outlier rejection on chi2 and NaN comparisons,
+#    so this can silently turn outlier rejection into a no-op. Do not use.
+#  * -mavx512f and friends: the target CPU (i9-12900HK, Alder Lake) has NO
+#    AVX-512 - it is fused off. Forcing it yields SIGILL. -march=native
+#    already selects AVX2 + FMA + POPCNT, which is what this code benefits
+#    from (see ORBmatcher::DescriptorDistance).
+#  * -flto: safe, but ORB_SLAM3 is a shared library consumed through a
+#    prebuilt .so path, so cross-TU inlining stops at the library boundary.
+#    Little upside for a long rebuild; enable only if measured to help.
+
+# Per-stage tracking timers. The #ifdef REGISTER_TIMES instrumentation
+# already present in Tracking.cc / Frame.cc was never switched on.
+option(ORBSLAM3_REGISTER_TIMES "Enable stock per-stage tracking timers" OFF)
+if(ORBSLAM3_REGISTER_TIMES)
+  add_definitions(-DREGISTER_TIMES)
+  message(STATUS "REGISTER_TIMES enabled")
+endif()
+
+# Fine-grained per-frame profiler (include/StageTimer.h). Prints a per-frame
+# breakdown plus p50/p95/max, which is what a hard 33.33 ms budget needs.
+option(ORBSLAM3_PROFILE "Enable per-frame stage profiler" OFF)
+if(ORBSLAM3_PROFILE)
+  add_definitions(-DORBSLAM3_PROFILE)
+  message(STATUS "ORBSLAM3_PROFILE enabled (per-frame stage breakdown)")
+endif()
+
+# Parallel ORB extraction across pyramid levels. Keep this well below the
+# core count: LocalMapping and LoopClosing need cores too, and oversubscribing
+# makes tracking p95 worse even when the mean improves.
+set(ORBEXTRACTOR_OMP_THREADS "4" CACHE STRING
+    "Threads for per-pyramid-level ORB extraction (unset/1 = serial)")
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+  add_definitions(-DORBEXTRACTOR_OMP_THREADS=${ORBEXTRACTOR_OMP_THREADS})
+  message(STATUS "OpenMP found; ORB extraction threads = ${ORBEXTRACTOR_OMP_THREADS}")
+else()
+  message(STATUS "OpenMP NOT found; ORB extraction stays serial")
+endif()
+
 # Require C++14. This is the unique standard that works here:
 #  - conda Pangolin/sigslot headers need C++14 type traits (std::decay_t etc.),
 #    so C++11 fails to compile them;
@@ -133,6 +178,10 @@ g2o
 -lboost_serialization
 -lcrypto
 )
+
+if(OpenMP_CXX_FOUND)
+  target_link_libraries(${ORB_SLAM3_TARGET} OpenMP::OpenMP_CXX)
+endif()
 
 # If RealSense SDK is found the library is added and its examples compiled
 if(realsense2_FOUND)

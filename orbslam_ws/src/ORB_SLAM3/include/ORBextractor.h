@@ -82,6 +82,13 @@ public:
 
     std::vector<cv::Mat> mvImagePyramid;
 
+    // PERF: persistent per-level scratch buffers for the pre-descriptor
+    // Gaussian blur. The original allocated a fresh clone() per level per
+    // frame. copyTo() into a buffer of identical size/type reuses the
+    // allocation and, exactly like clone(), yields a standalone Mat - so
+    // BORDER_REFLECT_101 stays ROI-isolated and descriptors stay identical.
+    std::vector<cv::Mat> mvBlurBuffer;
+
 protected:
 
     void ComputePyramid(cv::Mat image);

@@ -42,6 +42,11 @@ namespace ORB_SLAM3
         // Computes the Hamming distance between two ORB descriptors
         static int DescriptorDistance(const cv::Mat &a, const cv::Mat &b);
 
+        // PERF: raw-pointer overload for hot inner loops. Avoids constructing a
+        // cv::Mat header (and its atomic refcount inc/dec) per comparison.
+        // Both pointers must address 32 contiguous bytes (one ORB descriptor).
+        static int DescriptorDistance(const unsigned char *pa, const unsigned char *pb);
+
         // Search matches between Frame keypoints and projected MapPoints. Returns number of matches
         // Used to track the local map (Tracking)
         int SearchByProjection(Frame &F, const std::vector<MapPoint*> &vpMapPoints, const float th=3, const bool bFarPoints = false, const float thFarPoints = 50.0f);

@@ -19,6 +19,9 @@
 
 #include "ORBmatcher.h"
 
+#include <cstring>   // PERF: memcpy in DescriptorDistance
+#include <cstdint>
+
 #include<limits.h>
 
 #include<opencv2/core/core.hpp>
@@ -72,7 +75,12 @@ namespace ORB_SLAM3
                         F.GetFeaturesInArea(pMP->mTrackProjX,pMP->mTrackProjY,r*F.mvScaleFactors[nPredictedLevel],nPredictedLevel-1,nPredictedLevel);
 
                 if(!vIndices.empty()){
-                    const cv::Mat MPdescriptor = pMP->GetDescriptor();
+                    // PERF: MapPoint::GetDescriptor() returns mDescriptor.clone(),
+                    // i.e. a heap allocation per visible map point per frame. Copy
+                    // the 32 bytes into a stack buffer under the same lock instead.
+                    unsigned char aMPdesc[32];
+                    pMP->CopyDescriptorTo(aMPdesc);
+                    const unsigned char *pMPdesc = aMPdesc;
 
                     int bestDist=256;
                     int bestLevel= -1;
@@ -96,9 +104,9 @@ namespace ORB_SLAM3
                                 continue;
                         }
 
-                        const cv::Mat &d = F.mDescriptors.row(idx);
-
-                        const int dist = DescriptorDistance(MPdescriptor,d);
+                        // PERF: Mat::row() builds a cv::Mat header per comparison,
+                        // including an atomic refcount inc/dec. Use the raw row.
+                        const int dist = DescriptorDistance(pMPdesc, F.mDescriptors.ptr<unsigned char>(idx));
 
                         if(dist<bestDist)
                         {
@@ -2053,24 +2061,28 @@ namespace ORB_SLAM3
     }
 
 
-// Bit set count operation from
+// PERF: the original used the SWAR bit-hack popcount from
 // http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
+// The target CPU has hardware POPCNT (already selected by -march=native), so
+// __builtin_popcountll lowers to 4 POPCNT instructions instead of ~40 ALU ops.
+// The result is bit-identical. This is the hottest function in the system:
+// it is reached from 20 call sites and runs millions of times per second.
+    int ORBmatcher::DescriptorDistance(const unsigned char *pa, const unsigned char *pb)
+    {
+        // A 32-byte ORB descriptor read as 4 x uint64. memcpy is the portable
+        // spelling of a possibly-unaligned load; gcc/clang lower it to movq.
+        uint64_t va[4], vb[4];
+        memcpy(va, pa, 32);
+        memcpy(vb, pb, 32);
+        return __builtin_popcountll(va[0] ^ vb[0])
+             + __builtin_popcountll(va[1] ^ vb[1])
+             + __builtin_popcountll(va[2] ^ vb[2])
+             + __builtin_popcountll(va[3] ^ vb[3]);
+    }
+
     int ORBmatcher::DescriptorDistance(const cv::Mat &a, const cv::Mat &b)
     {
-        const int *pa = a.ptr<int32_t>();
-        const int *pb = b.ptr<int32_t>();
-
-        int dist=0;
-
-        for(int i=0; i<8; i++, pa++, pb++)
-        {
-            unsigned  int v = *pa ^ *pb;
-            v = v - ((v >> 1) & 0x55555555);
-            v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
-            dist += (((v + (v >> 4)) & 0xF0F0F0F) * 0x1010101) >> 24;
-        }
-
-        return dist;
+        return DescriptorDistance(a.ptr<unsigned char>(), b.ptr<unsigned char>());
     }
 
 } //namespace ORB_SLAM

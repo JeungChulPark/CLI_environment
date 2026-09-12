@@ -17,6 +17,8 @@
 */
 
 #include "MapPoint.h"
+
+#include <cstring>   // PERF: memcpy in CopyDescriptorTo
 #include "ORBmatcher.h"
 
 #include<mutex>
@@ -131,6 +133,17 @@ Eigen::Vector3f MapPoint::GetNormal() {
     return mNormalVector;
 }
 
+void MapPoint::GetFrustumData(Eigen::Vector3f &pos, Eigen::Vector3f &normal,
+                              float &minDistance, float &maxDistance)
+{
+    unique_lock<mutex> lock(mMutexPos);
+    pos = mWorldPos;
+    normal = mNormalVector;
+    minDistance = 0.8f*mfMinDistance;
+    maxDistance = 1.2f*mfMaxDistance;
+}
+
+
 
 KeyFrame* MapPoint::GetReferenceKeyFrame()
 {
@@ -205,6 +218,14 @@ std::map<KeyFrame*, std::tuple<int,int>>  MapPoint::GetObservations()
 {
     unique_lock<mutex> lock(mMutexFeatures);
     return mObservations;
+}
+
+void MapPoint::AccumulateObservingKeyFrames(std::map<KeyFrame*,int> &counter)
+{
+    unique_lock<mutex> lock(mMutexFeatures);
+    for(std::map<KeyFrame*,std::tuple<int,int>>::const_iterator it=mObservations.begin(),
+            itend=mObservations.end(); it!=itend; it++)
+        counter[it->first]++;
 }
 
 int MapPoint::Observations()
@@ -406,6 +427,13 @@ cv::Mat MapPoint::GetDescriptor()
 {
     unique_lock<mutex> lock(mMutexFeatures);
     return mDescriptor.clone();
+}
+
+void MapPoint::CopyDescriptorTo(unsigned char *dst32)
+{
+    unique_lock<mutex> lock(mMutexFeatures);
+    // mDescriptor is always 1x32 CV_8U (see ComputeDistinctiveDescriptors).
+    memcpy(dst32, mDescriptor.ptr<unsigned char>(), 32);
 }
 
 tuple<int,int> MapPoint::GetIndexInKeyFrame(KeyFrame *pKF)

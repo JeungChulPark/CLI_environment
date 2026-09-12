@@ -48,6 +48,38 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     mpFrameDrawer(pFrameDrawer), mpMapDrawer(pMapDrawer), mpAtlas(pAtlas), mnLastRelocFrameId(0), time_recently_lost(5.0),
     mnInitialFrameId(0), mbCreatedMap(false), mnFirstFrameId(0), mpCamera2(nullptr), mpLastKeyFrame(static_cast<KeyFrame*>(NULL))
 {
+    // PERF: pose-optimisation tuning, read here so it covers both the Settings
+    // path and the legacy parser. Absent keys leave stock behaviour intact.
+    //   Optimizer.PoseIterations : 4 ints, LM iterations per round (stock 10 10 10 10)
+    //   Optimizer.PoseEarlyExit  : 1 to stop once the outlier set is stable
+    {
+        cv::FileStorage fPerf(strSettingPath, cv::FileStorage::READ);
+        if(fPerf.isOpened())
+        {
+            cv::FileNode nIt = fPerf["Optimizer.PoseIterations"];
+            if(!nIt.empty() && nIt.isSeq() && nIt.size()==4)
+            {
+                for(int k=0;k<4;k++)
+                {
+                    int v = (int)nIt[k];
+                    if(v>0) Optimizer::sPoseOptIters[k]=v;
+                }
+                std::cout << "PoseOptimization iterations: "
+                          << Optimizer::sPoseOptIters[0] << " "
+                          << Optimizer::sPoseOptIters[1] << " "
+                          << Optimizer::sPoseOptIters[2] << " "
+                          << Optimizer::sPoseOptIters[3] << std::endl;
+            }
+            cv::FileNode nEe = fPerf["Optimizer.PoseEarlyExit"];
+            if(!nEe.empty() && nEe.isInt())
+            {
+                Optimizer::sPoseOptEarlyExit = ((int)nEe != 0);
+                std::cout << "PoseOptimization early exit: "
+                          << (Optimizer::sPoseOptEarlyExit?"on":"off") << std::endl;
+            }
+        }
+    }
+
     // Load camera parameters from settings file
     if(settings){
         newParameterLoader(settings);
@@ -2221,10 +2253,20 @@ void Tracking::Track()
         vdLMTrack_ms.push_back(timeLMTrack);
 #endif
 
-        // Update drawer
-        mpFrameDrawer->Update(this);
-        if(mCurrentFrame.isSet())
-            mpMapDrawer->SetCurrentCameraPose(mCurrentFrame.GetPose());
+        // PERF: FrameDrawer::Update() deep-copies the entire Frame (descriptor
+        // clone + all 64*48 grid cell vectors + mmProjectPoints/mmMatchedInImage
+        // maps) plus the whole local map point vector, every single frame.
+        // Nothing reads any of it when the Pangolin viewer is disabled, which is
+        // this project's configuration (config/no_cli_rgbd.yaml has
+        // visualization.enabled=false). mpViewer stays NULL unless System was
+        // constructed with bUseViewer=true (System.cc:229-236).
+        if(mpViewer)
+        {
+            // Update drawer
+            mpFrameDrawer->Update(this);
+            if(mCurrentFrame.isSet())
+                mpMapDrawer->SetCurrentCameraPose(mCurrentFrame.GetPose());
+        }
 
         if(bOK || mState==RECENTLY_LOST)
         {
@@ -3461,7 +3503,10 @@ void Tracking::SearchLocalPoints()
             pMP->IncreaseVisible();
             nToMatch++;
         }
-        if(pMP->mbTrackInView)
+        // PERF: mmProjectPoints' only consumer is FrameDrawer (FrameDrawer.cc:89
+        // and :393). One red-black-tree insert per visible local map point per
+        // frame, then deep-copied again by every Frame copy. Waste when headless.
+        if(mpViewer && pMP->mbTrackInView)
         {
             mCurrentFrame.mmProjectPoints[pMP->mnId] = cv::Point2f(pMP->mTrackProjX, pMP->mTrackProjY);
         }
@@ -3549,9 +3594,8 @@ void Tracking::UpdateLocalKeyFrames()
             {
                 if(!pMP->isBad())
                 {
-                    const map<KeyFrame*,tuple<int,int>> observations = pMP->GetObservations();
-                    for(map<KeyFrame*,tuple<int,int>>::const_iterator it=observations.begin(), itend=observations.end(); it!=itend; it++)
-                        keyframeCounter[it->first]++;
+                    // PERF: was a full std::map deep copy per map point per frame.
+                    pMP->AccumulateObservingKeyFrames(keyframeCounter);
                 }
                 else
                 {
@@ -3572,9 +3616,8 @@ void Tracking::UpdateLocalKeyFrames()
                     continue;
                 if(!pMP->isBad())
                 {
-                    const map<KeyFrame*,tuple<int,int>> observations = pMP->GetObservations();
-                    for(map<KeyFrame*,tuple<int,int>>::const_iterator it=observations.begin(), itend=observations.end(); it!=itend; it++)
-                        keyframeCounter[it->first]++;
+                    // PERF: was a full std::map deep copy per map point per frame.
+                    pMP->AccumulateObservingKeyFrames(keyframeCounter);
                 }
                 else
                 {

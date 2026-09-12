@@ -120,6 +120,28 @@ public:
     KeyFrame* GetReferenceKeyFrame();
 
     std::map<KeyFrame*,std::tuple<int,int>> GetObservations();
+
+    // PERF: Tracking::UpdateLocalKeyFrames() only needs to tally which
+    // KeyFrames observe this point. GetObservations() returns the whole
+    // std::map BY VALUE - a full red-black-tree deep copy, one node
+    // allocation per observation, for every matched map point every
+    // frame. This accumulates in place under the same lock, allocating
+    // nothing. No other lock is taken inside, so it cannot deadlock.
+    void AccumulateObservingKeyFrames(std::map<KeyFrame*,int> &counter);
+
+    // PERF: Frame::isInFrustum() reads world position, both scale-invariance
+    // distances and the normal -- four separate calls that each take the SAME
+    // mMutexPos. At nFeatures=2000 the local map reaches several thousand points
+    // and this runs per point per frame, so it is thousands of redundant
+    // lock/unlock pairs. Fetching all four under one lock is bit-identical:
+    // the four members are only ever written together under the same mutex.
+    void GetFrustumData(Eigen::Vector3f &pos, Eigen::Vector3f &normal,
+                        float &minDistance, float &maxDistance);
+
+    // PERF: non-allocating variant of GetDescriptor() for match loops.
+    // Copies the 32 descriptor bytes into caller-provided storage.
+    void CopyDescriptorTo(unsigned char *dst32);
+
     int Observations();
 
     void AddObservation(KeyFrame* pKF,int idx);
