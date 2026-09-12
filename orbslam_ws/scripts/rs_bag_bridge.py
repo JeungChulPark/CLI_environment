@@ -61,6 +61,7 @@ import yaml
 from rclpy.node import Node
 from rclpy.qos import QoSDurabilityPolicy, QoSHistoryPolicy, QoSProfile, QoSReliabilityPolicy
 from rclpy.serialization import deserialize_message
+from builtin_interfaces.msg import Time
 from sensor_msgs.msg import CameraInfo, Image
 from std_msgs.msg import String
 
@@ -282,6 +283,8 @@ class AlignBridge(Node):
         t0_wall = None
         t0_bag = None
         pub_period = 1.0 / args.rate if args.rate > 0 else 0.0
+        # single reading of the clock; every stamp is an exact 1/30 s step from it
+        self.t0_ns = self.get_clock().now().nanoseconds
         max_skew_ns = int(args.max_skew_ms * 1e6)
 
         self.get_logger().info(
@@ -326,7 +329,18 @@ class AlignBridge(Node):
             if sleep > 0:
                 time.sleep(sleep)
 
-            stamp = self.get_clock().now().to_msg() if args.stamp_now else msg.header.stamp
+            if args.stamp_now:
+                # Monotonic by construction. Reading the wall clock here instead
+                # is unsafe on WSL2: the system clock steps backwards when the
+                # host re-syncs, and ORB-SLAM3 treats a timestamp older than the
+                # previous frame as a reason to start a new Atlas map. One
+                # measured run took six such steps (worst -482.5 ms) and created
+                # seven maps against one for clean runs.
+                ns = self.t0_ns + int(round(self.n_pub * 1e9 / 30.0))
+                stamp = Time(sec=ns // 1_000_000_000,
+                             nanosec=ns % 1_000_000_000)
+            else:
+                stamp = msg.header.stamp
             msg.header.stamp = stamp
             msg.header.frame_id = self.frame_id
 
