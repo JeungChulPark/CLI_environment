@@ -56,6 +56,21 @@ public:
 
     void static LocalBundleAdjustment(KeyFrame* pKF, bool *pbStopFlag, Map *pMap, int& num_fixedKF, int& num_OptKF, int& num_MPs, int& num_edges);
 
+    // PERF: PoseOptimization() runs 4 rounds of 10 Levenberg-Marquardt
+    // iterations (40 total) and is called 2-3 times per frame, which dominates
+    // tracking cost once the local map grows (measured: 4.4 ms pose prediction +
+    // 9.0 ms local-map track per frame at nFeatures=2000).
+    //
+    // The later rounds start from an already-converged pose and mostly serve to
+    // re-classify outliers, so they need far fewer iterations. Two controls:
+    //   sPoseOptIters     - iterations per round (default {10,10,10,10})
+    //   sPoseOptEarlyExit - stop once the outlier set stops changing, after the
+    //                       robust kernel has been removed (round index >= 3)
+    // Both default to stock behaviour; Tracking sets them from the settings file
+    // so the change is opt-in and measurable.
+    static int  sPoseOptIters[4];
+    static bool sPoseOptEarlyExit;
+
     int static PoseOptimization(Frame* pFrame);
     int static PoseInertialOptimizationLastKeyFrame(Frame* pFrame, bool bRecInit = false);
     int static PoseInertialOptimizationLastFrame(Frame *pFrame, bool bRecInit = false);

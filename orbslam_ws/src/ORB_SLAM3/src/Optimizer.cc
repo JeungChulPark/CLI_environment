@@ -44,6 +44,9 @@
 
 namespace ORB_SLAM3
 {
+
+int  Optimizer::sPoseOptIters[4] = {10, 10, 10, 10};
+bool Optimizer::sPoseOptEarlyExit = false;
 bool sortByVal(const pair<MapPoint*, int> &a, const pair<MapPoint*, int> &b)
 {
     return (a.second < b.second);
@@ -1000,7 +1003,9 @@ int Optimizer::PoseOptimization(Frame *pFrame)
     // At the next optimization, outliers are not included, but at the end they can be classified as inliers again.
     const float chi2Mono[4]={5.991,5.991,5.991,5.991};
     const float chi2Stereo[4]={7.815,7.815,7.815, 7.815};
-    const int its[4]={10,10,10,10};    
+    // PERF: iteration schedule is configurable; stock is {10,10,10,10}.
+    const int its[4]={sPoseOptIters[0],sPoseOptIters[1],sPoseOptIters[2],sPoseOptIters[3]};
+    int nBadPrev=-1;
 
     int nBad=0;
     for(size_t it=0; it<4; it++)
@@ -1101,6 +1106,14 @@ int Optimizer::PoseOptimization(Frame *pFrame)
 
         if(optimizer.edges().size()<10)
             break;
+
+        // PERF: once the robust kernel is gone (set at it==2) and the inlier /
+        // outlier split has stopped moving, another round re-optimises an
+        // already-converged pose over an identical edge set. Skipping it changes
+        // the result only by the residual LM step on a converged system.
+        if(sPoseOptEarlyExit && it>=2 && nBad==nBadPrev)
+            break;
+        nBadPrev=nBad;
     }    
 
     // Recover optimized pose and return number of inliers
