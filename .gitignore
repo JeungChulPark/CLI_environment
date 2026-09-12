@@ -82,3 +82,14 @@ orbslam_ws/src/ORB_SLAM3/Vocabulary/ORBvoc.txt.tar.gz
 # dangling symlinks to another machine's data paths
 objectmemory_ws/input/*/pem
 objectmemory_ws/input/260804_SAM_longcircle2/
+
+# RTAB-Map: CMake-generated build artifact. A committed copy shadows the real one
+# (corelib/src/CMakeLists.txt puts the source include dir before the binary dir),
+# silently disabling RTABMAP_G2O / GTSAM / CERES / POINTMATCHER / NONFREE / ORB_SLAM.
+rtabmap_ws/src/rtabmap/corelib/include/rtabmap/core/Version.h
+
+# measurement outputs and derived visualisation data (regenerate with
+# orbslam_ws/scripts/rs_bag_bridge.py + build_map_viz.py + make_playback_video.py)
+rtabmap_ws/output/
+slam_comparison_report/realtime_30fps/viz/**/*.json
+slam_comparison_report/realtime_30fps/viz/**/*.mp4
