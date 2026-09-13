@@ -1,0 +1,1 @@
+ssh -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=10 -R 17001:127.0.0.1:17001 mac ~/objpose/run_slam.sh --slam rtabmap --session ~/Documents/DefenseMeta/Dataset/260826_etri_eightcircle_dark/SLAM --features 2000 --time-source frame --param Vis/MaxDepth=4 --param Vis/FeatureType=10 --mode live --connect 127.0.0.1:17001 --rate 1.0

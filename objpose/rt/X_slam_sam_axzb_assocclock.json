@@ -1,0 +1,99 @@
+{
+ "T_slam_sam": [
+  [
+   -0.044735,
+   0.286628,
+   -0.956997,
+   -0.359519
+  ],
+  [
+   0.049926,
+   0.9574,
+   0.284415,
+   -0.030575
+  ],
+  [
+   0.997751,
+   -0.035056,
+   -0.05714,
+   -0.314621
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "source": "ORB-SLAM3 f2000 SLAM+SAM trajectories, AX=ZB (integration/rig_offset.py)",
+ "trajectories": {
+  "slam": "/home/jucpark/DeepLearning/CLI_environment/objpose/rt/slam_traj_tum.txt",
+  "sam": "/home/jucpark/DeepLearning/CLI_environment/objpose/rt/sam_traj_tum.txt"
+ },
+ "n_pairs": 4274,
+ "tau_s": -0.15,
+ "constancy": {
+  "trans_median_cm": 7.69,
+  "trans_p90_cm": 19.13,
+  "trans_max_cm": 27.94,
+  "rot_median_deg": 3.98,
+  "rot_p90_deg": 10.75,
+  "rot_max_deg": 21.78
+ },
+ "unobservable_ratio": 0.003366,
+ "vs_urdf": {
+  "urdf": "/home/jucpark/DeepLearning/Dataset/260826_etri_eightcircle_dark/camera_extrinsic.urdf",
+  "translation_diff_cm": 13.82,
+  "rotation_diff_deg": 3.04,
+  "urdf_T_slam_sam": [
+   [
+    0.008031,
+    0.281937,
+    -0.959399,
+    -0.318124
+   ],
+   [
+    0.050866,
+    0.958073,
+    0.281973,
+    0.076443
+   ],
+   [
+    0.998673,
+    -0.051065,
+    -0.006647,
+    -0.391676
+   ],
+   [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  ]
+ },
+ "object_consistency_check": {
+  "method": "156 SAM-6D detections (eightcircle_dark run) placed in the SLAM map; spread of each static object's world position around its median",
+  "per_frame_slam_poses": {
+   "estimated_X": {
+    "median_cm": 5.8,
+    "p90_cm": 18.6
+   },
+   "urdf": {
+    "median_cm": 7.3,
+    "p90_cm": 19.1
+   }
+  },
+  "optimized_slam_poses": {
+   "estimated_X": {
+    "median_cm": 4.9,
+    "p90_cm": 17.9
+   },
+   "urdf": {
+    "median_cm": 5.1,
+    "p90_cm": 17.3
+   }
+  },
+  "decision": "use estimated_X (lowest spread with the per-frame poses the live system consumes)"
+ }
+}

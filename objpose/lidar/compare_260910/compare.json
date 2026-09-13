@@ -1,0 +1,61 @@
+{
+ "extrinsic": "/home/jucpark/DeepLearning/CLI_environment/objpose/rt/260910/T_cam_lidar_final.json",
+ "lidar": {
+  "path_m": 31.0,
+  "start_to_end_m": 0.095
+ },
+ "orb_final": {
+  "samples": 1582,
+  "path_m": 33.88,
+  "start_to_end_m": 0.113,
+  "ate_cm": {
+   "rmse": 5.8,
+   "median": 5.17,
+   "p95": 9.39,
+   "max": 11.26
+  },
+  "orientation_diff_deg": {
+   "median": 0.71,
+   "p95": 1.14
+  },
+  "rpe_1s": {
+   "trans_cm_median": 1.08,
+   "trans_cm_p95": 2.61,
+   "rot_deg_median": 0.198,
+   "rot_deg_p95": 0.776
+  },
+  "rpe_10s": {
+   "trans_cm_median": 6.27,
+   "trans_cm_p95": 12.78,
+   "rot_deg_median": 0.594,
+   "rot_deg_p95": 1.05
+  }
+ },
+ "orb_live": {
+  "samples": 1582,
+  "path_m": 38.07,
+  "start_to_end_m": 0.113,
+  "ate_cm": {
+   "rmse": 11.41,
+   "median": 8.44,
+   "p95": 18.08,
+   "max": 219.52
+  },
+  "orientation_diff_deg": {
+   "median": 1.41,
+   "p95": 3.86
+  },
+  "rpe_1s": {
+   "trans_cm_median": 1.28,
+   "trans_cm_p95": 3.87,
+   "rot_deg_median": 0.252,
+   "rot_deg_p95": 1.088
+  },
+  "rpe_10s": {
+   "trans_cm_median": 7.24,
+   "trans_cm_p95": 21.44,
+   "rot_deg_median": 0.871,
+   "rot_deg_p95": 3.419
+  }
+ }
+}

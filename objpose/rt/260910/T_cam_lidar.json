@@ -1,0 +1,129 @@
+{
+ "T_cam_lidar": [
+  [
+   0.3850824359513915,
+   -0.9228518712223438,
+   -0.007479391897756583,
+   -0.0425004481991635
+  ],
+  [
+   0.0038245921495148583,
+   0.009700114231337136,
+   -0.999945638661817,
+   -0.17218888486110492
+  ],
+  [
+   0.9228742547154691,
+   0.38503289673132723,
+   0.007264875639052165,
+   -0.711426426781935
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "frames": "camera = SLAM-folder RealSense colour optical frame; lidar = velodyne frame",
+ "tau_s": 0.004,
+ "stage1_planar_handeye": {
+  "pairs": 3122,
+  "tx_m": -0.3463987009610108,
+  "ty_m": -0.008557724091709965,
+  "phi_deg": 20.35496016642813,
+  "residual_median_cm": 1.18,
+  "sd_mm_deg": [
+   0.48,
+   0.53,
+   0.0236
+  ]
+ },
+ "stage2_registration": {
+  "pairs": 120,
+  "low_motion_candidates": 482,
+  "residual": {
+   "max_corr_m": 0.05,
+   "n": 37340,
+   "median_cm": 2.0,
+   "p90_cm": 4.02
+  },
+  "height_grid_best": [
+   [
+    -0.5,
+    {
+     "max_corr_m": 0.15,
+     "n": 82876,
+     "median_cm": 4.45,
+     "p90_cm": 11.71
+    }
+   ],
+   [
+    -0.4,
+    {
+     "max_corr_m": 0.15,
+     "n": 87440,
+     "median_cm": 4.81,
+     "p90_cm": 12.31
+    }
+   ],
+   [
+    -0.2,
+    {
+     "max_corr_m": 0.15,
+     "n": 85202,
+     "median_cm": 4.78,
+     "p90_cm": 12.03
+    }
+   ],
+   [
+    -0.6,
+    {
+     "max_corr_m": 0.15,
+     "n": 75548,
+     "median_cm": 4.65,
+     "p90_cm": 11.4
+    }
+   ]
+  ],
+  "change_vs_stage1": {
+   "trans_cm": 51.71,
+   "rot_deg": 3.593
+  },
+  "thirds": [
+   {
+    "pairs": 40,
+    "d_trans_cm": 2.22,
+    "d_rot_deg": 1.45,
+    "residual": {
+     "max_corr_m": 0.05,
+     "n": 14271,
+     "median_cm": 1.9,
+     "p90_cm": 3.97
+    }
+   },
+   {
+    "pairs": 40,
+    "d_trans_cm": 3.02,
+    "d_rot_deg": 1.287,
+    "residual": {
+     "max_corr_m": 0.05,
+     "n": 14485,
+     "median_cm": 1.88,
+     "p90_cm": 4.06
+    }
+   },
+   {
+    "pairs": 40,
+    "d_trans_cm": 19.51,
+    "d_rot_deg": 1.995,
+    "residual": {
+     "max_corr_m": 0.05,
+     "n": 14533,
+     "median_cm": 1.89,
+     "p90_cm": 3.87
+    }
+   }
+  ]
+ }
+}

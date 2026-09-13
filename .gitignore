@@ -93,3 +93,16 @@ rtabmap_ws/src/rtabmap/corelib/include/rtabmap/core/Version.h
 rtabmap_ws/output/
 slam_comparison_report/realtime_30fps/viz/**/*.json
 slam_comparison_report/realtime_30fps/viz/**/*.mp4
+
+# objpose: live-run logs and trajectory dumps (regenerate with objpose/run.sh and the Mac
+# slam_stream / lidar tools); run summaries, RT results and comparison JSON stay tracked
+objpose/output/**/*.jsonl
+objpose/output/**/*_tum.txt
+objpose/output/**/READY
+objpose/rt/**/*.frames.csv
+objpose/rt/**/*_tum.txt*
+objpose/rt/**/*_ftime.txt*
+objpose/rt/rtab_tune/c[0-9].txt*
+objpose/lidar/**/*_tum.txt
+# pip build metadata
+**/*.egg-info/

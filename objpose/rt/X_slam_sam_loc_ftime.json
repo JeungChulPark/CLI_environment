@@ -1,0 +1,117 @@
+{
+ "T_slam_sam": [
+  [
+   0.024600862418598327,
+   0.29007757590544686,
+   -0.9566868858331247,
+   -0.35535800899088393
+  ],
+  [
+   0.04978628091161632,
+   0.9554335427310985,
+   0.2909777855048261,
+   0.04633786513182704
+  ],
+  [
+   0.9984568712774989,
+   -0.054788186510619764,
+   0.009062605454652092,
+   -0.4338203406437606
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "source": "ORB-SLAM3 f2000 shared map: SLAM builds atlas, SAM localized; robust mean of T_w_slam^-1 T_w_sam",
+ "map_traj": "objpose/rt/loc/slam_map_traj_ftime.txt.optimized.txt",
+ "loc_traj": "objpose/rt/loc/sam_loc_traj_ftime.txt",
+ "reverse": false,
+ "filter": "state OK, n_tracked_mp>=60, vo_only==0",
+ "tau_s": 0.0,
+ "n_samples": 6176,
+ "coverage_of_localized_poses": 0.808,
+ "residual": {
+  "trans_median_cm": 5.85,
+  "trans_p90_cm": 11.95,
+  "rot_median_deg": 0.67,
+  "rot_p90_deg": 1.24,
+  "inlier_weight_mean": 0.925
+ },
+ "quarters": [
+  {
+   "t_from_s": 0.0,
+   "t_to_s": 67.0,
+   "n": 1544,
+   "d_trans_cm": 3.16,
+   "d_rot_deg": 0.46
+  },
+  {
+   "t_from_s": 67.1,
+   "t_to_s": 138.6,
+   "n": 1544,
+   "d_trans_cm": 3.43,
+   "d_rot_deg": 0.5
+  },
+  {
+   "t_from_s": 138.7,
+   "t_to_s": 200.4,
+   "n": 1544,
+   "d_trans_cm": 0.67,
+   "d_rot_deg": 0.16
+  },
+  {
+   "t_from_s": 200.4,
+   "t_to_s": 265.3,
+   "n": 1544,
+   "d_trans_cm": 1.35,
+   "d_rot_deg": 0.24
+  }
+ ],
+ "vs_urdf": {
+  "translation_diff_cm": 6.38,
+  "rotation_diff_deg": 1.07
+ },
+ "object_consistency_check": {
+  "per_frame_slam_poses": {
+   "new_localization_X": {
+    "n": 156,
+    "median_cm": 4.42,
+    "p90_cm": 9.48
+   },
+   "urdf": {
+    "n": 156,
+    "median_cm": 3.17,
+    "p90_cm": 9.97
+   },
+   "previous_axzb_X": {
+    "n": 156,
+    "median_cm": 3.72,
+    "p90_cm": 8.84
+   }
+  },
+  "optimized_slam_poses": {
+   "new_localization_X": {
+    "n": 156,
+    "median_cm": 3.06,
+    "p90_cm": 7.8
+   },
+   "urdf": {
+    "n": 156,
+    "median_cm": 1.82,
+    "p90_cm": 4.94
+   },
+   "previous_axzb_X": {
+    "n": 156,
+    "median_cm": 2.46,
+    "p90_cm": 5.81
+   }
+  }
+ },
+ "vs_previous_axzb": {
+  "translation_diff_cm": 14.19,
+  "rotation_diff_deg": 3.98
+ }
+}

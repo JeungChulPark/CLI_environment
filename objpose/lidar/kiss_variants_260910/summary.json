@@ -1,0 +1,19 @@
+{
+ "deskew_reference": {
+  "deskew_probe_x_for_u_0_05_1": [
+   -1.0
+  ]
+ },
+ "base": {
+  "ms_per_scan": 9.5
+ },
+ "nodeskew": {
+  "ms_per_scan": 11.12
+ },
+ "iterdeskew": {
+  "ms_per_scan": 19.74
+ },
+ "voxel05": {
+  "ms_per_scan": 37.36
+ }
+}

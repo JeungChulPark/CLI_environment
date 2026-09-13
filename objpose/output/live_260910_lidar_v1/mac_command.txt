@@ -1,0 +1,1 @@
+ssh -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=10 -R 17001:127.0.0.1:17001 mac ~/objpose/lidar/venv/bin/python -u ~/objpose/lidar/lidar_stream.py --session /home/jucpark/Documents/DefenseMeta/Dataset/260910_object/lidar --mode live --connect 127.0.0.1:17001 --rate 1.0

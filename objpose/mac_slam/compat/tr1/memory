@@ -1,0 +1,4 @@
+// macOS libc++ has no TR1; g2o's Thirdparty copy still spells std::tr1::shared_ptr.
+#pragma once
+#include <memory>
+namespace std { namespace tr1 { using std::shared_ptr; using std::weak_ptr; } }

@@ -1,0 +1,314 @@
+{
+ "circle3a_181235": {
+  "dense_hz": 9.91,
+  "keyframes": 76,
+  "keyframe_interval_s": 2.02,
+  "wobble_h_cm": {
+   "rms": 0.41,
+   "p95": 0.87
+  },
+  "wobble_v_cm": {
+   "rms": 0.27,
+   "p95": 0.58
+  },
+  "jerk_cm": {
+   "at_keyframes_median": 0.834,
+   "elsewhere_median": 0.598,
+   "ratio": 1.4
+  },
+  "correction_jump": {
+   "trans_cm_median": 1.04,
+   "trans_cm_p90": 2.18,
+   "rot_deg_median": 0.182,
+   "rot_deg_p90": 0.36
+  },
+  "vertical_peak_hz": 1.543,
+  "keyframe_rate_hz": 0.496,
+  "wobble_h_by_yaw_rate_cm": {
+   "slow<5deg/s": 0.15,
+   "fast>20deg/s": null
+  },
+  "floor_distance_m": {
+   "n": 76,
+   "median": 0.451,
+   "p5": 0.121,
+   "p95": 0.798,
+   "consecutive_change_median_cm": 21.6
+  },
+  "orb_wobble_h_cm_rms": 0.52,
+  "orb_wobble_v_cm_rms": 0.26
+ },
+ "circle3b_181520": {
+  "dense_hz": 9.91,
+  "keyframes": 73,
+  "keyframe_interval_s": 1.61,
+  "wobble_h_cm": {
+   "rms": 0.47,
+   "p95": 0.89
+  },
+  "wobble_v_cm": {
+   "rms": 0.28,
+   "p95": 0.59
+  },
+  "jerk_cm": {
+   "at_keyframes_median": 1.26,
+   "elsewhere_median": 1.074,
+   "ratio": 1.2
+  },
+  "correction_jump": {
+   "trans_cm_median": 0.78,
+   "trans_cm_p90": 2.66,
+   "rot_deg_median": 0.254,
+   "rot_deg_p90": 0.507
+  },
+  "vertical_peak_hz": 1.572,
+  "keyframe_rate_hz": 0.62,
+  "wobble_h_by_yaw_rate_cm": {
+   "slow<5deg/s": 0.15,
+   "fast>20deg/s": 0.9
+  },
+  "floor_distance_m": {
+   "n": 73,
+   "median": 0.432,
+   "p5": 0.092,
+   "p95": 0.829,
+   "consecutive_change_median_cm": 16.5
+  },
+  "orb_wobble_h_cm_rms": 0.52,
+  "orb_wobble_v_cm_rms": 0.2
+ },
+ "circle3c_182005": {
+  "dense_hz": 9.91,
+  "keyframes": 92,
+  "keyframe_interval_s": 2.22,
+  "wobble_h_cm": {
+   "rms": 0.32,
+   "p95": 0.61
+  },
+  "wobble_v_cm": {
+   "rms": 0.26,
+   "p95": 0.49
+  },
+  "jerk_cm": {
+   "at_keyframes_median": 0.592,
+   "elsewhere_median": 0.491,
+   "ratio": 1.2
+  },
+  "correction_jump": {
+   "trans_cm_median": 0.0,
+   "trans_cm_p90": 0.0,
+   "rot_deg_median": 0.0,
+   "rot_deg_p90": 0.0
+  },
+  "vertical_peak_hz": 1.667,
+  "keyframe_rate_hz": 0.451,
+  "wobble_h_by_yaw_rate_cm": {
+   "slow<5deg/s": 0.13,
+   "fast>20deg/s": null
+  },
+  "floor_distance_m": {
+   "n": 92,
+   "median": 0.422,
+   "p5": 0.112,
+   "p95": 0.782,
+   "consecutive_change_median_cm": 21.0
+  },
+  "orb_wobble_h_cm_rms": 0.58,
+  "orb_wobble_v_cm_rms": 0.28
+ },
+ "circle3d_183550": {
+  "dense_hz": 9.91,
+  "keyframes": 94,
+  "keyframe_interval_s": 1.31,
+  "wobble_h_cm": {
+   "rms": 0.51,
+   "p95": 0.71
+  },
+  "wobble_v_cm": {
+   "rms": 0.16,
+   "p95": 0.35
+  },
+  "jerk_cm": {
+   "at_keyframes_median": 0.299,
+   "elsewhere_median": 0.227,
+   "ratio": 1.3
+  },
+  "correction_jump": {
+   "trans_cm_median": 0.87,
+   "trans_cm_p90": 1.87,
+   "rot_deg_median": 0.276,
+   "rot_deg_p90": 0.567
+  },
+  "vertical_peak_hz": 0.889,
+  "keyframe_rate_hz": 0.763,
+  "wobble_h_by_yaw_rate_cm": {
+   "slow<5deg/s": 0.1,
+   "fast>20deg/s": 0.54
+  },
+  "floor_distance_m": {
+   "n": 94,
+   "median": 0.471,
+   "p5": 0.126,
+   "p95": 0.816,
+   "consecutive_change_median_cm": 18.8
+  },
+  "orb_wobble_h_cm_rms": 0.69,
+  "orb_wobble_v_cm_rms": 0.26
+ },
+ "eight1_173704": {
+  "dense_hz": 9.91,
+  "keyframes": 85,
+  "keyframe_interval_s": 1.82,
+  "wobble_h_cm": {
+   "rms": 0.48,
+   "p95": 1.03
+  },
+  "wobble_v_cm": {
+   "rms": 0.27,
+   "p95": 0.63
+  },
+  "jerk_cm": {
+   "at_keyframes_median": 0.838,
+   "elsewhere_median": 0.493,
+   "ratio": 1.7
+  },
+  "correction_jump": {
+   "trans_cm_median": 0.81,
+   "trans_cm_p90": 2.5,
+   "rot_deg_median": 0.151,
+   "rot_deg_p90": 0.427
+  },
+  "vertical_peak_hz": 1.946,
+  "keyframe_rate_hz": 0.551,
+  "wobble_h_by_yaw_rate_cm": {
+   "slow<5deg/s": 0.13,
+   "fast>20deg/s": 2.13
+  },
+  "floor_distance_m": {
+   "n": 84,
+   "median": 0.388,
+   "p5": 0.112,
+   "p95": 0.743,
+   "consecutive_change_median_cm": 23.0
+  },
+  "orb_wobble_h_cm_rms": 0.66,
+  "orb_wobble_v_cm_rms": 0.25
+ },
+ "eight3a_180633": {
+  "dense_hz": 9.91,
+  "keyframes": 164,
+  "keyframe_interval_s": 1.61,
+  "wobble_h_cm": {
+   "rms": 0.41,
+   "p95": 0.77
+  },
+  "wobble_v_cm": {
+   "rms": 0.26,
+   "p95": 0.49
+  },
+  "jerk_cm": {
+   "at_keyframes_median": 0.662,
+   "elsewhere_median": 0.509,
+   "ratio": 1.3
+  },
+  "correction_jump": {
+   "trans_cm_median": 0.0,
+   "trans_cm_p90": 0.0,
+   "rot_deg_median": 0.0,
+   "rot_deg_p90": 0.0
+  },
+  "vertical_peak_hz": 1.473,
+  "keyframe_rate_hz": 0.62,
+  "wobble_h_by_yaw_rate_cm": {
+   "slow<5deg/s": 0.14,
+   "fast>20deg/s": 1.15
+  },
+  "floor_distance_m": {
+   "n": 164,
+   "median": 0.39,
+   "p5": 0.113,
+   "p95": 0.755,
+   "consecutive_change_median_cm": 20.5
+  },
+  "orb_wobble_h_cm_rms": 0.51,
+  "orb_wobble_v_cm_rms": 0.25
+ },
+ "eight3b_183942": {
+  "dense_hz": 9.91,
+  "keyframes": 160,
+  "keyframe_interval_s": 1.01,
+  "wobble_h_cm": {
+   "rms": 0.54,
+   "p95": 0.75
+  },
+  "wobble_v_cm": {
+   "rms": 0.2,
+   "p95": 0.4
+  },
+  "jerk_cm": {
+   "at_keyframes_median": 0.292,
+   "elsewhere_median": 0.269,
+   "ratio": 1.1
+  },
+  "correction_jump": {
+   "trans_cm_median": 1.05,
+   "trans_cm_p90": 2.19,
+   "rot_deg_median": 0.268,
+   "rot_deg_p90": 0.448
+  },
+  "vertical_peak_hz": 1.559,
+  "keyframe_rate_hz": 0.992,
+  "wobble_h_by_yaw_rate_cm": {
+   "slow<5deg/s": 0.19,
+   "fast>20deg/s": 0.53
+  },
+  "floor_distance_m": {
+   "n": 157,
+   "median": 0.48,
+   "p5": 0.118,
+   "p95": 0.805,
+   "consecutive_change_median_cm": 16.7
+  },
+  "orb_wobble_h_cm_rms": 1.36,
+  "orb_wobble_v_cm_rms": 0.36
+ },
+ "eight3c_185421": {
+  "dense_hz": 9.92,
+  "keyframes": 152,
+  "keyframe_interval_s": 0.81,
+  "wobble_h_cm": {
+   "rms": 0.85,
+   "p95": 1.29
+  },
+  "wobble_v_cm": {
+   "rms": 0.24,
+   "p95": 0.47
+  },
+  "jerk_cm": {
+   "at_keyframes_median": 0.417,
+   "elsewhere_median": 0.401,
+   "ratio": 1.0
+  },
+  "correction_jump": {
+   "trans_cm_median": 1.13,
+   "trans_cm_p90": 2.17,
+   "rot_deg_median": 0.26,
+   "rot_deg_p90": 0.476
+  },
+  "vertical_peak_hz": 1.269,
+  "keyframe_rate_hz": 1.24,
+  "wobble_h_by_yaw_rate_cm": {
+   "slow<5deg/s": 0.29,
+   "fast>20deg/s": 0.78
+  },
+  "floor_distance_m": {
+   "n": 142,
+   "median": 0.473,
+   "p5": 0.117,
+   "p95": 0.82,
+   "consecutive_change_median_cm": 22.4
+  },
+  "orb_wobble_h_cm_rms": 1.45,
+  "orb_wobble_v_cm_rms": 0.37
+ }
+}
