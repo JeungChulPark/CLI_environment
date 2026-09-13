@@ -1692,15 +1692,27 @@ def weighted_procrustes(
         ref_centroid = ref_centroid.unsqueeze(1)
     ref_points_centered = ref_points - ref_centroid  # (B, N, 3)
 
-    H = src_points_centered.permute(0, 2, 1) @ (weights * ref_points_centered)
-    U, _, V = torch.svd(H)
-    Ut, V = U.transpose(1, 2), V
-    eye = torch.eye(3).unsqueeze(0).repeat(batch_size, 1, 1).to(src_points.device)
-    eye[:, -1, -1] = torch.sign(torch.det(V @ Ut))
-    R = V @ eye @ Ut
+    # AMP: torch.svd has no half kernel ("svd_cuda_gesvdjBatched not implemented
+    # for 'Half'"), so autocast would crash here. H is only 3x3 per batch element,
+    # so solving it in fp32 costs nothing measurable and is the numerically right
+    # choice anyway - a 3x3 SVD in fp16 loses most of its precision. Everything
+    # upstream may still run in half.
+    with torch.autocast(device_type=src_points.device.type, enabled=False):
+        src_c32 = src_points_centered.float()
+        ref_c32 = ref_points_centered.float()
+        w32 = weights.float()
+        H = src_c32.permute(0, 2, 1) @ (w32 * ref_c32)
+        U, _, V = torch.svd(H)
+        Ut, V = U.transpose(1, 2), V
+        eye = torch.eye(3, device=src_points.device, dtype=torch.float32
+                        ).unsqueeze(0).repeat(batch_size, 1, 1)
+        eye[:, -1, -1] = torch.sign(torch.det(V @ Ut))
+        R = V @ eye @ Ut
 
-    t = ref_centroid.permute(0, 2, 1) - R @ src_centroid.permute(0, 2, 1)
-    t = t.squeeze(2)
+        t = ref_centroid.float().permute(0, 2, 1) - R @ src_centroid.float().permute(0, 2, 1)
+        t = t.squeeze(2)
+    R = R.to(src_points.dtype)
+    t = t.to(src_points.dtype)
 
     if return_transform:
         transform = torch.eye(4).unsqueeze(0).repeat(batch_size, 1, 1).to(DEVICE)

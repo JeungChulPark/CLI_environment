@@ -42,8 +42,13 @@ def _sync():
 class Sam6DCore:
     def __init__(self, ism_config, objects=None, device="cuda:0",
                  det_score_thresh=0.2, log=print, appe_rerank=None, verify=UNSET,
-                 pem_diagnostic=None, coarse_npoint_override=None):
+                 pem_diagnostic=None, coarse_npoint_override=None,
+                 mask_cache=None, pem_schedule=None, precision=None):
         self.log = log
+        # 속도 옵션. 전부 기본 off — 지정하지 않으면 원래 동작 그대로다(§26).
+        self.precision = (precision or "fp32").lower()
+        self._mask_cache_cfg = dict(mask_cache or {})
+        self._pem_sched_cfg = dict(pem_schedule or {})
         # coarse_npoint 스윕 실험용. base.yaml 값을 대체한다(None 이면 그대로).
         self.coarse_npoint_override = (int(coarse_npoint_override)
                                        if coarse_npoint_override else None)
@@ -71,6 +76,13 @@ class Sam6DCore:
         self.anchor_manager = None
         self._load_ism(ism_config, objects or [])
         self._load_pem()
+        from mask_cache import install as _install_mask_cache
+        from pem_scheduler import from_config as _make_pem_scheduler
+        self.mask_cache = None
+        _install_mask_cache(self, self._mask_cache_cfg, self.log)
+        self.pem_scheduler = _make_pem_scheduler(self._pem_sched_cfg, self.log)
+        if self.precision != "fp32":
+            self.log(f"[pem] precision={self.precision}")
 
     def configure_anchors(self, map_id, config=None):
         """Enable session-only Object Anchors; no state is loaded from disk."""
@@ -230,6 +242,14 @@ class Sam6DCore:
 
         hits = [(n, r) for n, r in sorted(results.items())
                 if r.get("accepted") and r.get("mask") is not None]
+        # PEM 예산제: 이번 프레임에 실제로 풀 객체만 남기고, 나머지는 직전 포즈를
+        # 물려받는다. 스케줄러가 없으면 hits 가 그대로여서 원래 동작과 같다.
+        carried = []
+        if self.pem_scheduler is not None and hits:
+            pick = self.pem_scheduler.select([n for n, _ in hits])
+            carried = self.pem_scheduler.carried_rows(
+                [n for n, _ in hits if n not in pick])
+            hits = [(n, r) for n, r in hits if n in pick]
         rows, lab, shadows = [], None, []
         if hits:
             frame = self.ric.prepare_frame(rgb, depth, K)
@@ -288,7 +308,13 @@ class Sam6DCore:
                 used_names = set(names)
                 for d in self.last_frame_diag["pem_candidates"]:
                     d["used_by_pem"] = d["object"] in used_names
-                with torch.inference_mode():
+                import contextlib
+                _amp = (torch.autocast(device_type="cuda",
+                                       dtype=(torch.bfloat16 if self.precision == "bf16"
+                                              else torch.float16))
+                        if self.precision in ("fp16", "bf16") and self.device.startswith("cuda")
+                        else contextlib.nullcontext())
+                with torch.inference_mode(), _amp:
                     inp["dense_po"] = torch.cat([self._tem[n][0] for n in names], 0)
                     inp["dense_fo"] = torch.cat([self._tem[n][1] for n in names], 0)
                     if all(self._tem[n][2] is not None for n in names):
@@ -432,6 +458,9 @@ class Sam6DCore:
                         lab[r["mask"].astype(bool)] |= np.uint16(1 << i)
                     else:
                         lab[r["mask"].astype(bool)] = i + 1
+        if self.pem_scheduler is not None:
+            self.pem_scheduler.remember(rows)
+            rows = rows + carried
         if self.anchor_manager is not None:
             rows = self._apply_anchors(
                 rows, shadows, hits, depth, K, (h, w), slam_context)
