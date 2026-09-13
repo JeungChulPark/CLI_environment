@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ORB-SLAM3 Live</title>
+<style>
+:root{
+  --bg:#0f1115; --panel:#161920; --panel-2:#1d2129; --rule:#2a2f39;
+  --ink:#e9ecf1; --ink-2:#aab2bf; --ink-3:#7a8392;
+  --ok:#3ecf8e; --warn:#f0b43c; --bad:#ef5b5b; --accent:#5b9dff; --pts:#8e97a8;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font:13px/1.4 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Segoe UI",sans-serif}
+.app{display:flex;flex-direction:column;min-height:100vh;padding-inline:16px;padding-block:12px;gap:10px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+h1{font-size:16px;margin:0;font-weight:650;letter-spacing:.2px}
+.src{color:var(--ink-3);font-family:var(--mono);font-size:12px}
+.spacer{flex:1}
+.pill{font-family:var(--mono);font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--rule);
+  color:var(--ink-2);background:var(--panel);white-space:nowrap}
+.pill.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
+.pill.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+.pill.bad{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 45%,transparent)}
+.pill.live{color:#fff;background:var(--bad);border-color:var(--bad)}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(122px,1fr));gap:8px}
+.kpi{background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:8px 10px;min-width:0}
+.kpi .l{color:var(--ink-3);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi .v{font-family:var(--mono);font-size:19px;font-weight:600;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi .v small{font-size:11px;color:var(--ink-3);font-weight:400;margin-left:3px}
+.kpi.verdict{grid-column:span 2}
+.kpi.verdict .v{font-size:15px}
+
+.main{flex:1;display:grid;grid-template-columns:minmax(320px,44%) 1fr;gap:10px;min-height:560px}
+.col{display:flex;flex-direction:column;gap:10px;min-width:0}
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:8px;overflow:hidden;position:relative}
+.ptitle{position:absolute;top:8px;left:10px;font-size:11px;color:var(--ink-2);z-index:2;pointer-events:none;
+  background:rgba(10,12,16,.72);padding:2px 7px;border-radius:4px}
+
+/* video: what TrackRGBD consumed, colour large and depth picture-in-picture (click to swap) */
+.video{background:#000}
+#big{display:block;width:100%;height:auto;aspect-ratio:4/3;max-width:100%}
+#pip{position:absolute;right:8px;bottom:8px;width:32%;height:auto;aspect-ratio:4/3;max-width:100%;
+  border:1px solid rgba(255,255,255,.35);border-radius:4px;cursor:pointer;background:#000;z-index:2}
+.pipTag{position:absolute;right:12px;font-size:10px;color:#fff;background:rgba(10,12,16,.72);padding:1px 6px;
+  border-radius:3px;pointer-events:none;z-index:3}
+#noVideo{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--ink-3);z-index:1}
+
+.bar{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:6px 10px}
+.bar button,.bar select{font:12px var(--mono);color:var(--ink);background:var(--panel-2);border:1px solid var(--rule);
+  border-radius:6px;padding:3px 9px;cursor:pointer;min-width:34px}
+.bar button:disabled,.bar select:disabled,.bar input:disabled{opacity:.4;cursor:default}
+.bar input[type=range]{flex:1;min-width:60px;accent-color:var(--accent)}
+#pos{font-family:var(--mono);font-size:12px;color:var(--ink-2);white-space:nowrap}
+
+#chartWrap{flex:1;min-height:140px}
+#chart{display:block;width:100%;height:100%;position:absolute;inset:0}
+#scene{min-height:420px}
+#scene canvas{display:block;position:absolute;inset:0}  /* out of flow: sizing it must not resize the panel */
+.tools{position:absolute;top:6px;right:8px;display:flex;gap:6px;z-index:2}
+.tools button{font:12px var(--mono);color:var(--ink-2);background:var(--panel-2);border:1px solid var(--rule);
+  border-radius:6px;padding:3px 8px;cursor:pointer}
+.tools button.on{color:var(--accent);border-color:var(--accent)}
+.legend{position:absolute;bottom:8px;left:10px;display:flex;gap:12px;font-size:11px;color:var(--ink-3);z-index:2;flex-wrap:wrap}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+#overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;
+  color:var(--ink-2);font-size:14px;background:color-mix(in srgb,var(--bg) 60%,transparent)}
+#endBox{display:none;position:absolute;right:10px;bottom:34px;z-index:3;background:var(--panel-2);
+  border:1px solid var(--rule);border-radius:8px;padding:10px 12px;max-width:min(460px,90%)}
+#endBox h3{margin:0 0 6px;font-size:13px;display:flex;justify-content:space-between;gap:12px}
+#endBox h3 button{background:none;border:0;color:var(--ink-3);cursor:pointer;font-size:14px}
+#endBox pre{margin:0;font:11px/1.45 var(--mono);color:var(--ink-2);white-space:pre-wrap}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--panel)}
+.seg button{font:600 13px -apple-system,BlinkMacSystemFont,sans-serif;color:var(--ink-2);background:none;border:0;
+  padding:5px 12px;cursor:pointer;display:flex;align-items:center;gap:7px}
+.seg button+button{border-left:1px solid var(--rule)}
+.seg button.sel{color:var(--ink);background:var(--panel-2);box-shadow:inset 0 -2px 0 var(--accent)}
+.seg .st{font:11px var(--mono);font-weight:400;color:var(--ink-3)}
+.seg .st.running,.seg .st.loading{color:var(--bad)}
+.seg .st.finished{color:var(--ok)}
+.act{font:600 12px -apple-system,BlinkMacSystemFont,sans-serif;color:#fff;background:var(--accent);border:0;border-radius:6px;
+  padding:5px 12px;cursor:pointer}
+.act.stop{background:var(--bad)}
+#overlay button{margin-left:10px}
+@media (max-width:900px){
+  .main{grid-template-columns:1fr}
+  .kpi.verdict{grid-column:auto}
+}
+</style>
+<script>
+// surface script errors on the page instead of failing silently
+addEventListener("error", e => /ResizeObserver loop/.test(e.message) || showErr(e.message + " @" + (e.filename||"").split("/").pop() + ":" + e.lineno));
+addEventListener("unhandledrejection", e => showErr(String(e.reason && (e.reason.stack || e.reason))));
+function showErr(t){ const b = document.getElementById("err"); if (b){ b.hidden = false; b.textContent = "스크립트 오류: " + t; } }
+</script>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+            "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}
+</script>
+</head>
+<body>
+<div class="app">
+  <div id="err" hidden style="background:#5a1d1d;color:#ffd9d9;border:1px solid var(--bad);border-radius:6px;padding:6px 10px;font:12px var(--mono);white-space:pre-wrap"></div>
+  <header>
+    <h1 id="title">SLAM 실시간 추론</h1>
+    <div class="seg" id="seg" hidden></div>
+    <button class="act" id="b-act" hidden>▶ 실행</button>
+    <span class="src" id="src">연결 중…</span>
+    <span class="spacer"></span>
+    <span class="pill" id="state">—</span>
+    <span class="pill" id="conn">연결 안 됨</span>
+  </header>
+
+  <section class="kpis">
+    <div class="kpi"><div class="l">트래커 처리율</div><div class="v" id="k-hz">—<small>Hz</small></div></div>
+    <div class="kpi"><div class="l">추론 시간 (현재 / 평균)</div><div class="v" id="k-ms">—</div></div>
+    <div class="kpi"><div class="l">추론 시간 P99 / 최대</div><div class="v" id="k-p99">—</div></div>
+    <div class="kpi"><div class="l">33.3 ms 초과</div><div class="v" id="k-over">—</div></div>
+    <div class="kpi"><div class="l">큐 드롭 프레임</div><div class="v" id="k-drop">—</div></div>
+    <div class="kpi"><div class="l">입력→포즈 지연</div><div class="v" id="k-e2e">—</div></div>
+    <div class="kpi"><div class="l">입력→화면 지연</div><div class="v" id="k-disp">—</div></div>
+    <div class="kpi"><div class="l">추적 특징점 / 맵 포인트</div><div class="v" id="k-pts">—</div></div>
+    <div class="kpi"><div class="l">프레임 / 경과</div><div class="v" id="k-frame">—</div></div>
+    <div class="kpi verdict"><div class="l">30 FPS 실시간 판정</div><div class="v" id="k-verdict">—</div></div>
+  </section>
+
+  <section class="main">
+    <div class="col">
+      <div class="panel video">
+        <span class="ptitle" id="bigTitle">SLAM 입력 · 컬러 (초록 = 맵 포인트와 매칭된 특징점)</span>
+        <canvas id="big" width="640" height="480"></canvas>
+        <canvas id="pip" width="320" height="240" title="클릭하면 큰 화면과 바꿉니다"></canvas>
+        <span class="pipTag" id="pipTag" style="bottom:calc(8px + 2px)">깊이 · 클릭해서 전환</span>
+        <div id="noVideo">영상 대기 중…</div>
+      </div>
+      <div class="bar">
+        <span class="pill live" id="mode">LIVE</span>
+        <button id="b-first" title="처음으로" disabled>⏮</button>
+        <button id="b-play" title="재생 / 일시정지" disabled>▶</button>
+        <input id="seek" type="range" min="0" max="0" value="0" disabled>
+        <select id="speed" disabled><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select>
+        <span id="pos">—</span>
+      </div>
+      <div class="panel" id="chartWrap"><span class="ptitle">프레임별 추론 시간 (ms) · 빨간 점선 = 33.3 ms 마감</span>
+        <canvas id="chart"></canvas></div>
+    </div>
+    <div class="panel" id="scene">
+      <span class="ptitle">3D 맵 + 카메라 위치</span>
+      <div class="tools">
+        <button id="b-follow" class="on">따라가기</button>
+        <button id="b-top">위에서 보기</button>
+        <button id="b-reset">시점 초기화</button>
+      </div>
+      <div class="legend">
+        <span id="lg-map"><i style="background:var(--pts)"></i>맵 포인트</span>
+        <span id="lg-trk"><i style="background:var(--bad)"></i>현재 프레임 매칭 포인트</span>
+        <span><i style="background:var(--ok)"></i>궤적 (정상)</span>
+        <span><i style="background:var(--warn)"></i>궤적 (추적 불안정)</span>
+        <span><i style="background:#ffa24a"></i>카메라</span>
+      </div>
+      <div id="endBox"><h3><span>bag 재생 완료 · 요약</span><button id="b-endclose" title="닫기">✕</button></h3><pre id="endPre"></pre></div>
+      <div id="overlay">SLAM 프로세스에 연결하는 중…</div>
+    </div>
+  </section>
+</div>
+
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+const $ = id => document.getElementById(id);
+const STATE = {0:["NO IMAGES","warn"],1:["초기화 중","warn"],2:["추적 정상","ok"],3:["최근 추적 손실","warn"],4:["추적 손실","bad"],5:["OK (KLT)","ok"]};
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmt = (v, d=1) => v == null ? "—" : Number(v).toFixed(d);
+const clock = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,"0")}`;
+let DEADLINE = 1000/30, RATE = 30;
+
+// run data, indexed by frame number: {s: state, ms, e2e, p: [x,y,z] | null}
+const H = [];
+let mapFrames = [];   // frame index of each recorded map snapshot
+let mode = "live";    // "live" while tracking, "replay" once the bag has ended
+let cursor = -1;      // frame currently on screen
+
+// ---------------------------------------------------------------- 3D scene
+const host = $("scene");
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+host.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(css("--panel"));
+const camera = new THREE.PerspectiveCamera(55, 1, 0.02, 500);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+// ORB-SLAM3 world = first camera frame (x right, y down, z forward); rotate so y is up
+const world = new THREE.Group();
+world.rotation.x = Math.PI;
+scene.add(world);
+world.add(new THREE.GridHelper(40, 40, 0x2f3542, 0x232833));  // the first camera's x-z plane
+
+const mapGeo = new THREE.BufferGeometry();
+const mapMat = new THREE.PointsMaterial({color:css("--pts"), size:2, sizeAttenuation:false});
+world.add(new THREE.Points(mapGeo, mapMat));
+const trkGeo = new THREE.BufferGeometry();
+world.add(new THREE.Points(trkGeo, new THREE.PointsMaterial({color:css("--bad"), size:3.5, sizeAttenuation:false})));
+
+// trajectory as line segments so a map reset can start a fresh path
+let trajCap = 20000, trajPos = new Float32Array(trajCap*6), trajCol = new Float32Array(trajCap*6), trajN = 0;
+const trajGeo = new THREE.BufferGeometry();
+world.add(new THREE.LineSegments(trajGeo, new THREE.LineBasicMaterial({vertexColors:true})));
+function bindTraj(){
+  trajGeo.setAttribute("position", new THREE.BufferAttribute(trajPos,3).setUsage(THREE.DynamicDrawUsage));
+  trajGeo.setAttribute("color", new THREE.BufferAttribute(trajCol,3).setUsage(THREE.DynamicDrawUsage));
+}
+bindTraj();
+const cOk = new THREE.Color(css("--ok")), cWarn = new THREE.Color(css("--warn"));
+let prev = null, lastState = -1, everTracked = false;
+let trajUpto = -1;  // last frame index folded into the trajectory
+function resetTraj(){ trajN = 0; prev = null; lastState = -1; everTracked = false; trajUpto = -1; }
+function addPose(state, p){
+  // back to NO_IMAGES / NOT_INITIALIZED after tracking = ORB-SLAM3 started a new map
+  if ((state === 0 || state === 1) && everTracked && lastState !== 0 && lastState !== 1){ trajN = 0; prev = null; }
+  lastState = state;
+  if (state === 2) everTracked = true;
+  if (!p){ prev = null; return; }
+  if (prev){
+    if (trajN >= trajCap){
+      trajCap *= 2;
+      const np = new Float32Array(trajCap*6), nc = new Float32Array(trajCap*6);
+      np.set(trajPos); nc.set(trajCol); trajPos = np; trajCol = nc; bindTraj();
+    }
+    const c = state === 2 ? cOk : cWarn, o = trajN*6;
+    trajPos.set([prev[0],prev[1],prev[2],p[0],p[1],p[2]], o);
+    trajCol.set([c.r,c.g,c.b,c.r,c.g,c.b], o);
+    trajN++;
+  }
+  prev = p;
+}
+function commitTraj(){
+  trajGeo.attributes.position.needsUpdate = true;
+  trajGeo.attributes.color.needsUpdate = true;
+  trajGeo.setDrawRange(0, trajN*2);
+  trajGeo.computeBoundingSphere();
+}
+function rebuildTraj(upto){
+  if (upto < trajUpto) resetTraj();  // going back: start over; going forward: extend
+  for (let i = trajUpto + 1; i <= upto && i < H.length; i++) if (H[i]) addPose(H[i].s, H[i].p);
+  trajUpto = Math.max(trajUpto, Math.min(upto, H.length - 1));
+  commitTraj();
+}
+
+// camera frustum in the camera's own frame (z forward, y down)
+const fr = new THREE.Group();
+fr.matrixAutoUpdate = false;
+{
+  const w=0.16, h=0.12, z=0.22, v=[0,0,0, w,h,z, 0,0,0, -w,h,z, 0,0,0, w,-h,z, 0,0,0, -w,-h,z,
+    w,h,z, -w,h,z, -w,h,z, -w,-h,z, -w,-h,z, w,-h,z, w,-h,z, w,h,z, -w*.5,-h,z, 0,-h*1.6,z, 0,-h*1.6,z, w*.5,-h,z];
+  const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(v,3));
+  fr.add(new THREE.LineSegments(g, new THREE.LineBasicMaterial({color:0xffa24a})));
+}
+fr.visible = false;
+world.add(fr);
+const camWorld = new THREE.Vector3();
+
+let follow = true;
+function resetView(){ camera.position.set(0, 4, 5); controls.target.set(0, 0, -2); controls.update(); }
+resetView();
+$("b-follow").onclick = e => { follow = !follow; e.target.classList.toggle("on", follow); };
+$("b-reset").onclick = resetView;
+$("b-top").onclick = () => {
+  const t = follow && fr.visible ? camWorld.clone() : controls.target.clone();
+  camera.position.set(t.x, t.y + 14, t.z + 0.01); controls.target.copy(t); controls.update();
+};
+
+let chartDirty = true;
+function resize(){
+  const r = host.getBoundingClientRect();
+  renderer.setSize(r.width, r.height, false);
+  camera.aspect = r.width / Math.max(1, r.height); camera.updateProjectionMatrix();
+  const cw = $("chartWrap").getBoundingClientRect(), cc = $("chart");
+  const w = Math.round(cw.width*devicePixelRatio), h = Math.round(cw.height*devicePixelRatio);
+  if (cc.width !== w || cc.height !== h){ cc.width = w; cc.height = h; }
+  chartDirty = true;
+}
+const ro = new ResizeObserver(resize);
+ro.observe(host); ro.observe($("chartWrap"));
+
+// ---------------------------------------------------------------- latency chart (300 frames up to the cursor)
+function drawChart(){
+  const c = $("chart"), g = c.getContext("2d"), W = c.width, H_ = c.height, d = devicePixelRatio;
+  g.clearRect(0,0,W,H_);
+  const n = 300, end = Math.max(cursor, 0), start = Math.max(0, end - n + 1);
+  const win = [];
+  for (let i = start; i <= end; i++) win.push(H[i]);
+  const padL = 34*d, padB = 16*d, padT = 30*d;
+  const ymax = Math.max(40, ...win.map(h => h ? h.e2e : 0)) * 1.05;
+  const y = v => padT + (H_-padT-padB) * (1 - v/ymax);
+  const x = k => padL + (W-padL-6*d) * k/(n-1);
+  g.font = `${10*d}px ui-monospace,Menlo,monospace`; g.fillStyle = css("--ink-3"); g.strokeStyle = css("--rule"); g.lineWidth = 1;
+  for (const v of [0,10,20,30]){ g.beginPath(); g.moveTo(padL,y(v)); g.lineTo(W,y(v)); g.stroke(); g.fillText(v, 6*d, y(v)+3*d); }
+  g.strokeStyle = css("--bad"); g.setLineDash([4*d,3*d]); g.beginPath(); g.moveTo(padL,y(DEADLINE)); g.lineTo(W,y(DEADLINE)); g.stroke(); g.setLineDash([]);
+  const line = (key, color, w) => {
+    g.strokeStyle = color; g.lineWidth = w*d; g.beginPath(); let pen = false;
+    win.forEach((h,k) => { if (!h){ pen = false; return; } pen ? g.lineTo(x(k), y(h[key])) : g.moveTo(x(k), y(h[key])); pen = true; });
+    g.stroke();
+  };
+  line("e2e", "rgba(91,157,255,.5)", 1);
+  line("ms", css("--ok"), 1.5);
+  g.fillStyle = css("--bad");
+  win.forEach((h,k) => { if (h && h.ms > DEADLINE) g.fillRect(x(k)-1.5*d, y(h.ms)-1.5*d, 3*d, 3*d); });
+  if (win.length){ g.fillStyle = css("--ink-3"); g.fillText(`frame ${start}–${end}`, padL, H_ - 3*d); }
+  g.fillStyle = css("--ok"); g.fillText("— 추론 시간", W - 170*d, padT - 12*d);
+  g.fillStyle = "rgba(91,157,255,.9)"; g.fillText("— 입력→포즈", W - 90*d, padT - 12*d);
+}
+
+// ---------------------------------------------------------------- video (colour + depth)
+const bigCtx = $("big").getContext("2d"), pipCtx = $("pip").getContext("2d");
+let swapped = false, bmpColor = null, bmpDepth = null, drawToken = 0, drawnToken = 0, slamName = "SLAM";
+function videoTitle(){
+  $("bigTitle").textContent = swapped ? `${slamName} 입력 · 깊이 (가까움 = 빨강, 6 m 이상 = 파랑, 검정 = 깊이 없음)`
+    : `${slamName} 입력 · 컬러 (초록 = ${slamName.startsWith("RTAB") ? "오도메트리 인라이어 특징점" : "맵 포인트와 매칭된 특징점"})`;
+}
+function drawVideo(){
+  const [b, p] = swapped ? [bmpDepth, bmpColor] : [bmpColor, bmpDepth];
+  if (b) bigCtx.drawImage(b, 0, 0, 640, 480);
+  if (p) pipCtx.drawImage(p, 0, 0, 320, 240);
+}
+$("pip").onclick = () => {
+  swapped = !swapped;
+  videoTitle();
+  $("pipTag").textContent = (swapped ? "컬러" : "깊이") + " · 클릭해서 전환";
+  drawVideo();
+};
+
+// ---------------------------------------------------------------- one frame message -> screen
+const td = new TextDecoder();
+let mapCount = 0, dispLat = [], received = 0;
+function setState(st){ const [t,k] = STATE[st] || ["?","warn"]; $("state").textContent = t; $("state").className = "pill " + k; }
+
+function renderFrame(buf, live){
+  const dv = new DataView(buf);
+  const jl = dv.getUint32(4,true), np = dv.getUint32(8,true), cl = dv.getUint32(12,true), dl = dv.getUint32(16,true);
+  const m = JSON.parse(td.decode(new Uint8Array(buf, 20, jl)));
+  const po = 20 + jl, co = po + np*12, dofs = co + cl;
+  const token = ++drawToken;
+  Promise.all([
+    createImageBitmap(new Blob([new Uint8Array(buf, co, cl)], {type:"image/jpeg"})),
+    createImageBitmap(new Blob([new Uint8Array(buf, dofs, dl)], {type:"image/jpeg"})),
+  ]).then(([c, d]) => {
+    if (token < drawnToken) return;  // a newer frame is already on screen (never starve when decoding is slow)
+    drawnToken = token;
+    bmpColor = c; bmpDepth = d;
+    drawVideo();
+    $("noVideo").style.display = "none";
+    if (live){ dispLat.push(Date.now() - m.rel_wall_ms); if (dispLat.length > 60) dispLat.shift(); }
+  });
+
+  trkGeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(buf.slice(po, co)), 3));
+  if (m.T){
+    fr.matrix.set(m.T[0],m.T[1],m.T[2],m.T[3], m.T[4],m.T[5],m.T[6],m.T[7], m.T[8],m.T[9],m.T[10],m.T[11], 0,0,0,1);
+    fr.visible = true;
+  }
+  setState(m.state);
+  if (live){
+    const isNew = !H[m.i];
+    H[m.i] = {s:m.state, ms:m.track_ms, e2e:m.e2e_ms, p: m.T ? [m.T[3], m.T[7], m.T[11]] : null};
+    if (isNew && m.i > cursor){ addPose(m.state, H[m.i].p); trajUpto = m.i; commitTraj(); }
+    cursor = Math.max(cursor, m.i);
+    received++;
+  }
+  chartDirty = true;
+
+  $("k-hz").innerHTML = `${m.hz ? fmt(m.hz,0) : "—"}<small>/ ${RATE} Hz</small>`;
+  $("k-ms").innerHTML = `${fmt(m.track_ms)}<small>/ ${fmt(m.mean)} ms</small>`;
+  $("k-p99").innerHTML = `${fmt(m.p99)}<small>/ ${fmt(m.max)} ms</small>`;
+  $("k-over").innerHTML = `${m.over}<small>/ ${m.n}</small>`;
+  $("k-over").style.color = m.over ? css("--bad") : "";
+  $("k-drop").textContent = m.drops;
+  $("k-drop").style.color = m.drops ? css("--bad") : "";
+  $("k-e2e").innerHTML = `${fmt(m.e2e_ms)}<small>ms</small>`;
+  $("k-pts").innerHTML = `${m.n_kp}<small>/ ${mapCount.toLocaleString()}</small>`;
+  $("k-frame").innerHTML = `${m.i}<small>${clock((m.i + 1) / RATE)}</small>`;
+  if (!live) $("k-disp").innerHTML = `—<small>재생 중</small>`;
+  verdict(m);
+  updatePos();
+}
+
+function verdict(m){
+  const v = $("k-verdict");
+  const warm = m.n < RATE * 2;
+  const ok = m.over === 0 && m.drops === 0 && (warm || m.hz >= RATE - 1);
+  v.innerHTML = warm ? "측정 중…" :
+    ok ? `충족 <small>마감 초과 0 · 드롭 0 · P99 ${fmt(m.p99)} ms${m.state !== 2 ? " · 추적 상태 확인" : ""}</small>`
+       : `미충족 <small>초과 ${m.over} · 드롭 ${m.drops} · ${fmt(m.hz,0)} Hz</small>`;
+  v.style.color = warm ? "" : ok ? css("--ok") : css("--bad");
+}
+
+function onMap(buf){
+  const n = new DataView(buf).getUint32(4, true), rgb = new Uint8Array(buf, 1, 1)[0] === 1;
+  mapGeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(buf.slice(8, 8 + n*12)), 3));
+  if (rgb) mapGeo.setAttribute("color", new THREE.BufferAttribute(new Uint8Array(buf.slice(8 + n*12, 8 + n*15)), 3, true));
+  else mapGeo.deleteAttribute("color");
+  if (mapMat.vertexColors !== rgb){ mapMat.vertexColors = rgb; mapMat.color.set(rgb ? 0xffffff : css("--pts")); mapMat.needsUpdate = true; }
+  mapGeo.computeBoundingSphere();
+  mapCount = n;
+}
+
+// ---------------------------------------------------------------- replay (after the bag ends)
+let playing = false, playF = 0, speed = 1, inflight = false, wantFrame = -1, curMapK = -2;
+function updatePos(){
+  const n = H.length;
+  $("pos").textContent = cursor < 0 ? "—" : `${cursor} / ${Math.max(0, n-1)} · ${clock((cursor+1)/RATE)} / ${clock(n/RATE)}`;
+  if (mode === "replay") $("seek").value = cursor;
+}
+async function pump(){
+  if (inflight || wantFrame < 0) return;
+  const i = wantFrame; wantFrame = -1; inflight = true;
+  try {
+    const r = await fetch(`${BASE}/rec/frame/${i}`);
+    if (r.ok) renderFrame(await r.arrayBuffer(), false);
+  } catch (e) {} finally { inflight = false; if (wantFrame >= 0) pump(); }
+}
+async function loadMap(k){
+  curMapK = k;
+  try { const r = await fetch(`${BASE}/rec/map/${k}`); if (r.ok && curMapK === k) onMap(await r.arrayBuffer()); } catch (e) {}
+}
+function seek(i, fromPlayback = false){
+  i = Math.max(0, Math.min(H.length - 1, i));
+  cursor = i;
+  if (!fromPlayback) playF = i;
+  rebuildTraj(i);
+  let k = -1;
+  for (let j = 0; j < mapFrames.length && mapFrames[j] <= i; j++) k = j;
+  if (k < 0 && mapFrames.length) k = 0;
+  if (k !== curMapK && k >= 0) loadMap(k);
+  wantFrame = i; pump();
+  chartDirty = true; updatePos();
+}
+function setPlaying(p){ playing = p; $("b-play").textContent = p ? "⏸" : "▶"; }
+$("b-play").onclick = () => { if (cursor >= H.length - 1) seek(0); setPlaying(!playing); };
+$("b-first").onclick = () => { seek(0); };
+$("seek").oninput = e => { setPlaying(false); seek(+e.target.value); };
+$("speed").onchange = e => { speed = +e.target.value; };
+
+function enterReplay(){
+  if (mode === "replay") return;
+  mode = "replay";
+  $("mode").textContent = "재생"; $("mode").className = "pill";
+  for (const id of ["b-first","b-play","seek","speed"]) $(id).disabled = false;
+  $("seek").max = Math.max(0, H.length - 1);
+  seek(H.length - 1);
+}
+
+// ---------------------------------------------------------------- stream
+function onText(m){
+  if (m.type === "hello"){
+    DEADLINE = m.deadline_ms; RATE = m.rate;
+    if (m.slam){
+      $("title").textContent = `${m.slam} 실시간 추론`; document.title = `${m.slam} Live`;
+      slamName = m.slam; videoTitle();
+      const rtab = m.slam.startsWith("RTAB");
+      STATE[4] = [rtab ? "오도메트리 손실" : "추적 손실", "bad"];
+      $("lg-map").lastChild.textContent = rtab ? "맵 (그래프 노드별 RGB 포인트 클라우드)" : "맵 포인트";
+      $("lg-trk").lastChild.textContent = rtab ? "현재 프레임 오도메트리 인라이어" : "현재 프레임 매칭 포인트";
+    }
+    $("src").textContent = `${m.bag} · ${m.settings} · ${m.width}×${m.height} RGB-D · ${m.rate} Hz 입력 · KEEP_LAST(${m.queue})`;
+    if (!received) $("overlay").textContent = m.status === "loading" ? "Vocabulary 로드 중…" : "카메라 스트림 대기 중…";
+  } else if (m.type === "history"){
+    for (const t of m.traj) H[t[0]] = {s:t[1], ms:t[2], e2e:t[3], p: t.length > 4 ? [t[4],t[5],t[6]] : null};
+    mapFrames = m.maps;
+    if (mode === "live"){ cursor = Math.max(cursor, H.length - 1); resetTraj(); rebuildTraj(cursor); }
+    else $("seek").max = Math.max(0, H.length - 1);
+    chartDirty = true; updatePos();
+  } else if (m.type === "end"){
+    $("endPre").textContent = m.summary;
+    $("endBox").style.display = "block";
+    $("overlay").style.display = "none";
+    enterReplay();
+  }
+}
+$("b-endclose").onclick = () => { $("endBox").style.display = "none"; };
+
+// Opened through live_hub.py (port 8080) the page picks a backend (?slam=orb|rtab) and talks to its
+// port; opened on a backend's own port it simply uses that one.
+let BASE = "", WSURL = `ws://${location.host}/ws`, ws = null, hub = null, sel = null;
+function connect(){
+  if (ws) return;
+  ws = new WebSocket(WSURL);
+  ws.binaryType = "arraybuffer";
+  ws.onopen = () => { $("conn").textContent = "연결됨"; $("conn").className = "pill ok"; };
+  ws.onclose = () => {
+    ws = null;
+    $("conn").textContent = mode === "replay" ? "SLAM 프로세스 종료" : "연결 끊김"; $("conn").className = "pill " + (mode === "replay" ? "" : "bad");
+    if (!hub && mode !== "replay") setTimeout(connect, 1000);  // with the hub, its status poll reconnects
+  };
+  ws.onmessage = e => {
+    if (typeof e.data === "string") return onText(JSON.parse(e.data));
+    const t = new Uint8Array(e.data, 0, 1)[0];
+    if (t === 1){ $("overlay").style.display = "none"; if (mode === "live") renderFrame(e.data, true); }
+    else if (t === 2 && mode === "live") onMap(e.data);
+  };
+}
+
+const STATUS_KO = {idle:"대기", loading:"준비 중", running:"실행 중", finished:"완료", stopped:"중지됨"};
+async function api(path, method = "GET"){
+  const r = await fetch(path, {method});
+  if (!r.ok) throw new Error(`${path}: ${r.status}`);
+  return r.json();
+}
+function renderHub(st){
+  hub = st;
+  const want = new URLSearchParams(location.search).get("slam");
+  const cur = st.slams.find(s => s.id === want) || st.slams.find(s => s.status === "running" || s.status === "loading")
+           || st.slams.find(s => s.status === "finished") || st.slams[0];
+  if (!sel){
+    sel = cur;
+    BASE = `http://${location.hostname}:${sel.port}`; WSURL = `ws://${location.hostname}:${sel.port}/ws`;
+    $("title").textContent = `${sel.label} 실시간 추론`;
+  }
+  sel = st.slams.find(s => s.id === sel.id);
+  const seg = $("seg"); seg.hidden = false; seg.innerHTML = "";
+  for (const s of st.slams){
+    const b = document.createElement("button");
+    b.className = s.id === sel.id ? "sel" : "";
+    b.innerHTML = `${s.label} <span class="st ${s.status}">${STATUS_KO[s.status] || s.status}</span>`;
+    b.onclick = () => { if (s.id !== sel.id) location.search = `?slam=${s.id}`; };
+    seg.appendChild(b);
+  }
+  const act = $("b-act"); act.hidden = false;
+  const busy = sel.status === "running" || sel.status === "loading";
+  act.textContent = busy ? "■ 중지" : sel.status === "finished" ? "↻ 다시 실행" : "▶ 실행";
+  act.className = "act" + (busy ? " stop" : "");
+  act.onclick = () => busy ? stopSel() : startSel();
+  const up = busy || sel.status === "finished";
+  if (up) connect();
+  else if (!received){
+    $("overlay").style.display = "flex";
+    $("overlay").innerHTML = `${sel.label}이(가) 실행되고 있지 않습니다. <button class="act" id="b-ov">▶ ${sel.label} 실행</button>`;
+    $("b-ov").onclick = startSel;
+  }
+}
+async function startSel(){
+  const other = hub.slams.find(s => s.id !== sel.id && (s.status === "running" || s.status === "loading"));
+  if (other && !confirm(`${other.label} 추론을 중지하고 ${sel.label}을(를) 실행할까요? (동시에 돌리면 실시간 측정이 흐려집니다)`)) return;
+  if (sel.status === "finished" || received){  // a fresh run: start from a clean page
+    await api(`/api/start?slam=${sel.id}`, "POST");
+    location.search = `?slam=${sel.id}`;
+    return;
+  }
+  $("overlay").textContent = `${sel.label} 시작 중…`;
+  renderHub(await api(`/api/start?slam=${sel.id}`, "POST"));
+}
+async function stopSel(){
+  if (!confirm(`${sel.label} 추론을 중지할까요? 지금까지의 결과는 저장됩니다.`)) return;
+  renderHub(await api(`/api/stop?slam=${sel.id}`, "POST"));
+}
+async function pollHub(){
+  try { renderHub(await api("/api/status")); setTimeout(pollHub, 1000); }
+  catch (e){ if (!hub) connect(); else setTimeout(pollHub, 2000); }  // no hub: direct backend page
+}
+pollHub();
+
+// ---------------------------------------------------------------- render loop
+let fpsT = performance.now(), lastRecv = 0, lastT = performance.now();
+function tick(now){
+  requestAnimationFrame(tick);
+  const dt = Math.min(100, now - lastT); lastT = now;
+  if (playing && mode === "replay"){
+    playF += dt / 1000 * RATE * speed;
+    if (playF >= H.length - 1){ playF = H.length - 1; setPlaying(false); }
+    if (Math.floor(playF) !== cursor) seek(Math.floor(playF), true);
+  }
+  if (follow && fr.visible){
+    camWorld.setFromMatrixPosition(fr.matrixWorld);
+    const step = camWorld.clone().sub(controls.target).multiplyScalar(0.12);
+    controls.target.add(step);
+    camera.position.add(step);
+  }
+  world.updateMatrixWorld();
+  controls.update();
+  renderer.render(scene, camera);
+  if (chartDirty){ drawChart(); chartDirty = false; }
+  if (now - fpsT > 500 && mode === "live"){
+    const dispFps = (received - lastRecv) * 1000 / (now - fpsT);
+    lastRecv = received; fpsT = now;
+    if (dispLat.length){
+      const s = [...dispLat].sort((a,b) => a-b);
+      $("k-disp").innerHTML = `${s[Math.floor(s.length/2)]}<small>ms · 화면 ${fmt(dispFps,0)} fps</small>`;
+    }
+  }
+}
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>
