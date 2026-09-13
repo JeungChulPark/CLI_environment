@@ -1380,6 +1380,62 @@ vector<Eigen::Vector3f> System::GetAllMapPointsWorld()
     return points;
 }
 
+bool System::GetLastFrameReference(unsigned long &kfId, Sophus::SE3f &Tkf_c)
+{
+    // the tracker's lists are appended by Track*() on this same thread
+    if(mpTracker->mlpReferences.empty() || !mpTracker->mlpReferences.back())
+        return false;
+    KeyFrame* pKF = mpTracker->mlpReferences.back();
+    kfId = pKF->mnId;
+    Tkf_c = mpTracker->mlRelativeFramePoses.back().inverse();  // stored as T_c_kf
+    {
+        unique_lock<mutex> lock(mMutexReferencedKFs);
+        mReferencedKFs[kfId] = pKF;
+    }
+    return !mpTracker->mlbLost.back();
+}
+
+bool System::GetKeyFramePoseWorld(unsigned long kfId, Sophus::SE3f &Tw_kf, double &stamp, bool &culled)
+{
+    KeyFrame* pKF;
+    {
+        unique_lock<mutex> lock(mMutexReferencedKFs);
+        auto it = mReferencedKFs.find(kfId);
+        if(it == mReferencedKFs.end())
+            return false;
+        pKF = it->second;
+    }
+    stamp = pKF->mTimeStamp;
+    culled = pKF->isBad();
+
+    // same origin as SaveTrajectoryTUM: the first keyframe of the atlas
+    vector<KeyFrame*> vpKFs = mpAtlas->GetAllKeyFrames();
+    if(vpKFs.empty())
+        return false;
+    Sophus::SE3f Two = (*min_element(vpKFs.begin(), vpKFs.end(), KeyFrame::lId))->GetPoseInverse();
+
+    Sophus::SE3f Tkf_r;  // culled keyframe -> nearest good ancestor
+    while(pKF->isBad())
+    {
+        Tkf_r = Tkf_r * pKF->mTcp;
+        pKF = pKF->GetParent();
+        if(!pKF)
+            return false;
+    }
+    Tw_kf = (Tkf_r * pKF->GetPose() * Two).inverse();
+    return true;
+}
+
+vector<unsigned long> System::GetReferencedKeyFrameIds()
+{
+    unique_lock<mutex> lock(mMutexReferencedKFs);
+    vector<unsigned long> ids;
+    ids.reserve(mReferencedKFs.size());
+    for(const auto &kv : mReferencedKFs)
+        ids.push_back(kv.first);
+    return ids;
+}
+
 void System::SaveLoopEdges(const string &filename)
 {
     ofstream f(filename.c_str());

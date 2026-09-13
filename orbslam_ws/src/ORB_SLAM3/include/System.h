@@ -182,6 +182,17 @@ public:
     std::vector<MapPoint*> GetTrackedMapPoints();
     std::vector<cv::KeyPoint> GetTrackedKeyPointsUn();
     std::vector<Eigen::Vector3f> GetAllMapPointsWorld();
+
+    // Keyframe anchoring, for attaching other estimates (e.g. object poses) to the map so they follow
+    // later loop closures and BA. Both use the bookkeeping SaveTrajectoryTUM uses, so
+    //   T_w_cam (as saved in CameraTrajectory.txt) = T_w_kf (GetKeyFramePoseWorld) * T_kf_cam (GetLastFrameReference)
+    // Reference keyframe of the last frame given to Track*() and that frame's pose relative to it.
+    // Call right after Track*(). Returns false before tracking starts or when the frame was lost.
+    bool GetLastFrameReference(unsigned long &kfId, Sophus::SE3f &Tkf_c);
+    // Current camera-to-world pose of a keyframe seen by GetLastFrameReference. A culled keyframe is
+    // resolved through the spanning tree, as SaveTrajectoryTUM does; `culled` reports that case.
+    bool GetKeyFramePoseWorld(unsigned long kfId, Sophus::SE3f &Tw_kf, double &stamp, bool &culled);
+    std::vector<unsigned long> GetReferencedKeyFrameIds();
     // Save loop-closure edges as world-position pairs (c1x c1y c1z c2x c2y c2z)
     void SaveLoopEdges(const std::string &filename);
 
@@ -262,6 +273,10 @@ private:
     std::vector<MapPoint*> mTrackedMapPoints;
     std::vector<cv::KeyPoint> mTrackedKeyPointsUn;
     std::mutex mMutexState;
+
+    // keyframes handed out by GetLastFrameReference (keyframes are never freed, only flagged bad)
+    std::map<unsigned long, KeyFrame*> mReferencedKFs;
+    std::mutex mMutexReferencedKFs;
 
     //
     string mStrLoadAtlasFromFile;
