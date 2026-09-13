@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ORB-SLAM3 vs RTAB-Map Maps</title>
+<style>
+:root{
+  color-scheme: light;
+  --page:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,.10);
+  --orb:#2a78d6; --rtab:#eb6834; --pts:rgba(60,60,58,.42); --pts-faint:rgba(60,60,58,.16);
+}
+@media (prefers-color-scheme: dark){
+  :root:where(:not([data-theme="light"])){
+    color-scheme: dark;
+    --page:#0d0d0d; --surface:#1a1a19; --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.10);
+    --orb:#3987e5; --rtab:#d95926; --pts:rgba(215,213,205,.40); --pts-faint:rgba(215,213,205,.14);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --page:#0d0d0d; --surface:#1a1a19; --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.10);
+  --orb:#3987e5; --rtab:#d95926; --pts:rgba(215,213,205,.40); --pts-faint:rgba(215,213,205,.14);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Apple SD Gothic Neo","Segoe UI",sans-serif}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:28px 48px}
+h1{font-size:24px;margin:0 0 6px;font-weight:650}
+.sub{color:var(--ink-2);margin:0 0 22px;max-width:880px}
+h2{font-size:16px;margin:30px 0 4px;font-weight:620}
+.note{color:var(--ink-2);margin:0 0 12px;font-size:13px;max-width:880px}
+.card{background:var(--surface);border:1px solid var(--ring);border-radius:10px;padding:14px;position:relative}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}}
+.ctitle{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.ctitle b{font-size:15px}
+.ctitle span{color:var(--ink-2);font-size:12px}
+canvas{display:block;width:100%;max-width:100%}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink-2);margin-top:8px}
+.legend i{display:inline-block;vertical-align:middle;margin-right:6px}
+.sw-line{width:18px;height:2px;border-radius:1px}
+.sw-dot{width:8px;height:8px;border-radius:50%}
+.sw-ring{width:9px;height:9px;border-radius:50%;border:2px solid}
+.sw-sq{width:8px;height:8px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:7px 10px;border-bottom:1px solid var(--grid);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+thead th{color:var(--ink-2);font-weight:560}
+.scroll{overflow-x:auto}
+.tip{position:absolute;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--ring);
+  box-shadow:0 4px 14px rgba(0,0,0,.12);border-radius:6px;padding:6px 9px;font-size:12px;white-space:nowrap;z-index:5}
+.tip .k{color:var(--ink-2)}
+svg text{fill:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ORB-SLAM3 vs RTAB-Map · 공간 맵과 위치 추정</h1>
+  <p class="sub" id="sub"></p>
+
+  <div class="card scroll"><table id="stats"></table></div>
+
+  <h2>1. 공간 맵 (위에서 본 평면도)</h2>
+  <p class="note" id="n1"></p>
+  <div class="grid2">
+    <div class="card"><div class="ctitle"><b>ORB-SLAM3</b><span id="t-orb"></span></div>
+      <canvas id="c-orb"></canvas>
+      <div class="legend"><span><i class="sw-dot" style="background:var(--muted)"></i>맵 포인트</span>
+        <span><i class="sw-line" style="background:var(--orb)"></i>카메라 궤적</span>
+        <span><i class="sw-ring" style="border-color:var(--ink)"></i>시작</span><span><i class="sw-sq" style="background:var(--ink)"></i>끝</span></div></div>
+    <div class="card"><div class="ctitle"><b>RTAB-Map</b><span id="t-rtab"></span></div>
+      <canvas id="c-rtab"></canvas>
+      <div class="legend"><span><i class="sw-dot" style="background:var(--muted)"></i>포인트 클라우드</span>
+        <span><i class="sw-line" style="background:var(--rtab)"></i>카메라 궤적 (실시간)</span>
+        <span><i class="sw-ring" style="border-color:var(--ink)"></i>시작</span><span><i class="sw-sq" style="background:var(--ink)"></i>끝</span></div></div>
+  </div>
+
+  <h2>2. 위치 추정 비교 (궤적 겹쳐 보기)</h2>
+  <p class="note">두 SLAM 모두 첫 프레임의 카메라 좌표계를 원점으로 쓰기 때문에, 정렬이나 스케일 보정 없이 그대로 겹쳤습니다. 회색 점은 위치를 가늠하도록 깐 RTAB-Map 포인트 클라우드입니다. 아래 3번 그래프에 마우스를 올리면 그 시각의 두 추정 위치가 여기에 표시됩니다.</p>
+  <div class="card">
+    <canvas id="c-both" style="max-width:760px;margin:0 auto"></canvas>
+    <div class="legend"><span><i class="sw-line" style="background:var(--orb)"></i>ORB-SLAM3</span>
+      <span><i class="sw-line" style="background:var(--rtab)"></i>RTAB-Map 실시간 추정</span>
+      <span><i class="sw-ring" style="border-color:var(--rtab)"></i>RTAB-Map 그래프 노드 (최종 최적화)</span></div>
+  </div>
+
+  <h2>3. 두 추정 위치의 차이 (시간에 따라)</h2>
+  <p class="note">같은 프레임에서 ORB-SLAM3 위치와 RTAB-Map 위치 사이의 거리입니다. 정답(ground truth)이 없어서 어느 쪽이 맞는지는 알 수 없고, 두 시스템이 얼마나 다르게 추정했는지만 보여 줍니다.</p>
+  <div class="card" id="gapCard">
+    <svg id="gap" width="100%" height="260" role="img" aria-label="ORB-SLAM3와 RTAB-Map 위치 차이의 시간 변화"></svg>
+    <div class="legend"><span><i class="sw-line" style="background:var(--ink-2)"></i>ORB-SLAM3 ↔ RTAB-Map 실시간 추정</span>
+      <span><i class="sw-ring" style="border-color:var(--rtab)"></i>ORB-SLAM3 ↔ RTAB-Map 최적화 노드</span></div>
+  </div>
+</div>
+
+<script>
+const D = /*__DATA__*/null;
+const $ = id => document.getElementById(id);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const f = (v, d = 2) => v == null ? "—" : Number(v).toFixed(d);
+
+// ---------------------------------------------------------------- text + table
+const so = D.orb.stats, sr = D.rtab.stats;
+$("sub").textContent = `${D.dataset} · RealSense RGB-D 640×480 · 30 Hz 실시간 입력 · Apple M4 Pro (macOS) · 실행 ${D.orb.run}, ${D.rtab.run}`;
+$("n1").textContent = `바닥과 천장을 뺀 높이 구간(카메라 좌표 y ${f(D.band.rtab[0])}–${f(D.band.rtab[1])} m)의 점만 남겨 평면도처럼 보이게 했습니다. 격자 1칸 = 1 m, 두 그림의 축척은 같습니다. 궤적에 마우스를 올리면 프레임과 위치가 나옵니다.`;
+$("t-orb").textContent = `맵 포인트 ${so.map_points.toLocaleString()}개 (희소 특징점 맵)`;
+$("t-rtab").textContent = `포인트 ${sr.map_points.toLocaleString()}개 (4 cm 복셀) · 노드 ${sr.nodes}개 (밀집 RGB 맵)`;
+const rows = [
+  ["추적한 프레임", so.frames.toLocaleString(), sr.frames.toLocaleString()],
+  ["프레임당 추론 평균 / P99 (ms)", `${f(so.track[0])} / ${f(so.track[1])}`, `${f(sr.track[0])} / ${f(sr.track[1])}`],
+  ["33.3 ms 초과 / 드롭 프레임", `${so.over} / ${so.drops}`, `${sr.over} / ${sr.drops}`],
+  ["궤적 길이 (m)", f(so.path_m), `${f(sr.path_m)} (노드 기준 ${f(sr.node_path_m)})`],
+  ["시작점–끝점 거리 (m)", f(so.closure_m), `${f(sr.closure_m)} (노드 기준 ${f(sr.node_closure_m)})`],
+  ["맵", `희소 포인트 ${so.map_points.toLocaleString()}`, `RGB 클라우드 ${sr.map_points.toLocaleString()} · 노드 ${sr.nodes} · 루프 클로저 ${sr.loops}`],
+];
+$("stats").innerHTML = `<thead><tr><th></th><th>ORB-SLAM3</th><th>RTAB-Map</th></tr></thead><tbody>` +
+  rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("") + `</tbody>`;
+
+// ---------------------------------------------------------------- shared top-view frame (x right, z forward = up)
+const all = [...D.orb.traj, ...D.rtab.traj, ...D.rtab.nodes];
+const mapPts = [...D.orb.map, ...D.rtab.map];
+const q = (arr, p) => { const s = [...arr].sort((a, b) => a - b); return s[Math.floor(p * (s.length - 1))]; };
+const bx = [Math.min(q(mapPts.map(p => p[0]), .01), ...all.map(p => p[0])), Math.max(q(mapPts.map(p => p[0]), .99), ...all.map(p => p[0]))];
+const bz = [Math.min(q(mapPts.map(p => p[1]), .01), ...all.map(p => p[1])), Math.max(q(mapPts.map(p => p[1]), .99), ...all.map(p => p[1]))];
+const pad = 0.4;
+bx[0] -= pad; bx[1] += pad; bz[0] -= pad; bz[1] += pad;
+// the overlay zooms to the trajectories: that is where the two estimates differ
+const tx = [Math.min(...all.map(p => p[0])) - 0.5, Math.max(...all.map(p => p[0])) + 0.5];
+const tz = [Math.min(...all.map(p => p[1])) - 0.5, Math.max(...all.map(p => p[1])) + 0.5];
+
+function frame(canvas, bounds = [bx, bz]){
+  const [bx, bz] = bounds;
+  const w = canvas.clientWidth, h = Math.round(w * (bz[1] - bz[0]) / (bx[1] - bx[0]));
+  const dpr = devicePixelRatio || 1;
+  canvas.style.height = h + "px";
+  canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+  const g = canvas.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const s = w / (bx[1] - bx[0]);
+  return {g, w, h, s, bx, bz, X: x => (x - bx[0]) * s, Y: z => h - (z - bz[0]) * s};
+}
+function gridAndScale(v){
+  const {g, w, h, X, Y, bx, bz} = v;
+  g.strokeStyle = css("--grid"); g.lineWidth = 1;
+  for (let x = Math.ceil(bx[0]); x <= bx[1]; x++){ g.beginPath(); g.moveTo(Math.round(X(x)) + .5, 0); g.lineTo(Math.round(X(x)) + .5, h); g.stroke(); }
+  for (let z = Math.ceil(bz[0]); z <= bz[1]; z++){ g.beginPath(); g.moveTo(0, Math.round(Y(z)) + .5); g.lineTo(w, Math.round(Y(z)) + .5); g.stroke(); }
+  g.strokeStyle = css("--ink-2"); g.lineWidth = 2;
+  const x0 = 14, y0 = h - 14;
+  g.beginPath(); g.moveTo(x0, y0); g.lineTo(x0 + v.s, y0); g.stroke();
+  g.fillStyle = css("--ink-2"); g.font = "12px system-ui"; g.fillText("1 m", x0 + v.s + 6, y0 + 4);
+  g.fillText("↑ 첫 프레임 카메라의 정면", 14, 18);
+}
+function points(v, pts, color, size){
+  const {g, X, Y} = v; g.fillStyle = color;
+  for (const p of pts) g.fillRect(X(p[0]) - size / 2, Y(p[1]) - size / 2, size, size);
+}
+function path(v, pts, color, width){
+  const {g, X, Y} = v;
+  g.strokeStyle = color; g.lineWidth = width; g.lineJoin = "round"; g.lineCap = "round";
+  g.beginPath(); pts.forEach((p, i) => i ? g.lineTo(X(p[0]), Y(p[1])) : g.moveTo(X(p[0]), Y(p[1]))); g.stroke();
+}
+function ends(v, pts){
+  const {g, X, Y} = v, a = pts[0], b = pts[pts.length - 1], surf = css("--surface"), ink = css("--ink");
+  g.lineWidth = 2;
+  g.beginPath(); g.arc(X(a[0]), Y(a[1]), 6, 0, 7); g.fillStyle = surf; g.fill(); g.strokeStyle = ink; g.stroke();
+  g.fillStyle = surf; g.fillRect(X(b[0]) - 6, Y(b[1]) - 6, 12, 12); g.fillStyle = ink; g.fillRect(X(b[0]) - 4, Y(b[1]) - 4, 8, 8);
+}
+function ring(v, p, color, r = 4.5){
+  const {g, X, Y} = v;
+  g.beginPath(); g.arc(X(p[0]), Y(p[1]), r, 0, 7); g.fillStyle = css("--surface"); g.fill();
+  g.lineWidth = 2; g.strokeStyle = color; g.stroke();
+}
+
+// hover: nearest trajectory sample within 14 px
+function hover(canvas, series, extra){
+  const card = canvas.parentElement;
+  const tip = document.createElement("div"); tip.className = "tip"; tip.hidden = true; card.appendChild(tip);
+  canvas.addEventListener("mousemove", e => {
+    const v = canvas._v, r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+    let best = null;
+    for (const s of series) s.pts.forEach((p, i) => {
+      const d = Math.hypot(v.X(p[0]) - mx, v.Y(p[1]) - my);
+      if (d < 14 && (!best || d < best.d)) best = {d, s, i, p};
+    });
+    extra && extra(best);
+    if (!best){ tip.hidden = true; return; }
+    const t = best.s.t ? best.s.t[best.i] : null;
+    tip.innerHTML = `<b style="color:${best.s.color}">■</b> ${best.s.name}<br><span class="k">${t != null ? `프레임 ${Math.round(t * 30)} · ${f(t, 1)} s` : `노드 ${best.i + 1}`}</span><br>x ${f(best.p[0])} m · z ${f(best.p[1])} m`;
+    tip.hidden = false;
+    const cr = card.getBoundingClientRect();
+    tip.style.left = Math.min(e.clientX - cr.left + 14, cr.width - tip.offsetWidth - 8) + "px";
+    tip.style.top = (e.clientY - cr.top + 14) + "px";
+  });
+  canvas.addEventListener("mouseleave", () => { tip.hidden = true; extra && extra(null); });
+}
+
+let marker = null;  // time the gap chart points at, drawn on the overlay
+function drawAll(){
+  const orbC = css("--orb"), rtabC = css("--rtab");
+
+  const vo = frame($("c-orb"));
+  gridAndScale(vo); points(vo, D.orb.map, css("--pts"), 2); path(vo, D.orb.traj, orbC, 2); ends(vo, D.orb.traj);
+  $("c-orb")._v = vo;
+
+  const vr = frame($("c-rtab"));
+  gridAndScale(vr); points(vr, D.rtab.map, css("--pts"), 1.5); path(vr, D.rtab.traj, rtabC, 2); ends(vr, D.rtab.traj);
+  $("c-rtab")._v = vr;
+
+  const vb = frame($("c-both"), [tx, tz]);
+  gridAndScale(vb); points(vb, D.rtab.map, css("--pts-faint"), 1.5);
+  path(vb, D.rtab.traj, rtabC, 2); path(vb, D.orb.traj, orbC, 2);
+  for (const n of D.rtab.nodes) ring(vb, n, rtabC, 3.5);
+  ends(vb, D.orb.traj);
+  if (marker != null){
+    const i = Math.min(D.orb.traj.length - 1, Math.round(marker * 30)), j = Math.min(D.rtab.traj.length - 1, Math.round(marker * 30));
+    const a = D.orb.traj[i], b = D.rtab.traj[j];
+    vb.g.strokeStyle = css("--ink"); vb.g.lineWidth = 1.5; vb.g.setLineDash([4, 3]);
+    vb.g.beginPath(); vb.g.moveTo(vb.X(a[0]), vb.Y(a[1])); vb.g.lineTo(vb.X(b[0]), vb.Y(b[1])); vb.g.stroke(); vb.g.setLineDash([]);
+    ring(vb, a, orbC, 6); ring(vb, b, rtabC, 6);
+  }
+  $("c-both")._v = vb;
+}
+drawAll();
+hover($("c-orb"), [{name: "ORB-SLAM3", color: css("--orb"), pts: D.orb.traj, t: D.orb.t}]);
+hover($("c-rtab"), [{name: "RTAB-Map 실시간", color: css("--rtab"), pts: D.rtab.traj, t: D.rtab.t}]);
+hover($("c-both"), [
+  {name: "ORB-SLAM3", color: css("--orb"), pts: D.orb.traj, t: D.orb.t},
+  {name: "RTAB-Map 실시간", color: css("--rtab"), pts: D.rtab.traj, t: D.rtab.t},
+  {name: "RTAB-Map 노드", color: css("--rtab"), pts: D.rtab.nodes}]);
+
+// ---------------------------------------------------------------- gap over time (one axis: metres)
+function drawGap(){
+  const svg = $("gap"), W = svg.clientWidth, H = 260, m = {l: 44, r: 14, t: 14, b: 30};
+  const tmax = Math.max(...D.gap.map(g => g[0]));
+  const ymax = Math.max(0.1, ...D.gap.map(g => g[1]), ...D.node_gap.map(g => g[1])) * 1.1;
+  const X = t => m.l + (W - m.l - m.r) * t / tmax, Y = v => m.t + (H - m.t - m.b) * (1 - v / ymax);
+  const step = ymax > 2 ? 0.5 : ymax > 0.8 ? 0.2 : ymax > 0.3 ? 0.1 : 0.05;
+  let s = "";
+  for (let v = 0; v <= ymax; v += step)
+    s += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="${v === 0 ? css("--axis") : css("--grid")}"/><text x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end">${v.toFixed(2)}</text>`;
+  for (let t = 0; t <= tmax; t += 30) s += `<text x="${X(t)}" y="${H - 10}" text-anchor="middle">${t}s</text>`;
+  s += `<text x="${m.l}" y="10">m</text>`;
+  // thin the per-frame line to one point per 3 frames for drawing
+  const pts = D.gap.filter((_, i) => i % 3 === 0).map(g => `${X(g[0]).toFixed(1)},${Y(g[1]).toFixed(1)}`).join(" ");
+  s += `<polyline points="${pts}" fill="none" stroke="${css("--ink-2")}" stroke-width="2" stroke-linejoin="round"/>`;
+  for (const g of D.node_gap) s += `<circle cx="${X(g[0])}" cy="${Y(g[1])}" r="3.5" fill="${css("--surface")}" stroke="${css("--rtab")}" stroke-width="2"/>`;
+  s += `<line id="xh" y1="${m.t}" y2="${H - m.b}" stroke="${css("--ink")}" stroke-width="1" visibility="hidden"/>`;
+  svg.innerHTML = s;
+
+  const card = $("gapCard");
+  let tip = card.querySelector(".tip");
+  if (!tip){ tip = document.createElement("div"); tip.className = "tip"; tip.hidden = true; card.appendChild(tip); }
+  svg.onmousemove = e => {
+    const r = svg.getBoundingClientRect(), t = (e.clientX - r.left - m.l) / (W - m.l - m.r) * tmax;
+    if (t < 0 || t > tmax){ svg.onmouseleave(); return; }
+    const i = Math.min(D.gap.length - 1, Math.max(0, Math.round(t * 30)));
+    const g = D.gap[i], xh = $("xh");
+    xh.setAttribute("x1", X(g[0])); xh.setAttribute("x2", X(g[0])); xh.setAttribute("visibility", "visible");
+    tip.innerHTML = `<span class="k">${f(g[0], 1)} s · 프레임 ${i}</span><br>위치 차이 <b>${f(g[1], 2)} m</b>`;
+    tip.hidden = false;
+    const cr = card.getBoundingClientRect();
+    tip.style.left = Math.min(e.clientX - cr.left + 14, cr.width - tip.offsetWidth - 8) + "px"; tip.style.top = "20px";
+    marker = g[0]; drawAll();
+  };
+  svg.onmouseleave = () => { $("xh") && $("xh").setAttribute("visibility", "hidden"); tip.hidden = true; marker = null; drawAll(); };
+}
+drawGap();
+
+let rt;
+addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => { drawAll(); drawGap(); }, 120); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { drawAll(); drawGap(); });
+</script>
+</body>
+</html>

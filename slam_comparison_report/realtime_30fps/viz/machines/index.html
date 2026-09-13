@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WSL2 vs Mac at 2000 Features</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f7f7f5; --panel:#fcfcfb; --panel-2:#f1f1ee;
+  --ink:#1b1d21; --ink-2:#4a4e56; --ink-3:#767b85;
+  --rule:#dedfda; --rule-2:#ebebe7; --grid:#e6e6e1;
+  --wsl:#CC5A16; --mac:#2F6FD0;
+  --ok:#1F7A4D; --bad:#B3261E;
+  --shadow:0 1px 2px rgba(20,22,26,.05), 0 8px 20px -14px rgba(20,22,26,.22);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14161a; --panel:#1b1e23; --panel-2:#22262c;
+  --ink:#eceef1; --ink-2:#b3b9c2; --ink-3:#828a95;
+  --rule:#2d323a; --rule-2:#242931; --grid:#262b32;
+  --wsl:#D96A28; --mac:#4A85DD;
+  --ok:#4FB07B; --bad:#E8705F;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 24px -16px rgba(0,0,0,.7);
+}}
+:root[data-theme="dark"]{
+  --bg:#14161a; --panel:#1b1e23; --panel-2:#22262c;
+  --ink:#eceef1; --ink-2:#b3b9c2; --ink-3:#828a95;
+  --rule:#2d323a; --rule-2:#242931; --grid:#262b32;
+  --wsl:#D96A28; --mac:#4A85DD;
+  --ok:#4FB07B; --bad:#E8705F;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 24px -16px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  padding-inline:20px;padding-block:0}
+.wrap{max-width:1080px;margin:0 auto}
+h1,h2,h3{font-family:"IBM Plex Sans Condensed","IBM Plex Sans",sans-serif;margin:0;text-wrap:balance}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-3)}
+header{padding-block:36px 20px;border-bottom:1px solid var(--rule)}
+header h1{font-size:clamp(26px,4.1vw,40px);font-weight:700;letter-spacing:-.02em;line-height:1.08;margin-block:9px 11px}
+header p{margin:0;color:var(--ink-2);max-width:70ch}
+header nav{margin-top:12px;font-size:13.5px;display:flex;flex-wrap:wrap;gap:6px 18px}
+a{color:var(--mac)}
+
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+@media(max-width:900px){.tiles{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.tiles{grid-template-columns:1fr}}
+.tile{background:var(--panel);border:1px solid var(--rule);border-radius:3px;padding:13px 15px 14px;box-shadow:var(--shadow)}
+.tile .k{font-size:12.5px;color:var(--ink-3)}
+.tile .v{font-family:"IBM Plex Sans",sans-serif;font-size:28px;font-weight:600;letter-spacing:-.02em;line-height:1.2;margin-top:3px}
+.tile .v small{font-size:13px;font-weight:400;color:var(--ink-3);margin-left:4px;letter-spacing:0}
+.tile .d{font-size:12.5px;color:var(--ink-2);margin-top:3px}
+.tile .d b{font-weight:600}
+
+section{margin-top:26px}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:3px;box-shadow:var(--shadow);padding:16px 18px 14px}
+.card h2{font-size:19px;font-weight:600;letter-spacing:-.01em}
+.card .sub{font-size:13.5px;color:var(--ink-2);margin:3px 0 0;max-width:78ch}
+.legend{display:flex;flex-wrap:wrap;gap:6px 20px;margin:12px 0 4px;font-size:13px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block;flex:none}
+.glyphkey{display:inline-flex;align-items:center;gap:7px;color:var(--ink-3)}
+.chart{position:relative;margin-top:8px}
+.chart svg{display:block;width:100%;overflow:visible}
+.chart svg text{font-family:"IBM Plex Sans",sans-serif;fill:var(--ink-2)}
+.chart svg text.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+.chart svg text.muted{fill:var(--ink-3)}
+.chart svg text.strong{fill:var(--ink);font-weight:600}
+.chart svg text.badtxt{fill:var(--bad);font-weight:600}
+.facets{display:grid;grid-template-columns:1fr 1fr;gap:10px 28px}
+@media(max-width:760px){.facets{grid-template-columns:1fr}}
+.facets h3{font-size:14.5px;font-weight:600;margin-top:10px}
+
+.tip{position:absolute;pointer-events:none;z-index:5;background:var(--panel);border:1px solid var(--rule);
+  border-radius:3px;box-shadow:var(--shadow);padding:8px 11px;font-size:12.5px;min-width:170px;
+  opacity:0;transition:opacity .08s;color:var(--ink)}
+.tip.on{opacity:1}
+.tip .t{font-weight:600;margin-bottom:3px;display:flex;align-items:center;gap:7px}
+.tip table{border-collapse:collapse;width:100%}
+.tip td{padding:1px 0;color:var(--ink-2)}
+.tip td.r{text-align:right;font-family:"IBM Plex Mono",monospace;color:var(--ink);padding-left:14px;font-variant-numeric:tabular-nums}
+
+.tablewrap{overflow-x:auto;margin-top:12px}
+table.data{border-collapse:collapse;width:100%;font-size:13.5px;min-width:640px}
+table.data th,table.data td{padding:6px 10px;border-bottom:1px solid var(--rule-2);text-align:right;white-space:nowrap}
+table.data th{font-weight:600;color:var(--ink-3);font-size:12px;border-bottom:1px solid var(--rule)}
+table.data td{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+table.data th:first-child,table.data td:first-child,table.data th:nth-child(2),table.data td:nth-child(2){text-align:left;font-family:"IBM Plex Sans",sans-serif}
+table.data tr.grp td{border-top:1px solid var(--rule)}
+table.data td.miss{color:var(--bad);font-weight:600}
+table.data td.na{color:var(--ink-3)}
+details summary{cursor:pointer;font-size:13.5px;color:var(--ink-2);margin-top:10px}
+
+.notes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:760px){.notes{grid-template-columns:1fr}}
+.note{background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--ink-3);border-radius:3px;padding:13px 16px}
+.note h3{font-size:14.5px;font-weight:600;margin:0 0 4px}
+.note p,.note li{margin:0;font-size:13.5px;color:var(--ink-2)}
+.note ul{margin:0;padding-left:18px}
+.note li+li{margin-top:4px}
+.note code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;background:var(--panel-2);padding:1px 5px;border-radius:2px}
+footer{border-top:1px solid var(--rule);margin-top:30px;padding-block:16px 34px;font-size:12px;color:var(--ink-3)}
+footer code{font-family:"IBM Plex Mono",monospace}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">ORB-SLAM3 · nFeatures 2000 · 260826_etri_eightcircle_dark · CPU only</div>
+  <h1>WSL2 vs Mac at 2000 Features</h1>
+  <p>The same ORB-SLAM3 source, the same settings files and the same 7,100-frame RealSense sequence,
+     measured on an i9-12900HK laptop under WSL2 and on an Apple M4 Pro Mac, against the 33.33 ms
+     a 30 FPS camera allows per frame.</p>
+  <nav><a href="../mac/live2000/">Mac live playback →</a><a href="../live2000/">WSL2 live playback →</a><a href="../">All pages</a></nav>
+</header>
+
+<div class="tiles" id="tiles"></div>
+
+<section class="card" aria-labelledby="h-cost">
+  <h2 id="h-cost">Per-frame tracking cost against the budget</h2>
+  <p class="sub">Each lane is one run. The dot is the mean, the tall tick is P99, and the line runs on to the
+     slowest frame. Only WSL2 ever crosses the deadline: the unpatched build on 170 frames, and B on one.</p>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--wsl)"></i>WSL2 · i9-12900HK</span>
+    <span><i class="sw" style="background:var(--mac)"></i>Mac · Apple M4 Pro</span>
+    <span class="glyphkey"><svg width="62" height="14" aria-hidden="true"><line x1="6" y1="7" x2="58" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="6" cy="7" r="4.5" fill="currentColor"/><rect x="36" y="0" width="3" height="14" rx="1" fill="currentColor"/></svg>mean · P99 · max</span>
+  </div>
+  <div class="chart" id="c-cost"></div>
+</section>
+
+<section class="card" aria-labelledby="h-p99">
+  <h2 id="h-p99">What the patches bought on each machine</h2>
+  <p class="sub">P99 by configuration. The fixes cut the tail on both machines in the same order; on the Mac
+     the unpatched build already has a wide margin.</p>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--wsl)"></i>WSL2 · i9-12900HK</span>
+    <span><i class="sw" style="background:var(--mac)"></i>Mac · Apple M4 Pro</span>
+  </div>
+  <div class="chart" id="c-p99"></div>
+</section>
+
+<section class="card" aria-labelledby="h-stage">
+  <h2 id="h-stage">Where the time goes</h2>
+  <p class="sub">Mean milliseconds per tracking stage, from ORB-SLAM3's own <span class="mono">REGISTER_TIMES</span>
+     timers. Local-map tracking, which grows with the map, gains the most on the Mac; ORB extraction gains the least.
+     WSL2 published this breakdown for baseline and A only.</p>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--wsl)"></i>WSL2 · i9-12900HK</span>
+    <span><i class="sw" style="background:var(--mac)"></i>Mac · Apple M4 Pro</span>
+  </div>
+  <div class="facets" id="c-stage"></div>
+</section>
+
+<section class="card" aria-labelledby="h-tab">
+  <h2 id="h-tab">All numbers</h2>
+  <p class="sub">Latency in ms. Accuracy is the start-to-end gap on the figure-eight course, a direct measure of
+     accumulated drift. A dash means the WSL2 study did not report that value.</p>
+  <div class="tablewrap"><table class="data" id="t-all"></table></div>
+</section>
+
+<section aria-labelledby="h-notes">
+  <h2 id="h-notes" style="font-size:19px;margin-bottom:10px">Read these before comparing</h2>
+  <div class="notes">
+    <div class="note"><h3>The Mac ran the harder schedule</h3>
+      <p>WSL2's table replayed the bag at its recorded pace, about 25 Hz over 285 s. The Mac run forced
+         30 Hz, finishing the same frames in 238 s, with a five-deep drop-oldest queue. No frame was dropped.</p></div>
+    <div class="note"><h3>Different input paths</h3>
+      <p>On WSL2 a Python ROS 2 bridge in its own process aligned depth at about 8 ms per frame. On the Mac a C++
+         reader in the same process reads the <code>.db3</code> directly and aligns in about 2 ms. Both time only the
+         <code>TrackRGBD()</code> call, but WSL2's tracker had more work competing beside it.</p></div>
+    <div class="note"><h3>What was held equal</h3>
+      <ul><li>ORB-SLAM3 source: the repository tree for A/B/C, <code>f912e95^</code> for baseline</li>
+          <li>Settings: <code>orbslam_ws/data/nf2000_*.yaml</code></li>
+          <li><code>-O3</code>, native CPU tuning, four ORB-extraction threads, <code>OMP_NUM_THREADS=6</code>, stage timers on</li>
+          <li>Pairing rules, depth alignment and monotonic 1/30 s timestamps as in <code>rs_bag_bridge.py</code></li></ul></div>
+    <div class="note"><h3>What was not</h3>
+      <ul><li>Compiler: conda GCC with AVX2 on WSL2, Apple Clang with NEON on the Mac</li>
+          <li>The Mac tracking thread ran at QoS <code>USER_INTERACTIVE</code>, which keeps it on performance cores. WSL2 cannot tell P-cores from E-cores.</li>
+          <li>Per-frame WSL2 data is not in this checkout, so WSL2 appears here as published summaries only</li></ul></div>
+  </div>
+</section>
+
+<footer>
+  WSL2: <code>realtime_30fps/NF2000_REALTIME.md</code> §1, §4, §5. Mac: measured runs regenerated into this page by
+  <code>orbslam_ws/scripts/build_machine_compare.py</code>.
+</footer>
+</div>
+
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+<script id="data" type="application/json">{"configs":["baseline","A","B","C"],"config_labels":{"baseline":"Baseline (unpatched)","A":"A \u00b7 result-preserving fixes","B":"B \u00b7 A + fewer iterations","C":"C \u00b7 B + early exit"},"budget_ms":33.33,"runs":{"wsl2":{"baseline":{"mean":24.68,"p95":31.17,"p99":35.64,"max":43.64,"over":170,"frames":7142,"closure_cm":26.6,"path_m":36.16,"kf":160,"mp":19855},"A":{"mean":16.34,"p95":20.01,"p99":21.71,"max":30.86,"over":0,"frames":null,"closure_cm":26.7,"path_m":36.14,"kf":170,"mp":20715},"B":{"mean":16.37,"p95":20.25,"p99":22.12,"max":39.51,"over":1,"frames":null,"closure_cm":null,"path_m":null,"kf":null,"mp":null},"C":{"mean":15.38,"p95":18.8,"p99":20.34,"max":27.03,"over":0,"frames":7144,"closure_cm":26.5,"path_m":36.44,"kf":164,"mp":20255}},"mac":{"baseline":{"mean":14.4,"p95":16.73,"p99":17.36,"max":22.84,"over":0,"frames":7145,"closure_cm":26.7,"path_m":36.16,"kf":156,"mp":20336},"A":{"mean":10.23,"p95":11.73,"p99":12.25,"max":16.79,"over":0,"frames":7145,"closure_cm":26.8,"path_m":36.61,"kf":156,"mp":20334},"B":{"mean":10.27,"p95":11.84,"p99":12.52,"max":16.53,"over":0,"frames":7145,"closure_cm":26.9,"path_m":36.44,"kf":168,"mp":20698},"C":{"mean":9.96,"p95":11.46,"p99":11.97,"max":14.76,"over":0,"frames":7145,"closure_cm":26.7,"path_m":36.29,"kf":161,"mp":20086}}},"stages":{"wsl2":{"baseline":{"ext":8.46,"pred":4.41,"lm":8.95,"total":24.68,"other":2.86},"A":{"ext":3.63,"pred":3.85,"lm":7.51,"total":16.34,"other":1.35}},"mac":{"baseline":{"ext":5.99,"pred":2.71,"lm":4.89,"total":14.4,"other":0.82},"A":{"ext":2.77,"pred":2.66,"lm":4.34,"total":10.23,"other":0.46},"B":{"ext":2.77,"pred":2.66,"lm":4.37,"total":10.27,"other":0.47},"C":{"ext":2.83,"pred":2.45,"lm":4.21,"total":9.96,"other":0.47}}}}</script>
+<script>
+const D = JSON.parse(document.getElementById("data").textContent);
+const CFG = D.configs;                      // ["baseline","A","B","C"]
+const CFGLABEL = D.config_labels;
+const M = [["wsl2","WSL2 · i9-12900HK","--wsl"],["mac","Mac · Apple M4 Pro","--mac"]];
+const BUDGET = 1000/30;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const NS = "http://www.w3.org/2000/svg";
+const el = (tag, attrs={}, parent) => { const e=document.createElementNS(NS,tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const fmt = (v, d=2) => v==null ? "—" : v.toFixed(d);
+const tip = document.getElementById("tip");
+
+function showTip(evt, host, title, colorVar, rows){
+  tip.innerHTML = `<div class="t"><i class="sw" style="background:var(${colorVar})"></i>${title}</div>` +
+    `<table>${rows.map(([k,v])=>`<tr><td>${k}</td><td class="r">${v}</td></tr>`).join("")}</table>`;
+  tip.classList.add("on");
+  const pad = 14, r = tip.getBoundingClientRect();
+  let x = evt.clientX + pad, y = evt.clientY + pad;
+  if (x + r.width > innerWidth - 8) x = evt.clientX - r.width - pad;
+  if (y + r.height > innerHeight - 8) y = evt.clientY - r.height - pad;
+  tip.style.left = (x + scrollX) + "px"; tip.style.top = (y + scrollY) + "px";
+}
+const hideTip = () => tip.classList.remove("on");
+
+function latRows(r){
+  return [["mean", fmt(r.mean)+" ms"],["P95", fmt(r.p95)+" ms"],["P99", fmt(r.p99)+" ms"],
+          ["max", fmt(r.max)+" ms"],["over 33.33 ms", r.over==null?"—":r.over.toLocaleString() + (r.frames?` of ${r.frames.toLocaleString()}`:"")]];
+}
+
+/* ---- tiles ---- */
+function tiles(){
+  const w=D.runs.wsl2, m=D.runs.mac;
+  const ratios = k => CFG.map(c => w[c][k]/m[c][k]);
+  const lo = a => Math.min(...a).toFixed(1), hi = a => Math.max(...a).toFixed(1);
+  const T = [
+    ["Unpatched, frames over budget", `${m.baseline.over}<small>on Mac</small>`,
+     `WSL2: <b>${w.baseline.over}</b> of ${w.baseline.frames.toLocaleString()} frames`],
+    ["Mean speed-up, Mac over WSL2", `${lo(ratios("mean"))}–${hi(ratios("mean"))}×`, "across baseline, A, B and C"],
+    ["P99 speed-up, Mac over WSL2", `${lo(ratios("p99"))}–${hi(ratios("p99"))}×`, "the tail shrinks more than the mean"],
+    ["Mac best P99 (config C)", `${fmt(m.C.p99)}<small>ms</small>`,
+     `${Math.round(m.C.p99/BUDGET*100)}% of the budget · WSL2 ${Math.round(w.C.p99/BUDGET*100)}%`],
+  ];
+  document.getElementById("tiles").innerHTML = T.map(([k,v,d]) =>
+    `<div class="tile"><div class="k">${k}</div><div class="v">${v}</div><div class="d">${d}</div></div>`).join("");
+}
+
+/* ---- chart 1: mean / P99 / max lanes ---- */
+function drawCost(){
+  const host = document.getElementById("c-cost"); host.innerHTML = "";
+  const W = host.clientWidth, narrow = W < 560;
+  const left = narrow ? 64 : 150, right = narrow ? 64 : 96, top = 22, lane = 22, gapCfg = 16;
+  const H = top + CFG.length*(2*lane + gapCfg) + 26;
+  const svg = el("svg", {viewBox:`0 0 ${W} ${H}`, height:H, role:"img",
+    "aria-label":"Mean, P99 and max tracking time per configuration on WSL2 and Mac"}, host);
+  const xmax = 50, X = v => left + (v/xmax)*(W-left-right);
+  for (let v=0; v<=xmax; v+=10){
+    el("line",{x1:X(v),x2:X(v),y1:top-6,y2:H-22,stroke:css("--grid"),"stroke-width":1},svg);
+    const t=el("text",{x:X(v),y:H-6,"text-anchor":"middle","font-size":11,class:"num muted"},svg); t.textContent=v;
+  }
+  const tu=el("text",{x:W-right,y:H-6,"text-anchor":"start","font-size":11,class:"muted",dx:8},svg); tu.textContent="ms";
+  el("line",{x1:X(BUDGET),x2:X(BUDGET),y1:top-10,y2:H-22,stroke:css("--bad"),"stroke-width":1.5,"stroke-dasharray":"4 3"},svg);
+  const bl=el("text",{x:X(BUDGET),y:top-12,"text-anchor":"middle","font-size":11,class:"num badtxt"},svg); bl.textContent="33.33 ms budget";
+
+  CFG.forEach((c,ci) => {
+    const y0 = top + ci*(2*lane+gapCfg) + 4;
+    const lab = el("text",{x:0,y:y0+lane,"font-size":narrow?12:13,class:"strong","dominant-baseline":"middle"},svg);
+    lab.textContent = narrow ? c : CFGLABEL[c];
+    if (ci>0) el("line",{x1:0,x2:W,y1:y0-gapCfg/2-2,y2:y0-gapCfg/2-2,stroke:css("--rule-2"),"stroke-width":1},svg);
+    M.forEach(([k,name,col],mi) => {
+      const r = D.runs[k][c], y = y0 + mi*lane + lane/2, color = css(col);
+      el("line",{x1:X(r.mean),x2:X(r.max),y1:y,y2:y,stroke:color,"stroke-width":2,"stroke-linecap":"round"},svg);
+      el("rect",{x:X(r.p99)-1.5,y:y-7,width:3,height:14,rx:1,fill:color},svg);
+      el("circle",{cx:X(r.mean),cy:y,r:4.5,fill:color,stroke:css("--panel"),"stroke-width":2},svg);
+      const over = el("text",{x:W-right+10,y,"font-size":12,"dominant-baseline":"middle",
+        class: r.over>0 ? "num badtxt" : "num muted"},svg);
+      over.textContent = r.over>0 ? `▲ ${r.over} over` : "0 over";
+      const hit = el("rect",{x:left-4,y:y-lane/2,width:W-left,height:lane,fill:"transparent"},svg);
+      hit.style.cursor="default";
+      hit.addEventListener("pointermove",e=>showTip(e,host,`${CFGLABEL[c]} · ${name}`,col,latRows(r)));
+      hit.addEventListener("pointerleave",hideTip);
+    });
+  });
+}
+
+/* ---- chart 2: P99 by configuration, one line per machine ---- */
+function drawP99(){
+  const host = document.getElementById("c-p99"); host.innerHTML = "";
+  const W = host.clientWidth, narrow = W < 560;
+  const left = 40, right = narrow ? 70 : 150, top = 18, bottom = 30, H = 250;
+  const svg = el("svg",{viewBox:`0 0 ${W} ${H}`,height:H,role:"img","aria-label":"P99 tracking time by configuration"},host);
+  const ymax = 40, Y = v => top + (1 - v/ymax)*(H-top-bottom);
+  const X = i => left + 20 + i*((W-left-right-40)/(CFG.length-1));
+  for (let v=0; v<=ymax; v+=10){
+    el("line",{x1:left,x2:W-right+10,y1:Y(v),y2:Y(v),stroke:css("--grid"),"stroke-width":1},svg);
+    const t=el("text",{x:left-8,y:Y(v),"text-anchor":"end","dominant-baseline":"middle","font-size":11,class:"num muted"},svg); t.textContent=v;
+  }
+  el("line",{x1:left,x2:W-right+10,y1:Y(BUDGET),y2:Y(BUDGET),stroke:css("--bad"),"stroke-width":1.5,"stroke-dasharray":"4 3"},svg);
+  // label at the right end, above the line, clear of the first configuration's points
+  const bl=el("text",{x:W-right+10,y:Y(BUDGET)-6,"text-anchor":"end","font-size":11,class:"num badtxt"},svg); bl.textContent="33.33 ms budget";
+  CFG.forEach((c,i)=>{ const t=el("text",{x:X(i),y:H-8,"text-anchor":"middle","font-size":12,class:"muted"},svg);
+    t.textContent = narrow ? c : CFGLABEL[c]; });
+  M.forEach(([k,name,col])=>{
+    const color = css(col), pts = CFG.map((c,i)=>[X(i),Y(D.runs[k][c].p99)]);
+    el("polyline",{points:pts.map(p=>p.join(",")).join(" "),fill:"none",stroke:color,"stroke-width":2,
+      "stroke-linejoin":"round","stroke-linecap":"round"},svg);
+    pts.forEach(([x,y],i)=>{
+      const r = D.runs[k][CFG[i]];
+      el("circle",{cx:x,cy:y,r:4.5,fill:color,stroke:css("--panel"),"stroke-width":2},svg);
+      const hit = el("circle",{cx:x,cy:y,r:14,fill:"transparent"},svg);
+      hit.addEventListener("pointermove",e=>showTip(e,host,`${CFGLABEL[CFG[i]]} · ${name}`,col,latRows(r)));
+      hit.addEventListener("pointerleave",hideTip);
+    });
+    const last = pts[pts.length-1], r = D.runs[k].C;
+    const t = el("text",{x:last[0]+12,y:last[1],"dominant-baseline":"middle","font-size":12,class:"num"},svg);
+    t.textContent = narrow ? fmt(r.p99,1) : `${k==="mac"?"Mac":"WSL2"} ${fmt(r.p99)} ms`;
+  });
+}
+
+/* ---- chart 3: stage breakdown, small multiples ---- */
+function drawStages(){
+  const host = document.getElementById("c-stage"); host.innerHTML = "";
+  const STAGES = [["ext","ORB extraction"],["pred","Pose prediction"],["lm","Local-map track"],["other","Outside these stages"]];
+  const xmax = Math.ceil(Math.max(...["baseline","A"].flatMap(c => STAGES.flatMap(([s]) =>
+    [D.stages.wsl2[c][s], D.stages.mac[c][s]])))/2)*2;
+  ["baseline","A"].forEach(c=>{
+    const box = document.createElement("div"); host.appendChild(box);
+    const h = document.createElement("h3"); h.textContent = CFGLABEL[c]; box.appendChild(h);
+    const wrap = document.createElement("div"); wrap.className="chart"; box.appendChild(wrap);
+    const W = wrap.clientWidth || 400, left = 132, right = 104, bar = 11, gap = 3, row = 2*bar+gap+16, top = 6;
+    const H = top + STAGES.length*row + 18;
+    const svg = el("svg",{viewBox:`0 0 ${W} ${H}`,height:H,role:"img","aria-label":`Stage means for ${CFGLABEL[c]}`},wrap);
+    const X = v => left + (v/xmax)*(W-left-right);
+    for (let v=0; v<=xmax; v+=2){
+      el("line",{x1:X(v),x2:X(v),y1:top,y2:H-18,stroke:css("--grid"),"stroke-width":1},svg);
+      const t=el("text",{x:X(v),y:H-4,"text-anchor":"middle","font-size":10.5,class:"num muted"},svg); t.textContent=v;
+    }
+    STAGES.forEach(([s,label],si)=>{
+      const y0 = top + si*row + 4;
+      const lt = el("text",{x:0,y:y0+bar+gap/2,"dominant-baseline":"middle","font-size":12.5},svg); lt.textContent=label;
+      M.forEach(([k,name,col],mi)=>{
+        const v = D.stages[k][c][s], y = y0 + mi*(bar+gap), w = Math.max(1, X(v)-X(0));
+        // square at the baseline, 4px rounded at the data end
+        const r = Math.min(4, w/2, bar/2), x0 = X(0);
+        el("path",{d:`M${x0},${y} H${x0+w-r} Q${x0+w},${y} ${x0+w},${y+r} V${y+bar-r} Q${x0+w},${y+bar} ${x0+w-r},${y+bar} H${x0} Z`,
+          fill:css(col)},svg);
+        const vt = el("text",{x:x0+w+6,y:y+bar/2,"dominant-baseline":"middle","font-size":11,class:"num"},svg);
+        vt.textContent = fmt(v);
+        const hit = el("rect",{x:x0,y:y-1,width:W-left,height:bar+2,fill:"transparent"},svg);
+        hit.addEventListener("pointermove",e=>showTip(e,wrap,`${label} · ${name}`,col,
+          [["config",CFGLABEL[c]],["mean",fmt(v)+" ms"],["share of total",Math.round(v/D.stages[k][c].total*100)+"%"]]));
+        hit.addEventListener("pointerleave",hideTip);
+      });
+      const ratio = D.stages.wsl2[c][s]/D.stages.mac[c][s];
+      const rt = el("text",{x:W,y:y0+bar+gap/2,"text-anchor":"end","dominant-baseline":"middle","font-size":12,class:"num strong"},svg);
+      rt.textContent = `${ratio.toFixed(2)}×`;
+    });
+  });
+}
+
+/* ---- table ---- */
+function table(){
+  const t = document.getElementById("t-all");
+  const cols = [["mean","Mean",2],["p95","P95",2],["p99","P99",2],["max","Max",2],["over","> 33.33",0],
+                ["frames","Frames",0],["closure_cm","Closure cm",1],["path_m","Path m",2],["kf","KFs",0],["mp","Map points",0]];
+  let h = `<thead><tr><th>Config</th><th>Machine</th>${cols.map(c=>`<th>${c[1]}</th>`).join("")}</tr></thead><tbody>`;
+  CFG.forEach(c=>{
+    M.forEach(([k,name],mi)=>{
+      const r = D.runs[k][c];
+      h += `<tr class="${mi===0?"grp":""}"><td>${mi===0?CFGLABEL[c]:""}</td><td>${name}</td>` +
+        cols.map(([key,,d])=>{ const v=r[key];
+          if (v==null) return `<td class="na">—</td>`;
+          const cls = key==="over" && v>0 ? ` class="miss"` : "";
+          return `<td${cls}>${d? v.toFixed(d) : v.toLocaleString()}</td>`; }).join("") + `</tr>`;
+    });
+  });
+  t.innerHTML = h + "</tbody>";
+}
+
+function drawAll(){ drawCost(); drawP99(); drawStages(); }
+tiles(); table(); drawAll();
+let rz; addEventListener("resize",()=>{clearTimeout(rz); rz=setTimeout(drawAll,80)});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",drawAll);
+new MutationObserver(drawAll).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+</script>
+</body>
+</html>
