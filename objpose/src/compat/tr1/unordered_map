@@ -1,0 +1,4 @@
+// macOS libc++ has no TR1; g2o's Thirdparty copy still spells std::tr1::unordered_map.
+#pragma once
+#include <unordered_map>
+namespace std { namespace tr1 { using std::unordered_map; using std::hash; } }
