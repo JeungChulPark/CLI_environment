@@ -30,6 +30,9 @@ from pipeline.object_memory_runner import StreamingObjectMemory  # noqa: E402
 
 from fusion import Fusion, inv_se3  # noqa: E402
 
+import os
+LOOP_W_D0_M = float(os.environ.get("OBJPOSE_LOOP_W_D0_M", "0"))   # 0 (default) = off; 0.05 = the §3.3 weighting — did NOT help (see README 2026-09-14 F1/F2/가중치 절)
+
 
 def to_tuple(T) -> tuple:
     return tuple(tuple(float(v) for v in row) for row in np.asarray(T))
@@ -65,7 +68,7 @@ class ObjectMemory:
         """dets: [(name, score, R 3x3, t_mm 3)] from SAM-6D for the frame captured at t_ns."""
         poses = self.fusion.poses
         T_w_sam, _ = self.fusion.T_w_sam(t_ns)
-        kf = poses.anchor_at(t_ns) if T_w_sam is not None else None
+        kf = poses.anchor_at(self.fusion.slam_t(t_ns)) if T_w_sam is not None else None
         anchor = None
         if T_w_sam is not None:
             T_w_kf, _ = poses.kfs.resolve(kf) if kf is not None else (None, None)
@@ -92,10 +95,21 @@ class ObjectMemory:
         T_w_kf, _ = self.fusion.poses.kfs.resolve(f.kf)
         return None if T_w_kf is None else T_w_kf @ f.T_anchor_sam
 
+    def _weight(self, f: SamFrame) -> float:
+        """Pose-fusion weight of a frame: w = 1 / (1 + (d / d0)^2), d = cumulative correction the anchor keyframe
+        has received (docs/orb_improvement_plan_260914.md §3.3). Observations made before a loop closure sit on a
+        drifted map; after the closure they still miss the corrected observations by several cm, so they get
+        less say in the running average. d0 = LOOP_W_D0_M (0 disables); LiDAR corrections (<3 cm) stay near 1."""
+        if LOOP_W_D0_M <= 0 or f.kf is None:
+            return 1.0
+        d = self.fusion.poses.kfs.correction(f.kf)
+        return 1.0 / (1.0 + (d / LOOP_W_D0_M) ** 2)
+
     def _step(self, mem, f: SamFrame, idx: int):
         stamp = f.t_ns / 1e9
+        w = self._weight(f)
         dets = [Sam6DDetection(stamp=stamp, frame_id="sam_camera", detection_id=idx * 100 + j,
-                               object_name=name, T_cam_obj=to_tuple(T), score=score)
+                               object_name=name, T_cam_obj=to_tuple(T), score=score, weight=w)
                 for j, (name, score, T) in enumerate(f.dets)]
         T_w_sam = self._camera(f)
         if T_w_sam is None:

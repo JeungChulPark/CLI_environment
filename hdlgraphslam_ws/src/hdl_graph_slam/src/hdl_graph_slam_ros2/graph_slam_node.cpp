@@ -22,6 +22,8 @@
 #include <message_filters/sync_policies/approximate_time.h>
 #include <message_filters/synchronizer.h>
 #include <nav_msgs/msg/odometry.hpp>
+#include <nav_msgs/msg/path.hpp>
+#include <geometry_msgs/msg/pose_stamped.hpp>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -126,6 +128,9 @@ public:
       std::bind(&GraphSlamNode::cloud_callback, this, std::placeholders::_1, std::placeholders::_2));
 
     map_odom_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
+    // objpose hdl_stream.py: every keyframe's optimised pose after each optimisation tick
+    keyframes_pub_ = create_publisher<nav_msgs::msg::Path>(
+      "/hdl_graph_slam/keyframes", rclcpp::QoS(rclcpp::KeepLast(1)).reliable());
     if(publish_map_points_) {
       map_points_pub_ = create_publisher<sensor_msgs::msg::PointCloud2>(
         "/hdl_graph_slam/map_points",
@@ -515,6 +520,7 @@ private:
         get_logger(),
         "stage4 optimize tick skipped: vertices=%d edges=%d min_edges=%d",
         vertices, edges, g2o_optimization_min_edges_);
+      publish_keyframes();
       return;
     }
 
@@ -537,6 +543,25 @@ private:
 
     publish_map_odom_outputs();
     publish_map_points();
+    publish_keyframes();
+  }
+
+  void publish_keyframes() {
+    if(!keyframes_pub_ || keyframes_.empty()) {
+      return;
+    }
+    nav_msgs::msg::Path path;
+    path.header.stamp = keyframes_.back()->stamp;
+    path.header.frame_id = map_frame_id_;
+    path.poses.reserve(keyframes_.size());
+    for(const auto& kf : keyframes_) {
+      geometry_msgs::msg::PoseStamped ps;
+      ps.header.stamp = kf->stamp;
+      ps.header.frame_id = map_frame_id_;
+      ps.pose = tf2::toMsg(kf->estimate());
+      path.poses.push_back(ps);
+    }
+    keyframes_pub_->publish(path);
   }
 
   void flush_loop_closures() {
@@ -780,6 +805,7 @@ private:
   rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr loop_count_debug_pub_;
   rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr floor_count_debug_pub_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr map_points_pub_;
+  rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr keyframes_pub_;
   std::unique_ptr<tf2_ros::TransformBroadcaster> map_odom_broadcaster_;
   rclcpp::Service<hdl_graph_slam::srv::SaveMap>::SharedPtr save_map_service_;
   rclcpp::Service<hdl_graph_slam::srv::DumpGraph>::SharedPtr dump_graph_service_;

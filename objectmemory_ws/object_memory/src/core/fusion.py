@@ -14,6 +14,7 @@ association gate keeps gross outliers out of the fusion in the first place.
 from __future__ import annotations
 
 import math
+import os
 
 from core.transforms import (
     Matrix4,
@@ -149,8 +150,14 @@ def _rotation_of(T: Matrix4):
             (T[2][0], T[2][1], T[2][2]))
 
 
+# Floor on the running-average weight of a new observation (objpose F2, 2026-09-14): with w = 1/(n+1) a landmark with
+# 50 observations moves 2 % per new one and cannot follow a slow map deformation after a loop closure, so the
+# next observations fall outside the association gate and open a second instance. 0 = old behaviour.
+MIN_FUSE_WEIGHT = float(os.environ.get("OBJMEM_MIN_FUSE_WEIGHT", "0.05"))
+
+
 def fuse_pose(prev_T: Matrix4, n_prev: int, meas_T: Matrix4,
-              object_name=None, rot_modes=None) -> Matrix4:
+              object_name=None, rot_modes=None, weight: float = 1.0) -> Matrix4:
     """Fuse ``meas_T`` into ``prev_T`` given ``n_prev`` prior observations.
 
     n_prev=0 returns the measurement unchanged (first observation seeds).
@@ -164,12 +171,12 @@ def fuse_pose(prev_T: Matrix4, n_prev: int, meas_T: Matrix4,
         if n_prev <= 0:
             t = (meas_T[0][3], meas_T[1][3], meas_T[2][3])
         else:
-            w = 1.0 / (n_prev + 1)
+            w = max(1.0 / (n_prev + 1), MIN_FUSE_WEIGHT) * max(0.0, min(1.0, weight))
             t = tuple(prev_T[i][3] * (1.0 - w) + meas_T[i][3] * w for i in range(3))
         return make_transform(mode_R, t)
     if n_prev <= 0:
         return meas_T
-    w = 1.0 / (n_prev + 1)
+    w = max(1.0 / (n_prev + 1), MIN_FUSE_WEIGHT) * max(0.0, min(1.0, weight))
 
     tp = (prev_T[0][3], prev_T[1][3], prev_T[2][3])
     tm = (meas_T[0][3], meas_T[1][3], meas_T[2][3])

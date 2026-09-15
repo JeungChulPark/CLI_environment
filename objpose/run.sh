@@ -1,9 +1,9 @@
 #!/bin/bash
-# 객체 위치 추정 시스템 실행 (PC 219.100 에서).
+# 객체 위치 추정 시스템 실행 (PC 192.168.20.5 에서).
 #
 #   1) 카메라 RT 가 없으면 먼저: objpose/pc/estimate_rt.py  (Mac ORB-SLAM3 궤적 2개로 추정)
 #   2) bash objpose/run.sh [hub.py 옵션...]
-#      → Mac(219.113) 에 ssh 로 ORB-SLAM3(--features 2000) 실행 명령을 내리고,
+#      → Mac(192.168.20.55) 에 ssh 로 ORB-SLAM3(--features 2000) 실행 명령을 내리고,
 #        SAM-6D 를 띄운 뒤 두 재생을 같은 데이터 시각에서 시작한다.
 #      → 브라우저: http://localhost:8765
 set -euo pipefail

@@ -118,7 +118,14 @@ def main():
                      rt.get("device", "cuda:0"), rt.get("det_score_thresh", 0.2),
                      appe_rerank=rt.get("appe_rerank"),
                      verify=rt.get("verify", VC.UNSET),
-                     pem_diagnostic=rt.get("pem_diagnostic"))
+                     pem_diagnostic=rt.get("pem_diagnostic"),
+                     # 속도 옵션(opt-in). 키가 없으면 전부 None → 예전 동작 그대로
+                     # (fp32 / 마스크 캐시 off / PEM 예산제 off / base.yaml npoint).
+                     precision=rt.get("precision"),
+                     mask_cache=rt.get("mask_cache"),
+                     pem_schedule=rt.get("pem_schedule"),
+                     coarse_npoint_override=rt.get("coarse_npoint"),
+                     fine_npoint_override=rt.get("fine_npoint"))
     anchor_cfg = cfg.get("anchor", {})
     slam_cfg = cfg.get("slam", {})
     if anchor_cfg.get("enabled", False):

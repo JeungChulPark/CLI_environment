@@ -43,7 +43,8 @@ class Sam6DCore:
     def __init__(self, ism_config, objects=None, device="cuda:0",
                  det_score_thresh=0.2, log=print, appe_rerank=None, verify=UNSET,
                  pem_diagnostic=None, coarse_npoint_override=None,
-                 mask_cache=None, pem_schedule=None, precision=None):
+                 mask_cache=None, pem_schedule=None, precision=None,
+                 fine_npoint_override=None):
         self.log = log
         # 속도 옵션. 전부 기본 off — 지정하지 않으면 원래 동작 그대로다(§26).
         self.precision = (precision or "fp32").lower()
@@ -52,6 +53,9 @@ class Sam6DCore:
         # coarse_npoint 스윕 실험용. base.yaml 값을 대체한다(None 이면 그대로).
         self.coarse_npoint_override = (int(coarse_npoint_override)
                                        if coarse_npoint_override else None)
+        # fine_npoint 는 관측점 수(=ViTEncoder npoint)다. None 이면 base.yaml 그대로.
+        self.fine_npoint_override = (int(fine_npoint_override)
+                                     if fine_npoint_override else None)
         self.device = device if torch.cuda.is_available() else "cpu"
         self.det_thresh = float(det_score_thresh)
         # 외형 재정렬 옵션(기본 None = 예전 동작). split 모드도 단일 프로세스 모드와
@@ -167,6 +171,14 @@ class Sam6DCore:
             # coarse_point_matching 의 attention 은 N 에 독립이라 재빌드 없이 안전하다.
             self.pcfg.model.coarse_npoint = int(self.coarse_npoint_override)
             self.log(f"[pem] coarse_npoint override → {self.pcfg.model.coarse_npoint}")
+        if self.fine_npoint_override is not None:
+            # ViTEncoder 는 rgb_choose.size(1) == fine_npoint 를 단언한다. rgb_choose 는
+            # test_dataset.n_sample_observed_point 로 뽑히므로 **둘을 같이** 바꿔야 한다.
+            n = int(self.fine_npoint_override)
+            self.pcfg.model.fine_npoint = n
+            self.pcfg.test_dataset.n_sample_observed_point = n
+            self.log(f"[pem] fine_npoint override → {n} "
+                     f"(n_sample_observed_point={n})")
         self.log(describe(self.appe_cfg, self.verify or None))
         MODEL = importlib.import_module(self.pcfg.model_name)
         self.pem = MODEL.Net(self.pcfg.model).to(self.device).eval()
@@ -321,12 +333,14 @@ class Sam6DCore:
                         inp["dense_co"] = torch.cat([self._tem[n][2] for n in names], 0)
                     inp["obj_names"] = names              # 대칭 선언 조회용
                     out = self.pem(inp)
-                coarse = out["score"].detach().cpu().numpy()
-                pose_s = (out["pred_pose_score"].detach().cpu().numpy()
+                # bf16/fp16 로 돌면 출력이 반정밀도라 .numpy() 가 막힌다.
+                # .float() 는 fp32 경로에서 no-op 이다.
+                coarse = out["score"].detach().float().cpu().numpy()
+                pose_s = (out["pred_pose_score"].detach().float().cpu().numpy()
                           if "pred_pose_score" in out else None)
                 ps = coarse * pose_s if pose_s is not None else coarse
-                Rs = out["pred_R"].detach().cpu().numpy()
-                ts = out["pred_t"].detach().cpu().numpy() * 1000.0
+                Rs = out["pred_R"].detach().float().cpu().numpy()
+                ts = out["pred_t"].detach().float().cpu().numpy() * 1000.0
                 vfs = out.get("verify") or [None] * len(names)
                 explorer_payloads = out.get("pem_explorer") or [None] * len(names)
                 pds = out.get("pem_diagnostic") or [None] * len(names)

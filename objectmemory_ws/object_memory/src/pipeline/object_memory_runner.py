@@ -448,7 +448,8 @@ class StreamingObjectMemory:
             # accept -> incremental-mean fuse + Bayes existence update.
             seen_ids.add(object_id)
             n_prev = lm.observation_count
-            T_fused = fuse_pose(lm.T_map_obj, n_prev, T_meas, lm.object_name, lm.rot_modes)
+            T_fused = fuse_pose(lm.T_map_obj, n_prev, T_meas, lm.object_name, lm.rot_modes,
+                                weight=float(getattr(det, "weight", 1.0) or 1.0))
             # 융합 포즈의 수렴 과정을 남긴다. fuse_pose 는 tracking 처럼 포즈를 제자리에서
             # 갱신하므로, 최종값만 두면 초반 큰 보정이 점점 잦아드는 모습이 사라진다.
             lm.pose_history.append(FusedPoseSample(

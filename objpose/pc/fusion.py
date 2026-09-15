@@ -74,6 +74,7 @@ class KeyframeMap:
         self.updates = 0
         self.culled = 0
         self.max_correction_m = 0.0
+        self.corr: dict[int, float] = {}       # cumulative correction distance received by each keyframe [m]
         self.snapshot: dict[int, np.ndarray] = {}
         self.snapshot_map = None
 
@@ -89,8 +90,13 @@ class KeyframeMap:
         old_same_map = {k: prev.get(k, T) for k, T in self.T.items() if self.map_of.get(k) == map_id}
         for k, T in new.items():
             if k in self.T:
-                self.max_correction_m = max(self.max_correction_m, float(np.linalg.norm(T[:3, 3] - self.T[k][:3, 3])))
-        gone = [k for k in old_same_map if k not in new]
+                d = float(np.linalg.norm(T[:3, 3] - self.T[k][:3, 3]))
+                self.max_correction_m = max(self.max_correction_m, d)
+                self.corr[k] = self.corr.get(k, 0.0) + d
+        # a kf_update always carries the whole map, so an id ABOVE the update's newest id is a keyframe created
+        # after the message was built (we learned it from pose messages), not a culled one (F1, 2026-09-14)
+        newest = max(new) if new else -1
+        gone = [k for k in old_same_map if k not in new and k < newest]
         survivors = [k for k in old_same_map if k in new and (not prev or k in prev)] or \
             [k for k in old_same_map if k in new]
         if gone and survivors:
@@ -105,6 +111,14 @@ class KeyframeMap:
             self.set_pose(k, T, map_id)
         self.snapshot, self.snapshot_map = new, map_id
         self.updates += 1
+
+    def correction(self, kf) -> float:
+        """cumulative correction [m] the keyframe (or, if culled, its surviving anchor) has received so far"""
+        seen = 0
+        while kf not in self.T and kf in self.redirect and seen < 64:
+            kf = self.redirect[kf][0]
+            seen += 1
+        return self.corr.get(kf, 0.0)
 
     def resolve(self, kf: int):
         """(T_w_kf, map_id) following cull redirects; None if unknown."""
@@ -262,16 +276,22 @@ class ObjectTrack:
 
 
 class Fusion:
-    def __init__(self, X_slam_sam: np.ndarray, poses: PoseBuffer):
+    def __init__(self, X_slam_sam: np.ndarray, poses: PoseBuffer, t_offset_ns: int = 0):
         self.X = np.asarray(X_slam_sam, np.float64)
         self.poses = poses
+        # SLAM time of a SAM frame = frame time + offset: lets several SLAM lanes with different
+        # SAM lags (each rig RT carries its own sam_tau_s) share one SAM replay clock
+        self.t_offset_ns = int(t_offset_ns)
         self.objects: dict[str, ObjectTrack] = {}
         self.unplaced = 0
         self.near_loop_estimates = 0
         self._lock = threading.Lock()
 
+    def slam_t(self, t_ns: int) -> int:
+        return int(t_ns) + self.t_offset_ns
+
     def T_w_sam(self, t_ns: int):
-        T, status = self.poses.at(t_ns)
+        T, status = self.poses.at(self.slam_t(t_ns))
         return (T @ self.X, status) if T is not None else (None, None)
 
     def world(self, ob: Observation):
@@ -289,13 +309,13 @@ class Fusion:
             self.unplaced += 1
             return {"name": name, "placed": False, "reason": "no SLAM pose at SAM frame time"}
         T_w_obj = T_ws @ T_sam_obj
-        kf = self.poses.anchor_at(t_ns)
+        kf = self.poses.anchor_at(self.slam_t(t_ns))
         T_w_kf, _ = self.poses.kfs.resolve(kf) if kf is not None else (None, None)
         if T_w_kf is None:
             kf, T_anchor = None, T_w_obj
         else:
             T_anchor = inv_se3(T_w_kf) @ T_w_obj
-        near = self.poses.near_loop_closure(t_ns)
+        near = self.poses.near_loop_closure(self.slam_t(t_ns))
         self.near_loop_estimates += int(near)
         ob = Observation(t_ns, kf, T_anchor, float(score), near)
         with self._lock:

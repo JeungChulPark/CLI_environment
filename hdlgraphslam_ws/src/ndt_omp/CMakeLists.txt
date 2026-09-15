@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (BUILD_WITH_MARCH_NATIVE)
   add_compile_options(-march=native)
-else()
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64|i.86")   # SSE flags are x86 only (Apple Silicon: none)
   add_definitions(-msse -msse2 -msse3 -msse4 -msse4.1 -msse4.2)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse -msse2 -msse3 -msse4 -msse4.1 -msse4.2")
 endif()

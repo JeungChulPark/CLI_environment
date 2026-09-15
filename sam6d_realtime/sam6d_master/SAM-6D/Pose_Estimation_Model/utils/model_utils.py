@@ -322,7 +322,7 @@ def _candidate_shape_metrics(pred_rs, pred_ts, model_pts, appe):
         orthogonal = torch.linalg.norm(
             R.transpose(-1, -2) @ R - torch.eye(3, device=R.device, dtype=R.dtype),
             dim=(-2, -1)) <= 1e-2
-        proper = torch.linalg.det(R) > 0.99
+        proper = torch.linalg.det(R.float()) > 0.99
         pose_valid = rotation_finite & translation_finite & orthogonal & proper
         projection_valid = inside.any(2) & pose_valid
         rendered_bbox_area = ((umax - umin + 1).clamp_min(0) *
@@ -419,7 +419,7 @@ def sequential_candidate_select(pred_rs, pred_ts_m, geo_scores, texture_scores,
                       & torch.isfinite(geo_scores[b]))
         pose_valid &= (torch.linalg.norm(
             R.transpose(-1, -2) @ R - torch.eye(3, device=R.device, dtype=R.dtype),
-            dim=(-2, -1)) <= 1e-2) & (torch.linalg.det(R) > 0.99)
+            dim=(-2, -1)) <= 1e-2) & (torch.linalg.det(R.float()) > 0.99)
         if shape is None:
             projection_valid = torch.zeros(P, dtype=torch.bool, device=R.device)
             mask_iou = torch.full((P,), float('nan'), device=R.device)
@@ -781,7 +781,7 @@ def _attach_explorer_v2(info, pred_rs, physical_t, geo_scores, texture_scores,
                       & torch.isfinite(geo_scores[b]))
         pose_valid &= (torch.linalg.norm(
             R.transpose(-1, -2) @ R - torch.eye(3, device=R.device, dtype=R.dtype),
-            dim=(-2, -1)) <= 1e-2) & (torch.linalg.det(R) > 0.99)
+            dim=(-2, -1)) <= 1e-2) & (torch.linalg.det(R.float()) > 0.99)
         flags |= pose_valid.int()
         # Bit 6 records whether Texture was actually measured.  It reuses the
         # existing uint16 flags field, so the compact candidate record stays 80 B.
@@ -870,7 +870,7 @@ def independent_candidate_verify(pred_rs, pred_ts, geo_scores, appe, info=None):
             pose_valid = (torch.isfinite(R_all).flatten(1).all(1)
                           & torch.isfinite(t_all).flatten(1).all(1)
                           & torch.isfinite(geo_scores[b])
-                          & (torch.linalg.det(R_all) > 0.99))
+                          & (torch.linalg.det(R_all.float()) > 0.99))
             mask_pass = (pose_valid & shape['projection_valid'][b]
                          & torch.isfinite(shape['mask_iou'][b])
                          & (shape['mask_iou'][b] >= mask_min))
@@ -890,8 +890,11 @@ def independent_candidate_verify(pred_rs, pred_ts, geo_scores, appe, info=None):
                 obj = torch.einsum('kji,knj->kni', R, pm.unsqueeze(0) - t)
                 nearest = torch.cdist(
                     obj, po.unsqueeze(0).expand(obj.size(0), -1, -1)).argmin(2)
+                # autocast(bf16/fp16) 아래에서는 einsum 이 반저정밀도로 나온다.
+                # 목적지(geo_scores 기반 fp32)와 dtype 을 맞춰야 index_put 이 통과한다.
+                # fp32 실행에서는 no-op 이다.
                 texture_by_original[b, subset] = torch.einsum(
-                    'nd,knd->kn', fm, fo[nearest]).mean(1)
+                    'nd,knd->kn', fm, fo[nearest]).mean(1).to(texture_by_original.dtype)
         physical_t = pred_ts.clone()
         if radius is not None:
             physical_t = physical_t * radius.reshape(-1, 1, 1)
@@ -905,7 +908,7 @@ def independent_candidate_verify(pred_rs, pred_ts, geo_scores, appe, info=None):
                 pose_valid = (torch.isfinite(R_all).flatten(1).all(1)
                               & torch.isfinite(t_all).flatten(1).all(1)
                               & torch.isfinite(geo_scores[b])
-                              & (torch.linalg.det(R_all) > 0.99))
+                              & (torch.linalg.det(R_all.float()) > 0.99))
                 missing = torch.where(pose_valid & ~torch.isfinite(texture_by_original[b]))[0]
                 if not missing.numel():
                     continue
@@ -920,7 +923,8 @@ def independent_candidate_verify(pred_rs, pred_ts, geo_scores, appe, info=None):
                     nearest = torch.cdist(
                         obj, po.unsqueeze(0).expand(obj.size(0), -1, -1)).argmin(2)
                     texture_by_original[b, subset] = torch.einsum(
-                        'nd,knd->kn', fm, fo[nearest]).mean(1)
+                        'nd,knd->kn', fm, fo[nearest]).mean(1).to(
+                            texture_by_original.dtype)
         _attach_explorer_v2(info, pred_rs, physical_t, geo_scores,
                             texture_by_original, shape, appe, rows, selected)
         for b, decision in enumerate(rows):
@@ -1045,7 +1049,7 @@ def independent_candidate_verify(pred_rs, pred_ts, geo_scores, appe, info=None):
         nn_distance = (torch.linalg.norm(obj - po[nn], dim=2)
                        if diag.get('enabled') else None)
         texture = torch.einsum('nd,knd->kn', fm, fo[nn]).mean(1)
-        texture_by_original[b, sel] = texture
+        texture_by_original[b, sel] = texture.to(texture_by_original.dtype)
         color = None
         if have_col:
             cm = _whiten(appe['dense_cm'][b][::stride])
@@ -1306,7 +1310,7 @@ def validate_refined_poses(pred_rs, pred_ts_m, pose_scores, appe, verify_rows):
         R = pred_rs[b]
         t = pred_ts_m[b]
         fine_ok = bool(torch.isfinite(R).all().item() and torch.isfinite(t).all().item())
-        fine_ok = fine_ok and bool((torch.linalg.det(R) > 0.99).item())
+        fine_ok = fine_ok and bool((torch.linalg.det(R.float()) > 0.99).item())
         if flat_scores is not None:
             fine_ok = fine_ok and bool(torch.isfinite(flat_scores[b]).item())
         projection_ok = bool(shape is not None and shape['projection_valid'][b, 0].item())

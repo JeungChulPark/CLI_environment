@@ -58,6 +58,7 @@ class Sam6DDetection:
     model_id: Optional[str] = None
     size_extent: Optional[tuple] = None
     class_id: Optional[int] = None
+    weight: float = 1.0        # pose-fusion weight scale (objpose: lower for observations anchored to keyframes that were later corrected)
 
 
 @dataclass

@@ -38,23 +38,28 @@ h1 { font-size: 18px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
 .clock { margin-left: auto; font-family: var(--mono); font-size: 13px; color: var(--muted); }
 .clock b { color: var(--ink); font-weight: 500; }
 
-.views { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+/* video pane(s) and the map side by side: one lane -> video | map, two lanes -> video | video | map */
+.views { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 12px; align-items: stretch; }
 .pane { background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
 .pane-head { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid var(--rule); font-size: 12.5px; color: var(--muted); flex-wrap: wrap; }
 .pane-head b { color: var(--ink); font-weight: 600; font-size: 13px; }
-.pane-head .legend { margin-left: auto; display: flex; gap: 12px; flex-wrap: wrap; }
+.pane-head .legend { margin-left: auto; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
 .sw { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: 3px; margin-right: 5px; }
+.lane-tag { display: inline-block; font-family: var(--mono); font-size: 11px; padding: 1px 7px; border-radius: 4px; border: 1px solid currentColor; }
 .video-wrap { position: relative; background: #000; aspect-ratio: 4 / 3; }
 .video-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
 .video-wrap .waiting { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; text-align: center; padding: 16px; }
 #scene { position: relative; aspect-ratio: 4 / 3; }
 #scene canvas { display: block; width: 100% !important; height: 100% !important; }
 .scene-note { position: absolute; left: 10px; bottom: 8px; font-size: 11.5px; color: var(--faint); font-family: var(--mono); pointer-events: none; }
+.legend label { cursor: pointer; user-select: none; }
+.legend input { vertical-align: -1px; margin: 0 4px 0 0; }
 
-.strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+.strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-top: 12px; }
 .card { background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 10px 14px 12px; min-width: 0; }
-.card h2 { margin: 0 0 8px; font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: 0.04em; display: flex; align-items: center; gap: 8px; }
+.card h2 { margin: 0 0 8px; font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: 0.04em; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .card h2 .tag { font-family: var(--mono); font-size: 11px; color: var(--accent); border: 1px solid var(--rule); border-radius: 4px; padding: 0 6px; letter-spacing: 0; }
+.card.lane { border-top: 3px solid var(--lane, var(--accent)); }
 dl.kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 0; font-size: 13px; }
 dl.kv dt { color: var(--muted); }
 dl.kv dd { margin: 0; text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
@@ -63,17 +68,12 @@ dl.kv dd { margin: 0; text-align: right; font-family: var(--mono); font-variant-
 
 .objects { margin-top: 12px; }
 .table-wrap { overflow-x: auto; }
-table { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 720px; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 820px; }
 th, td { padding: 6px 10px; border-bottom: 1px solid var(--rule); text-align: left; white-space: nowrap; }
 th { font-size: 11.5px; font-weight: 500; color: var(--muted); }
 td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
 td .sw { width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
 .empty { color: var(--faint); padding: 14px 10px; }
-
-@media (max-width: 980px) {
-  .views { grid-template-columns: 1fr; }
-  .strip { grid-template-columns: 1fr; }
-}
 </style>
 <script type="importmap">
 { "imports": {
@@ -89,79 +89,42 @@ td .sw { width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
   <span class="clock">재생 <b id="clock">0.0</b> / <span id="duration">–</span> s · 화면 프레임 <b id="frame-idx">–</b></span>
 </header>
 
-<div class="views">
-  <section class="pane">
+<div class="views" id="views">
+  <!-- one video pane per SLAM lane is inserted here -->
+  <section class="pane" id="scene-pane">
     <div class="pane-head">
-      <b>SAM 카메라 영상</b><span>객체 박스 + 객체 3축</span>
-      <span class="legend">
-        <span><span class="sw" style="background:var(--x)"></span>X</span>
-        <span><span class="sw" style="background:var(--y)"></span>Y</span>
-        <span><span class="sw" style="background:var(--z)"></span>Z</span>
-        <span>굵은 선 = SAM-6D 추정 프레임 · 가는 선 = SLAM 보간</span>
-      </span>
-    </div>
-    <div class="video-wrap">
-      <img id="video" alt="SAM 카메라 영상과 객체 오버레이">
-      <div class="waiting" id="video-wait">SAM-6D와 ORB-SLAM3가 모델을 불러오면 재생이 시작됩니다.</div>
-    </div>
-  </section>
-  <section class="pane">
-    <div class="pane-head">
-      <b>SLAM 지도 좌표계</b><span>월드 3축 · 카메라 궤적 · 객체 박스</span>
-      <span class="legend">
-        <span><span class="sw" style="background:var(--accent)"></span>SLAM 카메라</span>
-        <span><span class="sw" style="background:#c792ea"></span>SAM 카메라</span>
-      </span>
+      <b>지도 좌표계 (<span id="ref-name">기준 SLAM</span>)</b><span>월드 3축 · 카메라 궤적 · 객체 박스 — 박스 테두리 색 = SLAM, 채움 색 = 객체</span>
+      <span class="legend" id="scene-legend"></span>
     </div>
     <div id="scene"><span class="scene-note">드래그: 회전 · 휠: 확대 · 우클릭 드래그: 이동</span></div>
   </section>
 </div>
 
-<div class="strip">
-  <div class="card">
-    <h2><span id="slam-name">SLAM</span> · 219.113 <span class="tag" id="features">f2000</span></h2>
-    <dl class="kv">
-      <dt>추적 상태</dt><dd><span class="pill idle" id="slam-state">대기</span></dd>
-      <dt>받은 포즈 (OK)</dt><dd id="slam-count">–</dd>
-      <dt>프레임 추적 시간</dt><dd id="slam-ms">–</dd>
-      <dt>도착 지연</dt><dd id="slam-lag">–</dd>
-      <dt>Mac에서 버린 프레임</dt><dd id="slam-drop">–</dd>
-      <dt>키프레임 (갱신 · 컬링)</dt><dd id="slam-kf">–</dd>
-      <dt>지도 보정 최대 이동</dt><dd id="slam-corr">–</dd>
-    </dl>
-  </div>
-  <div class="card">
-    <h2>SAM-6D · 219.100</h2>
+<div class="strip" id="strip">
+  <!-- one SLAM card per lane is inserted before the SAM-6D card -->
+  <div class="card" id="sam-card">
+    <h2>SAM-6D · <span class="mono" id="sam-host">이 PC</span></h2>
     <dl class="kv">
       <dt>추론 완료 프레임</dt><dd id="sam-count">–</dd>
       <dt>마지막 결과</dt><dd id="sam-last">–</dd>
       <dt>결과가 늦게 도착한 정도</dt><dd id="sam-age">–</dd>
       <dt>마지막 처리 시간</dt><dd id="sam-ms">–</dd>
-      <dt>SLAM 포즈 없어 못 놓은 추정</dt><dd id="sam-unplaced">–</dd>
-      <dt>객체 메모리 (활성 · 기억 · 삭제)</dt><dd id="sam-memory">–</dd>
-    </dl>
-  </div>
-  <div class="card">
-    <h2>동기화 · 보간</h2>
-    <dl class="kv">
-      <dt>이 프레임의 SLAM 포즈</dt><dd><span class="pill idle" id="sync-state">–</span></dd>
       <dt>화면 지연 (보간 여유)</dt><dd id="sync-delay">–</dd>
       <dt>영상에 그리는 최대 경과</dt><dd id="sync-maxage">–</dd>
       <dt>시계 기준</dt><dd id="sync-clock">–</dd>
-      <dt>카메라 RT</dt><dd id="sync-rt">–</dd>
     </dl>
   </div>
 </div>
 
 <section class="card objects">
-  <h2>객체 위치 (SLAM 지도 좌표계)</h2>
+  <h2>객체 위치 (기준 SLAM 지도 좌표계 — 다른 SLAM 은 정렬해서 표시)</h2>
   <div class="table-wrap">
     <table>
       <thead><tr>
-        <th>객체</th><th>이 프레임 위치의 출처</th><th>메모리 상태</th><th class="num">마지막 SAM-6D 이후</th><th class="num">추정 횟수</th>
+        <th>SLAM</th><th>객체</th><th>이 프레임 위치의 출처</th><th>메모리 상태</th><th class="num">마지막 SAM-6D 이후</th><th class="num">추정 횟수</th>
         <th class="num">score</th><th class="num">x (m)</th><th class="num">y (m)</th><th class="num">z (m)</th><th class="num">카메라 거리 (m)</th>
       </tr></thead>
-      <tbody id="obj-rows"><tr><td class="empty" colspan="10">아직 SAM-6D 추정이 없습니다.</td></tr></tbody>
+      <tbody id="obj-rows"><tr><td class="empty" colspan="11">아직 SAM-6D 추정이 없습니다.</td></tr></tbody>
     </table>
   </div>
 </section>
@@ -175,6 +138,7 @@ const PALETTE = { milk: "#f0f0f0", choco_hazelnut_high: "#c83c3c", Febreze_high:
 const KO = { milk: "우유", choco_hazelnut_high: "초코하임", Febreze_high: "페브리즈", Mugcup_high: "머그컵",
   saffron: "샤프란", Sauce_high: "저당소스", Sikhye_high: "식혜", Bear: "곰인형", Dinosaur: "공룡인형" };
 const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 // ── 3D scene ──────────────────────────────────────────────────────────────
 const host = $("scene");
@@ -189,12 +153,11 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 scene.add(new THREE.AmbientLight(0xffffff, 1));
 
-// SLAM map frame is the camera optical frame (x right, y down, z forward);
-// rotate 180° about X so "up" is up on screen.
+// camera SLAM worlds are optical frames (x right, y down, z forward): rotate 180° about X so "up" is up;
+// a LiDAR world (the reference when a LiDAR lane exists) is z-up
 const world = new THREE.Group();
 world.matrixAutoUpdate = false;
 world.matrix.set(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1);
-// camera SLAM worlds are optical frames (y down, z forward); a LiDAR world is z-up
 let WORLD_ZUP = false;
 function toScreen(p) { return WORLD_ZUP ? new THREE.Vector3(p[0], p[2], -p[1]) : new THREE.Vector3(p[0], -p[1], -p[2]); }
 function setWorldConvention(zup) {
@@ -231,21 +194,16 @@ function axes(len, width = 2) {
   return g;
 }
 
-const worldAxes = axes(0.4);
-world.add(worldAxes);
+world.add(axes(0.4));
 for (const [p, t, c] of [[[0.46, 0, 0], "X", "#ff5a5a"], [[0, 0.46, 0], "Y", "#4fd66b"], [[0, 0, 0.46], "Z", "#4d8dff"]]) {
   const s = label(t, c, 0.08); s.position.set(...p); world.add(s);
 }
-const originLabel = label("SLAM 지도 원점", "#95a1ad", 0.07);
+const originLabel = label("지도 원점", "#95a1ad", 0.07);
 originLabel.position.set(0, -0.12, 0); world.add(originLabel);
 
 const grid = new THREE.GridHelper(10, 20, 0x2c3844, 0x1c252e);
 grid.material.transparent = true; grid.material.opacity = 0.6;
 scene.add(grid);
-
-const trajGeo = new THREE.BufferGeometry();
-const traj = new THREE.Line(trajGeo, new THREE.LineBasicMaterial({ color: 0x56c2e0, transparent: true, opacity: 0.55 }));
-world.add(traj);
 
 function frustum(color, scale = 0.12) {
   const w = scale * 0.66, h = scale * 0.5, d = scale;
@@ -258,8 +216,6 @@ function frustum(color, scale = 0.12) {
   g.matrixAutoUpdate = false; g.visible = false;
   return g;
 }
-const camSlam = frustum(0x56c2e0); world.add(camSlam);
-const camSam = frustum(0xc792ea); world.add(camSam);
 
 function setMatrix(obj, m16) {
   if (!m16) { obj.visible = false; return; }
@@ -268,38 +224,99 @@ function setMatrix(obj, m16) {
   obj.visible = true;
 }
 
-const objNodes = new Map();
-function objectNode(o) {
+// ── lanes (one per SLAM stream) ────────────────────────────────────────────
+const lanes = new Map();       // name -> {info, group, traj, trajGeo, camSlam, camSam, objNodes, els, shown}
+let laneOrder = [];
+
+function ensureLane(info) {
+  let L = lanes.get(info.name);
+  if (L) return L;
+  const color = info.color || "#56c2e0";
+  const group = new THREE.Group();
+  world.add(group);
+  const trajGeo = new THREE.BufferGeometry();
+  const traj = new THREE.Line(trajGeo, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.6 }));
+  group.add(traj);
+  const camSlam = frustum(color); group.add(camSlam);
+  const camSam = frustum(color, 0.09); group.add(camSam);
+  camSam.children[0].material.transparent = true; camSam.children[0].material.opacity = 0.5;
+
+  // video pane
+  const pane = document.createElement("section");
+  pane.className = "pane";
+  pane.innerHTML = `<div class="pane-head"><b>${esc(info.label)}</b><span class="lane-tag" style="color:${color}">${esc(info.name)}</span>
+      <span class="mono" style="color:var(--faint)">${esc(info.host || "")}${info.link ? " · " + esc(info.link) : ""}</span>
+      <span class="legend"><span><span class="sw" style="background:var(--x)"></span>X</span><span><span class="sw" style="background:var(--y)"></span>Y</span>
+      <span><span class="sw" style="background:var(--z)"></span>Z</span><span>굵은 선 = SAM-6D 프레임 · 가는 선 = SLAM 보간</span></span></div>
+    <div class="video-wrap"><img alt="${esc(info.label)} 영상"><div class="waiting">SAM-6D 와 ${esc(info.label)} 가 준비되면 재생이 시작됩니다.</div></div>`;
+  $("views").insertBefore(pane, $("scene-pane"));
+
+  // SLAM card
+  const card = document.createElement("div");
+  card.className = "card lane"; card.style.setProperty("--lane", color);
+  card.innerHTML = `<h2><span style="color:${color}">${esc(info.label)}</span> · <span class="mono l-host">${esc(info.host || "")}</span>
+      <span class="tag l-features">f2000</span><span class="tag l-ref" hidden>기준 지도</span></h2>
+    <dl class="kv">
+      <dt>추적 상태</dt><dd><span class="pill idle l-state">대기</span></dd>
+      <dt>이 프레임의 포즈</dt><dd><span class="pill idle l-sync">–</span></dd>
+      <dt>받은 포즈 (OK)</dt><dd class="l-count">–</dd>
+      <dt>처리 시간 / 도착 지연</dt><dd class="l-ms">–</dd>
+      <dt>버린 프레임</dt><dd class="l-drop">–</dd>
+      <dt>키프레임 (갱신 · 컬링)</dt><dd class="l-kf">–</dd>
+      <dt>지도 보정 최대 이동</dt><dd class="l-corr">–</dd>
+      <dt>SLAM 포즈 없어 못 놓은 추정</dt><dd class="l-unplaced">–</dd>
+      <dt>객체 메모리 (활성 · 기억 · 삭제)</dt><dd class="l-memory">–</dd>
+      <dt>카메라 RT</dt><dd class="l-rt">–</dd>
+      <dt>기준 지도에 정렬</dt><dd class="l-align">–</dd>
+    </dl>`;
+  $("strip").insertBefore(card, $("sam-card"));
+
+  // legend + toggle
+  const lg = document.createElement("label");
+  lg.innerHTML = `<input type="checkbox" checked><span class="sw" style="background:${color}"></span>${esc(info.label)}`;
+  lg.querySelector("input").addEventListener("change", e => { L.shown = e.target.checked; group.visible = L.shown; });
+  $("scene-legend").appendChild(lg);
+
+  L = { info, color, group, traj, trajGeo, camSlam, camSam, objNodes: new Map(), shown: true,
+        els: { img: pane.querySelector("img"), wait: pane.querySelector(".waiting"), card,
+               q: sel => card.querySelector(sel) } };
+  lanes.set(info.name, L);
+  laneOrder.push(info.name);
+  return L;
+}
+
+function objectNode(L, o) {
   const key = o.instance !== undefined && o.instance !== null ? `${o.name}#${o.instance}` : o.name;
-  let n = objNodes.get(key);
+  let n = L.objNodes.get(key);
   if (n) return n;
-  const color = PALETTE[o.name] || "#ffffff";
+  const fillColor = PALETTE[o.name] || "#ffffff";
   const size = (o.size_mm || [100, 100, 100]).map(v => v / 1000);
   const center = (o.center_mm || [0, 0, 0]).map(v => v / 1000);
   const g = new THREE.Group(); g.matrixAutoUpdate = false;
   const box = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(...size)),
-    new THREE.LineBasicMaterial({ color }));
+    new THREE.LineBasicMaterial({ color: L.color }));
   box.position.set(...center);
   const fill = new THREE.Mesh(new THREE.BoxGeometry(...size),
-    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.12, depthWrite: false }));
+    new THREE.MeshBasicMaterial({ color: fillColor, transparent: true, opacity: 0.12, depthWrite: false }));
   fill.position.set(...center);
   g.add(box, fill, axes(Math.max(...size) * 0.75));
-  const tag = label(KO[o.name] || o.name, color, 0.07);
+  const tag = label(`${KO[o.name] || o.name} · ${L.info.name}`, L.color, 0.065);
   tag.position.set(center[0], center[1] - Math.max(...size) * 0.8, center[2]);
   g.add(tag);
-  const hist = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ color, size: 0.018, transparent: true, opacity: 0.5 }));
-  world.add(g); world.add(hist);
+  const hist = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ color: L.color, size: 0.018, transparent: true, opacity: 0.5 }));
+  L.group.add(g); L.group.add(hist);
   n = { g, fill, hist };
-  objNodes.set(key, n);
+  L.objNodes.set(key, n);
   return n;
 }
 
 let framed = false;
-function updateTrajectory(pts) {
+function updateTrajectory(L, pts, isRef) {
   if (!pts || pts.length < 2) return;
-  trajGeo.setFromPoints(pts.map(p => new THREE.Vector3(...p)));
-  trajGeo.computeBoundingSphere();
-  // grid on the plane the cart moves in (normal = smallest principal axis)
+  L.trajGeo.setFromPoints(pts.map(p => new THREE.Vector3(...p)));
+  L.trajGeo.computeBoundingSphere();
+  if (!isRef) return;
+  // grid on the plane the cart moves in (normal = smallest principal axis) — from the reference lane
   const n = pts.length, mean = [0, 0, 0];
   pts.forEach(p => { mean[0] += p[0] / n; mean[1] += p[1] / n; mean[2] += p[2] / n; });
   if (n > 40) {
@@ -309,7 +326,7 @@ function updateTrajectory(pts) {
     let v = [0, 1, 0];                      // inverse iteration for the smallest eigenvector
     const M = new THREE.Matrix3().set(...C.flat()); const inv = M.clone().invert();
     for (let k = 0; k < 30; k++) { const w = new THREE.Vector3(...v).applyMatrix3(inv).normalize(); v = [w.x, w.y, w.z]; }
-    const normal = toScreen(v);                                  // to screen frame
+    const normal = toScreen(v);
     if (normal.y < 0) normal.negate();
     grid.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
     grid.position.copy(toScreen(mean));
@@ -318,7 +335,7 @@ function updateTrajectory(pts) {
     framed = true;
     const c = toScreen(mean);
     controls.target.copy(c);
-    camera.position.copy(c.clone().add(new THREE.Vector3(2.0, 2.6, 2.6)));
+    camera.position.copy(c.clone().add(new THREE.Vector3(2.4, 3.0, 3.0)));
   }
 }
 
@@ -332,7 +349,7 @@ new ResizeObserver(resize).observe(host);
 
 // ── panels ─────────────────────────────────────────────────────────────────
 const fmt = (v, d = 2, unit = "") => v === null || v === undefined || Number.isNaN(v) ? "–" : `${Number(v).toFixed(d)}${unit}`;
-function pill(el, text, kind) { el.textContent = text; el.className = `pill ${kind}`; }
+function pill(el, text, kind) { el.textContent = text; el.className = el.className.replace(/\b(ok|warn|bad|idle)\b/g, "").trim() + " " + kind; }
 
 function statusPill(o) {
   if (o.status === "active") return `<span class="pill ok">활성</span>`;
@@ -342,6 +359,31 @@ function statusPill(o) {
   return "–";
 }
 
+function updateLaneCard(L, s, lf, refName) {
+  const q = L.els.q;
+  q(".l-host").textContent = s.slam_host || "";
+  q(".l-features").textContent = `f${s.features}`;
+  q(".l-features").hidden = String(s.slam_source || "").startsWith("lidar");
+  q(".l-ref").hidden = s.name !== refName;
+  const st = s.slam_state || "NO_DATA";
+  pill(q(".l-state"), st, st === "OK" || st === "OK_KLT" ? "ok" : st === "NO_DATA" ? "idle" : st.includes("LOST") ? "bad" : "warn");
+  pill(q(".l-sync"), lf.slam_status === "interp" ? "보간" : lf.slam_status === "exact" ? "일치" : "없음", lf.slam_status ? "ok" : "bad");
+  q(".l-count").textContent = `${s.slam_poses} (${s.slam_ok})`;
+  q(".l-ms").textContent = `${fmt(s.slam_track_ms, 1, " ms")} / ${fmt(s.slam_lag_s === null ? null : s.slam_lag_s * 1000, 0, " ms")}`;
+  q(".l-drop").textContent = s.slam_dropped ?? "–";
+  q(".l-kf").textContent = s.kf_anchoring ? `${s.kf_count} (${s.kf_updates} · ${s.kf_culled})` : "키프레임 정보 없음";
+  q(".l-corr").textContent = s.kf_anchoring ? `${fmt(s.kf_max_correction_cm, 1)} cm · 루프 ${s.slam_loop_events ?? 0}회` : "–";
+  q(".l-unplaced").textContent = s.objects_unplaced;
+  const bs = (s.memory && s.memory.by_status) || {};
+  q(".l-memory").textContent = s.memory ? `${bs.active || 0} · ${bs.remembered || 0} · ${bs.deleted || 0} (재구성 ${s.memory.last_rebuild_ms} ms)` : "끔";
+  q(".l-rt").textContent = String(s.extrinsic || "").startsWith("urdf") ? "URDF (대체값)" : (s.extrinsic || "–");
+  const al = s.align || {};
+  if (s.name === refName) q(".l-align").textContent = "기준 지도";
+  else if (al.mode === "kabsch") q(".l-align").textContent = `SAM 카메라 궤적 ${al.pairs}쌍 RMSE ${fmt(al.rmse_cm, 1)} cm${al.frozen ? " · 고정" : " · 맞추는 중"} · 지금 차이 ${fmt(lf.divergence_cm, 1)} cm`;
+  else if (al.mode === "single") q(".l-align").textContent = `첫 포즈로 정렬 · 지금 차이 ${fmt(lf.divergence_cm, 1)} cm`;
+  else q(".l-align").textContent = "아직 공통 포즈 없음";
+}
+
 function updatePanels(p) {
   const s = p.stats;
   $("run-status").textContent = s.status;
@@ -349,45 +391,38 @@ function updatePanels(p) {
   $("clock").textContent = fmt(p.t_rel_s, 1);
   $("duration").textContent = s.duration_s ?? "–";
   $("frame-idx").textContent = p.frame_idx;
-  $("features").textContent = `f${s.features}`;
-  $("slam-name").textContent = s.slam_source === "rtabmap" ? "RTAB-Map" : s.slam_source === "lidar_kiss_icp" ? "LiDAR KISS-ICP" : "ORB-SLAM3";
-  $("features").hidden = s.slam_source === "lidar_kiss_icp";
+  if (s.sam_host) $("sam-host").textContent = s.sam_host;
+  const refName = s.reference_lane;
+  const refStats = (s.lanes || []).find(l => l.name === refName);
+  $("ref-name").textContent = refStats ? refStats.label : "기준 SLAM";
 
-  const st = s.slam_state;
-  pill($("slam-state"), st, st === "OK" || st === "OK_KLT" ? "ok" : st === "NO_DATA" ? "idle" : st.includes("LOST") ? "bad" : "warn");
-  $("slam-count").textContent = `${s.slam_poses} (${s.slam_ok})`;
-  $("slam-ms").textContent = fmt(s.slam_track_ms, 1, " ms");
-  $("slam-lag").textContent = fmt(s.slam_lag_s === null ? null : s.slam_lag_s * 1000, 0, " ms");
-  $("slam-drop").textContent = s.slam_dropped ?? "–";
-  $("slam-kf").textContent = s.kf_anchoring ? `${s.kf_count} (${s.kf_updates} · ${s.kf_culled})` : "키프레임 정보 없음";
-  $("slam-corr").textContent = s.kf_anchoring ? `${fmt(s.kf_max_correction_cm, 1)} cm · 루프 ${s.slam_loop_events ?? 0}회` : "–";
+  for (const lf of p.lanes) {
+    const L = lanes.get(lf.name);
+    const ls = (s.lanes || []).find(l => l.name === lf.name);
+    if (L && ls) updateLaneCard(L, ls, lf, refName);
+  }
 
   $("sam-count").textContent = `${s.sam6d_frames} / 공급 ${s.sam6d_fed}`;
-  const L = s.sam6d_last;
-  $("sam-last").textContent = L ? (L.objects.length ? L.objects.map(n => KO[n] || n).join(", ") : "검출 없음") : "–";
-  $("sam-age").textContent = L ? `${fmt(L.age_s, 2)} s (중앙 ${fmt(s.sam6d_age_median_s, 2)} s)` : "–";
-  $("sam-ms").textContent = L && L.ms ? `${L.ms.total} ms` : "–";
-  $("sam-unplaced").textContent = s.objects_unplaced;
-  const bs = (s.memory && s.memory.by_status) || {};
-  $("sam-memory").textContent = s.memory ? `${bs.active || 0} · ${bs.remembered || 0} · ${bs.deleted || 0} (재구성 ${s.memory.last_rebuild_ms} ms)` : "끔";
-
-  pill($("sync-state"), p.slam_status === "interp" ? "보간" : p.slam_status === "exact" ? "일치" : "없음",
-       p.slam_status ? "ok" : "bad");
+  const Lr = s.sam6d_last;
+  $("sam-last").textContent = Lr ? (Lr.objects.length ? Lr.objects.map(n => KO[n] || n).join(", ") : "검출 없음") : "–";
+  $("sam-age").textContent = Lr ? `${fmt(Lr.age_s, 2)} s (중앙 ${fmt(s.sam6d_age_median_s, 2)} s)` : "–";
+  $("sam-ms").textContent = Lr && Lr.ms ? `${Lr.ms.total} ms` : "–";
   $("sync-delay").textContent = `${s.display_delay_s} s`;
   $("sync-clock").textContent = s.clock ? s.clock.replace("frame clock", "프레임 시계") : "–";
   $("sync-maxage").textContent = s.overlay_max_age_s ? `${s.overlay_max_age_s} s (3D 지도는 전부)` : "–";
-  $("sync-rt").textContent = s.extrinsic.startsWith("urdf") ? "URDF (대체값)" : s.extrinsic;
 
   const rows = $("obj-rows");
-  if (!p.objects.length) return;
-  const camPos = p.T_w_sam ? [p.T_w_sam[3], p.T_w_sam[7], p.T_w_sam[11]] : null;
-  rows.innerHTML = p.objects.slice().sort((a, b) => a.name.localeCompare(b.name)).map(o => {
+  const all = [];
+  for (const lf of p.lanes) for (const o of lf.objects) all.push({ lane: lf, o });
+  if (!all.length) return;
+  rows.innerHTML = all.sort((a, b) => a.o.name.localeCompare(b.o.name) || a.lane.name.localeCompare(b.lane.name)).map(({ lane, o }) => {
     const T = o.T_w_obj, pos = [T[3], T[7], T[11]];
     const dist = o.T_cam_obj ? Math.hypot(o.T_cam_obj[3], o.T_cam_obj[7], o.T_cam_obj[11]) : null;
     const src = o.age_s > (s.overlay_max_age_s ?? 1e9) ? `<span class="pill idle">오래됨 · 지도에만</span>`
       : o.source === "sam6d" ? `<span class="pill ok">SAM-6D 추정</span>`
       : o.source === "slam_interp" ? `<span class="pill warn">SLAM 보간</span>` : `<span class="pill bad">SLAM 없음</span>`;
-    return `<tr><td><span class="sw" style="background:${PALETTE[o.name] || "#fff"}"></span>${KO[o.name] || o.name}${o.multi ? " #" + o.instance : ""} <span class="mono" style="color:var(--faint)">${o.name}</span></td>
+    return `<tr><td><span class="lane-tag" style="color:${lane.color}">${esc(lane.name)}</span></td>
+      <td><span class="sw" style="background:${PALETTE[o.name] || "#fff"}"></span>${KO[o.name] || o.name}${o.multi ? " #" + o.instance : ""} <span class="mono" style="color:var(--faint)">${o.name}</span></td>
       <td>${src}</td><td>${statusPill(o)}</td><td class="num">${fmt(o.age_s, 1, " s")}</td><td class="num">${o.est_count}</td><td class="num">${fmt(o.score, 3)}</td>
       <td class="num">${fmt(pos[0], 3)}</td><td class="num">${fmt(pos[1], 3)}</td><td class="num">${fmt(pos[2], 3)}</td><td class="num">${fmt(dist, 2)}</td></tr>`;
   }).join("");
@@ -397,23 +432,34 @@ function updatePanels(p) {
 const es = new EventSource("/events");
 es.onmessage = ev => {
   const p = JSON.parse(ev.data);
-  if (p.type === "init") { updateTrajectory(p.trajectory); return; }
-  if (p.type !== "frame") return;
-  $("video").src = "data:image/jpeg;base64," + p.jpeg;
-  $("video-wait").hidden = true;
-  setWorldConvention(p.stats && p.stats.slam_source === "lidar_kiss_icp");
-  if (p.trajectory) updateTrajectory(p.trajectory);
-  setMatrix(camSlam, p.T_w_slam);
-  setMatrix(camSam, p.T_w_sam);
-  const seen = new Set();
-  for (const o of p.objects) {
-    const n = objectNode(o);
-    setMatrix(n.g, o.T_w_obj);
-    n.fill.material.opacity = o.source === "sam6d" ? 0.35 : o.status === "remembered" ? 0.05 : 0.12;
-    seen.add(o.instance !== undefined && o.instance !== null ? `${o.name}#${o.instance}` : o.name);
-    n.hist.geometry.setFromPoints((o.history || []).map(q => new THREE.Vector3(...q)));
+  if (p.type === "init") {
+    setWorldConvention(!!p.world_zup);
+    for (const info of (p.lanes || [{ name: "slam", label: "SLAM", color: "#56c2e0" }])) ensureLane(info);
+    return;
   }
-  for (const [key, n] of objNodes) { if (!seen.has(key)) { n.g.visible = false; n.hist.visible = false; } else { n.hist.visible = true; } }
+  if (p.type !== "frame") return;
+  const s = p.stats || {};
+  setWorldConvention(!!s.world_zup);
+  const refName = s.reference_lane;
+  const laneFrames = p.lanes || [{ name: "slam", label: "SLAM", color: "#56c2e0", jpeg: p.jpeg, slam_status: p.slam_status,
+                                   T_w_sam: p.T_w_sam, T_w_slam: p.T_w_slam, objects: p.objects, trajectory: p.trajectory }];
+  for (const lf of laneFrames) {
+    const L = ensureLane(lf);
+    L.els.img.src = "data:image/jpeg;base64," + lf.jpeg;
+    L.els.wait.hidden = true;
+    if (lf.trajectory) updateTrajectory(L, lf.trajectory, lf.name === refName || laneFrames.length === 1);
+    setMatrix(L.camSlam, lf.T_w_slam);
+    setMatrix(L.camSam, lf.T_w_sam);
+    const seen = new Set();
+    for (const o of lf.objects) {
+      const n = objectNode(L, o);
+      setMatrix(n.g, o.T_w_obj);
+      n.fill.material.opacity = o.source === "sam6d" ? 0.35 : o.status === "remembered" ? 0.05 : 0.12;
+      seen.add(o.instance !== undefined && o.instance !== null ? `${o.name}#${o.instance}` : o.name);
+      n.hist.geometry.setFromPoints((o.history || []).map(q => new THREE.Vector3(...q)));
+    }
+    for (const [key, n] of L.objNodes) { if (!seen.has(key)) { n.g.visible = false; n.hist.visible = false; } else { n.hist.visible = true; } }
+  }
   updatePanels(p);
 };
 es.onerror = () => { $("run-status").textContent = "허브 연결 끊김 — 다시 연결하는 중"; $("live-dot").className = "dot"; };

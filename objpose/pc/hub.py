@@ -1,25 +1,41 @@
 #!/usr/bin/env python3
-"""hub.py — PC (.100) side of the object-pose system.
+"""hub.py — PC side of the object-pose system.
 
-    Mac (.113) ORB-SLAM3 ──poses over TCP (ssh -R tunnel)──┐
-                                                          ▼
-    SAM session (raw) ──1x replay──► shared memory ──► sam6d_infer.py (unchanged)
-          │                                                │ results (shared memory)
-          └──────── display frames ──► Fusion ◄────────────┘
+    SLAM host(s) ──poses over TCP──┐   one "lane" per SLAM stream: ORB-SLAM3 / RTAB-Map on the Mac,
+                                   ▼   KISS-ICP or hdl_graph_slam (LiDAR) on the Mac or on this PC
+    SAM session ──1x replay──► shared memory ──► sam6d_infer.py (unchanged)
+          │                                        │ results (shared memory)
+          └──────── display frames ──► Fusion per lane ◄─┘
                                           │
-                                  http://localhost:8765  (video + 3D view)
+                                  http://<pc>:8765  (one video per lane + one 3D view, lanes colour-coded)
 
-The hub commands the Mac: it opens the SSH reverse tunnel and launches the SLAM
-streamer there with --features 2000, waits until both ORB-SLAM3 (hello) and SAM-6D
-(READY) have loaded, then starts both replays at the same dataset time t0.
+The hub commands each SLAM host (ssh tunnel / direct / manual / local), waits until every lane has said
+hello and SAM-6D is READY, then starts every replay at the same dataset time t0.
+
+Link modes (--link):
+    tunnel  ssh -R: the Mac connects to its own 127.0.0.1:PORT
+    direct  ssh runs the streamer on the SLAM host with --connect <pc-host>:PORT, no tunnel
+    manual  nothing is launched; the exact command is printed and written to <out>/mac_command*.txt
+    local   the streamer runs on this PC (bash), e.g. the hdl_graph_slam LiDAR lane
+
+Lanes (2026-09-14): the legacy arguments (--slam, --slam-port, --extrinsic, --mac-slam-session, ...) define
+lane 0; each --lane "key=value,..." adds another SLAM stream that gets the same SAM-6D detections:
+    --lane name=hdl,slam=hdl,port=17002,ssh=local,session=/mnt/.../260910_object/lidar,extrinsic=objpose/rt/260910/X_lidar_sam.json
+keys: name label slam port ssh(alias|local) link host session extrinsic tau features params(a=b;c=d) runner color
+Every lane has its own pose buffer, fusion, object memory and logs (<key>_<name>.jsonl). For display the
+lanes are drawn in ONE map: the reference lane is the first LiDAR lane (z-up, metric), and every other lane
+is rigidly aligned to it with its SAM-camera trajectory (first pose, then a Kabsch fit over the first 15 s of
+overlap, then frozen), so a divergence between the lanes shows as such.
 """
 from __future__ import annotations
 
 import argparse
 import base64
+import copy
 import json
 import os
 import queue
+import shlex
 import signal
 import socket
 import subprocess
@@ -50,6 +66,33 @@ from shm_channel import FrameWriter, JsonReader         # noqa: E402
 
 SAM_MINUS_SLAM_CLOCK_NS = 18225662057   # SLAM/peer_timestamp_comparison.json
 PY_SAM6D = "/home/jucpark/anaconda3/envs/sam6d/bin/python"
+
+# SAM-6D opt-in 속도 옵션 프리셋 (--sam6d-speed).
+# 후보값 출처: sam6d_realtime/_speed_opt_2026_09_13/REPORT.md §9 "권장 설정"
+# 채택 여부는 이 배치(9객체 + verify 스택, 260910_object)에서 직접 재본 결과로 정했다
+# — objpose/docs/sam6d_inference_speed_260914.md "실측 결과" 참고.
+#   fine_npoint 1024 : total -9%, 검출 수/포즈 유지(1.2 mm / 1.3°)  → 채택
+#   mask_cache       : 카메라가 움직이면 재사용률 2%(이득 ~0)지만 해도 무해   → 채택
+#   precision bf16   : 검출 채택률이 fp32 대비 17~22% 로 붕괴(verify 임계값이
+#                      fp32 로 캘리브레이션돼 있다)                          → 제외
+#   pem_schedule     : carried 포즈가 카메라 이동만큼 낡아 77~131 mm 오차     → 제외
+# 두 제외 항목은 "report" 프리셋으로 그대로 재현할 수 있게 남겨 둔다.
+_SAM6D_MASK_CACHE = {"enabled": True, "iou_thresh": 0.90, "max_age": 5, "interval": 30}
+SAM6D_SPEED_PRESETS = {
+    "off": {},                                   # 2026-09-14 이전 동작 (fp32 / 캐시 off / 예산 off)
+    "fast": {"fine_npoint": 1024, "mask_cache": dict(_SAM6D_MASK_CACHE)},
+    "report": {"precision": "bf16", "fine_npoint": 1024, "coarse_npoint": 196,
+               "mask_cache": dict(_SAM6D_MASK_CACHE),
+               "pem_schedule": {"enabled": True, "budget": 1, "max_age": 4}},
+}
+
+BACKENDS = ("orbslam3", "rtabmap", "lidar", "hdl")
+BACKEND_NAME = {"orbslam3": "orb", "rtabmap": "rtab", "lidar": "kiss", "hdl": "hdl"}
+BACKEND_LABEL = {"orbslam3": "ORB-SLAM3", "rtabmap": "RTAB-Map", "lidar": "LiDAR KISS-ICP", "hdl": "LiDAR hdl_graph_slam"}
+LANE_COLORS = ["#56c2e0", "#f2a03d", "#c792ea", "#3ddc97"]
+# default lane colour by backend (ORB blue, LiDAR orange, RTAB purple) so a single-backend run keeps the same
+# colour everywhere (lane card, 3D boxes, launcher mode bar); a second lane of the same backend gets the next free one
+BACKEND_COLOR = {"orbslam3": "#56c2e0", "rtabmap": "#a78bfa", "lidar": "#f2a03d", "hdl": "#f2a03d"}
 
 
 def log(*a):
@@ -109,7 +152,12 @@ def project(cam, K, dist):
     return np.column_stack([K[0, 0] * xd + K[0, 2], K[1, 1] * yd + K[1, 2]])
 
 
-def draw_objects(img, K, dist, rows, extents, max_age_s=float("inf")):
+def hex_bgr(h):
+    h = h.lstrip("#")
+    return (int(h[4:6], 16), int(h[2:4], 16), int(h[0:2], 16))
+
+
+def draw_objects(img, K, dist, rows, extents, max_age_s=float("inf"), tag=None, tag_color=None):
     for r in rows:
         if r["age_s"] > max_age_s:
             continue
@@ -153,11 +201,304 @@ def draw_objects(img, K, dist, rows, extents, max_age_s=float("inf")):
         x0, y0 = max(0, top[0] - tw // 2), max(th + 4, top[1] - 6)
         cv2.rectangle(img, (x0 - 3, y0 - th - 4), (x0 + tw + 3, y0 + 4), (20, 20, 20), -1)
         cv2.putText(img, label, (x0, y0), cv2.FONT_HERSHEY_SIMPLEX, 0.45, col, 1, cv2.LINE_AA)
+    if tag:
+        (tw, th), _ = cv2.getTextSize(tag, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
+        cv2.rectangle(img, (6, 6), (tw + 18, th + 18), (20, 20, 20), -1)
+        cv2.putText(img, tag, (12, th + 12), cv2.FONT_HERSHEY_SIMPLEX, 0.6, tag_color or (255, 255, 255), 2, cv2.LINE_AA)
     return img
 
 
 def mat16(T):
     return None if T is None else [round(float(v), 6) for v in np.asarray(T).reshape(-1)]
+
+
+def kabsch(P, Q):
+    """rigid T (4x4) with Q ≈ R P + t, least squares over paired points (rows)"""
+    P, Q = np.asarray(P, np.float64), np.asarray(Q, np.float64)
+    mp, mq = P.mean(0), Q.mean(0)
+    H = (P - mp).T @ (Q - mq)
+    U, _, Vt = np.linalg.svd(H)
+    d = np.sign(np.linalg.det(Vt.T @ U.T))
+    D = np.diag([1.0, 1.0, d])
+    R = Vt.T @ D @ U.T
+    T = np.eye(4)
+    T[:3, :3] = R
+    T[:3, 3] = mq - R @ mp
+    res = np.linalg.norm((R @ P.T).T + T[:3, 3] - Q, axis=1)
+    return T, float(np.sqrt(np.mean(res ** 2)))
+
+
+def parse_lane_spec(spec: str) -> dict:
+    """'k=v,k=v' (values may contain / and :); params use ';' between Key=Value pairs"""
+    out = {}
+    for item in spec.split(","):
+        if not item.strip():
+            continue
+        k, _, v = item.partition("=")
+        out[k.strip()] = v.strip()
+    return out
+
+
+# ── SLAM lane ────────────────────────────────────────────────────────────────
+class Lane:
+    """one SLAM stream: launch, pose server, pose buffer, fusion, object memory, logs, display alignment"""
+
+    def __init__(self, hub: "Hub", idx: int, spec: dict):
+        self.hub, self.idx = hub, idx
+        a = hub.a
+        self.backend = spec.get("slam", a.slam)
+        if self.backend not in BACKENDS:
+            raise ValueError(f"lane {idx}: unknown slam backend {self.backend!r}")
+        self.name = spec.get("name") or BACKEND_NAME[self.backend]
+        self.label = spec.get("label") or BACKEND_LABEL[self.backend]
+        self.port = int(spec.get("port", a.slam_port))
+        self.ssh = spec.get("ssh", a.mac_host)
+        self.link = spec.get("link", a.link)
+        if self.ssh == "local":
+            self.link = "local"
+        self.host = spec.get("host", a.pc_host if self.link == "local" else a.slam_host)
+        self.session = spec.get("session", a.mac_slam_session)
+        self.pc_session = spec.get("pc_session", a.slam_session if idx == 0 else "")
+        self.features = int(spec.get("features", a.features))
+        self.params = [p for p in spec.get("params", "").split(";") if p] if "params" in spec else list(a.slam_param)
+        self.runner = spec.get("runner", a.mac_runner)
+        used = {l.color for l in hub.lanes} if hasattr(hub, "lanes") else set()
+        default = BACKEND_COLOR.get(self.backend, LANE_COLORS[idx % len(LANE_COLORS)])
+        if default in used:
+            default = next((c for c in LANE_COLORS if c not in used), LANE_COLORS[idx % len(LANE_COLORS)])
+        self.color = spec.get("color", default)
+        xpath = Path(spec.get("extrinsic", a.extrinsic))
+        self.X, self.xsrc = load_extrinsic(xpath)
+        xj = json.loads(xpath.read_text()) if xpath.suffix == ".json" else {}
+        self.xj = xj
+        self.tau_s = float(spec["tau"]) if "tau" in spec else float(xj.get("sam_tau_s", 0.0))
+        self.is_lidar = self.backend in ("lidar", "hdl")
+        # frame-index remapping of SLAM poses only exists for raw camera SLAM sessions
+        self.slam_clock = (frame_clock(self.pc_session, hub.clock_dir)
+                           if not self.is_lidar and self.pc_session
+                           and (Path(self.pc_session) / "rgbd_timestamp_associations.json").exists() else None)
+        self.poses = PoseBuffer(max_gap_s=a.max_gap)
+        self.fusion: Fusion | None = None
+        self.memory: ObjectMemory | None = None
+        self.hello = None
+        self.sock = None
+        self.end = None
+        self.unrefined = {}
+        self.refined = 0
+        self.lag = None
+        self.track_ms = None
+        self.dropped = 0
+        self.loop_events = 0
+        self.kf_anchoring = False
+        self.last_kf_update = None
+        self.proc = None
+        self.logs = {}
+        # display alignment into the reference lane's world: T_ref_lane
+        self.align = None
+        self.align_frozen = False
+        self.align_info = {"pairs": 0, "rmse_cm": None, "span_s": 0.0, "frozen": False, "mode": "none"}
+        self.sfx = ""
+
+    def init_fusion(self, global_tau_ns: int, K, img_size, no_memory: bool, assoc_gate_m: float):
+        self.tau_ns = int(round(self.tau_s * 1e9))
+        self.fusion = Fusion(self.X, self.poses, t_offset_ns=self.tau_ns - global_tau_ns)
+        # position-only association: box-like objects flip 180 deg between SAM-6D estimates,
+        # and a rotation gate split one object into two instances on this dataset
+        self.memory = None if no_memory else ObjectMemory(self.fusion, K, img_size,
+                                                          assoc_trans_gate_m=assoc_gate_m, assoc_rot_gate_deg=None)
+
+    def open_logs(self, out: Path, sfx: str):
+        self.sfx = sfx
+        self.logs = {k: open(out / f"{k}{sfx}.jsonl", "w", encoding="utf-8")
+                     for k in ("slam_poses", "sam6d_estimates", "display_objects", "kf_updates")}
+
+    def write_log(self, key, obj):
+        with self.hub.log_lock:
+            self.logs[key].write(json.dumps(obj, ensure_ascii=False) + "\n")
+
+    # ── launch ──────────────────────────────────────────────────────────────
+    def connect_addr(self) -> str:
+        if self.link in ("tunnel", "local"):
+            return f"127.0.0.1:{self.port}"
+        return f"{self.hub.a.pc_host}:{self.port}"
+
+    def remote_command(self) -> str:
+        connect = self.connect_addr()
+        rate = self.hub.a.rate
+        extra = " ".join(f"--{k.replace('_', '-')} {v}" for k, v in (x.split("=", 1) for x in self.params))
+        if self.backend == "lidar":
+            return (f"~/objpose/lidar/venv/bin/python -u ~/objpose/lidar/lidar_stream.py --session {self.session} "
+                    f"--mode live --connect {connect} --rate {rate} {extra}")
+        if self.backend == "hdl":
+            if self.link == "local":
+                runner = shlex.quote(str(REPO / "objpose" / "lidar" / "run_hdl_stream.sh"))
+                extra += (f" --launch-log {shlex.quote(str(self.hub.out / f'hdl_launch{self.sfx}.log'))}"
+                          f" --dump-dir {shlex.quote(str(self.hub.out / f'hdl_dump{self.sfx}'))}")
+            else:
+                runner = "~/objpose/lidar/run_hdl_stream.sh"
+            return f"{runner} --session {self.session} --mode live --connect {connect} --rate {rate} {extra}"
+        return (f"{self.runner} --slam {self.backend} --session {self.session} --features {self.features} "
+                f"--time-source frame {' '.join('--param ' + x for x in self.params)} "
+                f"--mode live --connect {connect} --rate {rate}")
+
+    def start(self):
+        out = self.hub.out
+        remote = self.remote_command()
+        if self.link == "manual":
+            (out / f"mac_command{self.sfx}.txt").write_text(f"# run on the SLAM host ({self.host}) after this hub is up\n{remote}\n")
+            log(f"[{self.name}] link=manual: SLAM streamer is NOT launched. Run this on {self.host} "
+                f"(also in {out / f'mac_command{self.sfx}.txt'}):")
+            log(f"    {remote}")
+            return
+        if self.link == "local":
+            cmd = ["bash", "-c", remote]
+        else:
+            cmd = ["ssh", "-o", "BatchMode=yes", "-o", "ExitOnForwardFailure=yes", "-o", "ServerAliveInterval=10"]
+            if self.link == "tunnel":
+                cmd += ["-R", f"{self.port}:127.0.0.1:{self.port}"]
+            cmd += [self.ssh, remote]
+        f = open(out / f"mac_slam{self.sfx}.log", "w")
+        self.proc = subprocess.Popen(cmd, stdout=f, stderr=subprocess.STDOUT, start_new_session=True)
+        self.hub.procs.append(self.proc)
+        (out / f"mac_command{self.sfx}.txt").write_text(" ".join(cmd) + "\n")
+        log(f"[{self.name}] {self.backend} launched ({'locally' if self.link == 'local' else 'over ssh ' + self.ssh}), "
+            f"link={self.link}: {remote}")
+
+    # ── pose server ─────────────────────────────────────────────────────────
+    def server(self):
+        hub = self.hub
+        srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        bind = hub.a.slam_bind or ("127.0.0.1" if self.link in ("tunnel", "local") else "0.0.0.0")
+        srv.bind((bind, self.port))
+        srv.listen(1)
+        srv.settimeout(1.0)
+        log(f"[{self.name}] waiting for SLAM stream on {bind}:{self.port} (link={self.link})")
+        while not hub.stop.is_set():
+            try:
+                conn, _ = srv.accept()
+            except socket.timeout:
+                continue
+            conn.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+            self.sock = conn
+            buf = b""
+            conn.settimeout(1.0)
+            while not hub.stop.is_set():
+                try:
+                    chunk = conn.recv(65536)
+                except socket.timeout:
+                    continue
+                except OSError:
+                    break
+                if not chunk:
+                    break
+                buf += chunk
+                while b"\n" in buf:
+                    line, buf = buf.split(b"\n", 1)
+                    if line.strip():
+                        self.on_msg(json.loads(line))
+            log(f"[{self.name}] SLAM stream closed")
+            self.sock = None
+        srv.close()
+
+    def send(self, obj):
+        self.sock.sendall((json.dumps(obj) + "\n").encode())
+
+    def smoothing_streamer(self) -> bool:
+        return bool(self.hello) and int((self.hello.get("params") or {}).get("smooth_scans", 1) or 1) > 1
+
+    def on_msg(self, m):
+        hub = self.hub
+        kind = m.get("type")
+        if kind == "hello":
+            self.hello = m
+            # the streamer may still stamp with association times: t0 is always on the frame clock
+            self.hello["first_ns_frame"] = (int(self.slam_clock["frame_ns"][0]) if self.slam_clock is not None
+                                            else int(m["first_ns"]))
+            log(f"[{self.name}] SLAM hello: {m}")
+        elif kind == "pose":
+            recv = time.monotonic()
+            if "frame_idx" in m and self.slam_clock is not None:
+                m["t_ns_streamer"] = m["t_ns"]
+                m["t_ns"] = int(self.slam_clock["frame_ns"][int(m["frame_idx"])])
+            self.poses.add(int(m["t_ns"]), m.get("state", "?"), m.get("T_wc"), m.get("map_id"),
+                           kf=m.get("ref_kf"), T_w_kf=m.get("T_w_kf"), kf_map_id=m.get("kf_map_id"),
+                           map_changed=bool(m.get("map_changed")))
+            if m.get("ref_kf") is not None:
+                self.kf_anchoring = True
+            if m.get("map_changed"):
+                self.loop_events += 1
+            lag = None
+            if hub.wall0 is not None:
+                lag = (recv - hub.wall0) - (int(m["t_ns"]) - hub.t0_ns) / 1e9 / hub.a.rate
+            m["recv_lag_s"] = None if lag is None else round(lag, 4)
+            if self.smoothing_streamer():
+                self.unrefined[int(m["t_ns"])] = m      # logged once its smoothed pose arrives
+            else:
+                self.write_log("slam_poses", m)
+            self.lag = lag
+            self.track_ms = m.get("track_ms")
+            self.dropped = m.get("dropped", 0)
+        elif kind == "pose_refine":
+            # delayed smoothed pose (lidar_stream --smooth-scans): replaces the raw one in the buffer; the log keeps
+            # the final pose in T_wc and the streamed one in T_wc_raw
+            recv = time.monotonic()
+            ok = self.poses.refine(int(m["t_ns"]), m["T_wc"])
+            p = self.unrefined.pop(int(m["t_ns"]), None)
+            if p is not None:
+                p["T_wc_raw"], p["T_wc"], p["smooth_n"] = p["T_wc"], m["T_wc"], m.get("smooth_n")
+                if hub.wall0 is not None:
+                    p["refine_lag_s"] = round((recv - hub.wall0) - (int(m["t_ns"]) - hub.t0_ns) / 1e9 / hub.a.rate, 4)
+                self.write_log("slam_poses", p)
+            self.refined += int(ok)
+        elif kind == "kf_update":
+            self.poses.apply_kf_update(m.get("map_id"), m.get("kfs", []))
+            self.write_log("kf_updates", m)
+            self.last_kf_update = {"t_ns": m.get("t_ns"), "reason": m.get("reason"), "n": len(m.get("kfs", []))}
+            if m.get("reason") != "periodic":
+                log(f"[{self.name}] kf_update ({m.get('reason')}): {len(m.get('kfs', []))} keyframes, "
+                    f"max correction so far {self.poses.kfs.max_correction_m * 100:.1f} cm")
+        elif kind == "end":
+            for t in sorted(self.unrefined):
+                self.write_log("slam_poses", self.unrefined.pop(t))
+            self.end = m
+            log(f"[{self.name}] SLAM end: {m}")
+
+    # ── display alignment ───────────────────────────────────────────────────
+    def A(self) -> np.ndarray:
+        return np.eye(4) if self.align is None else self.align
+
+    def source(self) -> str:
+        return (self.hello or {}).get("source", self.backend)
+
+    # ── stats ───────────────────────────────────────────────────────────────
+    def stats(self):
+        return {
+            "name": self.name, "label": self.label, "color": self.color, "backend": self.backend,
+            "link": self.link, "slam_host": self.host, "port": self.port,
+            "extrinsic": self.xsrc, "sam_tau_s": self.tau_s,
+            "features": self.features,
+            "slam_source": self.source(),
+            "slam_params": self.params,
+            "slam_state": self.poses.last_state,
+            "slam_poses": self.poses.count_all, "slam_ok": self.poses.count_ok,
+            "slam_track_ms": self.track_ms,
+            "slam_lag_s": None if self.lag is None else round(self.lag, 3),
+            "slam_dropped": self.dropped,
+            "slam_map_changes": self.poses.map_changes,
+            "slam_loop_events": self.loop_events,
+            "objects_unplaced": self.fusion.unplaced,
+            "kf_anchoring": self.kf_anchoring,
+            "kf_count": len(self.poses.kfs.T), "kf_updates": self.poses.kfs.updates,
+            "kf_culled": self.poses.kfs.culled,
+            "kf_max_correction_cm": round(self.poses.kfs.max_correction_m * 100, 2),
+            "last_kf_update": self.last_kf_update,
+            "near_loop_estimates": self.fusion.near_loop_estimates,
+            "memory": None if self.memory is None else self.memory.stats(),
+            "slam_refined_poses": self.refined,
+            "align": self.align_info,
+            "is_reference": self is self.hub.ref,
+        }
 
 
 # ── hub ──────────────────────────────────────────────────────────────────────
@@ -167,44 +508,48 @@ class Hub:
         self.out = Path(a.out).resolve()
         self.out.mkdir(parents=True, exist_ok=True)
         self.stop = threading.Event()
-        clock_dir = REPO / "objpose" / "rt" / "clock"
-        xj = json.loads(Path(a.extrinsic).read_text()) if a.extrinsic.endswith(".json") else {}
+        self.clock_dir = REPO / "objpose" / "rt" / "clock"
+        self.procs: list[subprocess.Popen] = []
+        self.log_lock = threading.Lock()
+        self.lanes = []
+        for i, spec in enumerate([{}] + [parse_lane_spec(x) for x in a.lane]):
+            self.lanes.append(Lane(self, i, spec))
+        names = [l.name for l in self.lanes]
+        if len(set(names)) != len(names):
+            raise ValueError(f"lane names must be unique: {names}")
+        ports = [l.port for l in self.lanes]
+        if len(set(ports)) != len(ports):
+            raise ValueError(f"lane ports must be unique: {ports}")
+        # the reference lane for display: the first LiDAR lane (z-up, metric), else lane 0
+        self.ref = next((l for l in self.lanes if l.is_lidar), self.lanes[0])
+        lane0 = self.lanes[0]
         self.raw_sam = (Path(a.sam_session) / "rgbd_timestamp_associations.json").exists()
         if self.raw_sam:
             # raw SDK sessions: association stamps of the SLAM session drift by seconds, so both
             # sides use the colour-metadata frame clock; SAM "System Time" is arrival time and the
             # rig calibration measured its lag (tau_s, SLAM time = SAM time + tau)
-            self.sam_clock = frame_clock(a.sam_session, clock_dir)
+            xj = lane0.xj
+            self.sam_clock = frame_clock(a.sam_session, self.clock_dir)
             self.sam_tau_ns = int(round(float(xj.get("tau_s", 0.0)) * 1e9)) if "ftime" in str(xj.get("inputs", "")) or "frame clock" in str(xj.get("clock", "")) else 0
             self.sam = RsSession(a.sam_session, offset_ns=-SAM_MINUS_SLAM_CLOCK_NS,
                                  times_ns=self.sam_clock["frame_ns"] + self.sam_tau_ns)
+            for l in self.lanes:
+                l.tau_s = self.sam_tau_ns / 1e9      # one clock for every lane on raw sessions
         else:
-            # converted bags (260910): header stamps are already on the shared clock
-            self.sam_tau_ns = int(round(float(xj.get("sam_tau_s", 0.0)) * 1e9))
-            self.sam = ConvSession(a.sam_session, offset_ns=self.sam_tau_ns)
-        # frame-index remapping of SLAM poses only exists for raw camera SLAM sessions
-        self.slam_clock = (frame_clock(a.slam_session, clock_dir)
-                           if a.slam != "lidar" and (Path(a.slam_session) / "rgbd_timestamp_associations.json").exists()
-                           else None)
+            # converted bags (260910): header stamps are already on the shared clock; the replay clock uses
+            # lane 0's tau (or --sam-tau-s), other lanes get their tau difference as a pose-lookup offset
+            tau = lane0.tau_s if a.sam_tau_s is None else a.sam_tau_s
+            self.sam_tau_ns = int(round(float(tau) * 1e9))
+            self.sam = ConvSession(a.sam_session, offset_ns=self.sam_tau_ns, cache_dir=self.clock_dir)
         self.K = self.sam.K
         self.dist = np.asarray(self.sam.kc, np.float64)
-        X, xsrc = load_extrinsic(Path(a.extrinsic))
-        self.extrinsic_source = xsrc
-        self.poses = PoseBuffer(max_gap_s=a.max_gap)
-        self.fusion = Fusion(X, self.poses)
-        # position-only association: box-like objects flip 180 deg between SAM-6D estimates,
-        # and a rotation gate split one object into two instances on this dataset
-        self.memory = None if a.no_memory else ObjectMemory(
-            self.fusion, self.sam.K, (self.sam.W, self.sam.H),
-            assoc_trans_gate_m=a.assoc_gate_m, assoc_rot_gate_deg=None)
+        for l in self.lanes:
+            l.init_fusion(self.sam_tau_ns, self.sam.K, (self.sam.W, self.sam.H), a.no_memory, a.assoc_gate_m)
+            l.open_logs(self.out, "" if len(self.lanes) == 1 else f"_{l.name}")
         self.extents = json.loads((REPO / "integration" / "cad_extents.json").read_text())
         self.clients: list[queue.Queue] = []
         self.clients_lock = threading.Lock()
         self.frames = deque(maxlen=120)            # (t_ns, index, bgr)
-        self.hello = None
-        self.slam_sock = None
-        self.slam_end = None
-        self.unrefined = {}
         self.t0_ns = None
         self.wall0 = None
         self.replay_t_ns = 0
@@ -214,17 +559,13 @@ class Hub:
         self.sam6d_runs = []                       # latency records
         self.sam6d_frames = 0
         self.last_result = None
-        self.procs: list[subprocess.Popen] = []
-        self.logs = {k: open(self.out / f"{k}.jsonl", "w", encoding="utf-8")
-                     for k in ("slam_poses", "sam6d_estimates", "display_objects", "kf_updates", "sam6d_frames")}
-        self.log_lock = threading.Lock()
+        self.frames_log = open(self.out / "sam6d_frames.jsonl", "w", encoding="utf-8")
         self.status = "starting"
         log(f"SAM session {self.sam.dir} ({'raw' if self.raw_sam else 'converted'}) frames={len(self.sam)} "
-            f"extrinsic={xsrc} SAM tau {self.sam_tau_ns / 1e6:+.1f} ms")
-
-    def write_log(self, key, obj):
-        with self.log_lock:
-            self.logs[key].write(json.dumps(obj, ensure_ascii=False) + "\n")
+            f"SAM tau {self.sam_tau_ns / 1e6:+.1f} ms")
+        for l in self.lanes:
+            log(f"lane {l.idx} [{l.name}] {l.backend} host={l.host} link={l.link} port={l.port} "
+                f"extrinsic={l.xsrc} tau {l.tau_s * 1e3:+.1f} ms{' (reference)' if l is self.ref else ''}")
 
     # ── subprocesses ────────────────────────────────────────────────────────
     def start_sam6d(self):
@@ -233,6 +574,13 @@ class Hub:
         cfg["runtime"]["idle_exit_s"] = 0
         cfg.pop("bag", None)
         cfg["anchor"]["enabled"] = False
+        # 속도 옵션은 opt-in 이다. off 면 YAML 에 키를 넣지 않아 예전 동작(fp32 / 캐시 off /
+        # 예산제 off) 그대로다. fast 면 REPORT.md §9 권장값을 runtime 에 써 넣는다.
+        preset = copy.deepcopy(SAM6D_SPEED_PRESETS[self.a.sam6d_speed])
+        if preset:
+            cfg["runtime"].update(preset)
+        log(f"SAM-6D speed preset: {self.a.sam6d_speed} "
+            f"({', '.join(f'{k}={v}' for k, v in preset.items()) if preset else 'no speed options'})")
         cfg_path = self.out / "sam6d_config.yaml"
         cfg_path.write_text(yaml.safe_dump(cfg, allow_unicode=True, sort_keys=False), encoding="utf-8")
         (self.out / "sam6d").mkdir(exist_ok=True)
@@ -249,136 +597,23 @@ class Hub:
         self.procs.append(p)
         log(f"SAM-6D started pid={p.pid} (log {self.out / 'sam6d_infer.log'})")
 
-    def start_mac_slam(self):
-        if self.a.slam == "lidar":
-            remote = (f"~/objpose/lidar/venv/bin/python -u ~/objpose/lidar/lidar_stream.py --session {self.a.mac_slam_session} "
-                      f"--mode live --connect 127.0.0.1:{self.a.slam_port} --rate {self.a.rate} "
-                      # --slam-param deskew_passes=1 -> --deskew-passes 1 (lidar_stream.py options)
-                      + " ".join(f"--{k.replace('_', '-')} {v}" for k, v in (x.split("=", 1) for x in self.a.slam_param)))
-        else:
-            remote = (f"{self.a.mac_runner} --slam {self.a.slam} --session {self.a.mac_slam_session} --features {self.a.features} "
-                      f"--time-source frame {' '.join('--param ' + x for x in self.a.slam_param)} "
-                      f"--mode live --connect 127.0.0.1:{self.a.slam_port} --rate {self.a.rate}")
-        cmd = ["ssh", "-o", "BatchMode=yes", "-o", "ExitOnForwardFailure=yes", "-o", "ServerAliveInterval=10",
-               "-R", f"{self.a.slam_port}:127.0.0.1:{self.a.slam_port}", self.a.mac_host, remote]
-        f = open(self.out / "mac_slam.log", "w")
-        p = subprocess.Popen(cmd, stdout=f, stderr=subprocess.STDOUT, start_new_session=True)
-        self.procs.append(p)
-        (self.out / "mac_command.txt").write_text(" ".join(cmd) + "\n")
-        log(f"Mac {self.a.slam} launched over ssh (features={self.a.features}): {remote}")
-
-    # ── SLAM pose server ────────────────────────────────────────────────────
-    def slam_server(self):
-        srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        srv.bind(("127.0.0.1", self.a.slam_port))
-        srv.listen(1)
-        srv.settimeout(1.0)
-        log(f"waiting for SLAM stream on 127.0.0.1:{self.a.slam_port}")
-        while not self.stop.is_set():
-            try:
-                conn, _ = srv.accept()
-            except socket.timeout:
-                continue
-            conn.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-            self.slam_sock = conn
-            buf = b""
-            conn.settimeout(1.0)
-            while not self.stop.is_set():
-                try:
-                    chunk = conn.recv(65536)
-                except socket.timeout:
-                    continue
-                except OSError:
-                    break
-                if not chunk:
-                    break
-                buf += chunk
-                while b"\n" in buf:
-                    line, buf = buf.split(b"\n", 1)
-                    if line.strip():
-                        self.on_slam_msg(json.loads(line))
-            log("SLAM stream closed")
-            self.slam_sock = None
-        srv.close()
-
-    def on_slam_msg(self, m):
-        kind = m.get("type")
-        if kind == "hello":
-            self.hello = m
-            # the streamer may still stamp with association times: t0 is always on the frame clock
-            self.hello["first_ns_frame"] = (int(self.slam_clock["frame_ns"][0]) if self.slam_clock is not None
-                                            else int(m["first_ns"]))
-            log(f"SLAM hello: {m}")
-        elif kind == "pose":
-            recv = time.monotonic()
-            if "frame_idx" in m and self.slam_clock is not None:
-                m["t_ns_streamer"] = m["t_ns"]
-                m["t_ns"] = int(self.slam_clock["frame_ns"][int(m["frame_idx"])])
-            self.poses.add(int(m["t_ns"]), m.get("state", "?"), m.get("T_wc"), m.get("map_id"),
-                           kf=m.get("ref_kf"), T_w_kf=m.get("T_w_kf"), kf_map_id=m.get("kf_map_id"),
-                           map_changed=bool(m.get("map_changed")))
-            if m.get("ref_kf") is not None:
-                self.kf_anchoring = True
-            if m.get("map_changed"):
-                self.slam_loop_events = getattr(self, "slam_loop_events", 0) + 1
-            lag = None
-            if self.wall0 is not None:
-                lag = (recv - self.wall0) - (int(m["t_ns"]) - self.t0_ns) / 1e9 / self.a.rate
-            m["recv_lag_s"] = None if lag is None else round(lag, 4)
-            if self.smoothing_streamer():
-                self.unrefined[int(m["t_ns"])] = m      # logged once its smoothed pose arrives
-            else:
-                self.write_log("slam_poses", m)
-            self.slam_lag = lag
-            self.slam_track_ms = m.get("track_ms")
-            self.slam_dropped = m.get("dropped", 0)
-        elif kind == "pose_refine":
-            # delayed smoothed pose (lidar_stream --smooth-scans): replaces the raw one in the buffer; the log keeps
-            # the final pose in T_wc and the streamed one in T_wc_raw
-            recv = time.monotonic()
-            ok = self.poses.refine(int(m["t_ns"]), m["T_wc"])
-            p = self.unrefined.pop(int(m["t_ns"]), None)
-            if p is not None:
-                p["T_wc_raw"], p["T_wc"], p["smooth_n"] = p["T_wc"], m["T_wc"], m.get("smooth_n")
-                if self.wall0 is not None:
-                    p["refine_lag_s"] = round((recv - self.wall0) - (int(m["t_ns"]) - self.t0_ns) / 1e9 / self.a.rate, 4)
-                self.write_log("slam_poses", p)
-            self.refined = getattr(self, "refined", 0) + int(ok)
-        elif kind == "kf_update":
-            self.poses.apply_kf_update(m.get("map_id"), m.get("kfs", []))
-            self.write_log("kf_updates", m)
-            self.last_kf_update = {"t_ns": m.get("t_ns"), "reason": m.get("reason"), "n": len(m.get("kfs", []))}
-            if m.get("reason") != "periodic":
-                log(f"kf_update ({m.get('reason')}): {len(m.get('kfs', []))} keyframes, "
-                    f"max correction so far {self.poses.kfs.max_correction_m * 100:.1f} cm")
-        elif kind == "end":
-            for t in sorted(self.unrefined):
-                self.write_log("slam_poses", self.unrefined.pop(t))
-            self.slam_end = m
-            log(f"SLAM end: {m}")
-
-    def smoothing_streamer(self) -> bool:
-        return bool(self.hello) and int((self.hello.get("params") or {}).get("smooth_scans", 1) or 1) > 1
-
-    def send_slam(self, obj):
-        self.slam_sock.sendall((json.dumps(obj) + "\n").encode())
-
     # ── coordinator + SAM replay ────────────────────────────────────────────
     def run_replay(self):
         ready = self.out / "sam6d" / "READY"
-        self.status = "loading SAM-6D and ORB-SLAM3"
-        while not self.stop.is_set() and not (ready.exists() and self.hello and self.slam_sock):
+        self.status = "loading SAM-6D and SLAM (" + ", ".join(l.label for l in self.lanes) + ")"
+        while not self.stop.is_set() and not (ready.exists() and all(l.hello and l.sock for l in self.lanes)):
             time.sleep(0.2)
         if self.stop.is_set():
             return
         start = self.a.start_s
-        t0 = max(int(self.sam.t_ns[0]), int(self.hello["first_ns_frame"])) + int(max(start, 0.3) * 1e9)
+        t0 = max([int(self.sam.t_ns[0])] + [int(l.hello["first_ns_frame"]) for l in self.lanes]) + int(max(start, 0.3) * 1e9)
         self.t0_ns = t0
-        self.send_slam({"type": "start", "t0_ns": t0, "rate": self.a.rate})
+        for l in self.lanes:
+            l.send({"type": "start", "t0_ns": t0, "rate": self.a.rate})
         self.wall0 = time.monotonic()
         self.status = "running"
-        log(f"START t0_ns={t0} (dataset +{(t0 - int(self.hello['first_ns_frame'])) / 1e9:.2f}s) rate={self.a.rate}")
+        log(f"START t0_ns={t0} (dataset +{(t0 - min(int(l.hello['first_ns_frame']) for l in self.lanes)) / 1e9:.2f}s) "
+            f"rate={self.a.rate} lanes={[l.name for l in self.lanes]}")
         end_ns = int(self.sam.t_ns[-1]) if self.a.duration_s <= 0 else t0 + int(self.a.duration_s * 1e9)
         i = int(np.searchsorted(self.sam.t_ns, t0))
         feed_period = 1.0 / self.a.sam_feed_hz
@@ -435,32 +670,133 @@ class Hub:
             stamp = int(r["stamp_ns"])
             done_wall = time.monotonic()
             frame_age = ((done_wall - self.wall0) - (stamp - self.t0_ns) / 1e9 / self.a.rate) if self.wall0 else None
-            placed = []
-            for d in r.get("dets", []):
-                res = self.fusion.add_estimate(stamp, d["object"], d["R"], d["t_mm"], d.get("score", 0.0))
-                placed.append(res)
-                self.write_log("sam6d_estimates", {
-                    "t_ns": stamp, "object": d["object"], "score": d.get("score"), "R": d["R"], "t_mm": d["t_mm"],
-                    "placed": res["placed"], "slam_interp": res.get("slam"),
-                    "anchor_kf": res.get("kf"), "near_loop_closure": res.get("near_loop"),
-                    "T_w_obj": mat16(res.get("T_w_obj")), "result_age_s": frame_age, "ms": r.get("ms")})
-            self.write_log("sam6d_frames", {"t_ns": stamp, "dets": [{k: d.get(k) for k in ("object", "score", "R", "t_mm")}
-                                                                   for d in r.get("dets", [])]})
-            if self.memory is not None:
-                self.memory.add_frame(stamp, [(d["object"], d.get("score", 0.0), d["R"], d["t_mm"])
-                                              for d in r.get("dets", [])])
-            self.last_result = {"t_ns": stamp, "n": len(r.get("dets", [])), "ms": r.get("ms"),
-                                "age_s": frame_age, "objects": [p["name"] for p in placed if p["placed"]],
-                                "unplaced": [p["name"] for p in placed if not p["placed"]]}
+            dets = r.get("dets", [])
+            placed_any = {}
+            for l in self.lanes:
+                placed = []
+                for d in dets:
+                    res = l.fusion.add_estimate(stamp, d["object"], d["R"], d["t_mm"], d.get("score", 0.0))
+                    placed.append(res)
+                    l.write_log("sam6d_estimates", {
+                        "t_ns": stamp, "object": d["object"], "score": d.get("score"), "R": d["R"], "t_mm": d["t_mm"],
+                        "placed": res["placed"], "slam_interp": res.get("slam"),
+                        "anchor_kf": res.get("kf"), "near_loop_closure": res.get("near_loop"),
+                        "T_w_obj": mat16(res.get("T_w_obj")), "result_age_s": frame_age, "ms": r.get("ms")})
+                if l.memory is not None:
+                    l.memory.add_frame(stamp, [(d["object"], d.get("score", 0.0), d["R"], d["t_mm"]) for d in dets])
+                placed_any[l.name] = placed
+            with self.log_lock:
+                self.frames_log.write(json.dumps({"t_ns": stamp, "dets": [{k: d.get(k) for k in ("object", "score", "R", "t_mm")}
+                                                                          for d in dets]}, ensure_ascii=False) + "\n")
+            p0 = placed_any[self.lanes[0].name]
+            self.last_result = {"t_ns": stamp, "n": len(dets), "ms": r.get("ms"),
+                                "age_s": frame_age, "objects": [p["name"] for p in p0 if p["placed"]],
+                                "unplaced": [p["name"] for p in p0 if not p["placed"]],
+                                "placed_by_lane": {k: sum(1 for p in v if p["placed"]) for k, v in placed_any.items()}}
             self.sam6d_runs.append(frame_age)
 
+    # ── display alignment between lanes ─────────────────────────────────────
+    def update_alignment(self):
+        """T_ref_lane for every non-reference lane from the SAM-camera trajectories (same SAM frames)."""
+        if self.t0_ns is None or len(self.lanes) < 2:
+            return
+        ref = self.ref
+        t_now = self.replay_t_ns
+        for l in self.lanes:
+            if l is ref or l.align_frozen:
+                continue
+            step = 200_000_000
+            ts = range(self.t0_ns, t_now + 1, step)
+            P, Q, ts_ok = [], [], []
+            for t in ts:
+                Ta, _ = ref.fusion.T_w_sam(t)
+                Tb, _ = l.fusion.T_w_sam(t)
+                if Ta is None or Tb is None:
+                    continue
+                P.append(Tb[:3, 3])
+                Q.append(Ta[:3, 3])
+                ts_ok.append(t)
+            span = (ts_ok[-1] - ts_ok[0]) / 1e9 if len(ts_ok) > 1 else 0.0
+            # the fit needs real motion: a stationary start (260910: ~35 s) gives one point and an arbitrary
+            # rotation, so gate on the SAM camera's path length and spatial spread, not on time alone
+            path_m = float(np.sum(np.linalg.norm(np.diff(np.asarray(Q), axis=0), axis=1))) if len(Q) > 1 else 0.0
+            spread_m = float(np.sqrt(np.linalg.eigvalsh(np.cov(np.asarray(Q).T))[-2])) if len(Q) > 3 else 0.0
+            if len(P) >= 25 and span >= 4.0 and path_m >= self.a.align_path_m and spread_m >= 0.15:
+                T, rmse = kabsch(P, Q)
+                l.align = T
+                l.align_info = {"pairs": len(P), "rmse_cm": round(rmse * 100, 2), "span_s": round(span, 1),
+                                "path_m": round(path_m, 2), "frozen": False, "mode": "kabsch"}
+                if span >= self.a.align_span_s and path_m >= 2 * self.a.align_path_m:
+                    l.align_frozen = True
+                    l.align_info["frozen"] = True
+                    log(f"[{l.name}] display alignment to [{ref.name}] frozen: {len(P)} SAM-camera pairs over "
+                        f"{span:.1f} s, RMSE {rmse * 100:.2f} cm")
+            elif l.align is None or l.align_info.get("mode") == "single":
+                Ta, _ = ref.fusion.T_w_sam(t_now)
+                Tb, _ = l.fusion.T_w_sam(t_now)
+                if Ta is not None and Tb is not None:
+                    l.align = Ta @ inv_se3(Tb)
+                    l.align_info = {"pairs": 1, "rmse_cm": None, "span_s": round(span, 1), "path_m": round(path_m, 2),
+                                    "frozen": False, "mode": "single"}
+
+    def lane_divergence_cm(self, l: Lane, t_ns: int):
+        """distance between the SAM camera positions of lane l (aligned) and the reference lane at t"""
+        if l is self.ref:
+            return None
+        Ta, _ = self.ref.fusion.T_w_sam(t_ns)
+        Tb, _ = l.fusion.T_w_sam(t_ns)
+        if Ta is None or Tb is None:
+            return None
+        pb = (l.A() @ Tb)[:3, 3]
+        return round(float(np.linalg.norm(pb - Ta[:3, 3]) * 100), 1)
+
     # ── render + broadcast ──────────────────────────────────────────────────
+    def lane_frame(self, l: Lane, t_ns, idx, img, send_traj: bool):
+        A = l.A()
+        T_ws, slam_status, rows = l.fusion.view(t_ns)
+        if l.memory is not None:
+            rows = self.memory_rows(l, t_ns, T_ws, rows)
+        canvas = draw_objects(img.copy(), self.K, self.dist, rows, self.extents, self.a.overlay_max_age,
+                              tag=l.label, tag_color=hex_bgr(l.color))
+        ok, jpg = cv2.imencode(".jpg", canvas, [cv2.IMWRITE_JPEG_QUALITY, 78])
+        T_wslam, _ = l.poses.at(l.fusion.slam_t(t_ns))
+        objs = []
+        for r in rows:
+            T_w_obj = A @ r["T_w_obj"]
+            objs.append({"name": r["name"], "source": r["source"], "age_s": round(r["age_s"], 2),
+                         "score": round(r["score"], 3), "est_count": r["est_count"],
+                         "anchor_kf": r.get("anchor_kf"), "near_loop": r.get("near_loop"),
+                         "status": r.get("status"), "instance": r.get("instance"), "multi": r.get("multi", False),
+                         "confidence": r.get("confidence"),
+                         "T_w_obj": mat16(T_w_obj), "T_w_obj_lane": mat16(r["T_w_obj"]), "T_cam_obj": mat16(r["T_cam_obj"]),
+                         "size_mm": self.extents.get(r["name"], {}).get("size_mm"),
+                         "center_mm": (np.add(self.extents[r["name"]]["min_mm"], self.extents[r["name"]]["max_mm"]) / 2).tolist()
+                         if r["name"] in self.extents else None,
+                         "history": [(A[:3, :3] @ np.asarray(h) + A[:3, 3]).tolist() for h in r["history"][-20:]]})
+        l.write_log("display_objects", {"t_ns": t_ns, "frame_idx": idx, "slam": slam_status,
+                                        "objects": [{"name": o["name"], "source": o["source"],
+                                                     "age_s": o["age_s"], "T_cam_obj": o["T_cam_obj"]} for o in objs]})
+        out = {"name": l.name, "label": l.label, "color": l.color, "backend": l.backend,
+               "jpeg": base64.b64encode(jpg.tobytes()).decode(),
+               "slam_status": slam_status,
+               "T_w_sam": mat16(None if T_ws is None else A @ T_ws),
+               "T_w_slam": mat16(None if T_wslam is None else A @ T_wslam),
+               "objects": objs, "divergence_cm": self.lane_divergence_cm(l, t_ns)}
+        if send_traj:
+            pts = np.asarray(l.poses.positions(step=3), np.float64)
+            out["trajectory"] = [] if pts.size == 0 else ((A[:3, :3] @ pts.T).T + A[:3, 3]).round(4).tolist()
+        return out
+
     def run_render(self):
         period = 1.0 / self.a.view_hz
         last_traj = 0.0
+        last_align = 0.0
         while not self.stop.is_set():
             t_loop = time.monotonic()
             if self.frames:
+                if time.monotonic() - last_align > 0.5:
+                    self.update_alignment()
+                    last_align = time.monotonic()
                 target = self.replay_t_ns - int(self.a.display_delay * 1e9)
                 pick = None
                 for t_ns, idx, img in reversed(self.frames):
@@ -470,98 +806,75 @@ class Hub:
                 if pick is None:
                     pick = self.frames[0]
                 t_ns, idx, img = pick
-                T_ws, slam_status, rows = self.fusion.view(t_ns)
-                if self.memory is not None:
-                    rows = self.memory_rows(t_ns, T_ws, rows)
-                canvas = draw_objects(img.copy(), self.K, self.dist, rows, self.extents, self.a.overlay_max_age)
-                ok, jpg = cv2.imencode(".jpg", canvas, [cv2.IMWRITE_JPEG_QUALITY, 78])
-                T_wslam, _ = self.poses.at(t_ns)
+                send_traj = time.monotonic() - last_traj > 1.0
+                lanes = [self.lane_frame(l, t_ns, idx, img, send_traj) for l in self.lanes]
+                if send_traj:
+                    last_traj = time.monotonic()
+                l0 = lanes[0]
                 payload = {
                     "type": "frame", "t_ns": t_ns, "t_rel_s": round((t_ns - self.t0_ns) / 1e9, 3) if self.t0_ns else 0,
-                    "frame_idx": idx, "jpeg": base64.b64encode(jpg.tobytes()).decode(),
-                    "slam_status": slam_status, "T_w_sam": mat16(T_ws), "T_w_slam": mat16(T_wslam),
-                    "objects": [{"name": r["name"], "source": r["source"], "age_s": round(r["age_s"], 2),
-                                 "score": round(r["score"], 3), "est_count": r["est_count"],
-                                 "anchor_kf": r.get("anchor_kf"), "near_loop": r.get("near_loop"),
-                                 "status": r.get("status"), "instance": r.get("instance"), "multi": r.get("multi", False),
-                                 "confidence": r.get("confidence"),
-                                 "T_w_obj": mat16(r["T_w_obj"]), "T_cam_obj": mat16(r["T_cam_obj"]),
-                                 "size_mm": self.extents.get(r["name"], {}).get("size_mm"),
-                                 "center_mm": (np.add(self.extents[r["name"]]["min_mm"], self.extents[r["name"]]["max_mm"]) / 2).tolist()
-                                 if r["name"] in self.extents else None,
-                                 "history": r["history"][-20:]} for r in rows],
+                    "frame_idx": idx,
+                    "lanes": lanes,
+                    # lane 0 also at the top level (older tools / viewers)
+                    "jpeg": l0["jpeg"], "slam_status": l0["slam_status"], "T_w_sam": l0["T_w_sam"],
+                    "T_w_slam": l0["T_w_slam"], "objects": l0["objects"],
                     "stats": self.stats(),
                 }
-                self.write_log("display_objects", {"t_ns": t_ns, "frame_idx": idx, "slam": slam_status,
-                                                   "objects": [{"name": o["name"], "source": o["source"],
-                                                                "age_s": o["age_s"], "T_cam_obj": o["T_cam_obj"]}
-                                                               for o in payload["objects"]]})
-                if time.monotonic() - last_traj > 1.0:
-                    payload["trajectory"] = self.poses.positions(step=3)
-                    last_traj = time.monotonic()
+                if send_traj:
+                    payload["trajectory"] = l0.get("trajectory")
                 self.broadcast(payload)
             time.sleep(max(0.0, period - (time.monotonic() - t_loop)))
 
     def run_memory(self):
         while not self.stop.is_set():
-            if self.memory is not None:
-                self.memory.update()
+            for l in self.lanes:
+                if l.memory is not None:
+                    l.memory.update()
             time.sleep(0.2)
 
-    def memory_rows(self, t_ns, T_ws, fusion_rows, exact_window_ns=20_000_000):
+    def memory_rows(self, l: Lane, t_ns, T_ws, fusion_rows, exact_window_ns=20_000_000):
         """display rows from the object memory: one per kept instance, in the corrected map."""
         hist = {r["name"]: r["history"] for r in fusion_rows}
-        lms = [l for l in self.memory.landmarks() if l["status"] in ("active", "lost", "remembered")]
+        lms = [m for m in l.memory.landmarks() if m["status"] in ("active", "lost", "remembered")]
         per_class = {}
-        for l in lms:
-            per_class[l["name"]] = per_class.get(l["name"], 0) + 1
+        for m in lms:
+            per_class[m["name"]] = per_class.get(m["name"], 0) + 1
         rows = []
-        for l in lms:
-            T_w_obj = l["T_w_obj"]
+        for m in lms:
+            T_w_obj = m["T_w_obj"]
             rows.append({
-                "name": l["name"], "instance": l["object_id"], "multi": per_class[l["name"]] > 1,
-                "status": l["status"], "score": float(l["score"] or 0.0), "confidence": l["confidence"],
-                "T_w_obj": T_w_obj, "age_s": (t_ns - l["last_seen_ns"]) / 1e9, "est_count": l["n_obs"],
-                "anchor_kf": None, "near_loop": False, "history": hist.get(l["name"], []),
+                "name": m["name"], "instance": m["object_id"], "multi": per_class[m["name"]] > 1,
+                "status": m["status"], "score": float(m["score"] or 0.0), "confidence": m["confidence"],
+                "T_w_obj": T_w_obj, "age_s": (t_ns - m["last_seen_ns"]) / 1e9, "est_count": m["n_obs"],
+                "anchor_kf": None, "near_loop": False, "history": hist.get(m["name"], []),
                 "T_cam_obj": None if T_ws is None else inv_se3(T_ws) @ T_w_obj,
                 "source": ("no_slam" if T_ws is None else
-                           "sam6d" if abs(t_ns - l["last_seen_ns"]) <= exact_window_ns else "slam_interp"),
+                           "sam6d" if abs(t_ns - m["last_seen_ns"]) <= exact_window_ns else "slam_interp"),
             })
         return rows
 
     def stats(self):
         lags = [v for v in self.sam6d_runs if v is not None]
-        return {
+        lane_stats = [l.stats() for l in self.lanes]
+        s = dict(lane_stats[0])          # lane 0 flat at the top level, as before
+        s.update({
             "status": self.status,
-            "extrinsic": self.extrinsic_source,
+            "sam_host": self.a.pc_host,
             "clock": (f"frame clock, SAM tau {self.sam_tau_ns / 1e6:+.1f} ms" if self.raw_sam
                       else f"header stamps, SAM tau {self.sam_tau_ns / 1e6:+.1f} ms"),
-            "features": self.a.features,
-            "slam_source": (self.hello or {}).get("source", self.a.slam),
-            "slam_params": self.a.slam_param,
-            "slam_state": self.poses.last_state,
-            "slam_poses": self.poses.count_all, "slam_ok": self.poses.count_ok,
-            "slam_track_ms": getattr(self, "slam_track_ms", None),
-            "slam_lag_s": None if getattr(self, "slam_lag", None) is None else round(self.slam_lag, 3),
-            "slam_dropped": getattr(self, "slam_dropped", 0),
-            "slam_map_changes": self.poses.map_changes,
-            "slam_loop_events": getattr(self, "slam_loop_events", 0),
             "sam6d_frames": self.sam6d_frames, "sam6d_fed": self.fed,
+            "sam6d_speed": self.a.sam6d_speed,
             "sam6d_last": self.last_result,
             "sam6d_age_median_s": round(float(np.median(lags)), 2) if lags else None,
-            "objects_unplaced": self.fusion.unplaced,
-            "kf_anchoring": getattr(self, "kf_anchoring", False),
-            "kf_count": len(self.poses.kfs.T), "kf_updates": self.poses.kfs.updates,
-            "kf_culled": self.poses.kfs.culled,
-            "kf_max_correction_cm": round(self.poses.kfs.max_correction_m * 100, 2),
-            "near_loop_estimates": self.fusion.near_loop_estimates,
-            "memory": None if self.memory is None else self.memory.stats(),
             "display_delay_s": self.a.display_delay,
-            "slam_refined_poses": getattr(self, "refined", 0),
             "overlay_max_age_s": self.a.overlay_max_age,
             "replay_t_rel_s": round((self.replay_t_ns - self.t0_ns) / 1e9, 2) if self.t0_ns else 0,
             "duration_s": round((int(self.sam.t_ns[-1]) - self.t0_ns) / 1e9, 1) if self.t0_ns else None,
-        }
+            "lanes": lane_stats,
+            "reference_lane": self.ref.name,
+            "world_zup": self.ref.source().startswith("lidar") or self.ref.is_lidar,
+        })
+        return s
 
     def broadcast(self, payload):
         data = ("data: " + json.dumps(payload, separators=(",", ":")) + "\n\n").encode()
@@ -602,7 +915,12 @@ class Hub:
                         hub.clients.append(q)
                     try:
                         init = {"type": "init", "K": hub.K.tolist(), "width": hub.sam.W, "height": hub.sam.H,
-                                "X_slam_sam": mat16(hub.fusion.X), "trajectory": hub.poses.positions(step=3)}
+                                "X_slam_sam": mat16(hub.lanes[0].fusion.X),
+                                "trajectory": hub.lanes[0].poses.positions(step=3),
+                                "lanes": [{"name": l.name, "label": l.label, "color": l.color, "backend": l.backend,
+                                           "X_slam_sam": mat16(l.fusion.X), "host": l.host, "link": l.link}
+                                          for l in hub.lanes],
+                                "reference_lane": hub.ref.name, "world_zup": hub.ref.is_lidar}
                         self.wfile.write(("data: " + json.dumps(init) + "\n\n").encode())
                         while not hub.stop.is_set():
                             try:
@@ -626,23 +944,25 @@ class Hub:
 
         srv = ThreadingHTTPServer((self.a.http_host, self.a.http_port), H)
         srv.daemon_threads = True
-        log(f"viewer: http://localhost:{self.a.http_port}")
+        shown = self.a.pc_host if self.a.http_host in ("0.0.0.0", "") else self.a.http_host
+        log(f"viewer: http://{shown}:{self.a.http_port}  (bound to {self.a.http_host}:{self.a.http_port})")
         srv.serve_forever()
 
     # ── lifecycle ───────────────────────────────────────────────────────────
     def run(self):
         self.fw = FrameWriter()
         threads = [threading.Thread(target=self.http, daemon=True),
-                   threading.Thread(target=self.slam_server, daemon=True),
                    threading.Thread(target=self.run_results, daemon=True),
                    threading.Thread(target=self.run_render, daemon=True),
                    threading.Thread(target=self.run_memory, daemon=True)]
+        threads += [threading.Thread(target=l.server, daemon=True) for l in self.lanes]
         for t in threads:
             t.start()
         if not self.a.no_sam6d:
             self.start_sam6d()
         if not self.a.no_mac:
-            self.start_mac_slam()
+            for l in self.lanes:
+                l.start()
         replay = threading.Thread(target=self.run_replay, daemon=True)
         replay.start()
         try:
@@ -664,21 +984,34 @@ class Hub:
         finally:
             self.shutdown()
 
+    def lane_summary(self, l: Lane):
+        s = l.stats()
+        s["objects"] = {k: {"est_count": v.est_count, "T_w_obj": mat16(l.fusion.world(v.current)),
+                            "t_est_ns": v.current.t_ns, "anchor_kf": v.current.kf}
+                        for k, v in l.fusion.objects.items()}
+        s["observations_final"] = l.fusion.dump_observations()
+        if l.memory is not None:
+            l.memory.update()
+            s["memory_landmarks"] = [{**{k: v for k, v in m.items() if k != "T_w_obj"}, "T_w_obj": mat16(m["T_w_obj"])}
+                                     for m in l.memory.landmarks()]
+        s["slam_end"] = l.end
+        s["T_ref_lane"] = mat16(l.align) if l is not self.ref else None
+        s["align_final"] = l.align_info
+        return s
+
     def write_summary(self):
         s = self.stats()
-        s["objects"] = {k: {"est_count": v.est_count, "T_w_obj": mat16(self.fusion.world(v.current)),
-                            "t_est_ns": v.current.t_ns, "anchor_kf": v.current.kf}
-                        for k, v in self.fusion.objects.items()}
+        l0 = self.lane_summary(self.lanes[0])
+        for k in ("objects", "observations_final", "memory_landmarks", "slam_end"):
+            if k in l0:
+                s[k] = l0[k]
         s["t0_ns"] = self.t0_ns
-        s["observations_final"] = self.fusion.dump_observations()
-        if self.memory is not None:
-            self.memory.update()
-            s["memory_landmarks"] = [{**{k: v for k, v in l.items() if k != "T_w_obj"}, "T_w_obj": mat16(l["T_w_obj"])}
-                                     for l in self.memory.landmarks()]
-        s["slam_end"] = self.slam_end
+        s["lanes"] = [self.lane_summary(l) for l in self.lanes]
         (self.out / "summary.json").write_text(json.dumps(s, indent=1, default=str))
-        for f in self.logs.values():
-            f.flush()
+        for l in self.lanes:
+            for f in l.logs.values():
+                f.flush()
+        self.frames_log.flush()
         log(f"summary written: {self.out / 'summary.json'}")
 
     def shutdown(self):
@@ -695,8 +1028,10 @@ class Hub:
                 p.wait(timeout=max(0.1, deadline - time.time()))
             except subprocess.TimeoutExpired:
                 os.killpg(p.pid, signal.SIGKILL)
-        for f in self.logs.values():
-            f.close()
+        for l in self.lanes:
+            for f in l.logs.values():
+                f.close()
+        self.frames_log.close()
         self.fw.close()
         log("stopped")
 
@@ -708,14 +1043,28 @@ def main():
     ap.add_argument("--slam-session", default=f"{ds}/SLAM", help="PC copy of the SLAM session (for its frame clock)")
     ap.add_argument("--extrinsic", default=str(REPO / "objpose" / "rt" / "X_slam_sam.json"))
     ap.add_argument("--out", default=str(REPO / "objpose" / "output" / time.strftime("run_%y%m%d_%H%M%S")))
-    ap.add_argument("--mac-host", default="mac")
+    ap.add_argument("--mac-host", default="mac", help="ssh destination of the SLAM host (alias or user@ip)")
+    ap.add_argument("--link", choices=["tunnel", "direct", "manual", "local"], default="tunnel",
+                    help="tunnel: ssh -R (Mac connects to its own localhost); direct: ssh launches the streamer with "
+                         "--connect <pc-host>:port; manual: print the command and wait; local: run the streamer on this PC")
+    ap.add_argument("--slam-host", default="192.168.20.55", help="SLAM host address (shown in the viewer)")
+    ap.add_argument("--pc-host", default="192.168.20.5", help="this PC's LAN address the Mac connects to (direct/manual)")
+    ap.add_argument("--slam-bind", default=None, help="address the SLAM pose server binds (default 127.0.0.1 for tunnel, "
+                                                     "0.0.0.0 for direct/manual)")
+    ap.add_argument("--sam-tau-s", type=float, default=None,
+                    help="converted SAM bag only: SLAM time = SAM header stamp + tau (default: extrinsic json sam_tau_s or 0)")
     ap.add_argument("--mac-runner", default="~/objpose/run_slam.sh")
     ap.add_argument("--mac-slam-session", default="~/Documents/DefenseMeta/Dataset/260826_etri_eightcircle_dark/SLAM")
     ap.add_argument("--features", type=int, default=2000)
-    ap.add_argument("--slam", choices=["orbslam3", "rtabmap", "lidar"], default="orbslam3", help="SLAM backend on the Mac")
+    ap.add_argument("--slam", choices=list(BACKENDS), default="orbslam3", help="SLAM backend of lane 0")
     ap.add_argument("--slam-param", action="append", default=[], metavar="Key=Value",
-                    help="backend parameter override passed to the Mac streamer (repeatable)")
+                    help="ORB-SLAM3 settings override / lidar_stream option, e.g. ORBextractor.nFeatures=1500")
     ap.add_argument("--slam-port", type=int, default=17001)
+    ap.add_argument("--lane", action="append", default=[], metavar="k=v,k=v",
+                    help="additional SLAM lane (keys: name slam port ssh link host session extrinsic tau features params runner color)")
+    ap.add_argument("--align-span-s", type=float, default=15.0, help="overlap [s] after which a lane's display alignment is frozen")
+    ap.add_argument("--align-path-m", type=float, default=1.0, help="SAM-camera path length [m] needed before the Kabsch fit "
+                                                                    "(frozen at 2x); before that the current pose aligns the lanes")
     ap.add_argument("--http-host", default="0.0.0.0")
     ap.add_argument("--http-port", type=int, default=8765)
     ap.add_argument("--rate", type=float, default=1.0)
@@ -725,13 +1074,20 @@ def main():
     ap.add_argument("--view-hz", type=float, default=15.0)
     ap.add_argument("--display-delay", type=float, default=0.3)
     ap.add_argument("--overlay-max-age", type=float, default=60.0,
-                    help="draw an object on the video only if SAM-6D saw it within this many seconds")
+                    help="draw an object on the video only this long after its last SAM-6D estimate")
     ap.add_argument("--max-gap", type=float, default=0.25, help="max SLAM pose gap to interpolate across [s]")
     ap.add_argument("--tail-s", type=float, default=8.0)
-    ap.add_argument("--no-mac", action="store_true", help="don't launch the Mac; wait for an external SLAM client")
+    ap.add_argument("--no-mac", action="store_true", help="don't launch the SLAM hosts; wait for external SLAM clients")
     ap.add_argument("--no-sam6d", action="store_true")
+    ap.add_argument("--sam6d-speed", choices=list(SAM6D_SPEED_PRESETS), default="fast",
+                    help="SAM-6D opt-in speed options written into <run>/sam6d_config.yaml: "
+                         "off = fp32 / no mask cache / no PEM budget (pre-2026-09-14 behaviour); "
+                         "fast = fine_npoint 1024 + mask cache (the part measured to keep accuracy); "
+                         "report = the literal _speed_opt_2026_09_13/REPORT.md §9 preset "
+                         "(adds bf16 + PEM budget 1 — both measured to break detection accuracy here)")
     ap.add_argument("--no-memory", action="store_true", help="show raw latest estimates instead of the object memory")
-    ap.add_argument("--assoc-gate-m", type=float, default=0.15, help="object memory association distance gate")
+    ap.add_argument("--assoc-gate-m", type=float, default=0.30,
+                    help="object memory association distance gate (0.15 -> 0.30 on 2026-09-14: loop-closure deformation of a keyframe reached 0.29 m and split objects; docs/loop_split_analysis_260914.md F2)")
     ap.add_argument("--exit-when-done", action="store_true")
     Hub(ap.parse_args()).run()
 

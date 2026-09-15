@@ -5,7 +5,7 @@ project(hdl_graph_slam)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64")
 else()
   add_compile_options(-msse -msse2 -msse3 -msse4 -msse4.1 -msse4.2)
 endif()
@@ -112,7 +112,7 @@ set(g2o_libraries
   g2o_types_slam3d
   g2o_types_slam3d_addons
   g2o_solver_pcg
-  g2o_solver_cholmod
+  g2o_solver_eigen
   g2o_solver_csparse
   g2o_csparse_extension
 )
