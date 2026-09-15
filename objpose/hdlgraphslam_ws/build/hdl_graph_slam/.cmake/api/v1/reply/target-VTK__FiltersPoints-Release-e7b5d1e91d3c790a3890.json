@@ -1,0 +1,564 @@
+{
+	"abstract" : true,
+	"artifacts" : 
+	[
+		{
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/libvtkFiltersPoints-9.5.9.5.dylib"
+		}
+	],
+	"backtrace" : 9,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"include",
+			"find_package",
+			"find_VTK",
+			"find_external_library",
+			"set_target_properties"
+		],
+		"files" : 
+		[
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/vtk-9.5/VTK-targets.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/vtk-9.5/vtk-config.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/share/pcl-1.15/PCLConfig.cmake",
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 3
+			},
+			{
+				"command" : 2,
+				"file" : 3,
+				"line" : 16,
+				"parent" : 0
+			},
+			{
+				"file" : 2,
+				"parent" : 1
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 573,
+				"parent" : 2
+			},
+			{
+				"command" : 3,
+				"file" : 2,
+				"line" : 322,
+				"parent" : 3
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 273,
+				"parent" : 4
+			},
+			{
+				"file" : 1,
+				"parent" : 5
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 148,
+				"parent" : 6
+			},
+			{
+				"file" : 0,
+				"parent" : 7
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 5860,
+				"parent" : 8
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 5862,
+				"parent" : 8
+			}
+		]
+	},
+	"codemodelVersion" : 
+	{
+		"major" : 2,
+		"minor" : 11
+	},
+	"fileSets" : 
+	[
+		{
+			"baseDirectories" : 
+			[
+				"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5"
+			],
+			"name" : "vtk_module_templates",
+			"type" : "HEADERS",
+			"visibility" : "INTERFACE"
+		},
+		{
+			"baseDirectories" : 
+			[
+				"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5"
+			],
+			"name" : "vtk_module_headers",
+			"type" : "HEADERS",
+			"visibility" : "INTERFACE"
+		},
+		{
+			"baseDirectories" : 
+			[
+				"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5"
+			],
+			"name" : "vtk_module_nowrap_headers",
+			"type" : "HEADERS",
+			"visibility" : "INTERFACE"
+		}
+	],
+	"id" : "VTK::FiltersPoints::@6890427a1f51a3e7e1df",
+	"imported" : true,
+	"interfaceCompileDependencies" : 
+	[
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonCore::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonExecutionModel::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonMisc::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersModeling::@6890427a1f51a3e7e1df"
+		}
+	],
+	"interfaceLinkLibraries" : 
+	[
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonCore::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonExecutionModel::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonMisc::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersModeling::@6890427a1f51a3e7e1df"
+		}
+	],
+	"interfaceSources" : 
+	[
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkBoundedPointSource.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkConnectedPointsFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkConvertToPointCloud.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkDensifyPointCloudFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkEllipsoidalGaussianKernel.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkEuclideanClusterExtraction.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkExtractEnclosedPoints.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkExtractHierarchicalBins.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkExtractPointCloudPiece.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkExtractPoints.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkExtractSurface.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 2,
+			"fileSetIndexes" : 
+			[
+				2
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkFiltersPointsModule.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkFitImplicitFunction.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkGaussianKernel.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkGeneralizedKernel.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkHierarchicalBinningFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkInterpolationKernel.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkLinearKernel.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkMaskPointsFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPCACurvatureEstimation.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPCANormalEstimation.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPointCloudFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPointDensityFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPointInterpolator.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPointInterpolator2D.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPointOccupancyFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPointSmoothingFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPoissonDiskSampler.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkProbabilisticVoronoiKernel.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkProjectPointsToPlane.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkRadiusOutlierRemoval.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkSPHCubicKernel.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkSPHInterpolator.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkSPHKernel.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkSPHQuarticKernel.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkSPHQuinticKernel.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkShepardKernel.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkSignedDistance.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkStatisticalOutlierRemoval.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkUnsignedDistance.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkVoronoiKernel.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkVoxelGrid.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkWendlandQuinticKernel.h",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"local" : true,
+	"name" : "VTK::FiltersPoints",
+	"nameOnDisk" : "libvtkFiltersPoints-9.5.9.5.dylib",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sources" : [],
+	"type" : "SHARED_LIBRARY"
+}

@@ -1,0 +1,15 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from hdl_graph_slam/srv/DumpGraph.srv
+// generated code does not contain a copyright notice
+
+
+module hdl_graph_slam {
+  module srv {
+    struct DumpGraph_Request {
+      string destination;
+    };
+    struct DumpGraph_Response {
+      boolean success;
+    };
+  };
+};

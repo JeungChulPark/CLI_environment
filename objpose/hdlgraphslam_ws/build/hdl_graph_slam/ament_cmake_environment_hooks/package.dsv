@@ -1,0 +1,4 @@
+source;share/hdl_graph_slam/local_setup.bash
+source;share/hdl_graph_slam/local_setup.dsv
+source;share/hdl_graph_slam/local_setup.sh
+source;share/hdl_graph_slam/local_setup.zsh

@@ -1,0 +1,15 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from hdl_graph_slam/srv/LoadGraph.srv
+// generated code does not contain a copyright notice
+
+
+module hdl_graph_slam {
+  module srv {
+    struct LoadGraph_Request {
+      string path;
+    };
+    struct LoadGraph_Response {
+      boolean success;
+    };
+  };
+};

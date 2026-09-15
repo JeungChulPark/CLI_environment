@@ -1,0 +1,12 @@
+{
+  "package_name": "hdl_graph_slam",
+  "non_idl_tuples": [
+    "/Users/user/objpose/hdlgraphslam_ws/src/hdl_graph_slam:msg/FloorCoeffs.msg",
+    "/Users/user/objpose/hdlgraphslam_ws/src/hdl_graph_slam:msg/PrefilteringDebug.msg",
+    "/Users/user/objpose/hdlgraphslam_ws/src/hdl_graph_slam:msg/ScanMatchingOdometryDebug.msg",
+    "/Users/user/objpose/hdlgraphslam_ws/src/hdl_graph_slam:msg/ScanMatchingStatus.msg",
+    "/Users/user/objpose/hdlgraphslam_ws/src/hdl_graph_slam:srv/DumpGraph.srv",
+    "/Users/user/objpose/hdlgraphslam_ws/src/hdl_graph_slam:srv/LoadGraph.srv",
+    "/Users/user/objpose/hdlgraphslam_ws/src/hdl_graph_slam:srv/SaveMap.srv"
+  ]
+}

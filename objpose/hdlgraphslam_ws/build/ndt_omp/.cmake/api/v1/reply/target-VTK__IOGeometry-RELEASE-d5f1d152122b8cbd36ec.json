@@ -1,0 +1,454 @@
+{
+	"abstract" : true,
+	"artifacts" : 
+	[
+		{
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/libvtkIOGeometry-9.5.9.5.dylib"
+		}
+	],
+	"backtrace" : 9,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"include",
+			"find_package",
+			"find_VTK",
+			"find_external_library",
+			"set_target_properties"
+		],
+		"files" : 
+		[
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/vtk-9.5/VTK-targets.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/vtk-9.5/vtk-config.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/share/pcl-1.15/PCLConfig.cmake",
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 3
+			},
+			{
+				"command" : 2,
+				"file" : 3,
+				"line" : 17,
+				"parent" : 0
+			},
+			{
+				"file" : 2,
+				"parent" : 1
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 573,
+				"parent" : 2
+			},
+			{
+				"command" : 3,
+				"file" : 2,
+				"line" : 322,
+				"parent" : 3
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 273,
+				"parent" : 4
+			},
+			{
+				"file" : 1,
+				"parent" : 5
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 148,
+				"parent" : 6
+			},
+			{
+				"file" : 0,
+				"parent" : 7
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 1608,
+				"parent" : 8
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 1610,
+				"parent" : 8
+			}
+		]
+	},
+	"codemodelVersion" : 
+	{
+		"major" : 2,
+		"minor" : 11
+	},
+	"fileSets" : 
+	[
+		{
+			"baseDirectories" : 
+			[
+				"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5"
+			],
+			"name" : "vtk_module_templates",
+			"type" : "HEADERS",
+			"visibility" : "INTERFACE"
+		},
+		{
+			"baseDirectories" : 
+			[
+				"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5"
+			],
+			"name" : "vtk_module_headers",
+			"type" : "HEADERS",
+			"visibility" : "INTERFACE"
+		},
+		{
+			"baseDirectories" : 
+			[
+				"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5"
+			],
+			"name" : "vtk_module_nowrap_headers",
+			"type" : "HEADERS",
+			"visibility" : "INTERFACE"
+		}
+	],
+	"id" : "VTK::IOGeometry::@6890427a1f51a3e7e1df",
+	"imported" : true,
+	"interfaceCompileDependencies" : 
+	[
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonCore::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonDataModel::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonExecutionModel::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::IOCore::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::IOLegacy::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::nlohmannjson::@6890427a1f51a3e7e1df"
+		}
+	],
+	"interfaceLinkLibraries" : 
+	[
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonCore::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonDataModel::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonExecutionModel::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::IOCore::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::IOLegacy::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::nlohmannjson::@6890427a1f51a3e7e1df"
+		}
+	],
+	"interfaceSources" : 
+	[
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/GLTFSampler.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkAVSucdReader.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkBYUReader.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkBYUWriter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkChacoReader.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkFLUENTReader.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkFacetWriter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkGAMBITReader.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkGLTFDocumentLoader.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkGLTFReader.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkGLTFTexture.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkGLTFWriter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkHoudiniPolyDataWriter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 2,
+			"fileSetIndexes" : 
+			[
+				2
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkIOGeometryModule.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkIVWriter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkMCubesReader.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkMCubesWriter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkMFIXReader.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkOBJReader.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkOBJWriter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkOFFReader.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkOpenFOAMReader.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPTSReader.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkParticleReader.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkProStarReader.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkSTLReader.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkSTLWriter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkTecplotReader.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkWindBladeReader.h",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"local" : true,
+	"name" : "VTK::IOGeometry",
+	"nameOnDisk" : "libvtkIOGeometry-9.5.9.5.dylib",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sources" : [],
+	"type" : "SHARED_LIBRARY"
+}

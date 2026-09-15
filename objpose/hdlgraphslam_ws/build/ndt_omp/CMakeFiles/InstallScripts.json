@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/user/objpose/hdlgraphslam_ws/build/ndt_omp/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

@@ -1,0 +1,789 @@
+{
+	"abstract" : true,
+	"artifacts" : 
+	[
+		{
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/libvtkFiltersParallel-9.5.9.5.dylib"
+		}
+	],
+	"backtrace" : 9,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"include",
+			"find_package",
+			"find_VTK",
+			"find_external_library",
+			"set_target_properties"
+		],
+		"files" : 
+		[
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/vtk-9.5/VTK-targets.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/vtk-9.5/vtk-config.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/share/pcl-1.15/PCLConfig.cmake",
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 3
+			},
+			{
+				"command" : 2,
+				"file" : 3,
+				"line" : 11,
+				"parent" : 0
+			},
+			{
+				"file" : 2,
+				"parent" : 1
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 573,
+				"parent" : 2
+			},
+			{
+				"command" : 3,
+				"file" : 2,
+				"line" : 322,
+				"parent" : 3
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 273,
+				"parent" : 4
+			},
+			{
+				"file" : 1,
+				"parent" : 5
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 148,
+				"parent" : 6
+			},
+			{
+				"file" : 0,
+				"parent" : 7
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 3096,
+				"parent" : 8
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 3098,
+				"parent" : 8
+			}
+		]
+	},
+	"codemodelVersion" : 
+	{
+		"major" : 2,
+		"minor" : 11
+	},
+	"fileSets" : 
+	[
+		{
+			"baseDirectories" : 
+			[
+				"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5"
+			],
+			"name" : "vtk_module_templates",
+			"type" : "HEADERS",
+			"visibility" : "INTERFACE"
+		},
+		{
+			"baseDirectories" : 
+			[
+				"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5"
+			],
+			"name" : "vtk_module_headers",
+			"type" : "HEADERS",
+			"visibility" : "INTERFACE"
+		},
+		{
+			"baseDirectories" : 
+			[
+				"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5"
+			],
+			"name" : "vtk_module_nowrap_headers",
+			"type" : "HEADERS",
+			"visibility" : "INTERFACE"
+		}
+	],
+	"id" : "VTK::FiltersParallel::@6890427a1f51a3e7e1df",
+	"imported" : true,
+	"interfaceCompileDependencies" : 
+	[
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonCore::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonDataModel::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonExecutionModel::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersCore::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersExtraction::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersGeneral::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersGeometry::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersHybrid::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersHyperTree::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersModeling::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersSources::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersTexture::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::ParallelCore::@6890427a1f51a3e7e1df"
+		}
+	],
+	"interfaceLinkLibraries" : 
+	[
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonCore::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonDataModel::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonExecutionModel::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersCore::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersExtraction::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersGeneral::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersGeometry::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersHybrid::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersHyperTree::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersModeling::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersSources::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::FiltersTexture::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::ParallelCore::@6890427a1f51a3e7e1df"
+		}
+	],
+	"interfaceSources" : 
+	[
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkAdaptiveTemporalInterpolator.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkAggregateDataSetFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkAlignImageDataSetFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkAngularPeriodicFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkBlockDistribution.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkCleanArrays.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkCollectGraph.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkCollectPolyData.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkCollectTable.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkCutMaterial.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkDistributedDataFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkDuplicatePolyData.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkExtractCTHPart.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkExtractPolyDataPiece.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkExtractUnstructuredGridPiece.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkExtractUserDefinedPiece.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 2,
+			"fileSetIndexes" : 
+			[
+				2
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkFiltersParallelModule.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkGenerateProcessIds.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkHyperTreeGridGenerateGlobalIds.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkHyperTreeGridGenerateProcessIds.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkHyperTreeGridGhostCellsGenerator.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkIntegrateAttributes.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkIntegrationGaussianStrategy.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkIntegrationLinearStrategy.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkIntegrationStrategy.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkMergeBlocks.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkMultiProcessControllerHelper.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPAxisAlignedReflectionFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPConvertToMultiBlockDataSet.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPExtractDataArraysOverTime.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPExtractExodusGlobalTemporalVariables.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPExtractSelectedArraysOverTime.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPHyperTreeGridProbeFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPKdTree.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPLinearExtrusionFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPMaskPoints.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPMergeArrays.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPOutlineCornerFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPOutlineFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPOutlineFilterInternals.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPPolyDataNormals.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPProbeFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPProjectSphereFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPReflectionFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPResampleFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPSphereSource.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPTextureMapToSphere.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPYoungsMaterialInterface.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPartitionBalancer.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPeriodicFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPieceRequestFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPieceScalars.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPipelineSize.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkRectilinearGridOutlineFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkRemoveGhosts.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkTransmitPolyDataPiece.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkTransmitRectilinearGridPiece.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkTransmitStructuredDataPiece.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkTransmitStructuredGridPiece.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkTransmitUnstructuredGridPiece.h",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"local" : true,
+	"name" : "VTK::FiltersParallel",
+	"nameOnDisk" : "libvtkFiltersParallel-9.5.9.5.dylib",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sources" : [],
+	"type" : "SHARED_LIBRARY"
+}

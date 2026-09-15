@@ -1,0 +1,34 @@
+name: hdl_graph_slam_jazzy
+channels:
+  - conda-forge
+  - robostack-jazzy
+dependencies:
+  - cmake
+  - colcon-common-extensions
+  - compilers
+  - eigen-abi=3.4.0.100
+  - git
+  - llvm-openmp
+  - ninja
+  - numpy
+  - pcl=1.15
+  - pip
+  - pkg-config
+  - python=3.12
+  - pyyaml
+  - ros-dev-tools
+  - ros-jazzy-interactive-markers
+  - ros-jazzy-message-filters
+  - ros-jazzy-nav-msgs
+  - ros-jazzy-pcl-conversions
+  - ros-jazzy-pcl-ros
+  - ros-jazzy-ros-base
+  - ros-jazzy-rosbag2
+  - ros-jazzy-tf2-eigen
+  - ros-jazzy-tf2-geometry-msgs
+  - ros-jazzy-tf2-ros
+  - ros-jazzy-visualization-msgs
+  - scipy
+  - suitesparse
+
+prefix: "/Users/user/micromamba/envs/hdl_graph_slam_jazzy"

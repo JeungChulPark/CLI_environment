@@ -1,0 +1,294 @@
+{
+	"abstract" : true,
+	"artifacts" : 
+	[
+		{
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/libvtkWrappingPythonCore3.12-9.5.9.5.dylib"
+		}
+	],
+	"backtrace" : 9,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"include",
+			"find_package",
+			"find_VTK",
+			"find_external_library",
+			"set_target_properties"
+		],
+		"files" : 
+		[
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/vtk-9.5/VTK-targets.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/vtk-9.5/vtk-config.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/share/pcl-1.15/PCLConfig.cmake",
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 3
+			},
+			{
+				"command" : 2,
+				"file" : 3,
+				"line" : 17,
+				"parent" : 0
+			},
+			{
+				"file" : 2,
+				"parent" : 1
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 573,
+				"parent" : 2
+			},
+			{
+				"command" : 3,
+				"file" : 2,
+				"line" : 322,
+				"parent" : 3
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 273,
+				"parent" : 4
+			},
+			{
+				"file" : 1,
+				"parent" : 5
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 148,
+				"parent" : 6
+			},
+			{
+				"file" : 0,
+				"parent" : 7
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 2542,
+				"parent" : 8
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 2544,
+				"parent" : 8
+			}
+		]
+	},
+	"codemodelVersion" : 
+	{
+		"major" : 2,
+		"minor" : 11
+	},
+	"fileSets" : 
+	[
+		{
+			"baseDirectories" : 
+			[
+				"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5"
+			],
+			"name" : "vtk_module_templates",
+			"type" : "HEADERS",
+			"visibility" : "INTERFACE"
+		},
+		{
+			"baseDirectories" : 
+			[
+				"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5"
+			],
+			"name" : "vtk_module_headers",
+			"type" : "HEADERS",
+			"visibility" : "INTERFACE"
+		},
+		{
+			"baseDirectories" : 
+			[
+				"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5"
+			],
+			"name" : "vtk_module_nowrap_headers",
+			"type" : "HEADERS",
+			"visibility" : "INTERFACE"
+		}
+	],
+	"id" : "VTK::WrappingPythonCore::@6890427a1f51a3e7e1df",
+	"imported" : true,
+	"interfaceCompileDependencies" : 
+	[
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonCore::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::Python::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::vtksys::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::PythonUsed::@6890427a1f51a3e7e1df"
+		}
+	],
+	"interfaceLinkLibraries" : 
+	[
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonCore::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::Python::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::vtksys::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::PythonUsed::@6890427a1f51a3e7e1df"
+		}
+	],
+	"interfaceSources" : 
+	[
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/PyVTKEnum.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/PyVTKExtras.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/PyVTKNamespace.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/PyVTKObject.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/PyVTKSpecialObject.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/PyVTKTemplate.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPythonArgs.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPythonCommand.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPythonCompatibility.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPythonOverload.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkPythonUtil.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkSmartPyObject.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 2,
+			"fileSetIndexes" : 
+			[
+				2
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkWrappingPythonCoreModule.h",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"local" : true,
+	"name" : "VTK::WrappingPythonCore",
+	"nameOnDisk" : "libvtkWrappingPythonCore3.12-9.5.9.5.dylib",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sources" : [],
+	"type" : "SHARED_LIBRARY"
+}

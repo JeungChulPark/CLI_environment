@@ -1,0 +1,1 @@
+/Users/user/objpose/hdlgraphslam_ws/build/fast_gicp/ament_cmake_environment_hooks/local_setup.bash

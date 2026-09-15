@@ -1,0 +1,583 @@
+{
+	"abstract" : true,
+	"artifacts" : 
+	[
+		{
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/libvtkImagingCore-9.5.9.5.dylib"
+		}
+	],
+	"backtrace" : 9,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"include",
+			"find_package",
+			"find_VTK",
+			"find_external_library",
+			"set_target_properties"
+		],
+		"files" : 
+		[
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/vtk-9.5/VTK-targets.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/vtk-9.5/vtk-config.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/share/pcl-1.15/PCLConfig.cmake",
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 3
+			},
+			{
+				"command" : 2,
+				"file" : 3,
+				"line" : 11,
+				"parent" : 0
+			},
+			{
+				"file" : 2,
+				"parent" : 1
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 573,
+				"parent" : 2
+			},
+			{
+				"command" : 3,
+				"file" : 2,
+				"line" : 322,
+				"parent" : 3
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 273,
+				"parent" : 4
+			},
+			{
+				"file" : 1,
+				"parent" : 5
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 148,
+				"parent" : 6
+			},
+			{
+				"file" : 0,
+				"parent" : 7
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 836,
+				"parent" : 8
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 838,
+				"parent" : 8
+			}
+		]
+	},
+	"codemodelVersion" : 
+	{
+		"major" : 2,
+		"minor" : 11
+	},
+	"fileSets" : 
+	[
+		{
+			"baseDirectories" : 
+			[
+				"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5"
+			],
+			"name" : "vtk_module_templates",
+			"type" : "HEADERS",
+			"visibility" : "INTERFACE"
+		},
+		{
+			"baseDirectories" : 
+			[
+				"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5"
+			],
+			"name" : "vtk_module_headers",
+			"type" : "HEADERS",
+			"visibility" : "INTERFACE"
+		},
+		{
+			"baseDirectories" : 
+			[
+				"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5"
+			],
+			"name" : "vtk_module_nowrap_headers",
+			"type" : "HEADERS",
+			"visibility" : "INTERFACE"
+		}
+	],
+	"id" : "VTK::ImagingCore::@6890427a1f51a3e7e1df",
+	"imported" : true,
+	"interfaceCompileDependencies" : 
+	[
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonCore::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonDataModel::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonExecutionModel::@6890427a1f51a3e7e1df"
+		}
+	],
+	"interfaceLinkLibraries" : 
+	[
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonCore::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonDataModel::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 10,
+			"id" : "VTK::CommonExecutionModel::@6890427a1f51a3e7e1df"
+		}
+	],
+	"interfaceSources" : 
+	[
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkAbstractImageInterpolator.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkExtractVOI.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkGenericImageInterpolator.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageAppendComponents.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageBSplineCoefficients.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageBSplineInternals.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageBSplineInterpolator.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageBlend.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageCacheFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageCast.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageChangeInformation.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageClip.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageConstantPad.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageDataStreamer.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageDecomposeFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageDifference.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageExtractComponents.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageFlip.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageInterpolator.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageIterateFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageMagnify.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageMapToColors.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageMask.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageMirrorPad.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImagePadFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImagePermute.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImagePointDataIterator.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImagePointIterator.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageProbeFilter.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageResample.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageResize.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageReslice.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageResliceToColors.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageSSIM.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageShiftScale.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageShrink3D.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageSincInterpolator.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageStencilAlgorithm.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageStencilData.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageStencilIterator.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageStencilSource.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageThreshold.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageTranslateExtent.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImageWrapPad.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 2,
+			"fileSetIndexes" : 
+			[
+				2
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkImagingCoreModule.h",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"fileSetIndex" : 1,
+			"fileSetIndexes" : 
+			[
+				1
+			],
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/include/vtk-9.5/vtkRTAnalyticSource.h",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"local" : true,
+	"name" : "VTK::ImagingCore",
+	"nameOnDisk" : "libvtkImagingCore-9.5.9.5.dylib",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sources" : [],
+	"type" : "SHARED_LIBRARY"
+}

@@ -1,0 +1,19 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from hdl_graph_slam/srv/SaveMap.srv
+// generated code does not contain a copyright notice
+
+
+module hdl_graph_slam {
+  module srv {
+    struct SaveMap_Request {
+      boolean utm;
+
+      float resolution;
+
+      string destination;
+    };
+    struct SaveMap_Response {
+      boolean success;
+    };
+  };
+};
