@@ -63,6 +63,24 @@ def log(*a):
     print(time.strftime("%H:%M:%S"), "[hub]", *a, flush=True)
 
 
+def _child_setup():
+    """Own process group (so the hub can signal the whole tree) + die with the hub.
+
+    The children are a session of their own so that shutdown() can killpg them, but that
+    also means they outlive a hub that is killed rather than asked to stop. A stale
+    sam6d_infer.py keeps its share of the CPU and its GPU memory: five of them accumulated
+    over a debugging session took ~90 % of a core between them and starved the hub's pose
+    reader, so poses that had left the Mac on time were read late and the arrival lag grew
+    from 0.02 s to 3.1 s over one replay. PR_SET_PDEATHSIG closes that hole even for SIGKILL.
+    """
+    os.setsid()
+    try:
+        import ctypes
+        ctypes.CDLL("libc.so.6", use_errno=True).prctl(1, signal.SIGTERM)   # PR_SET_PDEATHSIG
+    except Exception:
+        pass                      # not Linux, or no libc — the signal handlers still cover it
+
+
 # ── extrinsic ────────────────────────────────────────────────────────────────
 def load_extrinsic(path: Path) -> tuple[np.ndarray, str]:
     if path.suffix == ".json":
@@ -213,7 +231,8 @@ class Hub:
         # and a rotation gate split one object into two instances on this dataset
         self.memory = None if a.no_memory else ObjectMemory(
             self.fusion, self.sam.K, (self.sam.W, self.sam.H),
-            assoc_trans_gate_m=a.assoc_gate_m, assoc_rot_gate_deg=None)
+            assoc_trans_gate_m=a.assoc_gate_m, assoc_rot_gate_deg=None,
+            pd_base=a.pd_base, clutter_ratio=a.clutter_ratio)
         self.extents = json.loads((REPO / "integration" / "cad_extents.json").read_text())
         self.clients: list[queue.Queue] = []
         self.clients_lock = threading.Lock()
@@ -262,7 +281,7 @@ class Hub:
         f = open(self.out / "sam6d_infer.log", "w")
         p = subprocess.Popen([PY_SAM6D, "-u", str(SAM6D / "realtime" / "sam6d_infer.py"), "--config", str(cfg_path)],
                              cwd=str(self.out / "sam6d"), stdout=f, stderr=subprocess.STDOUT, env=env,
-                             start_new_session=True)
+                             preexec_fn=_child_setup)
         self.procs.append(p)
         log(f"SAM-6D started pid={p.pid} (log {self.out / 'sam6d_infer.log'})")
 
@@ -304,7 +323,7 @@ class Hub:
         cmd = ["ssh", "-o", "BatchMode=yes", "-o", "ExitOnForwardFailure=yes", "-o", "ServerAliveInterval=10",
                "-R", f"{self.a.slam_port}:127.0.0.1:{self.a.slam_port}", self.a.mac_host, remote]
         f = open(self.out / "mac_slam.log", "w")
-        p = subprocess.Popen(cmd, stdout=f, stderr=subprocess.STDOUT, start_new_session=True)
+        p = subprocess.Popen(cmd, stdout=f, stderr=subprocess.STDOUT, preexec_fn=_child_setup)
         self.procs.append(p)
         (self.out / "mac_command.txt").write_text(" ".join(cmd) + "\n")
         log(f"Mac {self.a.slam} launched over ssh (features={self.a.features}): {remote}")
@@ -798,6 +817,12 @@ class Hub:
 
     # ── lifecycle ───────────────────────────────────────────────────────────
     def run(self):
+        # a plain `kill` must tear the children down too, not just this process
+        for sig in (signal.SIGTERM, signal.SIGHUP):
+            try:
+                signal.signal(sig, lambda *_: (_ for _ in ()).throw(KeyboardInterrupt))
+            except (ValueError, OSError):
+                pass                                   # not the main thread; PDEATHSIG covers it
         self.fw = FrameWriter()
         threads = [threading.Thread(target=self.http, daemon=True),
                    threading.Thread(target=self.slam_server, daemon=True),
@@ -919,6 +944,18 @@ def main():
     ap.add_argument("--no-sam6d", action="store_true")
     ap.add_argument("--no-memory", action="store_true", help="show raw latest estimates instead of the object memory")
     ap.add_argument("--assoc-gate-m", type=float, default=0.15, help="object memory association distance gate")
+    # The memory's existence filter penalises a landmark that is in view and not re-detected,
+    # in proportion to P_D — the detection rate it EXPECTS of a visible object. objectmemory_ws
+    # defaults to 0.5, calibrated on a 9-bag audit whose recall was 0.62; this pipeline runs
+    # SAM-6D at ~2.5 Hz against a live replay and its measured in-view recall is 0.055-0.17, so
+    # at 0.5 six ordinary misses in a row retire a real object. Replaying four finished runs
+    # (objpose/pc/tune_memory.py) puts the knee at 0.15. The clutter ratio drops with it to keep
+    # the evidence a single detection carries (P_D / clutter = 5) exactly where it was.
+    ap.add_argument("--pd-base", type=float, default=0.15,
+                    help="expected in-view detection rate used by the object memory")
+    ap.add_argument("--clutter-ratio", type=float, default=0.03,
+                    help="false-alarm likelihood; a detection is evidence FOR existence only "
+                         "while --pd-base stays above it")
     ap.add_argument("--exit-when-done", action="store_true")
     Hub(ap.parse_args()).run()
 
