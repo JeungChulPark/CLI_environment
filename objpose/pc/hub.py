@@ -548,8 +548,10 @@ class Hub:
         Served to the viewer so the four SLAM backends can be drawn together. Rebuilt only
         when a run directory's summary changes, since the Umeyama fits are not free.
         """
-        pattern = self.a.compare_glob or (self.out.name.rsplit("_", 1)[0] + "_*")
-        dirs = sorted(p for p in self.out.parent.glob(pattern) if (p / "summary.json").exists())
+        patterns = [p.strip() for p in self.a.compare_glob.split(",") if p.strip()] \
+            or [self.out.name.rsplit("_", 1)[0] + "_*"]
+        dirs = sorted({p for pat in patterns for p in self.out.parent.glob(pat)
+                       if (p / "summary.json").exists()})
         key = tuple((p.name, (p / "summary.json").stat().st_mtime_ns) for p in dirs)
         if key != self._compare_key:
             try:
@@ -763,8 +765,9 @@ def main():
                          "that are not settings keys — e.g. gyro-aided ORB-SLAM3: "
                          "--slam-arg=--gyro --slam-arg=<rig.json> --slam-arg=--imu --slam-arg=<imu dir>")
     ap.add_argument("--compare-glob", default="",
-                    help="which sibling run dirs the viewer's backend comparison covers "
-                         "(default: this run's name up to the last '_', plus '_*')")
+                    help="which sibling run dirs the viewer's backend comparison covers: one glob, "
+                         "or several separated by commas (default: this run's name up to the last "
+                         "'_', plus '_*')")
     ap.add_argument("--slam-port", type=int, default=17001)
     ap.add_argument("--http-host", default="0.0.0.0")
     ap.add_argument("--http-port", type=int, default=8765)
