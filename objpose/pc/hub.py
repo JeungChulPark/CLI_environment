@@ -50,6 +50,8 @@ from shm_channel import FrameWriter, JsonReader         # noqa: E402
 
 SAM_MINUS_SLAM_CLOCK_NS = 18225662057   # SLAM/peer_timestamp_comparison.json
 PY_SAM6D = "/home/jucpark/anaconda3/envs/sam6d/bin/python"
+# backends whose world is the Velodyne's (z up, no camera frame clock), not a camera's
+LIDAR_BACKENDS = ("lidar", "hdl")
 
 
 def log(*a):
@@ -184,12 +186,16 @@ class Hub:
             self.sam = ConvSession(a.sam_session, offset_ns=self.sam_tau_ns)
         # frame-index remapping of SLAM poses only exists for raw camera SLAM sessions
         self.slam_clock = (frame_clock(a.slam_session, clock_dir)
-                           if a.slam != "lidar" and (Path(a.slam_session) / "rgbd_timestamp_associations.json").exists()
+                           if a.slam not in LIDAR_BACKENDS and (Path(a.slam_session) / "rgbd_timestamp_associations.json").exists()
                            else None)
         self.K = self.sam.K
         self.dist = np.asarray(self.sam.kc, np.float64)
         X, xsrc = load_extrinsic(Path(a.extrinsic))
         self.extrinsic_source = xsrc
+        # keep the rig used with the run: comparing runs across backends needs T_slam_sam to put
+        # their different SLAM sensors (a camera, the Velodyne) back on the same physical camera
+        self.X_slam_sam = X
+        self._compare, self._compare_key = None, None
         self.poses = PoseBuffer(max_gap_s=a.max_gap)
         self.fusion = Fusion(X, self.poses)
         # position-only association: box-like objects flip 180 deg between SAM-6D estimates,
@@ -250,15 +256,20 @@ class Hub:
         log(f"SAM-6D started pid={p.pid} (log {self.out / 'sam6d_infer.log'})")
 
     def start_mac_slam(self):
-        if self.a.slam == "lidar":
-            remote = (f"~/objpose/lidar/venv/bin/python -u ~/objpose/lidar/lidar_stream.py --session {self.a.mac_slam_session} "
+        if self.a.slam in LIDAR_BACKENDS:
+            # hdl_graph_slam brings its own ROS 2 environment up, so it runs through a wrapper
+            runner = ("~/objpose/lidar/run_hdl_stream.sh" if self.a.slam == "hdl" else
+                      "~/objpose/lidar/venv/bin/python -u ~/objpose/lidar/lidar_stream.py")
+            remote = (f"{runner} --session {self.a.mac_slam_session} "
                       f"--mode live --connect 127.0.0.1:{self.a.slam_port} --rate {self.a.rate} "
-                      # --slam-param deskew_passes=1 -> --deskew-passes 1 (lidar_stream.py options)
+                      # --slam-param deskew_passes=1 -> --deskew-passes 1 (streamer options)
                       + " ".join(f"--{k.replace('_', '-')} {v}" for k, v in (x.split("=", 1) for x in self.a.slam_param)))
         else:
             remote = (f"{self.a.mac_runner} --slam {self.a.slam} --session {self.a.mac_slam_session} --features {self.a.features} "
                       f"--time-source frame {' '.join('--param ' + x for x in self.a.slam_param)} "
                       f"--mode live --connect 127.0.0.1:{self.a.slam_port} --rate {self.a.rate}")
+        if self.a.slam_arg:
+            remote += " " + " ".join(self.a.slam_arg)
         cmd = ["ssh", "-o", "BatchMode=yes", "-o", "ExitOnForwardFailure=yes", "-o", "ServerAliveInterval=10",
                "-R", f"{self.a.slam_port}:127.0.0.1:{self.a.slam_port}", self.a.mac_host, remote]
         f = open(self.out / "mac_slam.log", "w")
@@ -367,8 +378,10 @@ class Hub:
     # ── coordinator + SAM replay ────────────────────────────────────────────
     def run_replay(self):
         ready = self.out / "sam6d" / "READY"
-        self.status = "loading SAM-6D and ORB-SLAM3"
-        while not self.stop.is_set() and not (ready.exists() and self.hello and self.slam_sock):
+        # with --no-sam6d nothing ever writes READY, so only the SLAM side gates the start
+        sam6d_ready = (lambda: True) if self.a.no_sam6d else ready.exists
+        self.status = "loading SLAM" if self.a.no_sam6d else "loading SAM-6D and SLAM"
+        while not self.stop.is_set() and not (sam6d_ready() and self.hello and self.slam_sock):
             time.sleep(0.2)
         if self.stop.is_set():
             return
@@ -529,6 +542,25 @@ class Hub:
             })
         return rows
 
+    def comparison(self):
+        """Every finished run of this session, aligned into one world (see compare_api.py).
+
+        Served to the viewer so the four SLAM backends can be drawn together. Rebuilt only
+        when a run directory's summary changes, since the Umeyama fits are not free.
+        """
+        pattern = self.a.compare_glob or (self.out.name.rsplit("_", 1)[0] + "_*")
+        dirs = sorted(p for p in self.out.parent.glob(pattern) if (p / "summary.json").exists())
+        key = tuple((p.name, (p / "summary.json").stat().st_mtime_ns) for p in dirs)
+        if key != self._compare_key:
+            try:
+                from compare_api import build
+                self._compare = build(dirs, reference=None)
+            except Exception as e:                      # a half-written run must not kill the page
+                log(f"comparison failed: {e!r}")
+                self._compare = {"reference": None, "runs": [], "error": repr(e)}
+            self._compare_key = key
+        return self._compare
+
     def stats(self):
         lags = [v for v in self.sam6d_runs if v is not None]
         return {
@@ -621,6 +653,13 @@ class Hub:
                     self.send_header("Content-Type", "application/json")
                     self.end_headers()
                     self.wfile.write(body)
+                elif self.path == "/compare":
+                    body = json.dumps(hub.comparison(), default=str).encode()
+                    self.send_response(HTTPStatus.OK)
+                    self.send_header("Content-Type", "application/json")
+                    self.send_header("Cache-Control", "no-store")
+                    self.end_headers()
+                    self.wfile.write(body)
                 else:
                     self.send_error(HTTPStatus.NOT_FOUND)
 
@@ -670,6 +709,9 @@ class Hub:
                             "t_est_ns": v.current.t_ns, "anchor_kf": v.current.kf}
                         for k, v in self.fusion.objects.items()}
         s["t0_ns"] = self.t0_ns
+        s["extrinsic_path"] = str(self.a.extrinsic)
+        s["X_slam_sam"] = mat16(self.X_slam_sam)
+        s["slam_backend"] = self.a.slam
         s["observations_final"] = self.fusion.dump_observations()
         if self.memory is not None:
             self.memory.update()
@@ -712,9 +754,17 @@ def main():
     ap.add_argument("--mac-runner", default="~/objpose/run_slam.sh")
     ap.add_argument("--mac-slam-session", default="~/Documents/DefenseMeta/Dataset/260826_etri_eightcircle_dark/SLAM")
     ap.add_argument("--features", type=int, default=2000)
-    ap.add_argument("--slam", choices=["orbslam3", "rtabmap", "lidar"], default="orbslam3", help="SLAM backend on the Mac")
+    ap.add_argument("--slam", choices=["orbslam3", "rtabmap", "lidar", "hdl"], default="orbslam3",
+                    help="SLAM backend on the Mac ('lidar' = KISS-ICP, 'hdl' = hdl_graph_slam)")
     ap.add_argument("--slam-param", action="append", default=[], metavar="Key=Value",
                     help="backend parameter override passed to the Mac streamer (repeatable)")
+    ap.add_argument("--slam-arg", action="append", default=[], metavar="ARG",
+                    help="extra argument passed verbatim to the Mac streamer (repeatable), for options "
+                         "that are not settings keys — e.g. gyro-aided ORB-SLAM3: "
+                         "--slam-arg=--gyro --slam-arg=<rig.json> --slam-arg=--imu --slam-arg=<imu dir>")
+    ap.add_argument("--compare-glob", default="",
+                    help="which sibling run dirs the viewer's backend comparison covers "
+                         "(default: this run's name up to the last '_', plus '_*')")
     ap.add_argument("--slam-port", type=int, default=17001)
     ap.add_argument("--http-host", default="0.0.0.0")
     ap.add_argument("--http-port", type=int, default=8765)

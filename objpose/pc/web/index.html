@@ -70,6 +70,17 @@ td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numer
 td .sw { width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
 .empty { color: var(--faint); padding: 14px 10px; }
 
+/* backend comparison: chips over the 3D pane, one per finished run of this session */
+.cmp-bar { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-bottom: 1px solid var(--rule); flex-wrap: wrap; background: var(--panel-2); }
+.cmp-bar .hint { font-size: 11.5px; color: var(--faint); margin-left: auto; font-family: var(--mono); }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-family: var(--mono); padding: 2px 9px; border-radius: 999px;
+        border: 1px solid var(--rule); background: transparent; color: var(--muted); cursor: pointer; }
+.chip .sw { width: 10px; height: 10px; border-radius: 50%; margin: 0; vertical-align: 0; }
+.chip[aria-pressed="true"] { color: var(--ink); border-color: currentColor; }
+.chip:disabled { cursor: default; opacity: .45; }
+.chip.toggle { border-style: dashed; }
+.cmp-note { font-size: 12px; color: var(--muted); margin: 0 0 8px; }
+
 @media (max-width: 980px) {
   .views { grid-template-columns: 1fr; }
   .strip { grid-template-columns: 1fr; }
@@ -113,13 +124,18 @@ td .sw { width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
         <span><span class="sw" style="background:#c792ea"></span>SAM 카메라</span>
       </span>
     </div>
+    <div class="cmp-bar" id="cmp-bar" hidden>
+      <button class="chip toggle" id="cmp-toggle" aria-pressed="false">백엔드 비교</button>
+      <span id="cmp-chips"></span>
+      <span class="hint" id="cmp-hint"></span>
+    </div>
     <div id="scene"><span class="scene-note">드래그: 회전 · 휠: 확대 · 우클릭 드래그: 이동</span></div>
   </section>
 </div>
 
 <div class="strip">
   <div class="card">
-    <h2><span id="slam-name">SLAM</span> · 219.113 <span class="tag" id="features">f2000</span></h2>
+    <h2><span id="slam-name">SLAM</span> · 219.111 <span class="tag" id="features">f2000</span></h2>
     <dl class="kv">
       <dt>추적 상태</dt><dd><span class="pill idle" id="slam-state">대기</span></dd>
       <dt>받은 포즈 (OK)</dt><dd id="slam-count">–</dd>
@@ -166,6 +182,17 @@ td .sw { width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
   </div>
 </section>
 
+<section class="card objects" id="cmp-card" hidden>
+  <h2>SLAM 백엔드별 객체 위치 <span class="tag" id="cmp-ref">–</span></h2>
+  <p class="cmp-note" id="cmp-desc"></p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr id="cmp-head"><th>객체</th></tr></thead>
+      <tbody id="cmp-rows"></tbody>
+    </table>
+  </div>
+</section>
+
 <script type="module">
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
@@ -195,6 +222,11 @@ const world = new THREE.Group();
 world.matrixAutoUpdate = false;
 world.matrix.set(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1);
 // camera SLAM worlds are optical frames (y down, z forward); a LiDAR world is z-up
+const SLAM_NAMES = {
+  orbslam3: "ORB-SLAM3", orbslam3_gyro: "ORB-SLAM3 + IMU", rtabmap: "RTAB-Map",
+  lidar_kiss_icp: "LiDAR KISS-ICP", lidar_hdl_graph_slam: "LiDAR hdl_graph_slam",
+};
+const isLidarSource = (src) => typeof src === "string" && src.startsWith("lidar");
 let WORLD_ZUP = false;
 function toScreen(p) { return WORLD_ZUP ? new THREE.Vector3(p[0], p[2], -p[1]) : new THREE.Vector3(p[0], -p[1], -p[2]); }
 function setWorldConvention(zup) {
@@ -350,8 +382,8 @@ function updatePanels(p) {
   $("duration").textContent = s.duration_s ?? "–";
   $("frame-idx").textContent = p.frame_idx;
   $("features").textContent = `f${s.features}`;
-  $("slam-name").textContent = s.slam_source === "rtabmap" ? "RTAB-Map" : s.slam_source === "lidar_kiss_icp" ? "LiDAR KISS-ICP" : "ORB-SLAM3";
-  $("features").hidden = s.slam_source === "lidar_kiss_icp";
+  $("slam-name").textContent = SLAM_NAMES[s.slam_source] || "ORB-SLAM3";
+  $("features").hidden = isLidarSource(s.slam_source);
 
   const st = s.slam_state;
   pill($("slam-state"), st, st === "OK" || st === "OK_KLT" ? "ok" : st === "NO_DATA" ? "idle" : st.includes("LOST") ? "bad" : "warn");
@@ -401,7 +433,7 @@ es.onmessage = ev => {
   if (p.type !== "frame") return;
   $("video").src = "data:image/jpeg;base64," + p.jpeg;
   $("video-wait").hidden = true;
-  setWorldConvention(p.stats && p.stats.slam_source === "lidar_kiss_icp");
+  setWorldConvention(p.stats && isLidarSource(p.stats.slam_source));
   if (p.trajectory) updateTrajectory(p.trajectory);
   setMatrix(camSlam, p.T_w_slam);
   setMatrix(camSam, p.T_w_sam);
@@ -417,6 +449,106 @@ es.onmessage = ev => {
   updatePanels(p);
 };
 es.onerror = () => { $("run-status").textContent = "허브 연결 끊김 — 다시 연결하는 중"; $("live-dot").className = "dot"; };
+
+// ── backend comparison ─────────────────────────────────────────────────────
+// /compare returns every finished run of this session already carried into the reference
+// run's world, with the SAM-6D estimates re-fused onto each backend's own trajectory. It
+// lives in its own group: the live scene follows whichever backend is streaming now, and
+// the comparison keeps the reference run's frame whatever that is.
+const CMP_COLORS = ["#56c2e0", "#8bd450", "#ffa94d", "#f06595", "#b197fc", "#f2b84b"];
+const cmpWorld = new THREE.Group(); cmpWorld.matrixAutoUpdate = false; cmpWorld.visible = false;
+scene.add(cmpWorld);
+let cmpData = null, cmpOn = false;
+
+const cmpToScreen = (p, zup) => zup ? new THREE.Vector3(p[0], p[2], -p[1]) : new THREE.Vector3(p[0], -p[1], -p[2]);
+
+function cmpBuild(d) {
+  cmpWorld.clear();
+  const zup = isLidarSource((d.runs.find(r => r.is_reference) || {}).slam_source);
+  cmpWorld.matrix.copy(zup ? new THREE.Matrix4().set(1,0,0,0, 0,0,1,0, 0,-1,0,0, 0,0,0,1)
+                           : new THREE.Matrix4().set(1,0,0,0, 0,-1,0,0, 0,0,-1,0, 0,0,0,1));
+  d.runs.forEach((r, i) => {
+    const color = CMP_COLORS[i % CMP_COLORS.length];
+    const g = new THREE.Group();
+    g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(r.trajectory.map(p => new THREE.Vector3(...p))),
+      new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.85 })));
+    // one marker per object: a small octahedron at the re-fused position, plus a label
+    for (const o of r.objects) {
+      const m = o.T_w_obj, p = new THREE.Vector3(m[3], m[7], m[11]);
+      const mk = new THREE.Mesh(new THREE.OctahedronGeometry(0.035),
+        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.9 }));
+      mk.position.copy(p); g.add(mk);
+      if (r.is_reference) {
+        const tag = label(KO[o.name] || o.name, PALETTE[o.name] || "#fff", 0.07);
+        tag.position.copy(p.clone().add(new THREE.Vector3(0, 0.1, 0))); g.add(tag);
+      }
+    }
+    r._node = g; cmpWorld.add(g);
+  });
+}
+
+function cmpFrame() {
+  const pts = (cmpData.runs.find(r => r.is_reference) || cmpData.runs[0]).trajectory;
+  if (!pts || !pts.length) return;
+  const zup = isLidarSource((cmpData.runs.find(r => r.is_reference) || {}).slam_source);
+  const mean = pts.reduce((a, p) => [a[0] + p[0] / pts.length, a[1] + p[1] / pts.length, a[2] + p[2] / pts.length], [0, 0, 0]);
+  const c = cmpToScreen(mean, zup);
+  controls.target.copy(c);
+  camera.position.copy(c.clone().add(new THREE.Vector3(2.0, 2.6, 2.6)));
+}
+
+function cmpRender() {
+  const on = cmpOn && cmpData && cmpData.runs.length;
+  cmpWorld.visible = !!on;
+  world.visible = !on;
+  grid.visible = !on;
+  $("cmp-card").hidden = !on;
+  $("cmp-toggle").setAttribute("aria-pressed", String(!!on));
+  if (on) for (const r of cmpData.runs) r._node.visible = r._on !== false;
+}
+
+function cmpTable(d) {
+  const names = [...new Set(d.runs.flatMap(r => r.objects.map(o => o.name)))].sort();
+  $("cmp-ref").textContent = "기준 " + (d.runs.find(r => r.is_reference) || {}).label;
+  $("cmp-desc").textContent =
+    `SAM-6D 는 기준 실행에서 한 번만 돌았습니다. 그 ${d.estimates}개 추정(카메라 기준 객체 자세)을 백엔드마다 자기 궤적에 다시 투영한 값이라, ` +
+    `아래 편차는 SLAM 선택만으로 생기는 객체 위치 차이입니다.`;
+  $("cmp-head").innerHTML = "<th>객체</th>" +
+    d.runs.map((r, i) => `<th class="num"><span class="sw" style="background:${CMP_COLORS[i % CMP_COLORS.length]};border-radius:50%"></span>${r.label} x/y/z (m)</th>`).join("") +
+    `<th class="num">백엔드 간 최대 편차</th>`;
+  $("cmp-rows").innerHTML = names.map(n => {
+    const cells = d.runs.map(r => {
+      const o = r.objects.find(x => x.name === n);
+      if (!o) return `<td class="num" style="color:var(--faint)">–</td>`;
+      const m = o.T_w_obj;
+      return `<td class="num">${m[3].toFixed(3)} ${m[7].toFixed(3)} ${m[11].toFixed(3)}</td>`;
+    }).join("");
+    const sp = d.object_spread[n];
+    return `<tr><td><span class="sw" style="background:${PALETTE[n] || "#fff"}"></span>${KO[n] || n}
+      <span class="mono" style="color:var(--faint)">${n}</span></td>${cells}
+      <td class="num">${sp ? sp.max_from_mean_cm.toFixed(2) + " cm" : "–"}</td></tr>`;
+  }).join("");
+}
+
+fetch("/compare").then(r => r.json()).then(d => {
+  if (!d || !d.runs || d.runs.length < 2) return;      // nothing to compare against yet
+  cmpData = d;
+  cmpBuild(d);
+  cmpTable(d);
+  $("cmp-bar").hidden = false;
+  $("cmp-chips").innerHTML = d.runs.map((r, i) =>
+    `<button class="chip" data-i="${i}" aria-pressed="true"><span class="sw" style="background:${CMP_COLORS[i % CMP_COLORS.length]}"></span>${r.label}</button>`).join(" ");
+  $("cmp-hint").textContent = d.runs.filter(r => !r.is_reference)
+    .map(r => `${r.label} 정렬오차 ${r.align.rmse_cm.toFixed(2)}cm`).join(" · ");
+  $("cmp-chips").onclick = ev => {
+    const b = ev.target.closest(".chip"); if (!b) return;
+    const r = cmpData.runs[+b.dataset.i];
+    r._on = r._on === false;
+    b.setAttribute("aria-pressed", String(r._on));
+    cmpRender();
+  };
+  $("cmp-toggle").onclick = () => { cmpOn = !cmpOn; cmpRender(); if (cmpOn) cmpFrame(); };
+}).catch(() => {});
 </script>
 </body>
 </html>

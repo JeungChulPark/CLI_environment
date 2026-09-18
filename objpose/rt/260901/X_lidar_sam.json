@@ -1,0 +1,36 @@
+{
+ "T_slam_sam": [
+  [
+   -0.27015580210555534,
+   0.262533060369574,
+   -0.9263326804133004,
+   -0.34469231816605117
+  ],
+  [
+   0.9627684873686069,
+   0.08328029084595467,
+   -0.25717937881287867,
+   -0.10941717098614552
+  ],
+  [
+   0.009627165661241437,
+   -0.9613224148898218,
+   -0.27525721118933866,
+   -0.2034830292563585
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "source": "inv(T_samcam_lidar) from planar hand-eye (tx, ty, yaw, tilt) + height supplied (joint fit over both cameras)",
+ "slam_sensor": "lidar",
+ "clock": "header stamps (converted bags)",
+ "sam_tau_s": -0.222,
+ "height_uncertainty_m": 0.03,
+ "inputs": {
+  "T_samcam_lidar": "T_samcam_lidar_final.json"
+ }
+}

@@ -35,12 +35,20 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(REPO / "integration"))
+from conv_session import ConvSession  # noqa: E402
 from estimate_rt_loc import object_spread, rot_deg  # noqa: E402
 from hub import SAM_MINUS_SLAM_CLOCK_NS, load_extrinsic  # noqa: E402
 from rig_offset import read_tum  # noqa: E402
 from rs_session import RsSession  # noqa: E402
 
 DATASET = Path("/home/jucpark/DeepLearning/Dataset/260826_etri_eightcircle_dark")
+
+
+def open_session(session_dir: Path, offset_ns: int):
+    """Raw RealSense SDK session or converted standard-topic bag, same as the hub picks."""
+    if (session_dir / "rgbd_timestamp_associations.json").exists():
+        return RsSession(session_dir, offset_ns)
+    return ConvSession(session_dir, 0)          # converted bags carry their own header clock
 
 
 # ── 1. down direction ────────────────────────────────────────────────────────
@@ -215,9 +223,12 @@ def main():
     ap.add_argument("--floor-frames", type=int, default=400)
     ap.add_argument("--floor-heights", default="", help="'h_slam,h_sam' to skip depth floor fitting (tests)")
     ap.add_argument("--no-validation", action="store_true")
+    ap.add_argument("--dataset", default=str(DATASET),
+                    help="dataset root holding SLAM/ and SAM/ (for the depth floor heights)")
     ap.add_argument("--out", default=str(rt / "X_slam_sam_offline.json"))
     a = ap.parse_args()
     windows = [float(v) for v in a.windows.split(",")]
+    dataset = Path(a.dataset)
 
     ts_a, T_a = read_tum(a.slam_traj)
     ts_b, T_b = read_tum(a.sam_traj)
@@ -260,8 +271,8 @@ def main():
         h_a, h_b = (np.array([float(v)]) for v in a.floor_heights.split(","))
         n_a, n_b = d_a[None], d_b[None]
     else:
-        sam = RsSession(DATASET / "SAM", -SAM_MINUS_SLAM_CLOCK_NS)
-        slam = RsSession(DATASET / "SLAM", 0)
+        sam = open_session(dataset / "SAM", -SAM_MINUS_SLAM_CLOCK_NS)
+        slam = open_session(dataset / "SLAM", 0)
         h_a, n_a = floor_heights(slam, d_a, a.floor_frames)
         h_b, n_b = floor_heights(sam, d_b, a.floor_frames)
 
@@ -284,8 +295,10 @@ def main():
     La[:3, :3], Lb[:3, :3] = L_a, L_b
     X = La.T @ Xl @ Lb
 
-    U, _ = load_extrinsic(DATASET / "camera_extrinsic.urdf")
-    cands = {"offline_X": X, "urdf": U}
+    cands = {"offline_X": X}
+    urdf = dataset / "camera_extrinsic.urdf"
+    if urdf.exists():                    # datasets recorded without a rig URDF have none
+        cands["urdf"] = load_extrinsic(urdf)[0]
     for name, path in (("previous_axzb", rt / "X_slam_sam.json"), ("shared_map_loc", rt / "X_slam_sam_loc.json"),
                        ("shared_map_loc_ftime", rt / "X_slam_sam_loc_ftime.json"),
                        ("offline_assoc_stamps", rt / "X_slam_sam_offline.json")):
@@ -302,7 +315,7 @@ def main():
     ftime = "ftime" in Path(a.slam_traj).name
     if ftime:
         from clock import frame_clock
-        sam_times = frame_clock(DATASET / "SAM", rt / "clock")["frame_ns"]
+        sam_times = frame_clock(dataset / "SAM", rt / "clock")["frame_ns"]
     stem = "slam_traj_ftime.txt" if ftime else "slam_traj_tum.txt"
     for traj_name, traj in (() if a.no_validation else
                             (("per_frame_slam_poses", rt / stem),
@@ -327,6 +340,11 @@ def main():
         "compare": comp,
         "object_consistency_check (reference only)": spread,
     }
+    if not (dataset / "SAM" / "rgbd_timestamp_associations.json").exists():
+        # converted bags: the hub runs off the header stamps and reads the residual
+        # SAM-vs-SLAM clock offset from these two keys.
+        out["clock"] = "header stamps (converted bags)"
+        out["sam_tau_s"] = tau
     Path(a.out).write_text(json.dumps(out, indent=1))
     print(f"X t = {np.round(X[:3, 3], 4).tolist()} m")
     print("compare:", comp)

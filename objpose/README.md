@@ -1,11 +1,11 @@
 # objpose — SLAM 기반 객체 위치 추정 + localhost 시각화
 
 두 대의 RealSense(SLAM 카메라, SAM 카메라)로 녹화한 `Dataset/260826_etri_eightcircle_dark`를
-입력으로, **Mac(219.113)의 ORB-SLAM3 위치**와 **PC(219.100)의 SAM-6D 객체 포즈**를 시간 동기화·보간해
+입력으로, **Mac(219.111)의 ORB-SLAM3 위치**와 **PC(219.100)의 SAM-6D 객체 포즈**를 시간 동기화·보간해
 SLAM 지도 좌표계의 객체 위치를 `http://localhost:8765`에 실시간으로 보여준다.
 
 ```
-PC 219.100                                                     Mac 219.113
+PC 219.100                                                     Mac 219.111
 hub.py ── ssh -R 17001 ─ "run_slam.sh --features 2000 --mode live" ─► slam_stream (ORB-SLAM3 f2000)
    ▲                                                               │ SLAM 원본 세션 1x 재생
    └──────────── pose JSON (t_ns, state, T_wc) ◄── TCP 터널 ───────┘
@@ -235,3 +235,71 @@ Dataset 폴더에서 돌린 라이다 SLAM 은 KISS-ICP 다. hdl_graph_slam 결�
 | 처리 시간 | 11.0 ms/스캔 | | 15.6 ms/스캔 |
 
 v5 와 v3 의 객체 위치 차 0.08–0.50 cm, 궤적 차 RMSE 0.43 cm — 저주파(위치·지도)는 그대로이고 흔들림만 줄었다.
+
+## 260901_cbnu_eightcircle — 4개 SLAM 백엔드 비교 (2026-09-18)
+
+`Dataset/260901_cbnu_eightcircle` (SLAM 카메라 4551 프레임 30 Hz, SAM 카메라 3066 프레임 ~20 Hz,
+VLP-16 1504 스캔, Xsens 30346 샘플, 151.7 s). 변환 백이라 프레임 클록이 아니라 헤더 스탬프를 쓴다.
+카메라 내부파라미터는 백에서 직접 읽어 `mac_slam/settings/orbslam3_260901_{slam,sam}_nf2000.yaml` 로 넣었다.
+
+### RT (`rt/260901/`)
+
+| RT | 산출물 | 방법 | 잔차 |
+|---|---|---|---|
+| SLAM ↔ SAM 카메라 | `X_slam_sam_260901.json` | 궤적평면 중력 + 평면 SE(2) hand-eye + 깊이 바닥면 | 1.74 cm (쌍 4640) |
+| LiDAR ↔ SLAM 카메라 | `T_cam_lidar_final.json` | 평면 hand-eye + 합동 높이 | 1.20 cm (쌍 2963) |
+| LiDAR ↔ SAM 카메라 | `T_samcam_lidar_final.json`, `X_lidar_sam.json` | 평면 hand-eye + 합동 높이 | 1.23 cm (쌍 2886) |
+
+시간축 잔차: SAM 카메라가 SLAM 카메라보다 **0.196 s 늦다**(`sam_tau_s`). 녹화기의 peer-clock 보정
+(−185 ms)이 이 녹화에서는 맞지 않아 허브가 이 값으로 보상한다. LiDAR 기준으로는 −0.222 s.
+
+**높이 문제.** 평면 운동에서는 라이다-카메라 수직 팔이 관측되지 않아 기존 스크립트는 LiDAR/깊이 겹침을
+최대화해 높이를 찾는데, 이 데이터에서는 그 봉우리가 거의 평평하다(SLAM 카메라: 40 cm 구간에서 6 % 변화).
+카메라별로 독립적으로 풀면 라이다 높이가 1.59 m 와 1.14 m 로 **45 cm** 어긋났다.
+라이다로 바닥을 직접 재는 방법도 실패한다 — 이 녹화에서 VLP-16 은 바닥 반사를 전혀 받지 못한다
+(최저 링의 고도각이 10 m 까지 −15.4° 직선을 유지 = 바닥을 때리지 않고 벽에 닿는다. 광택 바닥의
+스침각 반사가 너무 약하다). 미지수는 하나뿐이므로 `lidar/fit_lidar_height_joint.py` 가 두 카메라의 겹침
+곡선을 "라이다의 바닥 위 높이"로 환산해 합산한다 → **1.173 m**. 각 카메라 높이는 자기 깊이의 바닥면에서
+직접 측정된 값(MAD 0.5 / 2.3 cm)을 쓴다. `estimate_lidar_cam_rt.py --height` 로 그 값을 넣어 다시 만든다.
+
+**교차검증** (`rt/260901/check_rt_consistency.py` → `rt_consistency.json`): 수평·회전은 구속하지 않았는데도
+
+| 비교 | 결과 |
+|---|---|
+| 카메라-카메라 RT ≟ 라이다 경유 RT (`T_slamcam_lidar · inv(T_samcam_lidar)`) | **0.09 cm / 0.05°** |
+| SLAM 카메라 팔 ≟ 자이로 리그(`rig_260901_gyro.json`, 다른 세션에서 피팅)의 수평 성분 | **0.11 cm** |
+
+### 4개 백엔드 실시간 실행 (전부 .111 → .100 ssh -R 17001)
+
+SAM-6D 는 ORB-SLAM3 실행에서 **한 번만** 돌렸다. 그 136개 추정은 카메라 기준 객체 자세라
+백엔드마다 자기 궤적에 다시 투영할 수 있다(`pc/compare_api.py`) — 그래서 아래 편차는
+SLAM 선택만으로 생기는 객체 위치 차이다.
+
+| 백엔드 | 명령 | 포즈 | 버림 | 도착지연 | 키프레임 | 최대보정 | ORB 대비 궤적 RMSE |
+|---|---|---|---|---|---|---|---|
+| ORB-SLAM3 | `run.sh` | 4536 | 0 | 37 ms | 427 | 6.9 cm | (기준) |
+| ORB-SLAM3 + IMU | `--slam-arg=--gyro …` | 4536 | 0 | 21 ms | 443 | 8.1 cm | 1.69 cm |
+| KISS-ICP | `--slam lidar` | 1499 | 0 | 23 ms | – | – | 3.63 cm |
+| hdl_graph_slam | `--slam hdl` | 1499 | 0 | 65 ms | 130 | 4.5 cm | 3.84 cm |
+
+객체 8종 모두 4개 백엔드에서 잡혔고, 백엔드 간 위치 편차는 **1.35–3.72 cm** (평균 중심 기준 최대):
+
+| 객체 | 편차 | 객체 | 편차 |
+|---|---|---|---|
+| 머그컵 | 1.35 cm | 식혜 | 2.47 cm |
+| 페브리즈 | 1.40 cm | 초코하임 | 2.63 cm |
+| 샤프란 | 1.72 cm | 공룡인형 | 3.22 cm |
+| 우유 | 3.33 cm | 곰인형 | 3.72 cm |
+
+객체 위치는 두 군집(z ≈ 0.2–0.5 m, z ≈ 3.5–3.7 m)으로 나뉘는데, KISS-ICP 지도의 두 테이블 위치와 일치한다.
+
+### 이번에 추가된 것
+
+- `hub.py --slam hdl` — hdl_graph_slam 백엔드(`lidar/run_hdl_stream.sh`). `--slam lidar` 와 같은 프로토콜.
+- `hub.py --slam-arg` — Mac 실행기로 넘기는 통로. 설정 키가 아닌 옵션용(자이로: `--gyro`/`--imu`).
+- `hub.py` 는 사용한 `X_slam_sam`·`extrinsic_path`·`slam_backend` 를 `summary.json` 에 남긴다.
+- `GET /compare` + 뷰어의 **백엔드 비교** 칩 — 완료된 실행들을 기준 실행의 좌표계로 정렬(강체 Umeyama)해
+  궤적과 재투영 객체를 함께 그리고, 백엔드별 좌표와 편차를 표로 보여준다. `--compare-glob` 로 범위 지정.
+- 버그: `--no-sam6d` 인데도 시작 배리어가 SAM-6D 의 `READY` 파일을 기다려 무한 대기하던 것을 고쳤다.
+- `estimate_rt_offline.py --dataset` (원본/변환 세션 자동 판별, URDF 없어도 동작),
+  `estimate_lidar_cam_rt.py --height`/`--tau-range` (와 `info.json` 에 K 가 없으면 백에서 직접 읽기).
