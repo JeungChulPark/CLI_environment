@@ -257,6 +257,8 @@ def main():
         print(f"height overridden: {dz_used:+.3f} m")
     X_final = compose(dz_used)
     final = {"T_cam_lidar": X_final.tolist(), "camera": a.camera,
+             "dataset": Path(a.dataset).name,   # geometry carries over to the day's other
+                                                # recordings; tau_s was measured on this one
              "method": f"planar hand-eye (tx, ty, yaw, tilt) + {how}",
              "height_along_down_m": dz_used, "height_uncertainty_m": unc,
              "height_overlap_argmax_m": dz_peak, "tau_s": tau,

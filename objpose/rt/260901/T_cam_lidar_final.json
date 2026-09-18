@@ -26,6 +26,7 @@
   ]
  ],
  "camera": "SLAM",
+ "dataset": "260901_cbnu_eightcircle",
  "method": "planar hand-eye (tx, ty, yaw, tilt) + height supplied (joint fit over both cameras)",
  "height_along_down_m": -0.121,
  "height_uncertainty_m": 0.03,

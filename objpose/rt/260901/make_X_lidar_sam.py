@@ -23,6 +23,7 @@ def main() -> None:
     T = np.asarray(src["T_cam_lidar"], np.float64).reshape(4, 4)
     out = {
         "T_slam_sam": np.linalg.inv(T).tolist(),
+        "dataset": src.get("dataset"),
         "source": "inv(T_samcam_lidar) from " + src["method"],
         "slam_sensor": "lidar",
         "clock": "header stamps (converted bags)",

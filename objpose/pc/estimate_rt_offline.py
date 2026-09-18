@@ -324,6 +324,8 @@ def main():
 
     out = {
         "T_slam_sam": X.tolist(),
+        "dataset": dataset.name,        # the rig carries over to the day's other recordings,
+                                        # but tau_s below was measured on THIS one
         "source": "offline: trajectory-plane gravity + planar SE(2) hand-eye on ORB-SLAM3 f2000 relative motions + depth floor height",
         "inputs": {"slam_traj": a.slam_traj, "sam_traj": a.sam_traj, "windows_s": windows},
         "down": {"slam": d_a.tolist(), "sam": d_b.tolist(), "plane_rms_cm": [round(planar_a * 100, 3), round(planar_b * 100, 3)]},

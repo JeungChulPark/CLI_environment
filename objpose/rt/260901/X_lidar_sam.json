@@ -25,6 +25,7 @@
    1.0
   ]
  ],
+ "dataset": "260901_cbnu_eightcircle",
  "source": "inv(T_samcam_lidar) from planar hand-eye (tx, ty, yaw, tilt) + height supplied (joint fit over both cameras)",
  "slam_sensor": "lidar",
  "clock": "header stamps (converted bags)",

@@ -52,6 +52,11 @@ SAM_MINUS_SLAM_CLOCK_NS = 18225662057   # SLAM/peer_timestamp_comparison.json
 PY_SAM6D = "/home/jucpark/anaconda3/envs/sam6d/bin/python"
 # backends whose world is the Velodyne's (z up, no camera frame clock), not a camera's
 LIDAR_BACKENDS = ("lidar", "hdl")
+# what a run leaves behind on the SLAM host. The [x] brackets keep each pattern from matching
+# the pkill command line that carries it.
+MAC_STREAMERS = ("objpose/[b]uild/slam_stream", "objpose/[b]uild_rtab/rtab_stream",
+                 "objpose/lidar/[l]idar_stream.py", "objpose/lidar/[h]dl_stream.py",
+                 "[h]dl_graph_slam")
 
 
 def log(*a):
@@ -196,6 +201,12 @@ class Hub:
         # their different SLAM sensors (a camera, the Velodyne) back on the same physical camera
         self.X_slam_sam = X
         self._compare, self._compare_key = None, None
+        self._mac_datasets, self._mac_stale, self._restart = None, False, None
+        self.lag_window = deque(maxlen=150)      # recent pose arrival lags, for display_delay
+        # which catalog entry this run is, so the viewer can highlight the active tab
+        self.dataset_name = Path(a.sam_session).parent.name
+        self.backend_id = ("orbslam3_imu" if any("--gyro" in s for s in a.slam_arg)
+                           else {"lidar": "lidar", "hdl": "hdl"}.get(a.slam, a.slam))
         self.poses = PoseBuffer(max_gap_s=a.max_gap)
         self.fusion = Fusion(X, self.poses)
         # position-only association: box-like objects flip 180 deg between SAM-6D estimates,
@@ -255,7 +266,27 @@ class Hub:
         self.procs.append(p)
         log(f"SAM-6D started pid={p.pid} (log {self.out / 'sam6d_infer.log'})")
 
+    def kill_mac_streamers(self, why: str):
+        """Kill any streamer left running on the SLAM host.
+
+        ssh without a PTY does not hang up the remote command when the local ssh process
+        dies, so a backend switch — or a hub that was SIGKILLed — can leave a streamer
+        running on the Mac. The next run then competes with it for the same cores: an
+        orphaned KISS-ICP at 600 % CPU pushed ORB-SLAM3's pose lag from 0.04 s to 2.2 s,
+        which is far past --max-gap, so display frames had no pose to place objects with
+        and not one object box was drawn on the video.
+        """
+        if self.a.no_mac:
+            return
+        try:
+            subprocess.run(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
+                            self.a.mac_host, "; ".join(f"pkill -f '{p}'" for p in MAC_STREAMERS)],
+                           capture_output=True, timeout=30)
+        except (subprocess.TimeoutExpired, OSError) as e:
+            log(f"could not clean up Mac streamers ({why}): {e!r}")
+
     def start_mac_slam(self):
+        self.kill_mac_streamers("before launch")
         if self.a.slam in LIDAR_BACKENDS:
             # hdl_graph_slam brings its own ROS 2 environment up, so it runs through a wrapper
             runner = ("~/objpose/lidar/run_hdl_stream.sh" if self.a.slam == "hdl" else
@@ -342,6 +373,8 @@ class Hub:
             else:
                 self.write_log("slam_poses", m)
             self.slam_lag = lag
+            if lag is not None:
+                self.lag_window.append(lag)
             self.slam_track_ms = m.get("track_ms")
             self.slam_dropped = m.get("dropped", 0)
         elif kind == "pose_refine":
@@ -467,6 +500,31 @@ class Hub:
                                 "unplaced": [p["name"] for p in placed if not p["placed"]]}
             self.sam6d_runs.append(frame_age)
 
+    def display_delay(self) -> float:
+        """How far behind the replay clock to draw, in seconds.
+
+        A display frame can only carry objects if a SLAM pose for its instant has already
+        arrived. Poses come from the Mac over an ssh tunnel, so their arrival lag depends on
+        the link and on how loaded that machine is: 0.04 s on a quiet wired run, but 0.5-2.5 s
+        over Wi-Fi or with something else eating its cores. When the lag exceeds this delay
+        the hub asks the pose buffer for a time it has not reached yet, gets nothing back, and
+        every object silently drops off the video while the 3D map still shows them.
+
+        So the delay follows the lag instead of being fixed: the recent nine-in-ten lag plus a
+        margin, never below the configured value and never above --max-display-delay. It rises
+        quickly when the link degrades and falls back slowly, so a single spike does not leave
+        the video permanently behind.
+        """
+        floor = self.a.display_delay
+        if not self.lag_window:
+            return floor
+        want = float(np.percentile(np.asarray(self.lag_window), 90)) + 0.15
+        want = min(max(want, floor), self.a.max_display_delay)
+        prev = getattr(self, "_display_delay", floor)
+        # up fast (objects come back immediately), down slow (no jitter from one quiet moment)
+        self._display_delay = want if want > prev else prev + (want - prev) * 0.02
+        return self._display_delay
+
     # ── render + broadcast ──────────────────────────────────────────────────
     def run_render(self):
         period = 1.0 / self.a.view_hz
@@ -474,7 +532,7 @@ class Hub:
         while not self.stop.is_set():
             t_loop = time.monotonic()
             if self.frames:
-                target = self.replay_t_ns - int(self.a.display_delay * 1e9)
+                target = self.replay_t_ns - int(self.display_delay() * 1e9)
                 pick = None
                 for t_ns, idx, img in reversed(self.frames):
                     if t_ns <= target:
@@ -542,6 +600,55 @@ class Hub:
             })
         return rows
 
+    def catalog(self):
+        """날짜 > 데이터셋 > 백엔드 tree for the viewer, plus what is running now.
+
+        The Mac listing needs an ssh round trip, so it is fetched once and reused; the
+        viewer's refresh button asks for it again.
+        """
+        import catalog as cat
+        if self._mac_datasets is None or self._mac_stale:
+            self._mac_datasets = cat.mac_datasets(self.a.mac_host)
+            self._mac_stale = False
+        c = cat.scan(self._mac_datasets)
+        c["current"] = {"dataset": self.dataset_name, "backend": self.backend_id,
+                        "status": self.status, "out": self.out.name}
+        return c
+
+    def request_restart(self, dataset: str, backend: str) -> tuple[bool, str]:
+        """Queue a restart of this hub onto another dataset/backend (applied in run())."""
+        import catalog as cat
+        if backend not in cat.BY_ID:
+            return False, f"알 수 없는 백엔드 {backend}"
+        try:
+            argv = cat.hub_args(dataset, backend)
+        except (ValueError, KeyError) as e:
+            return False, str(e)
+        self._restart = argv
+        self.status = f"{dataset} · {cat.BY_ID[backend].label} 로 재시작하는 중"
+        log(f"restart requested: {dataset} / {backend}")
+        self.stop_replay_for_restart()
+        return True, self.status
+
+    def stop_replay_for_restart(self):
+        self.stop.set()
+
+    def exec_restart(self):
+        """Replace this process with a hub configured for the requested run.
+
+        Restarting rather than reconfiguring in place keeps one code path for starting a
+        run: everything (SAM-6D, the ssh tunnel, the clocks) is built once, at startup, from
+        the arguments. The browser's EventSource reconnects on its own once the new process
+        binds the port.
+        """
+        argv = [sys.executable, "-u", str(HERE / "hub.py"), *self._restart,
+                "--http-host", self.a.http_host, "--http-port", str(self.a.http_port)]
+        if self.a.compare_glob:
+            argv += ["--compare-glob", self.a.compare_glob]
+        log("exec " + " ".join(argv[3:]))
+        sys.stdout.flush()
+        os.execv(sys.executable, argv)
+
     def comparison(self):
         """Every finished run of this session, aligned into one world (see compare_api.py).
 
@@ -590,7 +697,8 @@ class Hub:
             "kf_max_correction_cm": round(self.poses.kfs.max_correction_m * 100, 2),
             "near_loop_estimates": self.fusion.near_loop_estimates,
             "memory": None if self.memory is None else self.memory.stats(),
-            "display_delay_s": self.a.display_delay,
+            "display_delay_s": round(self.display_delay(), 3),
+            "display_delay_floor_s": self.a.display_delay,
             "slam_refined_poses": getattr(self, "refined", 0),
             "overlay_max_age_s": self.a.overlay_max_age,
             "replay_t_rel_s": round((self.replay_t_ns - self.t0_ns) / 1e9, 2) if self.t0_ns else 0,
@@ -655,15 +763,33 @@ class Hub:
                     self.send_header("Content-Type", "application/json")
                     self.end_headers()
                     self.wfile.write(body)
-                elif self.path == "/compare":
-                    body = json.dumps(hub.comparison(), default=str).encode()
-                    self.send_response(HTTPStatus.OK)
-                    self.send_header("Content-Type", "application/json")
-                    self.send_header("Cache-Control", "no-store")
-                    self.end_headers()
-                    self.wfile.write(body)
+                elif self.path in ("/catalog", "/catalog?refresh=1"):
+                    if self.path.endswith("refresh=1"):
+                        hub._mac_stale = True
+                    self._json(hub.catalog())
                 else:
                     self.send_error(HTTPStatus.NOT_FOUND)
+
+            def do_POST(self):
+                if self.path != "/run":
+                    self.send_error(HTTPStatus.NOT_FOUND)
+                    return
+                try:
+                    n = int(self.headers.get("Content-Length", 0))
+                    req = json.loads(self.rfile.read(n) or b"{}")
+                    ok, msg = hub.request_restart(str(req.get("dataset", "")), str(req.get("backend", "")))
+                except Exception as e:                    # a malformed request must not kill the server
+                    ok, msg = False, repr(e)
+                self._json({"ok": ok, "message": msg}, HTTPStatus.ACCEPTED if ok else HTTPStatus.BAD_REQUEST)
+
+            def _json(self, obj, status=HTTPStatus.OK):
+                body = json.dumps(obj, default=str).encode()
+                self.send_response(status)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(body)))
+                self.send_header("Cache-Control", "no-store")
+                self.end_headers()
+                self.wfile.write(body)
 
         srv = ThreadingHTTPServer((self.a.http_host, self.a.http_port), H)
         srv.daemon_threads = True
@@ -689,6 +815,9 @@ class Hub:
         try:
             while True:
                 time.sleep(1.0)
+                if self._restart:
+                    self.shutdown()
+                    self.exec_restart()          # never returns
                 for p in self.procs:
                     if p.poll() is not None and not getattr(p, "_reported", False):
                         p._reported = True
@@ -739,6 +868,7 @@ class Hub:
                 p.wait(timeout=max(0.1, deadline - time.time()))
             except subprocess.TimeoutExpired:
                 os.killpg(p.pid, signal.SIGKILL)
+        self.kill_mac_streamers("shutdown")
         for f in self.logs.values():
             f.close()
         self.fw.close()
@@ -776,7 +906,11 @@ def main():
     ap.add_argument("--duration-s", type=float, default=0.0, help="0 = to the end")
     ap.add_argument("--sam-feed-hz", type=float, default=10.0)
     ap.add_argument("--view-hz", type=float, default=15.0)
-    ap.add_argument("--display-delay", type=float, default=0.3)
+    ap.add_argument("--display-delay", type=float, default=0.3,
+                    help="minimum delay behind the replay clock; the hub raises it to follow the "
+                         "measured SLAM pose arrival lag (see Hub.display_delay)")
+    ap.add_argument("--max-display-delay", type=float, default=3.0,
+                    help="ceiling for that adaptive delay")
     ap.add_argument("--overlay-max-age", type=float, default=60.0,
                     help="draw an object on the video only if SAM-6D saw it within this many seconds")
     ap.add_argument("--max-gap", type=float, default=0.25, help="max SLAM pose gap to interpolate across [s]")

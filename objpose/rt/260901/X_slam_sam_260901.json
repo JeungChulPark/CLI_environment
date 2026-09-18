@@ -25,6 +25,7 @@
    1.0
   ]
  ],
+ "dataset": "260901_cbnu_eightcircle",
  "source": "offline: trajectory-plane gravity + planar SE(2) hand-eye on ORB-SLAM3 f2000 relative motions + depth floor height",
  "inputs": {
   "slam_traj": "objpose/rt/260901/slam_orb_tum.txt.optimized.txt",
