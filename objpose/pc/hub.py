@@ -63,6 +63,45 @@ def log(*a):
     print(time.strftime("%H:%M:%S"), "[hub]", *a, flush=True)
 
 
+class _WallClock:
+    """Seconds that tick at the real rate on average, without ever jumping.
+
+    The replay is paced against a Mac that streams at true real time, so the hub's clock has
+    to agree with it on how long a second is. CLOCK_MONOTONIC does not on WSL2 without a
+    disciplined kernel clock: its rate was off by +3.5 % on one boot and -2.1 .. -2.5 % on
+    the next (tsc and hyperv_clocksource_tsc_page alike), and over a 150 s replay that alone
+    read as 3-4 s of link lag that did not exist. Realtime is right on average, but only
+    because the Hyper-V time sync steps it (~0.77 s every ~32 s); between steps it runs at
+    monotonic's wrong rate. Following realtime directly would jolt the schedule on every
+    step, so this clock runs on monotonic and slews toward realtime instead, at most
+    MAX_SLEW faster or slower, closing the gap with time constant TAU_S. With a disciplined
+    kernel clock (chrony) the gap stays ~0 and this is plain monotonic.
+    """
+
+    TAU_S = 10.0
+    MAX_SLEW = 0.08
+
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._last_m = None
+        self._c = 0.0
+
+    def __call__(self) -> float:
+        with self._lock:
+            m, r = time.monotonic(), time.time()
+            if self._last_m is None:
+                self._c = r
+            else:
+                dm = m - self._last_m
+                slew = max(-self.MAX_SLEW, min(self.MAX_SLEW, (r - self._c) / self.TAU_S))
+                self._c += dm * (1.0 + slew)
+            self._last_m = m
+            return self._c
+
+
+wall_clock = _WallClock()
+
+
 def _child_setup():
     """Own process group (so the hub can signal the whole tree) + die with the hub.
 
@@ -323,6 +362,12 @@ class Hub:
                       f"--mode live --connect 127.0.0.1:{self.a.slam_port} --rate {self.a.rate}")
         if self.a.slam_arg:
             remote += " " + " ".join(self.a.slam_arg)
+        # The Mac follows its idle-sleep timer (1 min on battery here) even while the streamer
+        # is working: an ssh command without a PTY holds no power assertion, so the machine
+        # slept 3 s into a run, the pose stream stopped, and ssh's keepalive dropped the tunnel
+        # 40 s later. Meanwhile the sleeping Wi-Fi card kept answering pings, which is what made
+        # this look like a flaky link. caffeinate holds the assertion for as long as SLAM runs.
+        remote = f"caffeinate -ims {remote}"
         cmd = ["ssh", "-o", "BatchMode=yes", "-o", "ExitOnForwardFailure=yes", "-o", "ServerAliveInterval=10",
                "-R", f"{self.a.slam_port}:127.0.0.1:{self.a.slam_port}", self.a.mac_host, remote]
         f = open(self.out / "mac_slam.log", "w")
@@ -375,7 +420,7 @@ class Hub:
                                             else int(m["first_ns"]))
             log(f"SLAM hello: {m}")
         elif kind == "pose":
-            recv = time.monotonic()
+            recv = wall_clock()
             if "frame_idx" in m and self.slam_clock is not None:
                 m["t_ns_streamer"] = m["t_ns"]
                 m["t_ns"] = int(self.slam_clock["frame_ns"][int(m["frame_idx"])])
@@ -402,7 +447,7 @@ class Hub:
         elif kind == "pose_refine":
             # delayed smoothed pose (lidar_stream --smooth-scans): replaces the raw one in the buffer; the log keeps
             # the final pose in T_wc and the streamed one in T_wc_raw
-            recv = time.monotonic()
+            recv = wall_clock()
             ok = self.poses.refine(int(m["t_ns"]), m["T_wc"])
             p = self.unrefined.pop(int(m["t_ns"]), None)
             if p is not None:
@@ -444,7 +489,7 @@ class Hub:
         t0 = max(int(self.sam.t_ns[0]), int(self.hello["first_ns_frame"])) + int(max(start, 0.3) * 1e9)
         self.t0_ns = t0
         self.send_slam({"type": "start", "t0_ns": t0, "rate": self.a.rate})
-        self.wall0 = time.monotonic()
+        self.wall0 = wall_clock()
         self.status = "running"
         log(f"START t0_ns={t0} (dataset +{(t0 - int(self.hello['first_ns_frame'])) / 1e9:.2f}s) rate={self.a.rate}")
         end_ns = int(self.sam.t_ns[-1]) if self.a.duration_s <= 0 else t0 + int(self.a.duration_s * 1e9)
@@ -453,7 +498,7 @@ class Hub:
         next_feed = 0.0
         while not self.stop.is_set() and i < len(self.sam) and self.sam.t_ns[i] <= end_ns:
             due = self.wall0 + (int(self.sam.t_ns[i]) - t0) / 1e9 / self.a.rate
-            now = time.monotonic()
+            now = wall_clock()
             if due > now:
                 time.sleep(min(due - now, 0.05))
                 continue
@@ -497,14 +542,14 @@ class Hub:
                     continue
             r = jr.read_new()
             if r is None:
-                if self.pending and time.monotonic() - self._last_retry > 0.3:
-                    self._last_retry = time.monotonic()
+                if self.pending and wall_clock() - self._last_retry > 0.3:
+                    self._last_retry = wall_clock()
                     self.retry_pending()
                 time.sleep(0.01)
                 continue
             self.sam6d_frames += 1
             stamp = int(r["stamp_ns"])
-            done_wall = time.monotonic()
+            done_wall = wall_clock()
             frame_age = ((done_wall - self.wall0) - (stamp - self.t0_ns) / 1e9 / self.a.rate) if self.wall0 else None
             placed = []
             for d in r.get("dets", []):
@@ -515,7 +560,7 @@ class Hub:
                 else:
                     # its pose has not crossed the tunnel yet — keep it and try again
                     self.pending.append({"t_ns": stamp, "det": d, "age_s": frame_age,
-                                         "ms": r.get("ms"), "since": time.monotonic()})
+                                         "ms": r.get("ms"), "since": wall_clock()})
             self.write_log("sam6d_frames", {"t_ns": stamp, "dets": [{k: d.get(k) for k in ("object", "score", "R", "t_mm")}
                                                                    for d in r.get("dets", [])]})
             if self.memory is not None:
@@ -548,7 +593,7 @@ class Hub:
         """
         if not self.pending:
             return
-        now = time.monotonic()
+        now = wall_clock()
         keep = []
         for p in self.pending:
             d = p["det"]
@@ -594,7 +639,7 @@ class Hub:
         period = 1.0 / self.a.view_hz
         last_traj = 0.0
         while not self.stop.is_set():
-            t_loop = time.monotonic()
+            t_loop = wall_clock()
             if self.frames:
                 target = self.replay_t_ns - int(self.display_delay() * 1e9)
                 pick = None
@@ -631,11 +676,11 @@ class Hub:
                                                    "objects": [{"name": o["name"], "source": o["source"],
                                                                 "age_s": o["age_s"], "T_cam_obj": o["T_cam_obj"]}
                                                                for o in payload["objects"]]})
-                if time.monotonic() - last_traj > 1.0:
+                if wall_clock() - last_traj > 1.0:
                     payload["trajectory"] = self.poses.positions(step=3)
-                    last_traj = time.monotonic()
+                    last_traj = wall_clock()
                 self.broadcast(payload)
-            time.sleep(max(0.0, period - (time.monotonic() - t_loop)))
+            time.sleep(max(0.0, period - (wall_clock() - t_loop)))
 
     def run_memory(self):
         while not self.stop.is_set():
