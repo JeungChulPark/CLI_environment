@@ -148,6 +148,8 @@ def main() -> None:
                     help="false-alarm likelihood. A detection is evidence FOR existence only "
                          "while P_D > clutter, so lowering P_D without this weakens every hit")
     ap.add_argument("--min-obs", type=int, nargs="+", default=[5])
+    ap.add_argument("--max-range", type=float, nargs="+", default=[0.0],
+                    help="depth (m) beyond which a miss is no evidence (P_D = 0); 0 = no limit")
     ap.add_argument("--extrinsic", default="",
                     help="rig json, for runs made before the hub recorded it")
     a = ap.parse_args()
@@ -166,16 +168,18 @@ def main() -> None:
     for mo in a.min_obs:
         for cl in a.clutter:
             for pd in a.pd:
-                r = replay(frames, K, size, pd_base=pd, clutter_ratio=cl, min_obs_longterm=mo)
-                cells = ""
-                for n in names:
-                    sh = r["shown"].get(n, 0)
-                    sp = count_spans(r["spans"][n]) if n in r["spans"] else 0
-                    cells += f"{100*sh/r['n_frames']:8.0f}%/{sp:<2d}"
-                kept = sum(1 for l in r["landmarks"] if l["status"] in DISPLAYED)
-                label = f"P_D {pd:.2f} c {cl:.2f} obs≥{mo}"
-                print(f"{label:<26}{cells}{phantoms(r['landmarks'], truth):6d}{kept:9d}")
-    print("\n칸 = 표시된 프레임 비율 / 끊긴 구간 수   (현재 운용값: P_D 0.50, c 0.10, obs≥5)")
+                for mr in a.max_range:
+                    r = replay(frames, K, size, pd_base=pd, clutter_ratio=cl, min_obs_longterm=mo,
+                               pd_max_range_m=mr or None)
+                    cells = ""
+                    for n in names:
+                        sh = r["shown"].get(n, 0)
+                        sp = count_spans(r["spans"][n]) if n in r["spans"] else 0
+                        cells += f"{100*sh/r['n_frames']:8.0f}%/{sp:<2d}"
+                    kept = sum(1 for l in r["landmarks"] if l["status"] in DISPLAYED)
+                    label = f"P_D {pd:.2f} c {cl:.2f} obs≥{mo}" + (f" ≤{mr:.1f}m" if mr else "")
+                    print(f"{label:<26}{cells}{phantoms(r['landmarks'], truth):6d}{kept:9d}")
+    print("\n칸 = 표시된 프레임 비율 / 끊긴 구간 수   (hub 기본값: P_D 0.08, c 0.01, obs≥5)")
     print(f"객체 {len(names)}종이므로 랜드마크가 {len(names)}개를 넘으면 중복/유령이 생긴 것")
 
 

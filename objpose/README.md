@@ -98,6 +98,14 @@ v5 결과: 남은 개체 **8 개 = 8 종**, 각 개체 위치가 그 물체 관�
 0.15 / 0.03 은 9.2 % 이상을 요구해 8 개 중 5 개가 `lost` 로 끝났고, 같은 녹화를 재생하면 0.08 / 0.01 에서는 8 개 모두
 `active` 로 남는다. 대신 치운 물체가 `lost` 가 되기까지 시야 안 미검출이 약 14 → 27 프레임으로 늘어난다.
 
+검출 거리 한계(2026-09-19): `--pd-max-range 1.5`(m). 화면 안에 있어도 카메라에서 1.5 m 보다 먼 물체는 못 본 것을
+미검출로 세지 않는다. SAM-6D 는 `Mugcup_high`·`Sikhye_high` 를 0.5–0.6 m 안에서만 잡는데(다른 물체는 ~2.2 m 까지),
+`260901_cbnu_bigeightcircle` 처럼 2–4 m 밖에서 오래 바라보는 경로에서는 그 프레임이 전부 미검출로 쌓여 관측 2–3 회인
+두 물체가 50 초 만에 `lost` → 삭제(관측 5 회 미만)됐다. `tune_memory.py --max-range 0 1.5 2.0 2.5` 로 재생하면 1.5 m 에서
+LiDAR 실행의 두 물체 표시 비율이 37 / 46 % → 83 / 82 %, ORB-SLAM3+IMU 실행의 머그컵·식혜·초코가 55 / 54 / 15 % → 82 %
+가 되고 eightcircle 실행은 그대로다. 대가로 치운 물체는 1.5 m 안으로 다가가야 `lost` 가 되고, 멀리서 본 미검출로
+지워지던 17 cm 어긋난 중복 인스턴스(bigeightcircle ORB-SLAM3+IMU 의 식혜)가 남는다.
+
 ## ORB-SLAM3 vs RTAB-Map (2026-09-13, 같은 데이터·RT·SAM-6D, `--features 2000`)
 
 `bash objpose/run.sh --slam rtabmap` 로 Mac 백엔드만 바꾼다(`mac_slam/rtab_stream.cc`, Homebrew rtabmap 0.23.8, F2M 오도메트리,

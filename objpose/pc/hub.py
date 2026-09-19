@@ -274,7 +274,7 @@ class Hub:
         self.memory = None if a.no_memory else ObjectMemory(
             self.fusion, self.sam.K, (self.sam.W, self.sam.H),
             assoc_trans_gate_m=a.assoc_gate_m, assoc_rot_gate_deg=None,
-            pd_base=a.pd_base, clutter_ratio=a.clutter_ratio)
+            pd_base=a.pd_base, clutter_ratio=a.clutter_ratio, pd_max_range_m=a.pd_max_range or None)
         self.extents = json.loads((REPO / "integration" / "cad_extents.json").read_text())
         self.clients: list[queue.Queue] = []
         self.clients_lock = threading.Lock()
@@ -1059,6 +1059,11 @@ def main():
     ap.add_argument("--clutter-ratio", type=float, default=0.01,
                     help="false-alarm likelihood; a detection is evidence FOR existence only "
                          "while --pd-base stays above it")
+    # SAM-6D finds Mugcup/Sikhye only within ~0.6 m (others up to ~2.2 m). Without a range the
+    # memory counted every frame they sat in the image from 2-4 m away as a miss, and on
+    # 260901_cbnu_bigeightcircle retired both 50 s after seeing them; 1.5 m keeps all 8.
+    ap.add_argument("--pd-max-range", type=float, default=1.5,
+                    help="depth (m) beyond which an unseen object is not counted as missed; 0 = no limit")
     ap.add_argument("--exit-when-done", action="store_true")
     Hub(ap.parse_args()).run()
 
