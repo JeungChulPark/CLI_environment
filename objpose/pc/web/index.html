@@ -567,9 +567,9 @@ function loadCatalog(refresh) {
     cat = d; starting = false;
     const cur = d.current || {};
     if (cur.dataset) { pickDate = (cur.dataset.match(/^\d{6}/) || ["기타"])[0]; pickSet = cur.dataset; }
+    else if (!pickDate) { pickDate = d.dates[0] && d.dates[0].date; }
     if (cur.features) pickFeat = cur.features;
     else if (pickFeat == null) pickFeat = (d.features || [])[0] ?? null;
-    else if (!pickDate) { pickDate = d.dates[0] && d.dates[0].date; }
     $("pick-msg").hidden = true;
     renderPicker();
   }).catch(() => {});
