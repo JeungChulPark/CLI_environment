@@ -93,6 +93,11 @@ bash objpose/run.sh                     # 브라우저: http://localhost:8765 , 
 v5 결과: 남은 개체 **8 개 = 8 종**, 각 개체 위치가 그 물체 관측 중앙값과 0.1–1.3 cm. 1.84 m 떨어진 가짜 `milk` 관측 4 건은
 전부 삭제. 끝에 시야 밖 물체는 `remembered`(기억) 상태로 남아 지도에만 흐리게 표시된다.
 
+존재 확률 파라미터(2026-09-19): 기본값 `--pd-base 0.08 --clutter-ratio 0.01`. 모든 프레임이 포즈를 받게 된 뒤
+(260901_cbnu_eightcircle) SAM-6D 가 시야 안 물체를 검출하는 비율은 프레임당 6–20 %(대부분 7–9 %)였다. 이전 값
+0.15 / 0.03 은 9.2 % 이상을 요구해 8 개 중 5 개가 `lost` 로 끝났고, 같은 녹화를 재생하면 0.08 / 0.01 에서는 8 개 모두
+`active` 로 남는다. 대신 치운 물체가 `lost` 가 되기까지 시야 안 미검출이 약 14 → 27 프레임으로 늘어난다.
+
 ## ORB-SLAM3 vs RTAB-Map (2026-09-13, 같은 데이터·RT·SAM-6D, `--features 2000`)
 
 `bash objpose/run.sh --slam rtabmap` 로 Mac 백엔드만 바꾼다(`mac_slam/rtab_stream.cc`, Homebrew rtabmap 0.23.8, F2M 오도메트리,

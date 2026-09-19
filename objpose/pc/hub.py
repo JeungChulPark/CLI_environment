@@ -1051,9 +1051,12 @@ def main():
     ap.add_argument("--pending-timeout", type=float, default=20.0,
                     help="how long an estimate waits for a SLAM pose that has not arrived "
                          "yet before it is abandoned [s]")
-    ap.add_argument("--pd-base", type=float, default=0.15,
+    # measured on 260901_cbnu_eightcircle once every frame got its pose: SAM-6D finds an in-view
+    # object in only 6-20 % of processed frames (most 7-9 %). With 0.15/0.03 an object needs
+    # >9.2 % to hold its existence, so 5 of 8 ended lost; 0.08/0.01 keeps all 8 active.
+    ap.add_argument("--pd-base", type=float, default=0.08,
                     help="expected in-view detection rate used by the object memory")
-    ap.add_argument("--clutter-ratio", type=float, default=0.03,
+    ap.add_argument("--clutter-ratio", type=float, default=0.01,
                     help="false-alarm likelihood; a detection is evidence FOR existence only "
                          "while --pd-base stays above it")
     ap.add_argument("--exit-when-done", action="store_true")
