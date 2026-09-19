@@ -53,9 +53,12 @@ def mat16(T) -> list[float]:
 
 def run_label(summary: dict, name: str) -> str:
     src = summary.get("slam_source", "")
-    if src == "orbslam3" and "imu" in name.lower():
-        return LABELS["orbslam3_gyro"]
-    return LABELS.get(src, src or name)
+    label = (LABELS["orbslam3_gyro"] if src == "orbslam3" and "imu" in name.lower()
+             else LABELS.get(src, src or name))
+    f = summary.get("features")
+    if src == "orbslam3" and f and f != 2000:
+        label += f" f{f}"
+    return label
 
 
 def extrinsic_of(summary: dict) -> tuple[np.ndarray, float]:

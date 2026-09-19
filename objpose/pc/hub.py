@@ -721,20 +721,23 @@ class Hub:
             self._mac_stale = False
         c = cat.scan(self._mac_datasets)
         c["current"] = {"dataset": self.dataset_name, "backend": self.backend_id,
+                        "features": self.a.features if self.a.slam == "orbslam3" else None,
                         "status": self.status, "out": self.out.name}
         return c
 
-    def request_restart(self, dataset: str, backend: str) -> tuple[bool, str]:
+    def request_restart(self, dataset: str, backend: str,
+                        features: int | None = None) -> tuple[bool, str]:
         """Queue a restart of this hub onto another dataset/backend (applied in run())."""
         import catalog as cat
         if backend not in cat.BY_ID:
             return False, f"알 수 없는 백엔드 {backend}"
         try:
-            argv = cat.hub_args(dataset, backend)
+            argv = cat.hub_args(dataset, backend, features or cat.DEFAULT_FEATURES)
         except (ValueError, KeyError) as e:
             return False, str(e)
         self._restart = argv
-        self.status = f"{dataset} · {cat.BY_ID[backend].label} 로 재시작하는 중"
+        f = f" f{features}" if features and cat.BY_ID[backend].slam == "orbslam3" else ""
+        self.status = f"{dataset} · {cat.BY_ID[backend].label}{f} 로 재시작하는 중"
         log(f"restart requested: {dataset} / {backend}")
         self.stop_replay_for_restart()
         return True, self.status
@@ -889,7 +892,8 @@ class Hub:
                 try:
                     n = int(self.headers.get("Content-Length", 0))
                     req = json.loads(self.rfile.read(n) or b"{}")
-                    ok, msg = hub.request_restart(str(req.get("dataset", "")), str(req.get("backend", "")))
+                    ok, msg = hub.request_restart(str(req.get("dataset", "")), str(req.get("backend", "")),
+                                                  int(req["features"]) if req.get("features") else None)
                 except Exception as e:                    # a malformed request must not kill the server
                     ok, msg = False, repr(e)
                 self._json({"ok": ok, "message": msg}, HTTPStatus.ACCEPTED if ok else HTTPStatus.BAD_REQUEST)

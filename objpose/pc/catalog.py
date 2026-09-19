@@ -48,6 +48,10 @@ BACKENDS = (
     Backend("hdl", "hdl_graph_slam", "hdl", "lidar", True),
 )
 BY_ID = {b.id: b for b in BACKENDS}
+# ORB-SLAM3 extractor sizes the viewer offers. slam_stream rewrites ORBextractor.nFeatures in
+# whatever settings file it is given, so the nf2000 settings serve every size.
+FEATURES = (2000, 3000, 4000)
+DEFAULT_FEATURES = 2000
 
 
 def date_of(name: str) -> str:
@@ -144,13 +148,18 @@ def scan(there_all: dict[str, set[str]] | None = None) -> dict:
             "duration_s": round(dur, 1) if dur else None,
             "backends": [backend_state(d.name, here, there, b) for b in BACKENDS],
         })
-    return {"mac_reachable": there_all is not None,
+    return {"mac_reachable": there_all is not None, "features": list(FEATURES),
             "dates": [{"date": k, "datasets": v} for k, v in sorted(dates.items(), reverse=True)]}
 
 
-def hub_args(dataset: str, backend_id: str) -> list[str]:
-    """The hub.py argv that runs this dataset on this backend."""
+def hub_args(dataset: str, backend_id: str, features: int = DEFAULT_FEATURES) -> list[str]:
+    """The hub.py argv that runs this dataset on this backend (features: ORB-SLAM3 only)."""
     b = BY_ID[backend_id]
+    orb = b.slam == "orbslam3"
+    if orb and features not in FEATURES:
+        raise ValueError(f"features {features} not in {FEATURES}")
+    # f2000 keeps the plain name so earlier runs stay where the comparison expects them
+    tag = f"_f{features}" if orb and features != DEFAULT_FEATURES else ""
     d = DATASET_ROOT / dataset
     x, _ = extrinsic_for(dataset, b)
     if x is None:
@@ -160,7 +169,9 @@ def hub_args(dataset: str, backend_id: str) -> list[str]:
             "--sam-session", str(d / "SAM"),
             "--slam-session", str(d / b.source),
             "--mac-slam-session", f"{MAC_ROOT}/{dataset}/{b.source}",
-            "--out", str(REPO / "objpose" / "output" / f"live_{dataset}_{backend_id}")]
+            "--out", str(REPO / "objpose" / "output" / f"live_{dataset}_{backend_id}{tag}")]
+    if orb:
+        args += ["--features", str(features)]
     date = date_of(dataset)
     yaml = SETTINGS / f"orbslam3_{date}_slam_nf2000.yaml"
     if not b.lidar_world and yaml.exists():

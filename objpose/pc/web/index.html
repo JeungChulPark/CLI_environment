@@ -112,6 +112,8 @@ td .sw { width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
     <span class="note" id="pick-mac"></span></div>
   <div class="picker-row"><span class="lab">입력데이터 이름</span><span id="pick-datasets"></span>
     <span class="note" id="pick-streams"></span></div>
+  <div class="picker-row"><span class="lab">ORB 특징점 수</span><span id="pick-features"></span>
+    <span class="note">ORB-SLAM3 · ORB-SLAM3 + IMU 에만 적용</span></div>
   <div class="picker-row"><span class="lab">SLAM 백엔드 (클릭 = 실행)</span><span id="pick-backends"></span>
     <span class="note" id="pick-note"></span></div>
   <div class="msg" id="pick-msg" hidden></div>
@@ -492,7 +494,7 @@ es.onerror = () => { $("run-status").textContent = "허브 연결 끊김 — 다
 // (the Mac must hold the SLAM source, this PC the SAM stream, and the rig RT must exist).
 // Clicking a runnable backend POSTs /run; the hub then restarts itself onto that
 // dataset/backend, so the stream drops and the EventSource above reconnects on its own.
-let cat = null, pickDate = null, pickSet = null, starting = false;
+let cat = null, pickDate = null, pickSet = null, pickFeat = null, starting = false;
 
 const el = (html) => { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content.firstChild; };
 const datasetsOf = (date) => (cat.dates.find(d => d.date === date) || { datasets: [] }).datasets;
@@ -527,10 +529,16 @@ function renderPicker() {
   const set = currentSet();
   $("pick-streams").textContent = set ? set.streams.join(" · ") : "";
 
+  const feats = $("pick-features"); feats.innerHTML = "";
+  for (const f of (cat.features || [])) {
+    feats.append(tab(`f${f}`, f === pickFeat, () => { pickFeat = f; renderPicker(); }, { disabled: starting }));
+  }
+
   const backs = $("pick-backends"); backs.innerHTML = "";
   let note = "";
   for (const b of (set ? set.backends : [])) {
-    const running = set.name === cur.dataset && b.id === cur.backend;
+    const running = set.name === cur.dataset && b.id === cur.backend &&
+                    (cur.features == null || cur.features === pickFeat);
     if (running && b.extrinsic_provenance === "borrowed") note = "RT 는 같은 날 다른 녹화에서 차용 — 시계 보정값(sam_tau_s)은 이 녹화에서 측정한 값이 아닙니다";
     backs.append(tab(b.label, running, () => startRun(set.name, b.id), {
       disabled: !b.runnable || starting,
@@ -543,11 +551,12 @@ function renderPicker() {
 }
 
 function startRun(dataset, backend) {
+  const features = pickFeat;
   starting = true; renderPicker();
   $("pick-msg").hidden = false;
   $("pick-msg").textContent = "실행 요청을 보냈습니다 — 허브가 재시작합니다 (SAM-6D 모델 로딩까지 20~40초)";
   fetch("/run", { method: "POST", headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ dataset, backend }) })
+                  body: JSON.stringify({ dataset, backend, features }) })
     .then(r => r.json())
     .then(r => { if (!r.ok) { starting = false; $("pick-msg").textContent = "실행 불가: " + r.message; renderPicker(); } })
     .catch(() => {});           // the hub exec()s away mid-request; the reconnect below covers it
@@ -558,6 +567,8 @@ function loadCatalog(refresh) {
     cat = d; starting = false;
     const cur = d.current || {};
     if (cur.dataset) { pickDate = (cur.dataset.match(/^\d{6}/) || ["기타"])[0]; pickSet = cur.dataset; }
+    if (cur.features) pickFeat = cur.features;
+    else if (pickFeat == null) pickFeat = (d.features || [])[0] ?? null;
     else if (!pickDate) { pickDate = d.dates[0] && d.dates[0].date; }
     $("pick-msg").hidden = true;
     renderPicker();
