@@ -56,23 +56,34 @@ class ObjectMemory:
         self._kf_version_seen = -1
         self.rebuilds = 0
         self.last_rebuild_ms = 0.0
+        self.late_anchored = 0      # frames whose pose only arrived later
 
     def _new(self):
         return StreamingObjectMemory(cam_K=self.K, img_size=self.img_size, **self.mem_kwargs)
 
     # ── input ────────────────────────────────────────────────────────────────
-    def add_frame(self, t_ns: int, dets: list):
-        """dets: [(name, score, R 3x3, t_mm 3)] from SAM-6D for the frame captured at t_ns."""
+    def _anchor(self, t_ns: int):
+        """(kf, T_kf_sam) for this frame, or (None, None) while no pose has reached it yet.
+
+        SAM-6D answers about 1.5 s after the frame it was given, but a pose can take longer
+        than that to cross the tunnel when the SLAM host is loaded, so at that moment there is
+        often nothing to anchor to. Resolving this lazily instead of once at insert time lets
+        the next rebuild pick the frame up as soon as its pose lands, rather than spending the
+        detection on a step_no_pose.
+        """
         poses = self.fusion.poses
         T_w_sam, _ = self.fusion.T_w_sam(t_ns)
-        kf = poses.anchor_at(t_ns) if T_w_sam is not None else None
-        anchor = None
-        if T_w_sam is not None:
-            T_w_kf, _ = poses.kfs.resolve(kf) if kf is not None else (None, None)
-            if T_w_kf is None:
-                kf, anchor = None, T_w_sam
-            else:
-                anchor = inv_se3(T_w_kf) @ T_w_sam
+        if T_w_sam is None:
+            return None, None
+        kf = poses.anchor_at(t_ns)
+        T_w_kf, _ = poses.kfs.resolve(kf) if kf is not None else (None, None)
+        if T_w_kf is None:
+            return None, T_w_sam
+        return kf, inv_se3(T_w_kf) @ T_w_sam
+
+    def add_frame(self, t_ns: int, dets: list):
+        """dets: [(name, score, R 3x3, t_mm 3)] from SAM-6D for the frame captured at t_ns."""
+        kf, anchor = self._anchor(t_ns)
         rows = []
         for name, score, R, t_mm in dets:
             T = np.eye(4)
@@ -113,8 +124,15 @@ class ObjectMemory:
         kfs = self.fusion.poses.kfs
         version = kfs.updates
         with self._lock:
+            # frames whose pose had not arrived yet get another chance now that it may have
+            late = 0
+            for f in self.frames:
+                if f.T_anchor_sam is None:
+                    f.kf, f.T_anchor_sam = self._anchor(f.t_ns)
+                    late += f.T_anchor_sam is not None
+            self.late_anchored += late
             frames = list(self.frames)
-            rebuild = version != self._kf_version_seen
+            rebuild = (version != self._kf_version_seen) or late > 0
             if not rebuild:
                 for i in range(self._fed, len(frames)):
                     self._step(self._mem, frames[i], i)
@@ -153,4 +171,6 @@ class ObjectMemory:
         for lm in lms:
             by_status[lm["status"]] = by_status.get(lm["status"], 0) + 1
         return {"frames": len(self.frames), "landmarks": len(lms), "by_status": by_status,
-                "rebuilds": self.rebuilds, "last_rebuild_ms": round(self.last_rebuild_ms, 1)}
+                "rebuilds": self.rebuilds, "last_rebuild_ms": round(self.last_rebuild_ms, 1),
+                "late_anchored": self.late_anchored,
+                "no_pose_yet": sum(1 for f in self.frames if f.T_anchor_sam is None)}

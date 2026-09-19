@@ -221,6 +221,9 @@ class Hub:
         self._compare, self._compare_key = None, None
         self._mac_datasets, self._mac_stale, self._restart = None, False, None
         self.lag_window = deque(maxlen=150)      # recent pose arrival lags, for display_delay
+        self.pending: list = []                  # estimates waiting for their SLAM pose
+        self.deferred_placed = self.deferred_dropped = 0
+        self._last_retry = 0.0
         # which catalog entry this run is, so the viewer can highlight the active tab
         self.dataset_name = Path(a.sam_session).parent.name
         self.backend_id = ("orbslam3_imu" if any("--gyro" in s for s in a.slam_arg)
@@ -494,6 +497,9 @@ class Hub:
                     continue
             r = jr.read_new()
             if r is None:
+                if self.pending and time.monotonic() - self._last_retry > 0.3:
+                    self._last_retry = time.monotonic()
+                    self.retry_pending()
                 time.sleep(0.01)
                 continue
             self.sam6d_frames += 1
@@ -504,11 +510,12 @@ class Hub:
             for d in r.get("dets", []):
                 res = self.fusion.add_estimate(stamp, d["object"], d["R"], d["t_mm"], d.get("score", 0.0))
                 placed.append(res)
-                self.write_log("sam6d_estimates", {
-                    "t_ns": stamp, "object": d["object"], "score": d.get("score"), "R": d["R"], "t_mm": d["t_mm"],
-                    "placed": res["placed"], "slam_interp": res.get("slam"),
-                    "anchor_kf": res.get("kf"), "near_loop_closure": res.get("near_loop"),
-                    "T_w_obj": mat16(res.get("T_w_obj")), "result_age_s": frame_age, "ms": r.get("ms")})
+                if res["placed"]:
+                    self.log_estimate(stamp, d, res, frame_age, r.get("ms"), 0.0)
+                else:
+                    # its pose has not crossed the tunnel yet — keep it and try again
+                    self.pending.append({"t_ns": stamp, "det": d, "age_s": frame_age,
+                                         "ms": r.get("ms"), "since": time.monotonic()})
             self.write_log("sam6d_frames", {"t_ns": stamp, "dets": [{k: d.get(k) for k in ("object", "score", "R", "t_mm")}
                                                                    for d in r.get("dets", [])]})
             if self.memory is not None:
@@ -518,6 +525,44 @@ class Hub:
                                 "age_s": frame_age, "objects": [p["name"] for p in placed if p["placed"]],
                                 "unplaced": [p["name"] for p in placed if not p["placed"]]}
             self.sam6d_runs.append(frame_age)
+            self.retry_pending()
+
+    def log_estimate(self, stamp, d, res, frame_age, ms, waited_s):
+        self.write_log("sam6d_estimates", {
+            "t_ns": stamp, "object": d["object"], "score": d.get("score"), "R": d["R"], "t_mm": d["t_mm"],
+            "placed": res["placed"], "slam_interp": res.get("slam"),
+            "anchor_kf": res.get("kf"), "near_loop_closure": res.get("near_loop"),
+            "T_w_obj": mat16(res.get("T_w_obj")), "result_age_s": frame_age, "ms": ms,
+            "deferred_s": round(waited_s, 3) if waited_s else None})
+
+    def retry_pending(self):
+        """Place estimates whose SLAM pose had not arrived when SAM-6D answered.
+
+        SAM-6D replies about 1.5 s after the frame it was handed; a pose takes longer than
+        that whenever the SLAM host slips behind the replay, and the estimate used to be
+        dropped on the spot. On a run where the arrival lag grew to 3 s that threw away 54 %
+        of all detections — the recognition and memory work upstream cannot matter for a
+        detection that never reaches the map. Poses do arrive, just late, so the estimate
+        waits for its own instead. It is abandoned only once --pending-timeout has passed,
+        by which point no pose for that instant is coming.
+        """
+        if not self.pending:
+            return
+        now = time.monotonic()
+        keep = []
+        for p in self.pending:
+            d = p["det"]
+            res = self.fusion.add_estimate(p["t_ns"], d["object"], d["R"], d["t_mm"],
+                                           d.get("score", 0.0), count_unplaced=False)
+            if res["placed"]:
+                self.deferred_placed += 1
+                self.log_estimate(p["t_ns"], d, res, p["age_s"], p["ms"], now - p["since"])
+            elif now - p["since"] < self.a.pending_timeout:
+                keep.append(p)
+            else:
+                self.deferred_dropped += 1
+                self.log_estimate(p["t_ns"], d, res, p["age_s"], p["ms"], now - p["since"])
+        self.pending = keep
 
     def display_delay(self) -> float:
         """How far behind the replay clock to draw, in seconds.
@@ -710,6 +755,9 @@ class Hub:
             "sam6d_last": self.last_result,
             "sam6d_age_median_s": round(float(np.median(lags)), 2) if lags else None,
             "objects_unplaced": self.fusion.unplaced,
+            "estimates_waiting_for_pose": len(self.pending),
+            "estimates_placed_late": self.deferred_placed,
+            "estimates_given_up": self.deferred_dropped,
             "kf_anchoring": getattr(self, "kf_anchoring", False),
             "kf_count": len(self.poses.kfs.T), "kf_updates": self.poses.kfs.updates,
             "kf_culled": self.poses.kfs.culled,
@@ -951,6 +999,9 @@ def main():
     # at 0.5 six ordinary misses in a row retire a real object. Replaying four finished runs
     # (objpose/pc/tune_memory.py) puts the knee at 0.15. The clutter ratio drops with it to keep
     # the evidence a single detection carries (P_D / clutter = 5) exactly where it was.
+    ap.add_argument("--pending-timeout", type=float, default=20.0,
+                    help="how long an estimate waits for a SLAM pose that has not arrived "
+                         "yet before it is abandoned [s]")
     ap.add_argument("--pd-base", type=float, default=0.15,
                     help="expected in-view detection rate used by the object memory")
     ap.add_argument("--clutter-ratio", type=float, default=0.03,
