@@ -1,11 +1,11 @@
 # objpose — SLAM 기반 객체 위치 추정 + localhost 시각화
 
 두 대의 RealSense(SLAM 카메라, SAM 카메라)로 녹화한 `Dataset/260826_etri_eightcircle_dark`를
-입력으로, **Mac(219.111)의 ORB-SLAM3 위치**와 **PC(219.100)의 SAM-6D 객체 포즈**를 시간 동기화·보간해
+입력으로, **Mac(219.113)의 ORB-SLAM3 위치**와 **PC(219.100)의 SAM-6D 객체 포즈**를 시간 동기화·보간해
 SLAM 지도 좌표계의 객체 위치를 `http://localhost:8765`에 실시간으로 보여준다.
 
 ```
-PC 219.100                                                     Mac 219.111
+PC 219.100                                                     Mac 219.113
 hub.py ── ssh -R 17001 ─ "run_slam.sh --features 2000 --mode live" ─► slam_stream (ORB-SLAM3 f2000)
    ▲                                                               │ SLAM 원본 세션 1x 재생
    └──────────── pose JSON (t_ns, state, T_wc) ◄── TCP 터널 ───────┘

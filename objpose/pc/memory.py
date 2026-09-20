@@ -30,6 +30,8 @@ from pipeline.object_memory_runner import StreamingObjectMemory  # noqa: E402
 
 from fusion import Fusion, inv_se3  # noqa: E402
 
+DISPLAYED = ("active", "lost", "remembered")     # statuses the viewer draws
+
 
 def to_tuple(T) -> tuple:
     return tuple(tuple(float(v) for v in row) for row in np.asarray(T))
@@ -44,10 +46,11 @@ class SamFrame:
 
 
 class ObjectMemory:
-    def __init__(self, fusion: Fusion, K, img_size, **mem_kwargs):
+    def __init__(self, fusion: Fusion, K, img_size, dup_ratio: float = 0.0, **mem_kwargs):
         self.fusion = fusion
         self.K = [list(map(float, r)) for r in np.asarray(K)]
         self.img_size = tuple(img_size)
+        self.dup_ratio = float(dup_ratio)
         self.mem_kwargs = mem_kwargs
         self.frames: list[SamFrame] = []
         self._lock = threading.Lock()
@@ -163,7 +166,33 @@ class ObjectMemory:
                     "first_seen_ns": int(round(lm.first_seen_time * 1e9)),
                     "score": lm.last_sam6d_score,
                 })
-            return out
+        self._mark_duplicates(out)
+        return out
+
+    def _mark_duplicates(self, lms):
+        """Flag a displayable landmark whose evidence is dwarfed by another of the same class.
+
+        SAM-6D occasionally reads a different object as a known class with a top score — on
+        260826 it placed a second 'milk' 1.8 m away from the real one, on four frames out of
+        69, and the existence filter kept it at confidence 0.92. The association gate cannot
+        merge the two (they are metres apart) and the score cannot separate them (0.96-1.00),
+        but the observation counts can: 65 against 3. A landmark is hidden while another of
+        its name carries `dup_ratio` times more observations. The test holds no time term, so
+        a long revisit gap never trips it (an earlier span-based rule cut healthy objects from
+        68 % of frames to 26 % on the wide 260901 loop), and two genuine instances of one
+        class both accumulate observations, so their ratio stays near 1 and both stay.
+        """
+        for l in lms:
+            l["dup_suppressed"] = False
+        if self.dup_ratio <= 0:
+            return
+        best: dict[str, int] = {}
+        for l in lms:
+            if l["status"] in DISPLAYED:
+                best[l["name"]] = max(best.get(l["name"], 0), l["n_obs"])
+        for l in lms:
+            if l["status"] in DISPLAYED and l["n_obs"] * self.dup_ratio < best[l["name"]]:
+                l["dup_suppressed"] = True
 
     def stats(self):
         lms = self.landmarks()
@@ -171,6 +200,7 @@ class ObjectMemory:
         for lm in lms:
             by_status[lm["status"]] = by_status.get(lm["status"], 0) + 1
         return {"frames": len(self.frames), "landmarks": len(lms), "by_status": by_status,
+                "dup_suppressed": sum(1 for lm in lms if lm["dup_suppressed"]),
                 "rebuilds": self.rebuilds, "last_rebuild_ms": round(self.last_rebuild_ms, 1),
                 "late_anchored": self.late_anchored,
                 "no_pose_yet": sum(1 for f in self.frames if f.T_anchor_sam is None)}

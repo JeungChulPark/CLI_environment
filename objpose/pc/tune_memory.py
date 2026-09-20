@@ -29,7 +29,7 @@ REPO = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(REPO / "objectmemory_ws" / "object_memory" / "src"))
 from core.models import Sam6DDetection, SlamCameraPose, TrackingStatus  # noqa: E402
-from fusion import inv_se3  # noqa: E402
+from fusion import KeyframeMap, inv_se3  # noqa: E402
 from pipeline.object_memory_runner import StreamingObjectMemory  # noqa: E402
 
 DISPLAYED = ("active", "lost", "remembered")     # what hub.memory_rows puts on screen
@@ -58,7 +58,14 @@ def load_run(run: Path, extrinsic: str | None = None):
 
     kfu_path = run / "kf_updates.jsonl"
     kfu = [json.loads(l) for l in open(kfu_path)] if kfu_path.exists() else []
-    last_kf = {int(r[0]): mat(r[1:]) for r in kfu[-1]["kfs"]} if kfu else {}
+    # Replay every update through the hub's own keyframe table, the way ObjectMemory does live:
+    # local mapping culls redundant keyframes and the table re-anchors each culled id to a
+    # surviving neighbour, so a pose that referenced it still lands on the corrected map. Taking
+    # only the last update and testing membership skips those redirects and feeds the memory
+    # live, still-drifted camera poses for a quarter of a 260901 run's frames.
+    kfs = KeyframeMap()
+    for u in kfu:
+        kfs.apply_update(u.get("map_id"), u.get("kfs", []))
     t_p, T_p = [], []
     for line in open(run / "slam_poses.jsonl"):
         m = json.loads(line)
@@ -66,8 +73,10 @@ def load_run(run: Path, extrinsic: str | None = None):
             continue
         T = mat(m["T_wc"])
         ref = m.get("ref_kf")
-        if ref is not None and m.get("T_w_kf") is not None and int(ref) in last_kf:
-            T = last_kf[int(ref)] @ np.linalg.inv(mat(m["T_w_kf"])) @ T
+        if ref is not None and m.get("T_w_kf") is not None:
+            T_w_kf, _ = kfs.resolve(int(ref))
+            if T_w_kf is not None:
+                T = T_w_kf @ np.linalg.inv(mat(m["T_w_kf"])) @ T
         t_p.append(int(m["t_ns"]))
         T_p.append(T @ X)                       # SAM-camera pose in the SLAM world
     order = np.argsort(t_p)

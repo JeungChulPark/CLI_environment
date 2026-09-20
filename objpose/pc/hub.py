@@ -273,6 +273,7 @@ class Hub:
         # and a rotation gate split one object into two instances on this dataset
         self.memory = None if a.no_memory else ObjectMemory(
             self.fusion, self.sam.K, (self.sam.W, self.sam.H),
+            dup_ratio=a.dup_ratio,
             assoc_trans_gate_m=a.assoc_gate_m, assoc_rot_gate_deg=None,
             pd_base=a.pd_base, clutter_ratio=a.clutter_ratio, pd_max_range_m=a.pd_max_range or None)
         self.extents = json.loads((REPO / "integration" / "cad_extents.json").read_text())
@@ -691,7 +692,8 @@ class Hub:
     def memory_rows(self, t_ns, T_ws, fusion_rows, exact_window_ns=20_000_000):
         """display rows from the object memory: one per kept instance, in the corrected map."""
         hist = {r["name"]: r["history"] for r in fusion_rows}
-        lms = [l for l in self.memory.landmarks() if l["status"] in ("active", "lost", "remembered")]
+        lms = [l for l in self.memory.landmarks()
+               if l["status"] in ("active", "lost", "remembered") and not l["dup_suppressed"]]
         per_class = {}
         for l in lms:
             per_class[l["name"]] = per_class.get(l["name"], 0) + 1
@@ -1064,6 +1066,20 @@ def main():
     # 260901_cbnu_bigeightcircle retired both 50 s after seeing them; 1.5 m keeps all 8.
     ap.add_argument("--pd-max-range", type=float, default=1.5,
                     help="depth (m) beyond which an unseen object is not counted as missed; 0 = no limit")
+    # A top-scoring SAM-6D misread puts a second landmark of a known class metres away from the
+    # real one, too far for the association gate and too confident for the score to reject; with
+    # --pd-base low enough to keep real objects it then survives. A landmark is hidden while
+    # another of its class holds more than --dup-ratio times its observations, so a LARGER value
+    # is the more permissive one. Across three 260826 runs the real milk led its ghost 65:3,
+    # 72:3 and 68:4 — ratios of 21.7, 24.0 and 17.0, so a threshold near 20 catches the ghost in
+    # one run and misses it in the next. Every healthy object survives ratios down to 3 on all
+    # five replayed runs (the sparsest class of all, 260901 choco_hazelnut_high at 4
+    # observations, is the only landmark of its name and so is never compared), which leaves
+    # room to sit well clear of the ghosts: at 5 a duplicate needs a fifth of the leader's
+    # evidence to be drawn, and the observed ghosts have a seventeenth.
+    ap.add_argument("--dup-ratio", type=float, default=5.0,
+                    help="hide a landmark while another of its class has more than this many "
+                         "times its observations; 0 = show every instance")
     ap.add_argument("--exit-when-done", action="store_true")
     Hub(ap.parse_args()).run()
 
