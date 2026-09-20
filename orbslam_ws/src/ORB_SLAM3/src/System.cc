@@ -487,6 +487,11 @@ void System::DeactivateLocalizationMode()
     mbDeactivateLocalizationMode = true;
 }
 
+void System::SetFrameGyro(const Eigen::Matrix3f &Rgc, int epoch)
+{
+    mpTracker->SetNextFrameGyro(Rgc, epoch);
+}
+
 bool System::MapChanged()
 {
     static int n=0;

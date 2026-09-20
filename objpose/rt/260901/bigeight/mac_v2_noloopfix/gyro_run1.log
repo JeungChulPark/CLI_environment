@@ -1,0 +1,4 @@
+[slam_stream] time-source=header domain=colour header stamp offset_ns=0 non_monotonic=0
+[slam_stream] /Users/user/Documents/DefenseMeta/Dataset/260901_cbnu_bigeightcircle/SLAM/SLAM_0.db3 | 9445 frames | color 640x480 fx=385.238 | depth fx=385.238 | t=(0.000000,0.000000,0.000000) | units=0.001
+[slam_stream] converted bag: 9445 pairs (inexact 0, max dt 0.000 ms, unpaired colour 0 depth 0) K fx=385.238 fy=384.667 cx=320.789 cy=243.438 D=[-0.055259 0.068334 -0.000608 -0.000944 -0.022290] plumb_bob, depth pre-aligned
+libc++abi: terminating due to uncaught exception of type std::runtime_error: IMU topic /xsens/imu/data has no data in /Users/user/Documents/DefenseMeta/Dataset/260901_cbnu_bigeightcircle/imu/xsens_20260901_165918.db3

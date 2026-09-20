@@ -34,6 +34,9 @@
 #include <climits>
 #include <cstdlib>
 #include <libgen.h>
+#ifdef __linux__
+#include <sys/prctl.h>
+#endif
 
 #include <nlohmann/json.hpp>
 #include <opencv2/core.hpp>
@@ -41,7 +44,9 @@
 
 #include <iomanip>
 #include "raw_session.h"
+#include "gyro_aid.h"
 #include "System.h"
+#include "Optimizer.h"
 #include "Atlas.h"
 #include "Map.h"
 #include "KeyFrame.h"
@@ -91,7 +96,11 @@ struct Args {
   std::string save_atlas, load_atlas;
   std::string time_source = "frame";
   std::string print_times;
+  std::vector<std::string> params;   // --param Key=Value (settings yaml overrides, repeatable)
   bool localization = false;
+  // gyro aid (ORB-SLAM3 GyroEdges.h): --gyro RIG.json turns it on; IMU bag = --imu DIR (default <session>/../imu)
+  std::string gyro_rig, imu_dir, imu_topic = "/xsens/imu/data";
+  bool gyro_zupt = true;
 };
 
 static void usage() {
@@ -99,6 +108,9 @@ static void usage() {
                "            [--offset-ns NS] [--max-frames N] [--pace R (offline real-time pacing)]\n"
                "            [--save-atlas PATH | --load-atlas PATH --localization]   (PATH without .osa)\n"
                "            [--time-source frame|assoc (default frame)] [--print-times i,j,k]\n"
+               "            [--param Key=Value ...]   (any settings yaml key, e.g. Stereo.ThDepth=55)\n"
+               "            [--gyro RIG.json [--imu DIR] [--imu-topic T] [--no-gyro-zupt]]   gyro-aided tracking + local BA\n"
+               "                 (RIG.json: R_cam_imu, time.imu_minus_cam_s, gyro_bias_rad_s; tune with --param Gyro.SigmaFrame=.. etc.)\n"
                "            --mode offline --out TUM.txt | --mode live --connect HOST:PORT [--rate R]\n";
 }
 
@@ -137,8 +149,8 @@ static std::string settings_with_camera(const std::string& path, const Session& 
 }
 
 static std::string settings_override(const std::string& path, int features, const std::string& save_name,
-                                     const std::string& load_name) {
-  if (features <= 0 && save_name.empty() && load_name.empty()) return path;
+                                     const std::string& load_name, const std::vector<std::string>& params = {}) {
+  if (features <= 0 && save_name.empty() && load_name.empty() && params.empty()) return path;
   std::ifstream in(path);
   if (!in) throw std::runtime_error("cannot read settings " + path);
   std::stringstream ss;
@@ -148,6 +160,16 @@ static std::string settings_override(const std::string& path, int features, cons
     std::regex re(R"((^|\n)ORBextractor\.nFeatures:[^\n]*)");
     if (!std::regex_search(txt, re)) throw std::runtime_error("settings has no ORBextractor.nFeatures");
     txt = std::regex_replace(txt, re, "$1ORBextractor.nFeatures: " + std::to_string(features));
+  }
+  // --param Key=Value: replace the key's line if the template has it, else append it (hub --slam-param)
+  for (const std::string& kv : params) {
+    auto eq = kv.find('=');
+    if (eq == std::string::npos || eq == 0) throw std::runtime_error("--param expects Key=Value, got " + kv);
+    std::string key = kv.substr(0, eq), value = kv.substr(eq + 1);
+    std::regex re("(^|\\n)" + std::regex_replace(key, std::regex(R"(\.)"), R"(\.)") + ":[^\\n]*");
+    if (std::regex_search(txt, re)) txt = std::regex_replace(txt, re, "$1" + key + ": " + value);
+    else txt += "\n" + key + ": " + value + "\n";
+    fprintf(stderr, "[slam_stream] settings override %s: %s\n", key.c_str(), value.c_str());
   }
   // Drop any existing atlas keys, then set exactly what was asked for.
   txt = std::regex_replace(txt, std::regex(R"((^|\n)System\.(Load|Save)AtlasFromFile:[^\n]*)"), "$1");
@@ -173,6 +195,10 @@ static std::pair<std::string, std::string> split_atlas_path(const std::string& p
 
 int main(int argc, char** argv) {
   signal(SIGPIPE, SIG_IGN);
+#ifdef __linux__
+  // debugging aid: SLAM_STREAM_PTRACE=1 lets `gdb -p` attach under yama ptrace_scope=1 (hang analysis)
+  if (getenv("SLAM_STREAM_PTRACE")) prctl(PR_SET_PTRACER, PR_SET_PTRACER_ANY, 0, 0, 0);
+#endif
   Args a;
   for (int i = 1; i < argc; ++i) {
     std::string k = argv[i];
@@ -193,6 +219,11 @@ int main(int argc, char** argv) {
     else if (k == "--max-frames") a.max_frames = std::stoi(val());
     else if (k == "--time-source") a.time_source = val();
     else if (k == "--print-times") a.print_times = val();
+    else if (k == "--param") a.params.push_back(val());
+    else if (k == "--gyro") a.gyro_rig = val();
+    else if (k == "--imu") a.imu_dir = val();
+    else if (k == "--imu-topic") a.imu_topic = val();
+    else if (k == "--no-gyro-zupt") a.gyro_zupt = false;
     else if (k == "--save-atlas") a.save_atlas = val();
     else if (k == "--load-atlas") a.load_atlas = val();
     else if (k == "--localization") a.localization = true;
@@ -258,6 +289,26 @@ int main(int argc, char** argv) {
     if (access((atlas_dir + "/" + load_name + ".osa").c_str(), R_OK) != 0)
       throw std::runtime_error("atlas not found: " + atlas_dir + "/" + load_name + ".osa");
   }
+  GyroAid gyro;
+  bool use_gyro = !a.gyro_rig.empty();
+  if (use_gyro) {
+    if (a.imu_dir.empty()) a.imu_dir = s.dir + "/../imu";
+    if (a.gyro_rig.find('/') == std::string::npos) {   // bare file name: next to the settings yaml
+      std::string sp = absolute_path(a.settings);
+      a.gyro_rig = sp.substr(0, sp.find_last_of('/') + 1) + a.gyro_rig;
+    }
+    gyro.load(a.imu_dir, a.gyro_rig, a.imu_topic);
+    gyro.zupt = a.gyro_zupt;
+    fprintf(stderr, "[slam_stream] gyro aid: %s %s | %zu samples %.1f Hz | start bias (rig, camera frame) %.5f %.5f %.5f rad/s | "
+                    "zero-rate update %s | imu-cam %.2f ms\n",
+            gyro.db3.c_str(), gyro.topic.c_str(), gyro.t_ns.size(), gyro.rate_hz, gyro.bias_cam.x(), gyro.bias_cam.y(),
+            gyro.bias_cam.z(), gyro.zupt ? "on" : "off", gyro.tau_ns * 1e-6);
+    bool has_use = false;
+    for (const std::string& kv : a.params) has_use = has_use || kv.rfind("Gyro.Use=", 0) == 0;
+    if (!has_use) a.params.push_back("Gyro.Use=1");
+  }
+  long long gyro_frames = 0, gyro_missing = 0;
+  bool gyro_now = false;
   std::string base_settings = absolute_path(a.settings);
   std::string cam_settings;
   if (s.input_kind == "converted") {
@@ -265,7 +316,7 @@ int main(int argc, char** argv) {
     cam_settings = settings_with_camera(base_settings, s);
     base_settings = cam_settings;
   }
-  std::string settings = settings_override(base_settings, a.features, save_name, load_name);
+  std::string settings = settings_override(base_settings, a.features, save_name, load_name, a.params);
   if (!atlas_dir.empty()) {
     if (chdir(atlas_dir.c_str()) != 0) throw std::runtime_error("chdir failed: " + atlas_dir);
     fprintf(stderr, "[slam_stream] atlas %s: %s/%s.osa\n", load_name.empty() ? "save" : "load", atlas_dir.c_str(),
@@ -318,6 +369,11 @@ int main(int argc, char** argv) {
     std::memcpy(raw.data(), di.data, raw.size() * 2);
     depth_to_color(s, aligner, raw.data(), depth_aligned);
     auto t1 = Clock::now();
+    if (use_gyro) {
+      Eigen::Matrix3f R_gc;
+      gyro_now = gyro.advance(f.t_ns, R_gc);
+      if (gyro_now) { slam.SetFrameGyro(R_gc, gyro.epoch); ++gyro_frames; } else ++gyro_missing;
+    }
     Sophus::SE3f Tcw = slam.TrackRGBD(color, depth_aligned, double(f.t_ns) * 1e-9);
     auto t2 = Clock::now();
     r.state = slam.GetTrackingState();
@@ -330,6 +386,10 @@ int main(int argc, char** argv) {
     std::vector<ORB_SLAM3::MapPoint*> tracked = slam.GetTrackedMapPoints();
     r.n_tracked_mp = int(std::count_if(tracked.begin(), tracked.end(), [](ORB_SLAM3::MapPoint* m) { return m != nullptr; }));
     r.vo = tracker ? tracker->*get(TrackingVOTag()) : false;
+    if (use_gyro && gyro_now && gyro.observe(f.t_ns, r.ok, r.Twc.rotationMatrix(), r.map_changed))
+      fprintf(stderr, "[slam_stream] gyro bias update #%d at %.2f s: bias (camera frame) %.5f %.5f %.5f rad/s\n",
+              gyro.zupt_updates, double(f.t_ns - s.frames.front().t_ns) * 1e-9, gyro.bias_cam.x(), gyro.bias_cam.y(),
+              gyro.bias_cam.z());
     return true;
   };
 
@@ -411,6 +471,12 @@ int main(int argc, char** argv) {
         {"save_atlas", save_name.empty() ? "" : atlas_dir + "/" + save_name + ".osa"},
         {"load_atlas", load_name.empty() ? "" : atlas_dir + "/" + load_name + ".osa"},
         {"localization", a.localization},
+        {"gyro", use_gyro ? json{{"rig", a.gyro_rig}, {"imu", gyro.db3}, {"topic", gyro.topic}, {"rate_hz", gyro.rate_hz},
+                                 {"bias_cam_rad_s_final", {gyro.bias_cam.x(), gyro.bias_cam.y(), gyro.bias_cam.z()}}, {"zero_rate_updates", gyro.zupt_updates},
+                                 {"imu_minus_cam_ms", gyro.tau_ns * 1e-6}, {"frames_with_gyro", gyro_frames},
+                                 {"frames_without_gyro", gyro_missing}, {"prior_edges", ORB_SLAM3::Optimizer::sGyroPriorEdges},
+                                 {"kf_edges", ORB_SLAM3::Optimizer::sGyroKFEdges}}
+                        : json(nullptr)},
         {"ok_not_vo_frames", ok_map_count},
         {"ok_not_vo_ratio", processed ? double(ok_map_count) / processed : 0.0},
         {"anchored_segments", loc_segments},
@@ -423,7 +489,7 @@ int main(int argc, char** argv) {
       fprintf(stderr, "[slam_stream] cannot connect to %s\n", a.connect.c_str());
       return 1;
     }
-    line.send_json({{"type", "hello"}, {"source", "orbslam3"}, {"features", a.features}, {"session", s.dir},
+    line.send_json({{"type", "hello"}, {"source", "orbslam3"}, {"gyro", use_gyro}, {"features", a.features}, {"session", s.dir},
                     {"first_ns", s.frames.front().t_ns}, {"last_ns", s.frames.back().t_ns},
                     {"n_frames", s.frames.size()}, {"time_source", s.time_source}, {"time_domain", s.time_domain},
                     {"kf_updates", true}});
@@ -581,6 +647,11 @@ int main(int argc, char** argv) {
             pct(track_ms, 99), alive ? "" : " (server disconnected)");
   }
 
+  if (use_gyro)
+    fprintf(stderr, "[slam_stream] gyro aid: %lld frames with gyro, %lld without | %ld pose priors, %ld keyframe edges | "
+                    "%d zero-rate updates, final bias %.5f %.5f %.5f rad/s\n",
+            gyro_frames, gyro_missing, ORB_SLAM3::Optimizer::sGyroPriorEdges, ORB_SLAM3::Optimizer::sGyroKFEdges,
+            gyro.zupt_updates, gyro.bias_cam.x(), gyro.bias_cam.y(), gyro.bias_cam.z());
   slam.Shutdown();
   if (a.mode == "offline" && !a.localization) {
     // Live per-frame poses never receive later loop-closure / GBA corrections; the

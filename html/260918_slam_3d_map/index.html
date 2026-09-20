@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>260901 CBNU SLAM 3D 맵</title>
+<style>
+  :root{
+    color-scheme: dark;
+    --surface-0:#111110; --surface-1:#1a1a19; --surface-2:#242422;
+    --line:#35342f;
+    --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#8a8980;
+    --orb:#3987e5;      /* categorical slot 1 - ORB-SLAM3 */
+    --imu:#d95926;      /* categorical slot 2 - ORB-SLAM3 + IMU */
+    --hdl:#199e70;      /* categorical slot 3 - HDL graph SLAM */
+    --ref:#c3c2b7;      /* reference: neutral ink, not a categorical hue */
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--surface-0);color:var(--text-primary);
+       font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+       overflow:hidden}
+  /* one screen: map and comparison are both always visible, never scrolled apart */
+  #app{display:grid;height:100vh;height:100dvh;
+       grid-template-columns:1fr clamp(232px, 24vw, 310px);
+       grid-template-rows:1fr minmax(180px,38vh)}
+  #view{grid-column:1;grid-row:1;position:relative;min-width:0;min-height:0;overflow:hidden}
+  #compare{grid-column:1;grid-row:2;min-height:0;overflow:auto;position:relative;z-index:1;
+           border-top:1px solid var(--line);background:var(--surface-1);
+           padding:12px 16px calc(14px + env(safe-area-inset-bottom,0px))}
+  aside{grid-column:2;grid-row:1/3;position:relative;z-index:1}
+  canvas{display:block;max-width:100%;max-height:100%}
+  #hud{position:absolute;left:12px;bottom:12px;color:var(--text-muted);font-size:12px;
+       font-variant-numeric:tabular-nums;pointer-events:none;text-shadow:0 1px 3px #000}
+
+  aside{background:var(--surface-1);border-left:1px solid var(--line);min-height:0;
+        overflow-y:auto;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));
+        padding-top:calc(16px + env(safe-area-inset-top,0px))}
+  h1{font-size:15px;margin:0 0 2px}
+  .sub{color:var(--text-secondary);font-size:12px;margin:0 0 16px}
+  h2{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);
+     margin:18px 0 8px;font-weight:600}
+  select,button{font:inherit;color:inherit;background:var(--surface-2);
+                border:1px solid var(--line);border-radius:6px;padding:6px 9px}
+  select{width:100%}
+  button{cursor:pointer}
+  button:hover{border-color:#57564e}
+  .btnrow{display:flex;gap:6px;flex-wrap:wrap}
+  .btnrow button{flex:1;min-width:64px;font-size:12px;padding:6px 4px}
+
+  .series{display:flex;flex-direction:column;gap:2px}
+  .s{display:flex;align-items:center;gap:9px;padding:6px 7px;border-radius:6px;cursor:pointer;
+     border:1px solid transparent}
+  .s:hover{background:var(--surface-2)}
+  .s input{margin:0;accent-color:var(--text-secondary);flex:none}
+  .s.off .nm,.s.off .mt{opacity:.4}
+  .sw{width:22px;height:0;border-top-width:3px;border-radius:2px;flex:none}
+  .nm{flex:1;font-size:13px}
+  .mt{font-size:11px;color:var(--text-muted);font-variant-numeric:tabular-nums;flex:none}
+  .s.na{cursor:default;opacity:.55}
+  .s.na:hover{background:none}
+
+  .ctl{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:12px;
+       color:var(--text-secondary)}
+  .ctl input[type=range]{flex:1;accent-color:var(--text-secondary)}
+  .ctl .v{width:34px;text-align:right;font-variant-numeric:tabular-nums;color:var(--text-muted)}
+
+  table{width:100%;border-collapse:collapse;font-size:12px;
+        font-variant-numeric:tabular-nums;margin-top:4px}
+  th,td{text-align:right;padding:4px 5px;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--text-muted);font-weight:600}
+  .keys{font-size:11px;color:var(--text-muted);margin:8px 0 0;line-height:1.7}
+  .keys b{display:inline-block;min-width:16px;padding:1px 5px;margin:0 1px;text-align:center;
+          background:var(--surface-2);border:1px solid var(--line);border-radius:4px;
+          color:var(--text-secondary);font-weight:600;font-size:10px}
+  .note{font-size:12px;color:var(--text-muted);margin-top:8px}
+  .note b{color:var(--text-secondary);font-weight:600}
+  .err{color:#e66767;font-size:13px;padding:12px}
+  .build{font-size:10px;color:var(--text-muted);opacity:.7;margin:14px 0 0;
+         border-top:1px solid var(--line);padding-top:8px}
+
+  /* comparison view */
+  .chead{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+  .chead h2{margin:0}
+  #compare h2{margin-top:0}
+  #compare .wrap{overflow-x:auto}
+  #cmp{min-width:520px}
+  #cmp th,#cmp td{padding:5px 10px;white-space:nowrap}
+  #cmp tbody tr:hover{background:var(--surface-1)}
+  #cmp .best{color:var(--text-primary);font-weight:600}
+  #cmp .miss{color:var(--text-muted)}
+  #cmp .grp td{border-bottom:none;padding-top:11px;color:var(--text-muted);
+               font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+  #cmp .lbl{display:flex;align-items:center;gap:9px}
+  #cmp th.col{cursor:pointer}
+  #cmp th.col:hover{color:var(--text-primary)}
+  #cmp th.active{color:var(--text-primary);box-shadow:inset 0 -2px 0 var(--text-secondary)}
+  #cmp .avg{color:var(--text-secondary)}
+  .metricsel{display:flex;gap:6px;flex-wrap:wrap;margin:0}
+  .metricsel button{font-size:12px;padding:4px 10px}
+  .metricsel button[aria-pressed=true]{background:var(--surface-0);border-color:#57564e;
+                                       color:var(--text-primary)}
+  .cap{font-size:11px;color:var(--text-muted);margin:10px 0 0;max-width:80ch}
+
+  @media (max-width:600px){
+    body{overflow:auto}
+    #app{height:auto;min-height:100vh;
+         grid-template-columns:1fr;
+         grid-template-rows:46vh minmax(160px,34vh) auto}
+    #view{grid-column:1;grid-row:1;min-height:260px}
+    #compare{grid-column:1;grid-row:2}
+    aside{grid-column:1;grid-row:3;border-left:none;border-top:1px solid var(--line);
+          overflow:visible}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="view"><div id="hud"></div></div>
+  <div id="compare">
+    <div class="chead">
+      <h2>4개 세션 × 시스템 비교</h2>
+      <div class="metricsel" id="msel"></div>
+    </div>
+    <div class="wrap"><table id="cmp"><thead></thead><tbody></tbody></table></div>
+    <p class="cap" id="cmpcap"></p>
+  </div>
+  <aside>
+    <h1>260901 CBNU · SLAM 3D 맵</h1>
+    <p class="sub">KISS-ICP LiDAR 맵 위에 카메라 SLAM 궤적을 겹쳐 본 것. 모든 궤적은 채점과 동일하게
+      기준 타임스탬프로 보간한 뒤 Umeyama 정렬해 LiDAR 좌표계에 올렸습니다.</p>
+
+    <h2>세션</h2>
+    <select id="sess"></select>
+
+    <h2>궤적</h2>
+    <div class="series" id="series"></div>
+
+    <h2>포인트 클라우드</h2>
+    <div class="ctl"><label for="psz">점 크기</label>
+      <input type="range" id="psz" min="1" max="6" step="0.5" value="2"><span class="v" id="pszv">2</span></div>
+    <div class="ctl"><label for="pop">밝기</label>
+      <input type="range" id="pop" min="0" max="100" step="5" value="45"><span class="v" id="popv">45</span></div>
+
+    <h2>시점</h2>
+    <div class="btnrow">
+      <button data-view="top">위</button>
+      <button data-view="side">옆</button>
+      <button data-view="iso">비스듬히</button>
+      <button data-view="fit">맞춤</button>
+      <button data-view="cloud">클라우드 중심</button>
+    </div>
+    <p class="keys">단축키 — <b>C</b> 또는 <b>Space</b> 포인트 클라우드를 가운데로 ·
+      <b>F</b> 궤적에 맞춤 · <b>T</b>/<b>S</b>/<b>I</b> 위·옆·비스듬히</p>
+
+    <h2>정확도</h2>
+    <table id="tbl"><thead><tr><th>궤적</th><th>ATE<br>cm</th><th>최대<br>cm</th><th>최종<br>cm</th><th>회전<br>°</th></tr></thead><tbody></tbody></table>
+    <p class="note" id="foot"></p>
+    <p class="build">레이아웃 v3 · 맵 위 / 비교 아래 / 사이드바 오른쪽</p>
+  </aside>
+</div>
+
+<script>
+// If the page ever breaks again, this puts the reason in the tab title and in the server's log -
+// which is how the canvas-overflow bug was finally pinned down.
+(function(){
+  var report = function(m){
+    document.title = 'ERR ' + m;
+    try{ fetch('/__error?' + encodeURIComponent(m)); }catch(e){}
+  };
+  addEventListener('error', function(e){
+    report((e.message || '') + ' @' + (e.lineno || '?') + ':' + (e.colno || '?'));
+  });
+  addEventListener('unhandledrejection', function(e){
+    report('promise: ' + ((e.reason && e.reason.message) || e.reason || ''));
+  });
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  if(typeof THREE === 'undefined'){
+    document.getElementById('view').insertAdjacentHTML('beforeend',
+      '<p class="err" style="position:absolute;inset:auto 16px 16px 16px">' +
+      '3D 라이브러리(three.js)를 불러오지 못했습니다 — 네트워크에서 cdnjs.cloudflare.com 에 ' +
+      '접근할 수 없습니다. 아래 비교표는 정상 동작합니다.</p>');
+  }
+  const HAS3D = typeof THREE !== 'undefined';
+  const $ = s => document.querySelector(s);
+  const viewEl = $('#view');
+
+  // ---- series styling: hue = system, opacity/dash = which run & live vs optimized
+  const STYLE = {
+    kiss:      {c:'--ref', label:'KISS-ICP (LiDAR 기준)',        w:1.0, dash:false, sys:'KISS-ICP'},
+    orb_opt:   {c:'--orb', label:'ORB-SLAM3 · 최적화',            w:1.0, dash:false, sys:'ORB-SLAM3'},
+    orb_live:  {c:'--orb', label:'ORB-SLAM3 · 실시간',            w:0.5, dash:false, sys:'ORB-SLAM3'},
+    orb_live2: {c:'--orb', label:'ORB-SLAM3 · 실시간 run 2',      w:0.5, dash:true,  sys:'ORB-SLAM3'},
+    imu_opt:   {c:'--imu', label:'ORB-SLAM3 + IMU · 최적화',      w:1.0, dash:false, sys:'ORB+IMU'},
+    imu_live:  {c:'--imu', label:'ORB-SLAM3 + IMU · 실시간',      w:0.5, dash:false, sys:'ORB+IMU'},
+    imu_live2: {c:'--imu', label:'ORB-SLAM3 + IMU · 실시간 run 2',w:0.5, dash:true,  sys:'ORB+IMU'},
+    hdl:       {c:'--hdl', label:'HDL graph SLAM',                 w:1.0, dash:false, sys:'HDL'},
+  };
+  const DEFAULT_ON = ['kiss','orb_opt','imu_opt','hdl'];
+  const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+  // ---- three.js scene
+  let scene, camera, renderer, grid, ok3d = HAS3D;
+  if(ok3d){
+    try{
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(cssv('--surface-0'));
+      camera = new THREE.PerspectiveCamera(50, 1, 0.05, 2000);
+      camera.up.set(0,0,1);                     // KISS-ICP world: z is up
+      renderer = new THREE.WebGLRenderer({antialias:true});
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      viewEl.appendChild(renderer.domElement);
+      grid = new THREE.GridHelper(40, 40, 0x35342f, 0x24241f);
+      grid.rotation.x = Math.PI/2;              // GridHelper is xz by default
+      scene.add(grid);
+    }catch(e){ ok3d = false; }
+  }
+  if(!ok3d){
+    viewEl.insertAdjacentHTML('beforeend',
+      '<p class="err" style="position:absolute;left:16px;right:16px;top:16px">3D 맵을 그릴 수 없습니다 ' +
+      '(WebGL 또는 three.js 사용 불가). 아래 비교표와 오른쪽 수치는 정상 동작합니다.</p>');
+  }
+
+  let cloud = null, lines = {}, center = new THREE.Vector3(), radius = 10;
+  let cloudCenter = new THREE.Vector3(), cloudRadius = 10;
+
+  // ---- minimal orbit controls (drag = rotate, wheel = zoom, shift/right-drag = pan)
+  const cam = {theta:-0.9, phi:1.0, dist:30, target:new THREE.Vector3()};
+  function applyCam(){
+    if(!ok3d) return;
+    const sp = Math.sin(cam.phi), cp = Math.cos(cam.phi);
+    camera.position.set(
+      cam.target.x + cam.dist*sp*Math.cos(cam.theta),
+      cam.target.y + cam.dist*sp*Math.sin(cam.theta),
+      cam.target.z + cam.dist*cp);
+    camera.lookAt(cam.target);
+  }
+  if(ok3d){
+    let drag = null;
+    renderer.domElement.addEventListener('pointerdown', e=>{
+      drag = {x:e.clientX, y:e.clientY, pan:e.button===2||e.shiftKey};
+      renderer.domElement.setPointerCapture(e.pointerId);
+    });
+    renderer.domElement.addEventListener('pointermove', e=>{
+      if(!drag) return;
+      const dx = e.clientX-drag.x, dy = e.clientY-drag.y;
+      drag.x = e.clientX; drag.y = e.clientY;
+      if(drag.pan){
+        const s = cam.dist*0.0015;
+        const right = new THREE.Vector3().crossVectors(
+          new THREE.Vector3().subVectors(camera.position,cam.target).normalize(), camera.up).normalize();
+        const up = new THREE.Vector3().crossVectors(right,
+          new THREE.Vector3().subVectors(camera.position,cam.target).normalize()).normalize();
+        cam.target.addScaledVector(right, -dx*s).addScaledVector(up, dy*s);
+      }else{
+        cam.theta -= dx*0.006;
+        cam.phi = Math.max(0.02, Math.min(Math.PI-0.02, cam.phi - dy*0.006));
+      }
+      applyCam();
+    });
+    const endDrag = ()=>{ drag = null; };
+    renderer.domElement.addEventListener('pointerup', endDrag);
+    renderer.domElement.addEventListener('pointercancel', endDrag);
+    renderer.domElement.addEventListener('contextmenu', e=>e.preventDefault());
+    renderer.domElement.addEventListener('wheel', e=>{
+      e.preventDefault();
+      cam.dist = Math.max(0.6, Math.min(400, cam.dist * (1 + Math.sign(e.deltaY)*0.12)));
+      applyCam();
+    }, {passive:false});
+  }
+
+  function setView(v){
+    if(!ok3d) return;
+    if(v==='top'){ cam.phi = 0.03; cam.theta = -Math.PI/2; }
+    else if(v==='side'){ cam.phi = Math.PI/2 - 0.02; cam.theta = -Math.PI/2; }
+    else if(v==='iso'){ cam.phi = 1.0; cam.theta = -0.9; }
+    if(v==='cloud'){ cam.target.copy(cloudCenter); cam.dist = cloudRadius*2.2; }
+    else if(v==='fit' || v==='top'){ cam.target.copy(center); cam.dist = radius*2.2; }
+    applyCam();
+  }
+
+  function resize(){
+    if(!ok3d) return;
+    const w = viewEl.clientWidth, h = viewEl.clientHeight;
+    if(!w || !h) return;
+    camera.aspect = w/h; camera.updateProjectionMatrix();
+    renderer.setSize(w,h);
+  }
+  addEventListener('resize', resize);
+
+  if(ok3d) (function loop(){ requestAnimationFrame(loop); renderer.render(scene,camera); })();
+
+  // ---- data
+  function clearScene(){
+    if(!ok3d) return;
+    if(cloud){ scene.remove(cloud); cloud.geometry.dispose(); cloud.material.dispose(); cloud=null; }
+    for(const k in lines){ scene.remove(lines[k]); lines[k].geometry.dispose(); lines[k].material.dispose(); }
+    lines = {};
+  }
+
+  function buildCloud(pts){
+    if(!ok3d) return;
+    const n = pts.length, pos = new Float32Array(n*3), col = new Float32Array(n*3);
+    let zmin=Infinity, zmax=-Infinity;
+    for(const p of pts){ if(p[2]<zmin) zmin=p[2]; if(p[2]>zmax) zmax=p[2]; }
+    const span = Math.max(1e-6, zmax-zmin);
+    for(let i=0;i<n;i++){
+      pos[i*3]=pts[i][0]; pos[i*3+1]=pts[i][1]; pos[i*3+2]=pts[i][2];
+      const t = (pts[i][2]-zmin)/span;          // single-hue neutral ramp, light with height
+      const g = 0.34 + 0.52*t;
+      col[i*3]=g*0.97; col[i*3+1]=g*0.97; col[i*3+2]=g*0.92;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color', new THREE.BufferAttribute(col,3));
+    const mat = new THREE.PointsMaterial({size:2, sizeAttenuation:false, vertexColors:true,
+                                          transparent:true, opacity:0.45});
+    cloud = new THREE.Points(geo, mat);
+    geo.computeBoundingSphere();
+    cloudCenter.copy(geo.boundingSphere.center);
+    cloudRadius = Math.max(2, geo.boundingSphere.radius);
+    scene.add(cloud);
+  }
+
+  function buildLine(key, xyz){
+    const st = STYLE[key]; if(!st || !ok3d) return;
+    const pos = new Float32Array(xyz.length*3);
+    xyz.forEach((p,i)=>{ pos[i*3]=p[0]; pos[i*3+1]=p[1]; pos[i*3+2]=p[2]; });
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+    const opts = {color:new THREE.Color(cssv(st.c)), transparent:true, opacity:st.w};
+    const mat = st.dash
+      ? new THREE.LineDashedMaterial(Object.assign({dashSize:0.35, gapSize:0.25}, opts))
+      : new THREE.LineBasicMaterial(opts);
+    const line = new THREE.Line(geo, mat);
+    if(st.dash) line.computeLineDistances();
+    line.visible = DEFAULT_ON.includes(key);
+    lines[key] = line; scene.add(line);
+  }
+
+  function frame(data){
+    if(!ok3d) return;
+    const box = new THREE.Box3();
+    const ref = data.series.find(s=>s.key==='kiss') || data.series[0];
+    ref.xyz.forEach(p=>box.expandByPoint(new THREE.Vector3(p[0],p[1],p[2])));
+    box.getCenter(center);
+    radius = Math.max(2, box.getSize(new THREE.Vector3()).length()/2);
+    grid.position.set(Math.round(center.x), Math.round(center.y), box.min.z - 0.2);
+    setView('fit');
+  }
+
+  function renderPanel(data){
+    const list = $('#series'), tb = $('#tbl tbody');
+    list.innerHTML = ''; tb.innerHTML = '';
+    const have = new Set(data.series.map(s=>s.key));
+
+    const row = (key, label, colorVar, dash, on, metrics, na) => {
+      const el = document.createElement(na ? 'div' : 'label');
+      el.className = 's' + (on ? '' : ' off') + (na ? ' na' : '');
+      const sw = `<span class="sw" style="border-top-style:${dash?'dashed':'solid'};
+                   border-top-color:${cssv(colorVar)};opacity:${na?0.6:1}"></span>`;
+      el.innerHTML = (na ? '<span style="width:13px;flex:none"></span>' :
+        `<input type="checkbox" ${on?'checked':''}>`) + sw +
+        `<span class="nm">${label}</span><span class="mt">${metrics}</span>`;
+      if(!na){
+        el.querySelector('input').addEventListener('change', e=>{
+          if(lines[key]) lines[key].visible = e.target.checked;
+          el.classList.toggle('off', !e.target.checked);
+        });
+      }
+      list.appendChild(el);
+    };
+
+    for(const key of Object.keys(STYLE)){
+      if(!have.has(key)) continue;
+      const s = data.series.find(x=>x.key===key), st = STYLE[key];
+      const m = s.m;
+      row(key, st.label, st.c, st.dash, DEFAULT_ON.includes(key),
+          m ? `${m.ate} cm` : '기준');
+      if(m){
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${st.label.replace('ORB-SLAM3','ORB').replace('HDL graph SLAM','HDL').replace(' · ','<br>')}</td>
+          <td>${m.ate}</td><td>${m.ate_max}</td><td>${m.final}</td><td>${m.rot}</td>`;
+        tb.appendChild(tr);
+      }
+    }
+    if(!have.has('hdl') && !have.has('hdl_opt'))
+      row('hdl', 'HDL graph SLAM', '--hdl', false, false, '결과 없음', true);
+
+    const su = data.summary || {};
+    $('#foot').innerHTML =
+      `궤적과 수치 모두 <code>eval_traj.py</code>가 만든 것을 그대로 씁니다. 카메라 SLAM은 rig 외부
+       파라미터를 거친 카메라 기준 포즈와, HDL은 LiDAR 추정이므로 KISS 포즈와 직접 비교됩니다
+       (카메라는 LiDAR에서 55 cm 떨어져 있어, 이를 무시하면 카메라 쪽 오차가 그만큼 부풀려집니다).<br><br>
+       기준 궤적: 스캔 ${su.scans_used ?? '-'}개 · 경로 ${su.path_m ?? '-'} m ·
+       복귀 오차 ${su.return_error_cm ?? '-'} cm · 총 yaw ${su.total_abs_yaw_deg ?? '-'}°`;
+    $('#hud').textContent = `${data.session} · 맵 ${data.cloud.length.toLocaleString()} 점`;
+  }
+
+  let current = null;
+  async function load(name){
+    clearScene();
+    const r = await fetch(`./data/${name}.json`);
+    if(!r.ok) throw new Error(`${name}.json ${r.status}`);
+    const data = await r.json();
+    buildCloud(data.cloud);
+    data.series.forEach(s=>buildLine(s.key, s.xyz));
+    current = name;
+    frame(data); renderPanel(data); resize(); renderCompare();
+    applyPointCtl();
+  }
+
+  function applyPointCtl(){
+    if(!ok3d) return;
+    if(!cloud) return;
+    cloud.material.size = parseFloat($('#psz').value);
+    cloud.material.opacity = parseInt($('#pop').value,10)/100;
+    cloud.visible = cloud.material.opacity > 0;
+  }
+  $('#psz').addEventListener('input', e=>{ $('#pszv').textContent = e.target.value; applyPointCtl(); });
+  $('#pop').addEventListener('input', e=>{ $('#popv').textContent = e.target.value; applyPointCtl(); });
+  document.querySelectorAll('[data-view]').forEach(b=>
+    b.addEventListener('click', ()=>setView(b.dataset.view)));
+
+  // keyboard: C / Space centres the point cloud; the rest mirror the view buttons
+  const KEYS = {c:'cloud', ' ':'cloud', f:'fit', t:'top', s:'side', i:'iso'};
+  addEventListener('keydown', e=>{
+    if(e.metaKey || e.ctrlKey || e.altKey) return;
+    const t = e.target;
+    if(t && (t.tagName==='INPUT' || t.tagName==='SELECT' || t.tagName==='TEXTAREA')) return;
+    const v = KEYS[e.key.length===1 ? e.key.toLowerCase() : e.key];
+    if(!v) return;
+    e.preventDefault();
+    setView(v);
+  });
+
+  // ---- comparison view: every session side by side, one metric at a time
+  const METRICS = [
+    {k:'ate',     name:'ATE',            unit:'cm', hint:'전 구간 정렬 후 위치 RMSE'},
+    {k:'ate_max', name:'최대 오차',       unit:'cm', hint:'같은 정렬에서의 최대 위치 오차'},
+    {k:'final',   name:'최종 드리프트',   unit:'cm', hint:'초반만 정렬하고 끝까지 둔 뒤 마지막 위치 오차 — 실시간 소비자가 겪는 값'},
+    {k:'rot',     name:'회전 오차',       unit:'°',  hint:'정렬 후 남은 회전 오차 RMSE'},
+  ];
+  let summary = null, metric = 'ate';
+
+  function renderCompare(){
+    if(!summary) return;
+    const M = METRICS.find(m=>m.k===metric);
+    const sess = summary.map(s=>s.session.replace('260901_cbnu_',''));
+    const keys = Object.keys(STYLE).filter(k=>summary.some(s=>s.metrics && s.metrics[k]));
+
+    $('#cmp thead').innerHTML = `<tr><th>시스템</th>${
+      summary.map((s,i)=>`<th class="col${s.session===current?' active':''}" data-sess="${s.session}"
+        title="이 세션을 3D 맵에 표시">${sess[i]}<br>
+        <span style="font-weight:400;color:var(--text-muted)">${s.path_m} m</span></th>`).join('')
+    }<th>평균</th></tr>`;
+    $('#cmp thead').querySelectorAll('.col').forEach(th=>th.addEventListener('click', ()=>{
+      const sel = $('#sess'); sel.value = th.dataset.sess;
+      sel.dispatchEvent(new Event('change'));
+    }));
+
+    // best (lowest) value per session column
+    const best = summary.map(s=>Math.min(...keys.map(k=>s.metrics?.[k]?.[metric] ?? Infinity)));
+    const groups = {'대표 궤적':['orb_opt','imu_opt','hdl'],
+                    '실시간 궤적':['orb_live','imu_live','hdl'],
+                    '반복 실행 (run 2)':['orb_live2','imu_live2']};
+    const seen = new Set(), body = [];
+    for(const [g, gkeys] of Object.entries(groups)){
+      const rows = gkeys.filter(k=>keys.includes(k) && !(g!=='대표 궤적' && k==='hdl' && seen.has(k)));
+      if(!rows.length) continue;
+      body.push(`<tr class="grp"><td colspan="${summary.length+2}">${g}</td></tr>`);
+      for(const k of rows){
+        seen.add(k);
+        const st = STYLE[k];
+        const vals = summary.map(s=>s.metrics?.[k]?.[metric]);
+        const fin = vals.filter(v=>v!=null);
+        const avg = fin.length ? (fin.reduce((a,b)=>a+b,0)/fin.length) : null;
+        body.push(`<tr><td><span class="lbl">
+            <span class="sw" style="border-top-style:${st.dash?'dashed':'solid'};
+                  border-top-color:${cssv(st.c)};opacity:${st.w}"></span>${st.label}</span></td>${
+          vals.map((v,i)=> v==null ? '<td class="miss">—</td>'
+            : `<td class="${Math.abs(v-best[i])<1e-9?'best':''}">${v.toFixed(v<10?1:0)}</td>`).join('')
+        }<td class="avg">${avg==null?'—':avg.toFixed(avg<10?1:0)}</td></tr>`);
+      }
+    }
+    $('#cmp tbody').innerHTML = body.join('');
+    $('#cmpcap').textContent =
+      `단위 ${M.unit} · 낮을수록 좋음 · ${M.hint}. 굵게 표시된 값이 해당 세션의 최솟값입니다. ` +
+      `HDL graph SLAM은 LiDAR 추정이라 KISS-ICP 포즈와 직접, 카메라 SLAM은 rig 외부 파라미터를 거쳐 비교됩니다.`;
+  }
+
+  METRICS.forEach(m=>{
+    const b = document.createElement('button');
+    b.textContent = m.name; b.setAttribute('aria-pressed', m.k===metric);
+    b.addEventListener('click', ()=>{
+      metric = m.k;
+      $('#msel').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', x===b));
+      renderCompare();
+    });
+    $('#msel').appendChild(b);
+  });
+
+  (async function init(){
+    try{
+      const idx = await (await fetch('./data/index.json')).json();
+      fetch('./data/summary.json').then(r=>r.json()).then(s=>{ summary = s; renderCompare(); })
+        .catch(()=>{});
+      const sel = $('#sess');
+      idx.forEach(s=>{
+        const o = document.createElement('option');
+        o.value = s.session;
+        o.textContent = `${s.session.replace('260901_cbnu_','')} (${s.path_m} m)`;
+        sel.appendChild(o);
+      });
+      sel.addEventListener('change', ()=>load(sel.value).catch(showErr));
+      await load(idx[0].session);
+    }catch(e){ showErr(e); }
+  })();
+
+  function showErr(e){
+    document.querySelector('aside').insertAdjacentHTML('afterbegin',
+      `<p class="err">데이터를 불러오지 못했습니다: ${e.message}<br>
+       이 페이지는 127.0.0.1 로컬 서버로 열어야 합니다 (file:// 로는 fetch가 막힙니다).</p>`);
+  }
+})();
+</script>
+</body>
+</html>

@@ -35,6 +35,7 @@
 #include "Thirdparty/g2o/g2o/core/robust_kernel_impl.h"
 #include "Thirdparty/g2o/g2o/solvers/linear_solver_dense.h"
 #include "G2oTypes.h"
+#include "GyroEdges.h"
 #include "Converter.h"
 
 #include<mutex>
@@ -47,6 +48,20 @@ namespace ORB_SLAM3
 
 int  Optimizer::sPoseOptIters[4] = {10, 10, 10, 10};
 bool Optimizer::sPoseOptEarlyExit = false;
+
+// GYRO AID defaults (off unless Gyro.Use: 1)
+bool   Optimizer::sGyroUse = false;
+double Optimizer::sGyroSigmaFrame = 5e-4;    // 0.03 deg per frame
+double Optimizer::sGyroSigmaKF = 5e-4;       // 0.03 deg
+double Optimizer::sGyroSigmaARW = 2e-4;      // 0.011 deg/sqrt(s)
+double Optimizer::sGyroSigmaRate = 1e-4;     // 0.006 deg/s
+double Optimizer::sGyroSigmaScale = 1e-3;    // 0.1 %
+double Optimizer::sGyroMaxGapS = 10.0;
+double Optimizer::sGyroLoopVetoDeg = 3.0;
+double Optimizer::sGyroLoopVetoRate = 0.02;
+long   Optimizer::sGyroLoopVetoed = 0;
+long   Optimizer::sGyroPriorEdges = 0;
+long   Optimizer::sGyroKFEdges = 0;
 bool sortByVal(const pair<MapPoint*, int> &a, const pair<MapPoint*, int> &b)
 {
     return (a.second < b.second);
@@ -999,6 +1014,18 @@ int Optimizer::PoseOptimization(Frame *pFrame)
     if(nInitialCorrespondences<3)
         return 0;
 
+    // GYRO AID: rotation prior from the gyro rotation since the last frame (no robust kernel: the gyro has no
+    // outliers, and the visual edges keep their Huber kernel). Level 0, so it takes part in all four rounds.
+    if(sGyroUse && pFrame->mbHasRotPrior && pFrame->mRotPriorInfo>0)
+    {
+        EdgeGyroRotPrior* eg = new EdgeGyroRotPrior();
+        eg->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(0)));
+        eg->setMeasurement(pFrame->mRcwPrior);
+        eg->setInformation(Eigen::Matrix3d::Identity()*pFrame->mRotPriorInfo);
+        optimizer.addEdge(eg);
+        sGyroPriorEdges++;
+    }
+
     // We perform 4 optimizations, after each optimization we classify observation as inlier/outlier
     // At the next optimization, outliers are not included, but at the end they can be classified as inliers again.
     const float chi2Mono[4]={5.991,5.991,5.991,5.991};
@@ -1253,6 +1280,43 @@ void Optimizer::LocalBundleAdjustment(KeyFrame *pKF, bool* pbStopFlag, Map* pMap
             maxKFid=pKFi->mnId;
         // DEBUG LBA
         pCurrentMap->msFixedKFs.insert(pKFi->mnId);
+    }
+
+    // GYRO AID: tie temporally consecutive keyframes of this window (optimised or fixed) with the gyro's
+    // relative rotation. The window is a covisibility set, not a time window, so after sorting by stamp only
+    // neighbours closer than sGyroMaxGapS are tied; sigma grows with the gap (residual gyro bias).
+    if(sGyroUse)
+    {
+        vector<KeyFrame*> vGyroKFs;
+        vGyroKFs.reserve(lLocalKeyFrames.size()+lFixedCameras.size());
+        for(list<KeyFrame*>::iterator lit=lLocalKeyFrames.begin(), lend=lLocalKeyFrames.end(); lit!=lend; lit++)
+            if((*lit)->mbHasGyro) vGyroKFs.push_back(*lit);
+        for(list<KeyFrame*>::iterator lit=lFixedCameras.begin(), lend=lFixedCameras.end(); lit!=lend; lit++)
+            if((*lit)->mbHasGyro) vGyroKFs.push_back(*lit);
+        sort(vGyroKFs.begin(), vGyroKFs.end(), [](KeyFrame* x, KeyFrame* y){ return x->mTimeStamp < y->mTimeStamp; });
+        for(size_t k=0; k+1<vGyroKFs.size(); k++)
+        {
+            KeyFrame* pKi = vGyroKFs[k];
+            KeyFrame* pKj = vGyroKFs[k+1];
+            const double dtg = pKj->mTimeStamp - pKi->mTimeStamp;
+            if(dtg<=0 || dtg>sGyroMaxGapS || pKi->mnGyroEpoch!=pKj->mnGyroEpoch)
+                continue;
+            g2o::OptimizableGraph::Vertex* vi = dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(pKi->mnId));
+            g2o::OptimizableGraph::Vertex* vj = dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(pKj->mnId));
+            if(!vi || !vj || (vi->fixed() && vj->fixed()))
+                continue;
+            EdgeGyroRelRot* eg = new EdgeGyroRelRot();
+            eg->setVertex(0, vi);
+            eg->setVertex(1, vj);
+            const Eigen::Matrix3d Rij = (pKi->mRgc.transpose()*pKj->mRgc).cast<double>();   // R_(ci <- cj)
+            eg->setMeasurement(Rij);
+            const double ang = Eigen::AngleAxisd(Rij).angle();
+            const double sig2 = sGyroSigmaKF*sGyroSigmaKF + sGyroSigmaARW*sGyroSigmaARW*dtg
+                              + sGyroSigmaRate*sGyroSigmaRate*dtg*dtg + sGyroSigmaScale*sGyroSigmaScale*ang*ang;
+            eg->setInformation(Eigen::Matrix3d::Identity()/sig2);
+            optimizer.addEdge(eg);
+            sGyroKFEdges++;
+        }
     }
 
     // Set MapPoint vertices

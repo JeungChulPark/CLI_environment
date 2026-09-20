@@ -1,0 +1,62 @@
+[
+ {
+  "session": "260901_cbnu_bigeightcircle",
+  "path_m": 63.9,
+  "hdl": true,
+  "series": [
+   "kiss",
+   "orb_live",
+   "orb_opt",
+   "imu_live",
+   "imu_opt",
+   "orb_live2",
+   "imu_live2",
+   "hdl"
+  ]
+ },
+ {
+  "session": "260901_cbnu_digut",
+  "path_m": 52.95,
+  "hdl": true,
+  "series": [
+   "kiss",
+   "orb_live",
+   "orb_opt",
+   "imu_live",
+   "imu_opt",
+   "orb_live2",
+   "imu_live2",
+   "hdl"
+  ]
+ },
+ {
+  "session": "260901_cbnu_eightcircle",
+  "path_m": 51.63,
+  "hdl": true,
+  "series": [
+   "kiss",
+   "orb_live",
+   "orb_opt",
+   "imu_live",
+   "imu_opt",
+   "orb_live2",
+   "imu_live2",
+   "hdl"
+  ]
+ },
+ {
+  "session": "260901_cbnu_longcircle",
+  "path_m": 46.67,
+  "hdl": true,
+  "series": [
+   "kiss",
+   "orb_live",
+   "orb_opt",
+   "imu_live",
+   "imu_opt",
+   "orb_live2",
+   "imu_live2",
+   "hdl"
+  ]
+ }
+]

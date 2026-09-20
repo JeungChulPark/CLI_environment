@@ -135,6 +135,11 @@ public:
     // since last call to this function
     bool MapChanged();
 
+    // GYRO AID (objpose): gyro-only camera orientation R_(gyro world <- camera) at the stamp of the NEXT image
+    // handed to TrackRGBD/TrackStereo/TrackMonocular. Used only when the settings have Gyro.Use: 1.
+    // `epoch` changes whenever the caller restarted its integration (IMU gap): frames of different epochs are not tied.
+    void SetFrameGyro(const Eigen::Matrix3f &Rgc, int epoch = 0);
+
     // Reset the system (clear Atlas or the active map)
     void Reset();
     void ResetActiveMap();

@@ -91,6 +91,14 @@ Frame::Frame(const Frame &frame)
     mmProjectPoints = frame.mmProjectPoints;
     mmMatchedInImage = frame.mmMatchedInImage;
 
+    // GYRO AID: members with in-class defaults are not copied by this hand-written constructor unless listed
+    mbHasGyro = frame.mbHasGyro;
+    mnGyroEpoch = frame.mnGyroEpoch;
+    mRgc = frame.mRgc;
+    mbHasRotPrior = frame.mbHasRotPrior;
+    mRcwPrior = frame.mRcwPrior;
+    mRotPriorInfo = frame.mRotPriorInfo;
+
 #ifdef REGISTER_TIMES
     mTimeStereoMatch = frame.mTimeStereoMatch;
     mTimeORB_Ext = frame.mTimeORB_Ext;
