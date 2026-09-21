@@ -131,7 +131,8 @@ grep -E 'LOOP_GAP|GYRO_LOOP_CHECK' run.log
 - `corr_m`/`resid_m` 이 들어간 빌드로 260901 네 세션 재실행 → 큰 `gap_m` 의 정체 확정
 - `Gyro.LoopVetoDeg` 는 **5.0 으로 통일**했다 (2026-09-21, 사용자 결정). 이전에는 `orbslam_ws/src/ORB_SLAM3`
   가 5.0(근거 주석 포함), `objpose/ORB_SLAM3_src` 가 3.0 으로 갈려 있었고 `~/objpose/build` 바이너리는
-  3.0 쪽에서 빌드돼 있었다. **커밋된 바이너리는 아직 3.0 빌드다** — `bash objpose/src/build_from_repo_mac.sh`
-  로 다시 빌드해야 소스와 맞는다.
+  3.0 쪽에서 빌드돼 있었다. 같은 날 `bash objpose/src/build_from_repo_mac.sh` 로 재빌드해
+  `objpose/build/{slam_stream,libORB_SLAM3.dylib}` 도 5.0 소스와 맞췄다
+  (이전 빌드는 `~/objpose/build.prev_260921`).
 - `objpose/ORB_SLAM3_src/src/Tracking.cc` 에는 `orbslam_ws` 에 없는 prior-map 재측위 수정
   (RECENTLY_LOST 탈출, `mbVO` 리셋)이 남아 있다. 두 계보가 의도적으로 다르므로 통일하지 않았다.
