@@ -108,6 +108,8 @@ LOOP_GAP|cur_id=351|matched_id=243|…|cur_xyz=0.017631,0.154192,2.552087
 3.5 m 떨어진 두 지점을 같은 장소로 선언한 것으로 8자 교차 오매칭의 전형적 형태다.
 다만 이 로그들은 `mac_*_noveto` (veto 미적용본)라 `GYRO_LOOP_CHECK` 줄이 없어 **veto 가 걸러냈다는 증거는 아니다**.
 기록에 남은 `GYRO_LOOP_CHECK` 는 4줄뿐이고 전부 `verdict=ok` 다 (0.87° ~ 2.53°, 한계 3.86° ~ 5.08°).
+그 한계값은 `3.0 + 0.02·Δt` 로 정확히 맞는다 — 즉 **이 로그들은 `Gyro.LoopVetoDeg = 3.0` 빌드에서 나왔다**.
+지금은 5.0 으로 통일했으므로(2026-09-21) 같은 루프의 한계는 5.86° ~ 7.08° 가 되어 더 너그러워진다.
 **아직 VETO 가 발동한 로그는 없다.** `corr_m`/`resid_m` 이 들어간 지금 빌드로 다시 돌리면
 저 3.5 m 가 드리프트였는지 오매칭이었는지 갈린다.
 
@@ -127,5 +129,9 @@ grep -E 'LOOP_GAP|GYRO_LOOP_CHECK' run.log
 ## 5. 남은 것
 
 - `corr_m`/`resid_m` 이 들어간 빌드로 260901 네 세션 재실행 → 큰 `gap_m` 의 정체 확정
-- `Gyro.LoopVetoDeg` 값이 두 사본에서 갈려 있다: `objpose/ORB_SLAM3_src` 5.0 (근거 주석 있음),
-  `orbslam_ws/src/ORB_SLAM3` 3.0 (주석 없음). 실행 바이너리는 5.0 쪽이다. 어느 쪽으로 통일할지 결정 필요.
+- `Gyro.LoopVetoDeg` 는 **5.0 으로 통일**했다 (2026-09-21, 사용자 결정). 이전에는 `orbslam_ws/src/ORB_SLAM3`
+  가 5.0(근거 주석 포함), `objpose/ORB_SLAM3_src` 가 3.0 으로 갈려 있었고 `~/objpose/build` 바이너리는
+  3.0 쪽에서 빌드돼 있었다. **커밋된 바이너리는 아직 3.0 빌드다** — `bash objpose/src/build_from_repo_mac.sh`
+  로 다시 빌드해야 소스와 맞는다.
+- `objpose/ORB_SLAM3_src/src/Tracking.cc` 에는 `orbslam_ws` 에 없는 prior-map 재측위 수정
+  (RECENTLY_LOST 탈출, `mbVO` 리셋)이 남아 있다. 두 계보가 의도적으로 다르므로 통일하지 않았다.
