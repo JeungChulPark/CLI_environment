@@ -1,0 +1,8 @@
+base_live1                   ATE    5.0 cm (max   82.2)  rot  0.97 deg | drift pos rmse    6.1 max   85.0 final    6.0 cm  yaw rmse  0.44 max  7.06 tilt rmse  0.96 | RPE10s   7.5 cm  1.12 deg  RPE1s  4.30 cm 0.460 deg
+base_opt1                    ATE    3.7 cm (max    7.5)  rot  0.89 deg | drift pos rmse    4.8 max    9.6 final    5.2 cm  yaw rmse  0.23 max  0.92 tilt rmse  0.98 | RPE10s   5.2 cm  1.01 deg  RPE1s  1.50 cm 0.348 deg
+gyro_live1                   ATE    4.0 cm (max   16.5)  rot  0.97 deg | drift pos rmse    6.0 max   20.0 final    6.3 cm  yaw rmse  0.32 max  1.53 tilt rmse  0.94 | RPE10s   5.9 cm  1.06 deg  RPE1s  1.84 cm 0.350 deg
+gyro_opt1                    ATE    3.6 cm (max    7.3)  rot  0.88 deg | drift pos rmse    4.9 max   10.4 final    5.6 cm  yaw rmse  0.20 max  0.74 tilt rmse  0.95 | RPE10s   5.2 cm  0.99 deg  RPE1s  1.47 cm 0.342 deg
+base_live2                   ATE   56.8 cm (max  201.7)  rot 22.81 deg | drift pos rmse   69.2 max  199.1 final  138.3 cm  yaw rmse 22.22 max 179.69 tilt rmse  5.71 | RPE10s  75.1 cm 32.62 deg  RPE1s 18.08 cm 20.654 deg
+base_opt2                    ATE   39.5 cm (max  156.0)  rot  4.63 deg | drift pos rmse   71.9 max  120.6 final   91.3 cm  yaw rmse  1.45 max  6.44 tilt rmse  5.19 | RPE10s  44.8 cm  4.51 deg  RPE1s 19.18 cm 2.144 deg
+gyro_live2                   ATE    3.9 cm (max    9.6)  rot  0.93 deg | drift pos rmse    4.5 max   10.9 final    4.7 cm  yaw rmse  0.25 max  0.88 tilt rmse  1.01 | RPE10s   5.9 cm  1.06 deg  RPE1s  1.71 cm 0.351 deg
+gyro_opt2                    ATE    3.2 cm (max    7.3)  rot  0.89 deg | drift pos rmse    3.9 max    9.1 final    4.6 cm  yaw rmse  0.18 max  0.60 tilt rmse  1.04 | RPE10s   4.9 cm  1.00 deg  RPE1s  1.44 cm 0.341 deg
