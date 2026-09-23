@@ -7,6 +7,7 @@ RTAB-Map의 매퍼는 그대로 두고 **오도메트리만 갈아끼웠을 때*
 기록이다. 답을 찾는 과정에서 훨씬 큰 것이 나왔다 — `Rtabmap::process`의 **오도메트리 링크 공분산
 기본값(단위행렬)이 오도메트리 개선을 통째로 삼키고 있었다.**
 
+hdl 방식 상세: `HDL_STYLE.md`
 리포트: `html/260923_rtabmap_odometry_covariance.html` (자체 완결 HTML, 공분산·궤적 토글)
 
 | 항목 | 위치 |
@@ -268,14 +269,20 @@ KISS-ICP 로 고정이고 루프 링크의 기하만 다르다. 실행 `sweep_fe
 bigeightcircle −9.9 → **−14.7 %**(전 구성 최고), eightcircle +13.0 → −3.2 %, digut +18.1 → +6.5 %.
 멀리서 근접 후보를 긁어오지 않으니 틀린 링크가 줄어든 것으로 보인다.
 
-### hdl 의 "거리만으로 후보 선택"은 RTAB-Map 에서 재현되지 않는다
+### hdl 의 "거리만으로 후보 선택"은 두 세션에서만 실제로 돌았다  (정정)
 
-`Rtabmap/LoopThr=1.0` 으로 외형 루프를 끄면 **근접 링크까지 0 이 된다** — RTAB-Map 의
-`RGBD/ProximityBySpace` 는 외형 탐지를 거친 뒤에 동작하는 구조다. 그래서 그 열은 hdl 방식이
-아니라 "루프 클로저를 아예 하지 않음"이다. 그 결과가 오히려 말해주는 것이 있다:
-digut 은 **+1.8 % 로 그게 최선**(루프를 안 거는 편이 낫다)이고, bigeightcircle 은 +54.2 % 로
-대폭 악화한다(루프가 반드시 필요하다).
+처음에는 `Rtabmap/LoopThr=1.0` 이 근접 링크까지 없앤다고 적었으나 **틀렸다.** `loops` 카운터가
+외형 루프만 세는 것이었고(`rtab_stream` 은 `loopClosureId` 와 `proximityDetectionId` 를 따로
+집계하는데 offline 의 `done:` 줄은 앞의 것만 찍는다), 근접 탐지는 `Rtabmap.cpp` 에서 외형 가설
+평가보다 **먼저** 독립적으로 돈다. 실제 근접 링크 수는 bigeightcircle 1, eightcircle 19,
+longcircle 35, digut 1 이다.
 
+즉 hdl3 은 네 세션 중 **둘에서만** hdl 방식을 측정했고, 그 둘에서 hdl2 보다 **나빴다**
+(eightcircle −3.2 → +5.9 %, longcircle +3.0 → +7.2 %). 외형 후보를 유지한 채 정합만 라이다로
+바꾸는 편이 낫다. 나머지 두 세션은 사실상 루프 보정이 없는 상태를 잰 셈인데, digut 은 그게
+최선(+1.8 %)이고 bigeightcircle 은 +54.2 % 로 대폭 악화한다(루프가 반드시 필요하다).
+
+**세 변형의 설계·hdl 원본과의 대응·정정 기록은 `HDL_STYLE.md` 에 따로 정리했다.**
 진짜 hdl 방식 — 거리 기반 후보 + GICP(plane-to-plane, 양쪽 공분산) + fitness 문턱 — 을 보려면
 `hdl_graph_slam` 자체를 돌려야 한다. 문서 `objpose/docs/orb_imu_260918.md` §7 에 bigeightcircle
 live ATE 3.5 cm 로 이미 기록이 있다.

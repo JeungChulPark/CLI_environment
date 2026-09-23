@@ -42,7 +42,7 @@ state: dict = {"running": None, "proc": None, "srv": None}
 
 # What each run has produced so far, so a browser that connects late — or reloads — gets the whole
 # picture instead of only what arrives after it attached.
-VARIANTS = ("base", "imu", "lidar")
+VARIANTS = ("base", "imu", "lidar", "hdl1", "hdl2", "hdl3")
 hist: dict = {v: {"traj": [], "nodes": [], "frames": 0, "dropped": 0, "n": 0, "ms": 0.0}
               for v in VARIANTS}
 hist_lock = threading.Lock()
@@ -92,10 +92,19 @@ def build_cmd(a, variant: str, tcp_port: int, rate: float):
         if not (a.rig and a.imu_dir):
             return None
         cmd += ["--gyro", a.rig, "--imu", a.imu_dir]
-    elif variant == "lidar":
+    elif variant in ("lidar", "hdl1", "hdl2", "hdl3"):
         if not (a.rig and a.ext_odom):
             return None
         cmd += ["--rig", a.rig, "--ext-odom", a.ext_odom]
+        if variant != "lidar":                       # the lidar scans, so loops close with ICP
+            if not a.lidar_dir:
+                return None
+            cmd += ["--lidar", a.lidar_dir, "--lidar-z", str(a.lidar_z),
+                    "--param", "Icp/PointToPlane=true"]
+        if variant in ("hdl2", "hdl3"):              # hdl's 1 m proximity radius
+            cmd += ["--param", "RGBD/LocalRadius=1.0"]
+        if variant == "hdl3":                        # appearance loops off
+            cmd += ["--param", "Rtabmap/LoopThr=1.0"]
     elif variant != "base":
         return None
     if a.features:
@@ -189,12 +198,14 @@ PAGE = r"""<!doctype html>
   --paper:#EDF1F6; --surface:#FFFFFF; --surface-2:#F6F9FC; --line:#C6D2DE; --line-soft:#DDE5EC;
   --ink:#11202F; --muted:#5A6D80;
   --base:#2a78d6; --imu:#eb6834; --lidar:#1baf7a; --lost:#d03b3b;
+  --hdl1:#eda100; --hdl2:#e87ba4; --hdl3:#4a3aa7;
   --sans:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sans KR",-apple-system,Arial,sans-serif;
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"D2Coding",monospace;
 }
 @media (prefers-color-scheme:dark){:root{
   --paper:#0D1620; --surface:#15202C; --surface-2:#1A2734; --line:#28394A; --line-soft:#223142;
-  --ink:#E3EBF3; --muted:#90A4B6; --base:#3987e5; --imu:#d95926; --lidar:#199e70; --lost:#e66767;}}
+  --ink:#E3EBF3; --muted:#90A4B6; --base:#3987e5; --imu:#d95926; --lidar:#199e70; --lost:#e66767;
+  --hdl1:#c98500; --hdl2:#d55181; --hdl3:#9085e9;}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px}
 .wrap{max-width:1240px;margin:0 auto;padding:22px 16px 60px}
@@ -206,6 +217,7 @@ button{font-family:var(--sans);font-size:14px;font-weight:600;padding:8px 16px;b
 button[disabled]{opacity:.4;cursor:default}
 button.v{border-left-width:5px}
 #b-base{border-left-color:var(--base)} #b-imu{border-left-color:var(--imu)} #b-lidar{border-left-color:var(--lidar)}
+#b-hdl1{border-left-color:var(--hdl1)} #b-hdl2{border-left-color:var(--hdl2)} #b-hdl3{border-left-color:var(--hdl3)}
 button.on{background:var(--ink);color:var(--surface)}
 .pill{font-family:var(--mono);font-size:12px;padding:5px 10px;border-radius:99px;background:var(--surface-2);
   border:1px solid var(--line-soft);color:var(--muted)}
@@ -237,12 +249,15 @@ td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-
 #log{font-family:var(--mono);font-size:11px;color:var(--muted);height:110px;overflow-y:auto;
   background:var(--surface-2);border:1px solid var(--line-soft);border-radius:5px;padding:8px;margin-top:14px;white-space:pre-wrap}
 </style></head><body><div class="wrap">
-<h1>RTAB-Map 실시간 · 오도메트리 3종</h1>
-<p class="sub">260901_cbnu_bigeightcircle · 9445 프레임 29.98 Hz. 매퍼 설정은 세 실행이 동일하고 오도메트리 소스만 다릅니다. 실시간 측정이라 <b>한 번에 하나만</b> 돌립니다 — 끝난 실행의 궤적은 흐리게 남아 다음 실행과 겹쳐 보입니다.</p>
+<h1>RTAB-Map 실시간 · 오도메트리와 루프 제약 6종</h1>
+<p class="sub">260901_cbnu_bigeightcircle · 9445 프레임 29.98 Hz. <b>여섯 실행 모두 RTAB-Map</b>이고, 오도메트리를 어디서 받는지와 루프 링크의 기하를 무엇으로 계산하는지만 다릅니다 — <code>+ICP</code> 세 가지는 hdl_graph_slam 을 돌린 것이 아니라 그 방식을 RTAB-Map 에 옮겨온 것입니다. 실시간 측정이라 <b>한 번에 하나만</b> 돌립니다 — 끝난 실행의 궤적은 흐리게 남아 겹쳐 보입니다.</p>
 <div class="bar">
-  <button id="b-base"  class="v">1 · 기본 (VO)</button>
-  <button id="b-imu"   class="v">2 · IMU + VO</button>
-  <button id="b-lidar" class="v">3 · LiDAR 오도메트리</button>
+  <button id="b-base"  class="v">1 · RTAB VO</button>
+  <button id="b-imu"   class="v">2 · RTAB VO+IMU</button>
+  <button id="b-lidar" class="v">3 · RTAB LiDAR odom</button>
+  <button id="b-hdl1"  class="v">4 · RTAB +ICP p2plane</button>
+  <button id="b-hdl2"  class="v">5 · RTAB +ICP 반경1m</button>
+  <button id="b-hdl3"  class="v">6 · RTAB +ICP 외형끔</button>
   <button id="b-stop">정지</button>
   <span class="seg" style="margin-left:6px">
     <button id="r-1" type="button" aria-pressed="true">1.0×</button>
@@ -261,15 +276,21 @@ td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-
     </div>
     <canvas id="map" width="1500" height="1050"></canvas>
     <div class="legend">
-      <span><i style="border-color:var(--base)"></i>기본 (VO)</span>
-      <span><i style="border-color:var(--imu)"></i>IMU + VO</span>
-      <span><i style="border-color:var(--lidar)"></i>LiDAR 오도메트리</span>
+      <span><i style="border-color:var(--base)"></i>RTAB · VO</span>
+      <span><i style="border-color:var(--imu)"></i>RTAB · VO+IMU</span>
+      <span><i style="border-color:var(--lidar)"></i>RTAB · LiDAR odom</span>
+      <span><i style="border-color:var(--hdl1)"></i>RTAB · +ICP p2plane</span>
+      <span><i style="border-color:var(--hdl2)"></i>RTAB · +ICP 반경1m</span>
+      <span><i style="border-color:var(--hdl3)"></i>RTAB · +ICP 외형끔</span>
       <span>점 = 그래프 노드 · 시야뿔 = 현재 카메라 · 바닥 격자 1 m</span>
     </div>
     <div class="smalls">
       <figure><canvas id="s-base"  width="620" height="480"></canvas><figcaption id="c-base">기본 (VO)</figcaption></figure>
       <figure><canvas id="s-imu"   width="620" height="480"></canvas><figcaption id="c-imu">IMU + VO</figcaption></figure>
-      <figure><canvas id="s-lidar" width="620" height="480"></canvas><figcaption id="c-lidar">LiDAR 오도메트리</figcaption></figure>
+      <figure><canvas id="s-lidar" width="620" height="480"></canvas><figcaption id="c-lidar">RTAB · LiDAR odom</figcaption></figure>
+      <figure><canvas id="s-hdl1" width="620" height="480"></canvas><figcaption id="c-hdl1">RTAB · +ICP p2plane</figcaption></figure>
+      <figure><canvas id="s-hdl2" width="620" height="480"></canvas><figcaption id="c-hdl2">RTAB · +ICP 반경1m</figcaption></figure>
+      <figure><canvas id="s-hdl3" width="620" height="480"></canvas><figcaption id="c-hdl3">RTAB · +ICP 외형끔</figcaption></figure>
     </div>
     <p class="hint" style="margin-top:6px">세 패널은 위 3D 뷰와 <b>같은 시점·같은 축척</b>입니다 — 회전·확대가 함께 적용됩니다.</p>
   </div>
@@ -288,8 +309,17 @@ td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-
 <div id="log"></div>
 </div>
 <script>
-var VS=['base','imu','lidar'], COL={base:'--base',imu:'--imu',lidar:'--lidar'};
-var NAME={base:'기본 (VO)', imu:'IMU + VO', lidar:'LiDAR 오도메트리'};
+var VS=['base','imu','lidar','hdl1','hdl2','hdl3'];
+var COL={base:'--base',imu:'--imu',lidar:'--lidar',hdl1:'--hdl1',hdl2:'--hdl2',hdl3:'--hdl3'};
+// 여섯 레인 모두 RTAB-Map 이다. 오도메트리를 어디서 받는지와 루프 링크의 기하를 무엇으로
+// 계산하는지만 다르다. hdl1~3 은 hdl_graph_slam 을 돌린 것이 아니라 그 방식을 RTAB-Map 에
+// 옮겨온 것이라, 이름에 RTAB 를 붙여 혼동을 막는다.
+var NAME={base :'RTAB · VO',
+          imu  :'RTAB · VO + IMU',
+          lidar:'RTAB · LiDAR odom (카메라 루프)',
+          hdl1 :'RTAB · LiDAR odom + ICP p2plane',
+          hdl2 :'RTAB · LiDAR odom + ICP, 반경 1 m',
+          hdl3 :'RTAB · LiDAR odom + ICP, 외형 루프 끔'};
 function blank(){ return {traj:[],nodes:[],cur:null,frames:0,dropped:0,n:0,ms:0,t0:null,ok:0,el:0}; }
 var R={}; VS.forEach(function(v){ R[v]=blank(); });
 var active=null, rate=1.0, tms=[], lastStat={};
@@ -608,12 +638,20 @@ def main():
     ap.add_argument("--features", type=int, default=0)
     ap.add_argument("--no-odom-cov", dest="no_odom_cov", action="store_true")
     ap.add_argument("--param", action="append", default=[])
-    ap.add_argument("--load", default="", help="directory with base.sse / imu.sse / lidar.sse to preload")
+    ap.add_argument("--lidar-dir", dest="lidar_dir", default="")
+    ap.add_argument("--lidar-z", dest="lidar_z", type=float, default=-0.45)
+    ap.add_argument("--load", default="", help="directory with <variant>.sse to preload")
+    ap.add_argument("--load-tum", action="append", default=[],
+                    help="variant=path.txt — show a finished offline run without re-running it")
     ap.add_argument("--port", type=int, default=8972)
     ap.add_argument("--tcp-port", type=int, default=8082)
     a = ap.parse_args()
     if not a.imu_dir:
         a.imu_dir = str(Path(a.session).parent / "imu")
+    if not a.lidar_dir:
+        a.lidar_dir = str(Path(a.session).parent / "lidar")
+    if not Path(a.lidar_dir).is_dir():
+        a.lidar_dir = ""
     a.rig = str(Path(a.rig).resolve()) if Path(a.rig).exists() else ""
     a.ext_odom = str(Path(a.ext_odom).resolve()) if Path(a.ext_odom).exists() else ""
     if not Path(a.imu_dir).is_dir():
@@ -635,6 +673,21 @@ def main():
                     note(v, m)
                     n += 1
             print(f"  loaded    {v}: {n} messages from {f.name}")
+    for spec in a.load_tum:
+        v, _, path = spec.partition("=")
+        f = Path(path)
+        if v not in VARIANTS or not f.is_file():
+            print(f"  --load-tum {spec}: 건너뜀"); continue
+        n = 0
+        for ln in f.read_text().splitlines():
+            q = ln.split()
+            if len(q) != 8:
+                continue
+            note(v, {"type": "pose", "dropped": 0, "track_ms": 0.0,
+                     "T_wc": [1, 0, 0, float(q[1]), 0, 1, 0, float(q[2]),
+                              0, 0, 1, float(q[3]), 0, 0, 0, 1]})
+            n += 1
+        print(f"  loaded    {v}: {n} poses from {f.name}")
     Handler.args = a
     Handler.tcp_port = a.tcp_port
     print(f"live viewer:  http://127.0.0.1:{a.port}/")
