@@ -29,6 +29,8 @@
 #include <signal.h>
 
 #include "raw_session.h"
+#include "imu_source.h"
+#include "rtab_aux.h"
 
 #include <rtabmap/core/CameraModel.h>
 #include <rtabmap/core/Memory.h>
@@ -58,6 +60,14 @@ static std::string fmt6(double v) {
 
 struct Args {
   std::string session, mode = "offline", out, connect, time_source = "frame";
+  // optional inputs (rtab_aux.h): IMU into SensorData, or an external odometry replacing the visual one
+  // --gyro RIG.json [--imu DIR] mirrors slam_stream's ORB-SLAM3 CLI; --rig is for --ext-odom.
+  std::string imu_dir, imu_topic = "/xsens/imu/data", gyro_rig, rig, ext_odom;
+  // Neighbor-link covariance for --ext-odom (the visual odometry reports its own).
+  // Defaults: sigma 1 cm / 0.001 rad per 1 Hz link -- conservative for KISS-ICP on the VLP-16,
+  // whose return error is 15 cm over a 66 m path (0.23 %), i.e. sub-mm over one link.
+  double ext_lin_var = 1e-4, ext_ang_var = 1e-6;
+  bool odom_cov = true;
   int features = 0;
   long long offset_ns = 0;
   double rate = 1.0, pace = 0.0;
@@ -68,14 +78,28 @@ struct Args {
 static void usage() {
   std::cerr << "rtab_stream --session DIR [--features N] [--offset-ns NS] [--time-source frame|assoc]\n"
                "            [--max-frames N] [--param Key=Value ...] [--settings X --vocab X (ignored)]\n"
+               "            [--gyro RIG.json [--imu DIR] [--imu-topic T]] [--ext-odom TUM.txt --rig RIG.json]\n"
+               "                 --gyro     : sensor_msgs/Imu -> SensorData::setIMU (imu_source.h). Stock RTAB-Map\n"
+               "                              then uses it in OdometryF2M's bundle adjustment and as a\n"
+               "                              Link::kGravity per node (Optimizer/GravitySigma).\n"
+               "                 --ext-odom : replace the visual odometry with this trajectory (e.g. KISS-ICP)\n"
+               "            [--ext-cov LINVAR ANGVAR] [--no-odom-cov]\n"
+               "                 by default the odometry covariance is handed to Rtabmap::process (as rtabmap_ros\n"
+               "                 does); --no-odom-cov restores the identity default (sigma 1 m / 1 rad)\n"
                "            --mode offline --out TUM.txt [--pace R] | --mode live --connect HOST:PORT [--rate R]\n";
 }
 
 // ---------------------------------------------------------------- backend
 class RtabBackend {
  public:
-  RtabBackend(const Calib& c, const rtabmap::ParametersMap& params, const std::string& db, bool async)
-      : params_(params), async_(async) {
+  RtabBackend(const Calib& c, const rtabmap::ParametersMap& params, const std::string& db, bool async,
+              ImuSource* imu, ExtOdom* ext, bool use_cov, double ext_lin_var, double ext_ang_var)
+      : params_(params), async_(async), imu_(imu), ext_(ext), use_cov_(use_cov) {
+    if (ext_) {
+      ext_cov_ = cv::Mat::eye(6, 6, CV_64FC1);
+      for (int k = 0; k < 3; ++k) ext_cov_.at<double>(k, k) = ext_lin_var;
+      for (int k = 3; k < 6; ++k) ext_cov_.at<double>(k, k) = ext_ang_var;
+    }
     model_ = rtabmap::CameraModel(c.fxc, c.fyc, c.ppxc, c.ppyc, O_, 0, cv::Size(c.W, c.H));
     odom_.reset(rtabmap::Odometry::create(params_));
     rtab_.init(params_, db);
@@ -102,22 +126,44 @@ class RtabBackend {
   Track track(const cv::Mat& bgr, const cv::Mat& depth, double stamp_s, long long data_ns) {
     Track r;
     rtabmap::SensorData data(bgr, depth, model_, ++id_, stamp_s);
+    if (imu_) {
+      rtabmap::IMU imu = imu_->at(data_ns);
+      if (!imu.empty()) data.setIMU(imu);
+    }
     rtabmap::OdometryInfo info;
     auto t0 = Clock::now();
-    Transform odom = odom_->process(data, &info);
+    Transform odom;
+    if (ext_) {
+      // external odometry: rtabmap::Odometry is not run at all, the mapper gets these poses directly
+      if (!ext_->at(data_ns, odom)) odom = Transform();
+      if (use_cov_ && !odom.isNull()) odom_cov_ = ext_cov_;
+    } else {
+      odom = odom_->process(data, &info);
+      // rtabmap_ros CoreWrapper.cpp:1152-1178 — keep the LARGEST registration covariance seen between
+      // two mapper updates ("to be independent of the odometry frame rate"), ignoring the 1.0 sentinel.
+      const cv::Mat& rc = info.reg.covariance;
+      if (use_cov_ && !odom.isNull() && rc.rows == 6 && rc.cols == 6 && rc.type() == CV_64FC1 &&
+          std::isfinite(rc.at<double>(0, 0)) && rc.at<double>(0, 0) != 1.0 && rc.at<double>(0, 0) > 0.0) {
+        if (odom_cov_.empty() || rc.at<double>(0, 0) > odom_cov_.at<double>(0, 0)) odom_cov_ = rc.clone();
+      }
+    }
     r.odom_ms = ms_since(t0);
     r.features = info.features;
     r.inliers = info.reg.inliers;
+    if (!odom.isNull() && base0_.isNull()) base0_ = odom;
     if (!odom.isNull()) {
       if (async_) {
         std::lock_guard<std::mutex> l(m_);
         pending_ = std::make_shared<rtabmap::SensorData>(data);
         pending_pose_ = odom;
+        pending_cov_ = odom_cov_;
+        odom_cov_.release();            // reset after each handoff, as CoreWrapper does
         cv_.notify_one();
       } else if (last_sync_ns_ < 0 || double(data_ns - last_sync_ns_) * 1e-9 >= period_s_) {
         // offline, unpaced: feed the mapper on the data clock so it sees the same 1 Hz cadence
         last_sync_ns_ = data_ns;
-        map_update(data, odom);
+        map_update(data, odom, odom_cov_);
+        odom_cov_.release();
       }
     }
     std::lock_guard<std::mutex> l(m_);
@@ -176,9 +222,17 @@ class RtabBackend {
   }
   void close(bool save) { rtab_.close(save); }
 
-  Transform view(const Transform& T_base) const { return O_.inverse() * T_base * O_; }
+  // T_w_cam in the optical convention, world = the first tracked camera pose. base0_ is identity for a
+  // plain run (odometry starts at identity) and the IMU attitude when --imu resets the initial pose.
+  Transform view(const Transform& T_base) const {
+    return O_.inverse() * (base0_.isNull() ? T_base : base0_.inverse() * T_base) * O_;
+  }
   Transform cam_of(const Transform& T_base) const { return T_base * O_; }
   int loops() const { return loops_; }
+  std::vector<double> cov_lin_used() {
+    std::lock_guard<std::mutex> l(m_);
+    return cov_lin_used_;
+  }
   int proximities() const { return proximities_; }
   int empty_updates() const { return empty_updates_; }
   size_t nodes() {
@@ -205,9 +259,10 @@ class RtabBackend {
     mapper_.join();
   }
 
-  void map_update(const rtabmap::SensorData& d, const Transform& odom) {
+  void map_update(const rtabmap::SensorData& d, const Transform& odom, const cv::Mat& cov) {
     auto t0 = Clock::now();
-    rtab_.process(d, odom);
+    const cv::Mat C = cov.empty() ? cv::Mat::eye(6, 6, CV_64FC1) : cov;
+    rtab_.process(d, odom, C);
     double ms = ms_since(t0);
     const rtabmap::Statistics& st = rtab_.getStatistics();
     const bool loop = st.loopClosureId() > 0, prox = st.proximityDetectionId() > 0;
@@ -219,6 +274,7 @@ class RtabBackend {
     for (const auto& p : poses)
       if (p.first > 0 && mem) node_map[p.first] = mem->getMapId(p.first);
     std::lock_guard<std::mutex> l(m_);
+    cov_lin_used_.push_back(C.at<double>(0, 0));
     if (loop) ++loops_;
     if (prox) ++proximities_;
     if (loop || prox) ++changed_version_;
@@ -247,6 +303,7 @@ class RtabBackend {
     while (true) {
       std::shared_ptr<rtabmap::SensorData> d;
       Transform pose;
+      cv::Mat cov;
       {
         std::unique_lock<std::mutex> l(m_);
         cv_.wait(l, [&] { return stop_ || pending_; });
@@ -254,15 +311,26 @@ class RtabBackend {
         if (stop_) return;
         d = std::move(pending_);
         pose = pending_pose_;
+        cov = pending_cov_;
+        pending_cov_.release();
       }
       next = Clock::now() + std::chrono::duration_cast<Clock::duration>(std::chrono::duration<double>(period_s_));
-      map_update(*d, pose);
+      map_update(*d, pose, cov);
     }
   }
 
   const Transform O_ = rtabmap::CameraModel::opticalRotation();
   rtabmap::ParametersMap params_;
   bool async_;
+  ImuSource* imu_ = nullptr;
+  ExtOdom* ext_ = nullptr;
+  bool use_cov_ = true;
+  cv::Mat ext_cov_;                  // fixed Neighbor-link covariance for --ext-odom
+  cv::Mat odom_cov_;                 // largest covariance seen since the last mapper update (tracking thread)
+  cv::Mat pending_cov_;
+  std::vector<double> cov_lin_used_; // diagnostics: the linear variance actually handed to the mapper
+  Transform base0_;                  // first odometry pose; the output world frame is re-anchored on it
+                                     // (with --imu, RTAB-Map resets the initial pose to the IMU attitude)
   rtabmap::CameraModel model_;
   std::unique_ptr<rtabmap::Odometry> odom_;
   rtabmap::Rtabmap rtab_;
@@ -324,6 +392,13 @@ int main(int argc, char** argv) {
     else if (k == "--rate") a.rate = std::stod(val());
     else if (k == "--pace") a.pace = std::stod(val());
     else if (k == "--max-frames") a.max_frames = std::stoi(val());
+    else if (k == "--rig") a.rig = val();
+    else if (k == "--gyro") a.gyro_rig = val();
+    else if (k == "--imu") a.imu_dir = val();
+    else if (k == "--imu-topic") a.imu_topic = val();
+    else if (k == "--ext-odom") a.ext_odom = val();
+    else if (k == "--ext-cov") { a.ext_lin_var = atof(val().c_str()); a.ext_ang_var = atof(val().c_str()); }
+    else if (k == "--no-odom-cov") a.odom_cov = false;
     else if (k == "--param") {
       std::string kv = val();
       auto eq = kv.find('=');
@@ -368,7 +443,27 @@ int main(int argc, char** argv) {
   const bool async = !(a.mode == "offline" && a.pace <= 0);
   std::string db = a.mode == "offline" ? a.out + ".rtabmap.db" : "";
   if (!db.empty()) unlink(db.c_str());
-  RtabBackend be(c, params, db, async);
+  ImuSource imu_feed;
+  ExtOdom ext_feed;
+  ImuSource* imu_p = nullptr;
+  ExtOdom* ext_p = nullptr;
+  if (!a.gyro_rig.empty()) {
+    if (a.imu_dir.empty()) a.imu_dir = a.session + "/../imu";   // as slam_stream does
+    imu_feed.load(a.imu_dir, a.gyro_rig, a.imu_topic);
+    imu_p = &imu_feed;
+    fprintf(stderr, "[rtab_stream] imu: %s %s | %zu samples %.1f Hz | imu-cam %.2f ms | T_base_imu %s\n",
+            imu_feed.db3.c_str(), imu_feed.topic.c_str(), imu_feed.t_ns.size(), imu_feed.rate_hz,
+            imu_feed.tau_ns * 1e-6, imu_feed.local.prettyPrint().c_str());
+    fprintf(stderr, "[rtab_stream] %s\n", imu_feed.gravity_report().c_str());
+  }
+  if (!a.ext_odom.empty()) {
+    if (a.rig.empty()) { fprintf(stderr, "--ext-odom needs --rig RIG.json\n"); return 2; }
+    ext_feed.load(a.ext_odom, a.rig);
+    ext_p = &ext_feed;
+    fprintf(stderr, "[rtab_stream] external odometry: %s | %zu poses | visual odometry disabled\n",
+            ext_feed.path.c_str(), ext_feed.t_ns.size());
+  }
+  RtabBackend be(c, params, db, async, imu_p, ext_p, a.odom_cov, a.ext_lin_var, a.ext_ang_var);
 
   Bag bag(s.db3);
   Blob cb, dbl;
@@ -493,6 +588,13 @@ int main(int argc, char** argv) {
         {"features", a.features}, {"params_effective", shown}, {"offset_ns", a.offset_ns},
         {"time_source", s.time_source}, {"time_domain", s.time_domain}, {"non_monotonic", s.non_monotonic},
         {"pace", a.pace}, {"mapper", async ? "async thread at Rtabmap/DetectionRate (wall clock)" : "synchronous at Rtabmap/DetectionRate (data clock)"},
+        {"imu", imu_p ? json{{"bag", imu_feed.db3}, {"topic", imu_feed.topic}, {"rate_hz", imu_feed.rate_hz},
+                             {"imu_minus_cam_ms", imu_feed.tau_ns * 1e-6}, {"frames_found", imu_feed.found},
+                             {"frames_missing", imu_feed.missing},
+                             {"max_gap_ms", imu_feed.max_gap_seen_ns * 1e-6},
+                             {"gravity_check", imu_feed.gravity_report()}} : json(nullptr)},
+        {"ext_odom", ext_p ? json{{"path", ext_feed.path}, {"poses", ext_feed.t_ns.size()},
+                                  {"frames_served", ext_feed.served}, {"frames_missed", ext_feed.missed}} : json(nullptr)},
         {"frames", s.frames.size()}, {"processed", processed}, {"ok_frames", ok_count},
         {"ok_ratio", processed ? double(ok_count) / processed : 0.0},
         {"odom_ms", {{"mean", odom_ms.empty() ? 0 : std::accumulate(odom_ms.begin(), odom_ms.end(), 0.0) / odom_ms.size()},
@@ -506,6 +608,20 @@ int main(int argc, char** argv) {
                        ".optimized.txt = final node pose * odometry T_node_cam"}};
     std::ofstream(a.out + ".json") << side.dump(1) << "\n";
     be.close(true);
+    {
+      std::vector<double> cv_ = be.cov_lin_used();
+      if (!cv_.empty()) {
+        std::sort(cv_.begin(), cv_.end());
+        size_t unlinked = 0;
+        for (double v : cv_)
+          if (v >= 9999.0) ++unlinked;   // OdometryF2M: "a very high variance tells that the new pose is
+                                         // not linked with the previous one" (init / reset branch)
+        fprintf(stderr, "[rtab_stream] odom link covariance handed to the mapper: %s | n=%zu  lin var min %.3g "
+                        "med %.3g max %.3g  (sigma med %.4f m) | unlinked(>=9999) %zu\n",
+                a.odom_cov ? "ON" : "OFF (identity)", cv_.size(), cv_.front(), cv_[cv_.size() / 2], cv_.back(),
+                std::sqrt(cv_[cv_.size() / 2]), unlinked);
+      }
+    }
     fprintf(stderr, "[rtab_stream] done: %d processed, %d ok, loops %d, nodes %zu, wall %.1f s\n", processed, ok_count,
             be.loops(), finals.size(), wall);
     return 0;
