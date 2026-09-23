@@ -30,6 +30,7 @@
 
 #include "raw_session.h"
 #include "imu_source.h"
+#include "lidar_source.h"
 #include "rtab_aux.h"
 
 #include <rtabmap/core/CameraModel.h>
@@ -63,6 +64,10 @@ struct Args {
   // optional inputs (rtab_aux.h): IMU into SensorData, or an external odometry replacing the visual one
   // --gyro RIG.json [--imu DIR] mirrors slam_stream's ORB-SLAM3 CLI; --rig is for --ext-odom.
   std::string imu_dir, imu_topic = "/xsens/imu/data", gyro_rig, rig, ext_odom;
+  // --lidar DIR attaches VLP-16 scans so loop links can be closed with ICP (Reg/Strategy 1 or 2)
+  std::string lidar_dir, lidar_topic = "/velodyne_points";
+  bool lidar_z_set = false;
+  double lidar_z = 0;
   // Neighbor-link covariance for --ext-odom (the visual odometry reports its own).
   // Defaults: sigma 1 cm / 0.001 rad per 1 Hz link -- conservative for KISS-ICP on the VLP-16,
   // whose return error is 15 cm over a 66 m path (0.23 %), i.e. sub-mm over one link.
@@ -83,6 +88,9 @@ static void usage() {
                "                              then uses it in OdometryF2M's bundle adjustment and as a\n"
                "                              Link::kGravity per node (Optimizer/GravitySigma).\n"
                "                 --ext-odom : replace the visual odometry with this trajectory (e.g. KISS-ICP)\n"
+               "                 --lidar    : VLP-16 scans -> SensorData::setLaserScan, so loop links are closed\n"
+               "                              with ICP rather than with the camera (needs --rig; sets\n"
+               "                              Reg/Strategy=1 unless --param overrides it)\n"
                "            [--ext-cov LINVAR ANGVAR] [--no-odom-cov]\n"
                "                 by default the odometry covariance is handed to Rtabmap::process (as rtabmap_ros\n"
                "                 does); --no-odom-cov restores the identity default (sigma 1 m / 1 rad)\n"
@@ -93,8 +101,9 @@ static void usage() {
 class RtabBackend {
  public:
   RtabBackend(const Calib& c, const rtabmap::ParametersMap& params, const std::string& db, bool async,
-              ImuSource* imu, ExtOdom* ext, bool use_cov, double ext_lin_var, double ext_ang_var)
-      : params_(params), async_(async), imu_(imu), ext_(ext), use_cov_(use_cov) {
+              ImuSource* imu, ExtOdom* ext, LidarSource* lidar, bool use_cov, double ext_lin_var,
+              double ext_ang_var)
+      : params_(params), async_(async), imu_(imu), ext_(ext), lidar_(lidar), use_cov_(use_cov) {
     if (ext_) {
       ext_cov_ = cv::Mat::eye(6, 6, CV_64FC1);
       for (int k = 0; k < 3; ++k) ext_cov_.at<double>(k, k) = ext_lin_var;
@@ -129,6 +138,10 @@ class RtabBackend {
     if (imu_) {
       rtabmap::IMU imu = imu_->at(data_ns);
       if (!imu.empty()) data.setIMU(imu);
+    }
+    if (lidar_) {
+      rtabmap::LaserScan sc = lidar_->at(data_ns);
+      if (!sc.empty()) data.setLaserScan(sc);
     }
     rtabmap::OdometryInfo info;
     auto t0 = Clock::now();
@@ -324,6 +337,7 @@ class RtabBackend {
   bool async_;
   ImuSource* imu_ = nullptr;
   ExtOdom* ext_ = nullptr;
+  LidarSource* lidar_ = nullptr;
   bool use_cov_ = true;
   cv::Mat ext_cov_;                  // fixed Neighbor-link covariance for --ext-odom
   cv::Mat odom_cov_;                 // largest covariance seen since the last mapper update (tracking thread)
@@ -397,6 +411,9 @@ int main(int argc, char** argv) {
     else if (k == "--imu") a.imu_dir = val();
     else if (k == "--imu-topic") a.imu_topic = val();
     else if (k == "--ext-odom") a.ext_odom = val();
+    else if (k == "--lidar") a.lidar_dir = val();
+    else if (k == "--lidar-topic") a.lidar_topic = val();
+    else if (k == "--lidar-z") { a.lidar_z = atof(val().c_str()); a.lidar_z_set = true; }
     else if (k == "--ext-cov") { a.ext_lin_var = atof(val().c_str()); a.ext_ang_var = atof(val().c_str()); }
     else if (k == "--no-odom-cov") a.odom_cov = false;
     else if (k == "--param") {
@@ -424,6 +441,7 @@ int main(int argc, char** argv) {
 
   // Parameters: RTAB-Map defaults (as the harness), --features -> Vis/MaxFeatures, then --param.
   rtabmap::ParametersMap params;
+  if (!a.lidar_dir.empty()) params[rtabmap::Parameters::kRegStrategy()] = "1";   // Icp; --param overrides
   if (a.features > 0) params[rtabmap::Parameters::kVisMaxFeatures()] = std::to_string(a.features);
   for (auto& kv : a.params) params[kv.first] = kv.second;
   rtabmap::ParametersMap effective = rtabmap::Parameters::getDefaultParameters();
@@ -432,7 +450,9 @@ int main(int argc, char** argv) {
                                "Kp/DetectorStrategy", "Kp/MaxFeatures", "Reg/Strategy", "Rtabmap/DetectionRate",
                                "Rtabmap/TimeThr", "RGBD/LinearUpdate", "RGBD/AngularUpdate", "RGBD/ProximityBySpace",
                                "Optimizer/Strategy", "Mem/STMSize", "Mem/IncrementalMemory", "Odom/ResetCountdown",
-                               "OdomF2M/MaxSize"};
+                               "OdomF2M/MaxSize", "Icp/Strategy", "Icp/VoxelSize", "Icp/MaxTranslation",
+                               "Icp/MaxCorrespondenceDistance", "Icp/Iterations", "Icp/PointToPlane",
+                               "Icp/CorrespondenceRatio"};
   json shown = json::object();
   for (const char* k : SHOW)
     if (effective.count(k)) shown[k] = effective[k];
@@ -456,6 +476,18 @@ int main(int argc, char** argv) {
             imu_feed.tau_ns * 1e-6, imu_feed.local.prettyPrint().c_str());
     fprintf(stderr, "[rtab_stream] %s\n", imu_feed.gravity_report().c_str());
   }
+  LidarSource lidar_feed;
+  LidarSource* lidar_p = nullptr;
+  if (!a.lidar_dir.empty()) {
+    if (a.rig.empty()) { fprintf(stderr, "--lidar needs --rig RIG.json\n"); return 2; }
+    if (a.lidar_z_set) { lidar_feed.lever_z_set = true; lidar_feed.lever_z = float(a.lidar_z); }
+    lidar_feed.load(a.lidar_dir, a.rig, a.lidar_topic);
+    lidar_p = &lidar_feed;
+    fprintf(stderr, "[rtab_stream] lidar: %s %s | %zu scans %.1f Hz | lidar-cam %.2f ms | T_base_lidar %s\n",
+            lidar_feed.db3.c_str(), lidar_feed.topic.c_str(), lidar_feed.scans.size(), lidar_feed.rate_hz,
+            lidar_feed.tau_ns * 1e-6, lidar_feed.local.prettyPrint().c_str());
+    fprintf(stderr, "[rtab_stream] %s\n", lidar_feed.report().c_str());
+  }
   if (!a.ext_odom.empty()) {
     if (a.rig.empty()) { fprintf(stderr, "--ext-odom needs --rig RIG.json\n"); return 2; }
     ext_feed.load(a.ext_odom, a.rig);
@@ -463,7 +495,7 @@ int main(int argc, char** argv) {
     fprintf(stderr, "[rtab_stream] external odometry: %s | %zu poses | visual odometry disabled\n",
             ext_feed.path.c_str(), ext_feed.t_ns.size());
   }
-  RtabBackend be(c, params, db, async, imu_p, ext_p, a.odom_cov, a.ext_lin_var, a.ext_ang_var);
+  RtabBackend be(c, params, db, async, imu_p, ext_p, lidar_p, a.odom_cov, a.ext_lin_var, a.ext_ang_var);
 
   Bag bag(s.db3);
   Blob cb, dbl;
@@ -593,6 +625,11 @@ int main(int argc, char** argv) {
                              {"frames_missing", imu_feed.missing},
                              {"max_gap_ms", imu_feed.max_gap_seen_ns * 1e-6},
                              {"gravity_check", imu_feed.gravity_report()}} : json(nullptr)},
+        {"lidar", lidar_p ? json{{"bag", lidar_feed.db3}, {"topic", lidar_feed.topic},
+                                 {"scans", lidar_feed.scans.size()}, {"rate_hz", lidar_feed.rate_hz},
+                                 {"frames_found", lidar_feed.found}, {"frames_missing", lidar_feed.missing},
+                                 {"max_gap_ms", lidar_feed.max_gap_seen_ns * 1e-6},
+                                 {"geometry_check", lidar_feed.report()}} : json(nullptr)},
         {"ext_odom", ext_p ? json{{"path", ext_feed.path}, {"poses", ext_feed.t_ns.size()},
                                   {"frames_served", ext_feed.served}, {"frames_missed", ext_feed.missed}} : json(nullptr)},
         {"frames", s.frames.size()}, {"processed", processed}, {"ok_frames", ok_count},
