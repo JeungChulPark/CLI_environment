@@ -28,6 +28,7 @@
 #include <numeric>
 #include <signal.h>
 
+#include "imu_source.h"
 #include "raw_session.h"
 
 #include <rtabmap/core/CameraModel.h>
@@ -63,11 +64,19 @@ struct Args {
   double rate = 1.0, pace = 0.0;
   int max_frames = 0;
   std::vector<std::pair<std::string, std::string>> params;
+  // IMU: --gyro RIG.json turns it on, same flags slam_stream uses so hub.py/catalog.py need no
+  // new plumbing (they already emit --gyro/--imu for a gyro backend).
+  std::string imu_rig, imu_dir, imu_topic = "/xsens/imu/data";
+  double imu_yaw_offset_deg = 0;   // diagnostic, see ImuSource::yaw_offset_rad
+  bool imu_graph_only = false;     // IMU to the mapper only, not to odometry
 };
 
 static void usage() {
   std::cerr << "rtab_stream --session DIR [--features N] [--offset-ns NS] [--time-source frame|assoc]\n"
                "            [--max-frames N] [--param Key=Value ...] [--settings X --vocab X (ignored)]\n"
+               "            [--gyro RIG.json [--imu DIR] [--imu-topic T] [--imu-yaw-offset DEG]]   IMU\n"
+               "                 (RIG.json: R_cam_imu, time.imu_minus_cam_s; tune with "
+               "--param Optimizer/GravitySigma=..)\n"
                "            --mode offline --out TUM.txt [--pace R] | --mode live --connect HOST:PORT [--rate R]\n";
 }
 
@@ -86,6 +95,9 @@ class RtabBackend {
   }
   ~RtabBackend() { stop(); }
 
+  // Borrowed, not owned; must outlive the backend. Null = no IMU (plain RTAB-SLAM).
+  void set_imu(ImuSource* s, bool graph_only = false) { imu_ = s; graph_only_ = graph_only; }
+
   struct Track {
     bool ok = false;
     Transform T_odom_base;     // null when lost
@@ -102,10 +114,19 @@ class RtabBackend {
   Track track(const cv::Mat& bgr, const cv::Mat& depth, double stamp_s, long long data_ns) {
     Track r;
     rtabmap::SensorData data(bgr, depth, model_, ++id_, stamp_s);
+    // Rides along into the mapper too: pending_ copies the SensorData, IMU included.
+    // With graph_only_ the IMU is withheld until after odometry has run, so only the mapper
+    // (gravity links) sees it. That is the one way to tell the two consumers apart: rtabmap's
+    // base Odometry keeps its own imus_/imuLastTransform_ for the motion guess, so an IMU in
+    // the SensorData reaches odometry even with OdomF2M/BundleAdjustment=0.
+    rtabmap::IMU im;
+    if (imu_) im = imu_->at(data_ns);
+    if (imu_ && !graph_only_) data.setIMU(im);
     rtabmap::OdometryInfo info;
     auto t0 = Clock::now();
     Transform odom = odom_->process(data, &info);
     r.odom_ms = ms_since(t0);
+    if (imu_ && graph_only_) data.setIMU(im);
     r.features = info.features;
     r.inliers = info.reg.inliers;
     if (!odom.isNull()) {
@@ -266,6 +287,8 @@ class RtabBackend {
   rtabmap::CameraModel model_;
   std::unique_ptr<rtabmap::Odometry> odom_;
   rtabmap::Rtabmap rtab_;
+  ImuSource* imu_ = nullptr;
+  bool graph_only_ = false;
   double period_s_ = 1.0;
   int id_ = 0;
   long long last_sync_ns_ = -1;
@@ -324,6 +347,11 @@ int main(int argc, char** argv) {
     else if (k == "--rate") a.rate = std::stod(val());
     else if (k == "--pace") a.pace = std::stod(val());
     else if (k == "--max-frames") a.max_frames = std::stoi(val());
+    else if (k == "--gyro") a.imu_rig = val();
+    else if (k == "--imu") a.imu_dir = val();
+    else if (k == "--imu-topic") a.imu_topic = val();
+    else if (k == "--imu-yaw-offset") a.imu_yaw_offset_deg = std::stod(val());
+    else if (k == "--imu-graph-only") a.imu_graph_only = true;
     else if (k == "--param") {
       std::string kv = val();
       auto eq = kv.find('=');
@@ -347,6 +375,18 @@ int main(int argc, char** argv) {
           s.db3.c_str(), s.frames.size(), s.time_source.c_str(), s.time_domain.c_str(), a.offset_ns, s.non_monotonic);
   Aligner aligner(c);
 
+  ImuSource imu;
+  const bool use_imu = !a.imu_rig.empty();
+  if (use_imu) {
+    if (a.imu_dir.empty()) a.imu_dir = a.session + "/../imu";
+    imu.load(a.imu_dir, a.imu_rig, a.imu_topic);
+    imu.yaw_offset_rad = a.imu_yaw_offset_deg * M_PI / 180.0;
+    // The gravity line is the self-check for R_cam_imu and the optical->base step; read it.
+    fprintf(stderr, "[rtab_stream] imu: %s %s | %zu samples %.1f Hz | imu-cam %.2f ms | %s\n",
+            imu.db3.c_str(), imu.topic.c_str(), imu.t_ns.size(), imu.rate_hz, imu.tau_ns * 1e-6,
+            imu.gravity_report().c_str());
+  }
+
   // Parameters: RTAB-Map defaults (as the harness), --features -> Vis/MaxFeatures, then --param.
   rtabmap::ParametersMap params;
   if (a.features > 0) params[rtabmap::Parameters::kVisMaxFeatures()] = std::to_string(a.features);
@@ -357,7 +397,12 @@ int main(int argc, char** argv) {
                                "Kp/DetectorStrategy", "Kp/MaxFeatures", "Reg/Strategy", "Rtabmap/DetectionRate",
                                "Rtabmap/TimeThr", "RGBD/LinearUpdate", "RGBD/AngularUpdate", "RGBD/ProximityBySpace",
                                "Optimizer/Strategy", "Mem/STMSize", "Mem/IncrementalMemory", "Odom/ResetCountdown",
-                               "OdomF2M/MaxSize"};
+                               "OdomF2M/MaxSize",
+                               // the three that decide whether an IMU changes anything: gravity
+                               // links need GravitySigma > 0 (g2o/GTSAM only), the odometry
+                               // orientation constraint needs BundleAdjustment != 0, and
+                               // UseOdomGravity would ignore the IMU orientation in favour of odom
+                               "Optimizer/GravitySigma", "OdomF2M/BundleAdjustment", "Mem/UseOdomGravity"};
   json shown = json::object();
   for (const char* k : SHOW)
     if (effective.count(k)) shown[k] = effective[k];
@@ -369,6 +414,7 @@ int main(int argc, char** argv) {
   std::string db = a.mode == "offline" ? a.out + ".rtabmap.db" : "";
   if (!db.empty()) unlink(db.c_str());
   RtabBackend be(c, params, db, async);
+  if (use_imu) be.set_imu(&imu, a.imu_graph_only);
 
   Bag bag(s.db3);
   Blob cb, dbl;
@@ -502,12 +548,22 @@ int main(int argc, char** argv) {
                            {"p99", pct(mm, 99)}, {"max", mm.empty() ? 0 : *std::max_element(mm.begin(), mm.end())}}},
         {"loop_closures", be.loops()}, {"proximity_detections", be.proximities()}, {"empty_graph_updates", be.empty_updates()}, {"graph_nodes_final", finals.size()},
         {"optimized_frames", n_opt}, {"wall_s", wall},
+        {"imu", use_imu ? json{{"topic", imu.topic}, {"db3", imu.db3}, {"rig", imu.rig},
+                               {"samples", imu.t_ns.size()}, {"rate_hz", imu.rate_hz},
+                               {"tau_ms", imu.tau_ns * 1e-6}, {"frames_with_imu", imu.found},
+                               {"frames_without_imu", imu.missing},
+                               {"max_stamp_gap_ms", imu.max_gap_seen_ns * 1e-6},
+                               {"gravity_check", imu.gravity_report()}}
+                        : json(nullptr)},
         {"trajectory", "TUM T_world_cam (optical, world = first camera): live = O^-1*correction*odom*O per frame; "
                        ".optimized.txt = final node pose * odometry T_node_cam"}};
     std::ofstream(a.out + ".json") << side.dump(1) << "\n";
     be.close(true);
     fprintf(stderr, "[rtab_stream] done: %d processed, %d ok, loops %d, nodes %zu, wall %.1f s\n", processed, ok_count,
             be.loops(), finals.size(), wall);
+    if (use_imu)
+      fprintf(stderr, "[rtab_stream] imu: %lld frames with, %lld without, max stamp gap %.2f ms\n", imu.found,
+              imu.missing, imu.max_gap_seen_ns * 1e-6);
     return 0;
   }
 
@@ -520,7 +576,8 @@ int main(int argc, char** argv) {
   line.send_json({{"type", "hello"}, {"source", "rtabmap"}, {"features", a.features}, {"session", s.dir},
                   {"first_ns", s.frames.front().t_ns}, {"last_ns", s.frames.back().t_ns},
                   {"n_frames", s.frames.size()}, {"time_source", s.time_source}, {"time_domain", s.time_domain},
-                  {"kf_updates", true}, {"rtabmap_version", RTABMAP_VERSION}, {"params", shown}});
+                  {"kf_updates", true}, {"rtabmap_version", RTABMAP_VERSION}, {"params", shown},
+                  {"imu", use_imu ? json(imu.topic) : json(nullptr)}});
   json start;
   do {
     if (!line.read_json(start)) {
@@ -637,6 +694,9 @@ int main(int argc, char** argv) {
             *std::max_element(kf_build_ms.begin(), kf_build_ms.end()),
             std::accumulate(kf_bytes.begin(), kf_bytes.end(), 0.0) / kf_bytes.size(),
             *std::max_element(kf_bytes.begin(), kf_bytes.end()));
+  if (use_imu)
+    fprintf(stderr, "[rtab_stream] imu: %lld frames with, %lld without, max stamp gap %.2f ms\n", imu.found,
+            imu.missing, imu.max_gap_seen_ns * 1e-6);
   std::map<int, Transform> finals, node_odom;
   be.finish(finals, node_odom);
   be.close(false);

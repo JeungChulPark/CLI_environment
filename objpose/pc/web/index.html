@@ -112,10 +112,10 @@ td .sw { width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
     <span class="note" id="pick-mac"></span></div>
   <div class="picker-row"><span class="lab">입력데이터 이름</span><span id="pick-datasets"></span>
     <span class="note" id="pick-streams"></span></div>
-  <div class="picker-row"><span class="lab">ORB 특징점 수</span><span id="pick-features"></span>
-    <span class="note">ORB-SLAM3 · ORB-SLAM3 + IMU 에만 적용</span></div>
   <div class="picker-row"><span class="lab">SLAM 백엔드 (클릭 = 실행)</span><span id="pick-backends"></span>
     <span class="note" id="pick-note"></span></div>
+  <div class="picker-row"><span class="lab">특징점 수 (클릭 = 재실행)</span><span id="pick-features"></span>
+    <span class="note" id="pick-feat-note"></span></div>
   <div class="msg" id="pick-msg" hidden></div>
 </div>
 
@@ -529,18 +529,14 @@ function renderPicker() {
   const set = currentSet();
   $("pick-streams").textContent = set ? set.streams.join(" · ") : "";
 
-  const feats = $("pick-features"); feats.innerHTML = "";
-  for (const f of (cat.features || [])) {
-    feats.append(tab(`f${f}`, f === pickFeat, () => { pickFeat = f; renderPicker(); }, { disabled: starting }));
-  }
-
   const backs = $("pick-backends"); backs.innerHTML = "";
   let note = "";
+  // the backend this hub is actually replaying, when it is the dataset on screen
+  const live = set && set.name === cur.dataset ? set.backends.find(b => b.id === cur.backend) : null;
   for (const b of (set ? set.backends : [])) {
-    const running = set.name === cur.dataset && b.id === cur.backend &&
-                    (cur.features == null || cur.features === pickFeat);
+    const running = b === live;
     if (running && b.extrinsic_provenance === "borrowed") note = "RT 는 같은 날 다른 녹화에서 차용 — 시계 보정값(sam_tau_s)은 이 녹화에서 측정한 값이 아닙니다";
-    backs.append(tab(b.label, running, () => startRun(set.name, b.id), {
+    backs.append(tab(b.label, running, () => startRun(set.name, b.id, pickFeat), {
       disabled: !b.runnable || starting,
       cls: running ? "running" : "",
       title: b.runnable ? (b.extrinsic_provenance === "borrowed" ? "RT 차용 (같은 날 다른 녹화)" : b.extrinsic || "")
@@ -548,10 +544,23 @@ function renderPicker() {
     }));
   }
   $("pick-note").textContent = note;
+
+  // The feature count belongs to a run, not to a plan: it is live only while a backend that
+  // uses one is replaying, and clicking a size restarts that same run at it.
+  const feats = $("pick-features"); feats.innerHTML = "";
+  const sizeable = !!(live && live.sized);
+  for (const f of (cat.features || [])) {
+    feats.append(tab(`f${f}`, f === pickFeat, () => startRun(cur.dataset, cur.backend, f),
+                     { disabled: !sizeable || starting,
+                       title: sizeable ? `${live.label} 을 f${f} 로 다시 실행` : "" }));
+  }
+  $("pick-feat-note").textContent =
+    sizeable ? `${live.label} 에 적용 중` :
+    live ? `${live.label} — 특징점 수를 쓰지 않는 백엔드` :
+           "ORB-SLAM3 · ORB-SLAM3 + IMU · RTAB-Map 실행 중에만 바꿀 수 있습니다";
 }
 
-function startRun(dataset, backend) {
-  const features = pickFeat;
+function startRun(dataset, backend, features) {
   starting = true; renderPicker();
   $("pick-msg").hidden = false;
   $("pick-msg").textContent = "실행 요청을 보냈습니다 — 허브가 재시작합니다 (SAM-6D 모델 로딩까지 20~40초)";

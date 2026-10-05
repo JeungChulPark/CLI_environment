@@ -29,6 +29,13 @@ DATASET_ROOT = Path("/home/jucpark/DeepLearning/Dataset")
 MAC_ROOT = "~/Documents/DefenseMeta/Dataset"
 RT = REPO / "objpose" / "rt"
 SETTINGS = REPO / "objpose" / "mac_slam" / "settings"
+# What the hdl variants read on the Mac besides the dataset: the KISS-ICP trajectory they take
+# as odometry and the rig that places the Velodyne and that trajectory against the camera.
+# Both were made for the 260901 experiments and exist only there.
+MAC_RTAB_ODOM = "~/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/rtab_odom"
+MAC_KISS = MAC_RTAB_ODOM + "/../bigeight/Userui-MacBookPro/{dataset}/kiss/kiss_tum.txt"
+MAC_RIG = MAC_RTAB_ODOM + "/rigs/rig_{short}.json"
+HDL_LIDAR_Z = "-0.45"            # vertical lever arm the HDL_STYLE runs used
 
 
 @dataclass(frozen=True)
@@ -39,11 +46,38 @@ class Backend:
     source: str               # dataset folder the SLAM host replays
     lidar_world: bool
     gyro: bool = False
+    # Non-empty when the streamer has no code path for this backend yet: the viewer offers the
+    # tab so the gap is visible, but disabled, with this as the reason. Passing the arguments
+    # anyway would not fail loudly — rtab_stream exits 2 on an unknown option and the hub would
+    # sit in "waiting for SLAM stream" with nothing to show.
+    unbuilt: str = ""
+    # RTAB-Map parameter overrides (hub --slam-param); non-empty marks an hdl_graph_slam-style
+    # variant, which also swaps the visual odometry for KISS-ICP and closes loops on the
+    # Velodyne scans (see rt/260901/rtab_odom/HDL_STYLE.md on the Mac)
+    params: tuple[str, ...] = ()
+
+    @property
+    def sized(self) -> bool:
+        """Whether --features applies: ORB-SLAM3 rewrites ORBextractor.nFeatures and
+        RTAB-Map maps it to Vis/MaxFeatures. The LiDAR backends have no such knob, and neither
+        do the hdl variants, whose visual odometry is replaced by KISS-ICP."""
+        return self.slam in ("orbslam3", "rtabmap") and not self.params
 
 
 BACKENDS = (
     Backend("orbslam3", "ORB-SLAM3", "orbslam3", "SLAM", False),
     Backend("orbslam3_imu", "ORB-SLAM3 + IMU", "orbslam3", "SLAM", False, gyro=True),
+    Backend("rtabmap", "RTAB-Map", "rtabmap", "SLAM", False),
+    # rtab_stream --gyro feeds sensor_msgs/Imu to SensorData::setIMU (mac_slam/imu_source.h)
+    Backend("rtabmap_imu", "RTAB-Map + IMU", "rtabmap", "SLAM", False, gyro=True),
+    # HDL_STYLE.md: one change at a time — plane registration, then hdl's 1 m proximity radius,
+    # then appearance loops off
+    Backend("rtabmap_hdl1", "RTAB-Map + hdl1", "rtabmap", "SLAM", False,
+            params=("Icp/PointToPlane=true",)),
+    Backend("rtabmap_hdl2", "RTAB-Map + hdl2", "rtabmap", "SLAM", False,
+            params=("Icp/PointToPlane=true", "RGBD/LocalRadius=1.0")),
+    Backend("rtabmap_hdl3", "RTAB-Map + hdl3", "rtabmap", "SLAM", False,
+            params=("Icp/PointToPlane=true", "RGBD/LocalRadius=1.0", "Rtabmap/LoopThr=1.0")),
     Backend("lidar", "KISS-ICP", "lidar", "lidar", True),
     Backend("hdl", "hdl_graph_slam", "hdl", "lidar", True),
 )
@@ -85,7 +119,9 @@ def mac_datasets(host: str = "mac", timeout: float = 20.0) -> dict[str, set[str]
     """{dataset: {streams}} on the SLAM host, or None when it cannot be reached."""
     cmd = ["ssh", "-o", "BatchMode=yes", "-o", f"ConnectTimeout={int(timeout)}", host,
            f"cd {MAC_ROOT} && for d in */; do n=${{d%/}}; "
-           f'for s in SLAM SAM lidar imu; do [ -d "$n/$s" ] && echo "$n $s"; done; done']
+           f'for s in SLAM SAM lidar imu; do [ -d "$n/$s" ] && echo "$n $s"; done; '
+           f'k={MAC_KISS.format(dataset="$n")}; r={MAC_RIG.format(short="${n#*_*_}")}; '
+           f'[ -f "$k" ] && [ -f "$r" ] && echo "$n hdl_inputs"; done']
     try:
         out = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout + 10)
     except (subprocess.TimeoutExpired, OSError):
@@ -108,19 +144,24 @@ def backend_state(name: str, here: set[str], there: set[str] | None, b: Backend)
     """Whether this backend can run on this dataset, and if not, the first missing piece."""
     x, provenance = extrinsic_for(name, b)
     why = None
-    if b.source not in (there if there is not None else here):
+    if b.unbuilt:                        # no dataset can make up for a streamer that cannot run it
+        why = b.unbuilt
+    elif b.source not in (there if there is not None else here):
         why = f"Mac 에 {name}/{b.source} 없음"
     elif "SAM" not in here:
         why = f"이 PC 에 {name}/SAM 없음 (SAM-6D 입력)"
     elif x is None:
         why = f"rt/{date_of(name)}/ 에 이 백엔드용 RT 없음"
+    elif b.params and (there is None or "hdl_inputs" not in there):
+        why = ("Mac 에 연결할 수 없어 KISS 궤적/rig 를 확인할 수 없음" if there is None else
+               f"Mac 에 {name} 의 KISS 궤적 또는 rig_*.json 없음 (rt/260901/rtab_odom)")
     elif b.gyro:
         if "imu" not in here:
             why = f"이 PC 에 {name}/imu 없음"
         elif not (SETTINGS / f"rig_{date_of(name)}_gyro.json").exists():
             why = f"settings/rig_{date_of(name)}_gyro.json 없음"
     return {"id": b.id, "label": b.label, "runnable": why is None, "reason": why,
-            "lidar_world": b.lidar_world,
+            "lidar_world": b.lidar_world, "sized": b.sized,
             "extrinsic": str(x.relative_to(REPO)) if x else None,
             "extrinsic_provenance": provenance}
 
@@ -153,13 +194,15 @@ def scan(there_all: dict[str, set[str]] | None = None) -> dict:
 
 
 def hub_args(dataset: str, backend_id: str, features: int = DEFAULT_FEATURES) -> list[str]:
-    """The hub.py argv that runs this dataset on this backend (features: ORB-SLAM3 only)."""
+    """The hub.py argv that runs this dataset on this backend (features: camera backends only)."""
     b = BY_ID[backend_id]
-    orb = b.slam == "orbslam3"
-    if orb and features not in FEATURES:
+    if b.unbuilt:                        # the viewer disables these, but /run takes any known id
+        raise ValueError(f"{b.label}: {b.unbuilt}")
+    sized = b.sized
+    if sized and features not in FEATURES:
         raise ValueError(f"features {features} not in {FEATURES}")
     # f2000 keeps the plain name so earlier runs stay where the comparison expects them
-    tag = f"_f{features}" if orb and features != DEFAULT_FEATURES else ""
+    tag = f"_f{features}" if sized and features != DEFAULT_FEATURES else ""
     d = DATASET_ROOT / dataset
     x, _ = extrinsic_for(dataset, b)
     if x is None:
@@ -170,12 +213,21 @@ def hub_args(dataset: str, backend_id: str, features: int = DEFAULT_FEATURES) ->
             "--slam-session", str(d / b.source),
             "--mac-slam-session", f"{MAC_ROOT}/{dataset}/{b.source}",
             "--out", str(REPO / "objpose" / "output" / f"live_{dataset}_{backend_id}{tag}")]
-    if orb:
+    if sized:
         args += ["--features", str(features)]
     date = date_of(dataset)
     yaml = SETTINGS / f"orbslam3_{date}_slam_nf2000.yaml"
-    if not b.lidar_world and yaml.exists():
+    # rtab_stream accepts --settings and ignores it (it reads the bag's own calibration)
+    if b.slam == "orbslam3" and yaml.exists():
         args += ["--slam-arg=--settings", f"--slam-arg=~/objpose/settings/{yaml.name}"]
+    if b.params:
+        short = dataset.split("_", 2)[-1]
+        args += ["--backend-id", b.id,
+                 "--slam-arg=--ext-odom", "--slam-arg=" + MAC_KISS.format(dataset=dataset),
+                 "--slam-arg=--rig", "--slam-arg=" + MAC_RIG.format(short=short),
+                 "--slam-arg=--lidar", f"--slam-arg={MAC_ROOT}/{dataset}/lidar",
+                 "--slam-arg=--lidar-z", f"--slam-arg={HDL_LIDAR_Z}"]
+        args += [f"--slam-param={p}" for p in b.params]
     if b.gyro:
         args += [f"--slam-arg=--gyro", f"--slam-arg=~/objpose/settings/rig_{date}_gyro.json",
                  "--slam-arg=--imu", f"--slam-arg={MAC_ROOT}/{dataset}/imu"]

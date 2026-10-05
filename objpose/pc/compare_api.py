@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -55,8 +56,11 @@ def run_label(summary: dict, name: str) -> str:
     src = summary.get("slam_source", "")
     label = (LABELS["orbslam3_gyro"] if src == "orbslam3" and "imu" in name.lower()
              else LABELS.get(src, src or name))
+    hdl = re.search(r"_(hdl\d)(?:_|$)", name)
+    if src == "rtabmap" and hdl:
+        label += f" + {hdl.group(1)}"
     f = summary.get("features")
-    if src == "orbslam3" and f and f != 2000:
+    if src in ("orbslam3", "rtabmap") and f and f != 2000:
         label += f" f{f}"
     return label
 

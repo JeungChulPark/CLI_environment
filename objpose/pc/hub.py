@@ -54,7 +54,8 @@ PY_SAM6D = "/home/jucpark/anaconda3/envs/sam6d/bin/python"
 LIDAR_BACKENDS = ("lidar", "hdl")
 # what a run leaves behind on the SLAM host. The [x] brackets keep each pattern from matching
 # the pkill command line that carries it.
-MAC_STREAMERS = ("objpose/[b]uild/slam_stream", "objpose/[b]uild_rtab/rtab_stream",
+MAC_STREAMERS = ("objpose/[b]uild/slam_stream", "objpose/[b]uild_linux/slam_stream",
+                 "objpose/[b]uild_rtab/rtab_stream",
                  "objpose/lidar/[l]idar_stream.py", "objpose/lidar/[h]dl_stream.py",
                  "[h]dl_graph_slam")
 
@@ -265,8 +266,8 @@ class Hub:
         self._last_retry = 0.0
         # which catalog entry this run is, so the viewer can highlight the active tab
         self.dataset_name = Path(a.sam_session).parent.name
-        self.backend_id = ("orbslam3_imu" if any("--gyro" in s for s in a.slam_arg)
-                           else {"lidar": "lidar", "hdl": "hdl"}.get(a.slam, a.slam))
+        self.backend_id = a.backend_id or (f"{a.slam}_imu" if any("--gyro" in s for s in a.slam_arg)
+                                           else a.slam)
         self.poses = PoseBuffer(max_gap_s=a.max_gap)
         self.fusion = Fusion(X, self.poses)
         # position-only association: box-like objects flip 180 deg between SAM-6D estimates,
@@ -295,7 +296,7 @@ class Hub:
         self.last_result = None
         self.procs: list[subprocess.Popen] = []
         self.logs = {k: open(self.out / f"{k}.jsonl", "w", encoding="utf-8")
-                     for k in ("slam_poses", "sam6d_estimates", "display_objects", "kf_updates", "sam6d_frames")}
+                     for k in ("slam_poses", "sam6d_estimates", "display_objects", "kf_updates", "sam6d_frames", "map_prior")}
         self.log_lock = threading.Lock()
         self.status = "starting"
         log(f"SAM session {self.sam.dir} ({'raw' if self.raw_sam else 'converted'}) frames={len(self.sam)} "
@@ -311,6 +312,10 @@ class Hub:
         cfg["output"] = {"dir": str(self.out / "sam6d"), "diagnostics": False}
         cfg["runtime"]["idle_exit_s"] = 0
         cfg.pop("bag", None)
+        if self.a.ism_config:              # e.g. a YCB-V object list for benchmark replays
+            cfg.setdefault("ism", {})["config"] = self.a.ism_config
+        if self.a.cluster_occupancy > 0:   # YCB-V setting of the paper: 0.3 instead of 0.5
+            cfg["runtime"].setdefault("verify", {})["cluster_min_occupancy"] = self.a.cluster_occupancy
         cfg["anchor"]["enabled"] = False
         cfg_path = self.out / "sam6d_config.yaml"
         cfg_path.write_text(yaml.safe_dump(cfg, allow_unicode=True, sort_keys=False), encoding="utf-8")
@@ -321,6 +326,10 @@ class Hub:
             pass
         env = dict(os.environ)
         env.pop("ROS_DOMAIN_ID", None)
+        if self.a.recognizer:              # e.g. the original SAM-6D for the live baseline
+            env["OBJPOSE_RECOGNIZER"] = str(Path(self.a.recognizer).resolve())
+        if self.a.map_prior:               # map-projected proposals, read by sam6d_infer per frame
+            env["OBJPOSE_MAP_PRIOR"] = str(self.out / "sam6d" / "map_prior.json")
         f = open(self.out / "sam6d_infer.log", "w")
         p = subprocess.Popen([PY_SAM6D, "-u", str(SAM6D / "realtime" / "sam6d_infer.py"), "--config", str(cfg_path)],
                              cwd=str(self.out / "sam6d"), stdout=f, stderr=subprocess.STDOUT, env=env,
@@ -347,6 +356,18 @@ class Hub:
         except (subprocess.TimeoutExpired, OSError) as e:
             log(f"could not clean up Mac streamers ({why}): {e!r}")
 
+    def remote_uname(self) -> str:
+        """`uname -s` of the SLAM host, asked once; "" when the probe fails."""
+        if getattr(self, "_uname", None) is None:
+            try:
+                r = subprocess.run(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
+                                    self.a.mac_host, "uname -s"], capture_output=True, timeout=20)
+                self._uname = r.stdout.decode().strip()
+            except (subprocess.TimeoutExpired, OSError) as e:
+                log(f"could not read the SLAM host's uname: {e!r}")
+                self._uname = ""
+        return self._uname
+
     def start_mac_slam(self):
         self.kill_mac_streamers("before launch")
         if self.a.slam in LIDAR_BACKENDS:
@@ -368,7 +389,10 @@ class Hub:
         # slept 3 s into a run, the pose stream stopped, and ssh's keepalive dropped the tunnel
         # 40 s later. Meanwhile the sleeping Wi-Fi card kept answering pings, which is what made
         # this look like a flaky link. caffeinate holds the assertion for as long as SLAM runs.
-        remote = f"caffeinate -ims {remote}"
+        # It is a macOS command, and the SLAM host need not be the Mac — a Linux box running the
+        # same streamer would fail the whole launch on a missing binary.
+        if self.remote_uname() == "Darwin":
+            remote = f"caffeinate -ims {remote}"
         cmd = ["ssh", "-o", "BatchMode=yes", "-o", "ExitOnForwardFailure=yes", "-o", "ServerAliveInterval=10",
                "-R", f"{self.a.slam_port}:127.0.0.1:{self.a.slam_port}", self.a.mac_host, remote]
         f = open(self.out / "mac_slam.log", "w")
@@ -515,6 +539,8 @@ class Hub:
             self.replay_t_ns = fr.t_ns
             if feed:
                 depth = self.sam.align(fr.depth_raw)
+                if self.a.map_prior:
+                    self.write_map_prior(fr.t_ns, fr.color_bgr.shape[:2])
                 self.fw.write(np.ascontiguousarray(fr.color_bgr[:, :, ::-1]), depth, self.K, fr.t_ns, time.time(),
                               {"tracking_state": "TRACKING_LOST", "map_id": "primary_sam_camera"},
                               depth_stamp_ns=fr.t_ns)
@@ -689,6 +715,63 @@ class Hub:
                 self.memory.update()
             time.sleep(0.2)
 
+    def write_map_prior(self, t_ns, hw):
+        """Boxes of the objects already in the map, projected into the frame about to be recognised.
+
+        The recogniser adds them as extra proposals for those objects, so an object the text
+        detector misses in this frame is still offered to the gates; a wrong box (the object has
+        moved, or is hidden) is rejected there like any other proposal. The camera pose is the
+        SLAM pose at the frame time, or the newest one when SLAM has not reached it yet.
+        """
+        boxes = []
+        if self.memory is not None:
+            T_ws, _ = self.fusion.T_w_sam(t_ns)
+            if T_ws is None and self.poses.latest_t():
+                T_ws, _ = self.fusion.T_w_sam(self.poses.latest_t())
+            if T_ws is not None:
+                T_sw = inv_se3(T_ws)
+                h, w = hw
+                for l in self.memory.landmarks():
+                    if l["status"] not in ("active", "lost", "remembered") or l["dup_suppressed"]:
+                        continue
+                    c = self._prior_corners(l["name"])
+                    if c is None:
+                        continue
+                    T = T_sw @ l["T_w_obj"]
+                    cam = (T[:3, :3] @ c.T).T + T[:3, 3]
+                    if np.any(cam[:, 2] < 0.1):
+                        continue
+                    uv = (self.K @ (cam / cam[:, 2:3]).T).T[:, :2]
+                    x1, y1 = uv.min(0); x2, y2 = uv.max(0)
+                    cx1, cy1, cx2, cy2 = max(0, x1), max(0, y1), min(w, x2), min(h, y2)
+                    if cx2 - cx1 < 10 or cy2 - cy1 < 10:
+                        continue
+                    if (cx2 - cx1) * (cy2 - cy1) < 0.3 * (x2 - x1) * (y2 - y1):   # mostly outside the image
+                        continue
+                    boxes.append({"name": l["name"], "xyxy": [float(cx1), float(cy1), float(cx2), float(cy2)],
+                                  "conf": self.a.map_prior_conf})
+        path = self.out / "sam6d" / "map_prior.json"
+        tmp = path.with_suffix(".tmp")
+        tmp.write_text(json.dumps({"stamp_ns": int(t_ns), "boxes": boxes}))
+        os.replace(tmp, path)
+        self.write_log("map_prior", {"t_ns": int(t_ns), "n": len(boxes), "names": [b["name"] for b in boxes]})
+
+    def _prior_corners(self, name):
+        if not hasattr(self, "_corner_cache"):
+            self._corner_cache = {}
+        if name not in self._corner_cache:
+            f = SAM6D / "assets" / "model_points" / f"{name}.npy"
+            if f.exists():
+                pts = np.load(f) / 1000.0
+                lo, hi = pts.min(0), pts.max(0)
+                self._corner_cache[name] = np.array([[x, y, z] for x in (lo[0], hi[0]) for y in (lo[1], hi[1])
+                                                     for z in (lo[2], hi[2])])
+            elif name in self.extents:
+                self._corner_cache[name] = box_corners(self.extents[name])
+            else:
+                self._corner_cache[name] = None
+        return self._corner_cache[name]
+
     def memory_rows(self, t_ns, T_ws, fusion_rows, exact_window_ns=20_000_000):
         """display rows from the object memory: one per kept instance, in the corrected map."""
         hist = {r["name"]: r["history"] for r in fusion_rows}
@@ -723,7 +806,7 @@ class Hub:
             self._mac_stale = False
         c = cat.scan(self._mac_datasets)
         c["current"] = {"dataset": self.dataset_name, "backend": self.backend_id,
-                        "features": self.a.features if self.a.slam == "orbslam3" else None,
+                        "features": self.a.features if cat.BY_ID[self.backend_id].sized else None,
                         "status": self.status, "out": self.out.name}
         return c
 
@@ -738,7 +821,7 @@ class Hub:
         except (ValueError, KeyError) as e:
             return False, str(e)
         self._restart = argv
-        f = f" f{features}" if features and cat.BY_ID[backend].slam == "orbslam3" else ""
+        f = f" f{features}" if features and cat.BY_ID[backend].sized else ""
         self.status = f"{dataset} · {cat.BY_ID[backend].label}{f} 로 재시작하는 중"
         log(f"restart requested: {dataset} / {backend}")
         self.stop_replay_for_restart()
@@ -756,7 +839,8 @@ class Hub:
         binds the port.
         """
         argv = [sys.executable, "-u", str(HERE / "hub.py"), *self._restart,
-                "--http-host", self.a.http_host, "--http-port", str(self.a.http_port)]
+                "--http-host", self.a.http_host, "--http-port", str(self.a.http_port),
+                "--mac-host", self.a.mac_host]
         if self.a.compare_glob:
             argv += ["--compare-glob", self.a.compare_glob]
         log("exec " + " ".join(argv[3:]))
@@ -1018,6 +1102,9 @@ def main():
                     help="extra argument passed verbatim to the Mac streamer (repeatable), for options "
                          "that are not settings keys — e.g. gyro-aided ORB-SLAM3: "
                          "--slam-arg=--gyro --slam-arg=<rig.json> --slam-arg=--imu --slam-arg=<imu dir>")
+    ap.add_argument("--backend-id", default="",
+                    help="catalog backend id of this run, for variants the --slam/--slam-arg "
+                         "pair cannot name (e.g. rtabmap_hdl1); derived from them when empty")
     ap.add_argument("--compare-glob", default="",
                     help="which sibling run dirs the viewer's backend comparison covers: one glob, "
                          "or several separated by commas (default: this run's name up to the last "
@@ -1041,6 +1128,12 @@ def main():
     ap.add_argument("--tail-s", type=float, default=8.0)
     ap.add_argument("--no-mac", action="store_true", help="don't launch the Mac; wait for an external SLAM client")
     ap.add_argument("--no-sam6d", action="store_true")
+    ap.add_argument("--recognizer", default="", help="python file with a LiveCore class to use instead of Sam6DCore")
+    ap.add_argument("--map-prior", action="store_true",
+                    help="give the recogniser the map objects projected into each frame as extra proposals")
+    ap.add_argument("--map-prior-conf", type=float, default=0.25, help="detector score given to a map-projected box")
+    ap.add_argument("--ism-config", default="", help="SAM-6D object list yaml (default: the run_split_example.yaml setting)")
+    ap.add_argument("--cluster-occupancy", type=float, default=0.0, help="override verify.cluster_min_occupancy (0 = keep)")
     ap.add_argument("--no-memory", action="store_true", help="show raw latest estimates instead of the object memory")
     ap.add_argument("--assoc-gate-m", type=float, default=0.15, help="object memory association distance gate")
     # The memory's existence filter penalises a landmark that is in view and not re-detected,
