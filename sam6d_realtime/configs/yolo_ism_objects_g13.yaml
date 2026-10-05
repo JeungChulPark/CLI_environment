@@ -1,0 +1,135 @@
+# PAPER STUDY ONLY (2026-10-05): deployed configs/yolo_ism_objects.yaml + gate study (semantic 0.25, HSV 0.06,
+# ownership fallback; tuned on YCB-V held-out frames). Not the deployed config.
+defaults:
+  weights: yolov8m-worldv2.pt
+  device: cuda:0
+  top_k: 3
+  score_threshold: 0.02
+  hsv_gate_enabled: true
+  hsv_gate_shadow_mode: false
+  hsv_gate_threshold: 0.06
+  hsv_hue_shift_deg: -6
+  hsv_sat_gain: 1.3
+  hsv_hist_bins:
+  - 16
+  - 8
+  hsv_lowsat_exception: false
+  hsv_hue_correction_ocv: 0
+  training_free_gate_enabled: false
+  training_free_gate_method: phase1c
+  appe_v2_enabled: true
+  appe_v2_blocks:
+  - 2
+  - 9
+  appe_v2_gate: 0.605
+  cross_object_nms_enabled: true
+  cross_object_nms_iou: 0.9
+  yolo_multi_label: true
+  relative_assignment_enabled: true
+  color_tiebreak_template_sim: 0.6
+  imgsz: 640
+  similarity_threshold: 0.25
+  use_mask: true
+  appe_gate: 0.55
+  appe_blocks:
+  - 11
+  nms_rank_blocks:
+  - 2
+  - 9
+  match_topk: 5
+  seg_weights: mobile_sam.pt
+  stride: 10
+  assignment_fallback: true
+objects:
+- name: milk
+  yolo_prompt: milk carton
+  object_id: Milk_high
+  template_dir: template/milk_high/templates
+  cad_ply: data/cad/milk_high/Milk_high.ply
+  enabled: true
+- name: choco_hazelnut_high
+  yolo_prompt: maroon box
+  object_id: choco_hazelnut_color_high
+  template_dir: template/choco_hazelnut_color_high/templates
+  cad_ply: data/cad/choco_hazelnut_color_high/choco_hazelnut_color_with_normal_vertexcolor.ply
+  enabled: true
+- name: choco_hazelnut_low
+  yolo_prompt: brown box
+  object_id: choco_hazelnut_color_low
+  template_dir: template/choco_hazelnut_color_low/templates
+  cad_ply: data/cad/choco_hazelnut_color_low/choco_hazelnut_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: Febreze_high
+  yolo_prompt: febreze spray bottle
+  object_id: Febreze_high
+  template_dir: template/Febreze_high/templates
+  cad_ply: data/cad/Febreze_high/Febreze_color_with_normal_vertexcolor.ply
+  enabled: true
+- name: Febreze_low
+  yolo_prompt: febreze spray bottle
+  object_id: Febreze_low
+  template_dir: template/Febreze_low/templates
+  cad_ply: data/cad/Febreze_low/Febreze_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: Mugcup_high
+  yolo_prompt: mug cup
+  hsv_hue_correction_ocv: 12
+  object_id: Mugcup_color_high
+  template_dir: template/Mugcup_color_high/templates
+  cad_ply: data/cad/Mugcup_color_high/Mugcup_color_with_normal_vertexcolor.ply
+  enabled: true
+- name: Mugcup_low
+  yolo_prompt: mug cup
+  object_id: Mugcup_color_low
+  template_dir: template/Mugcup_color_low/templates
+  cad_ply: data/cad/Mugcup_color_low/Mugcup_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: saffron
+  yolo_prompt: white jug
+  object_id: saffron
+  template_dir: template/saffron/templates
+  cad_ply: data/cad/saffron/saffron_color_with_normal_vertexcolor.ply
+  enabled: true
+- name: Sauce_high
+  yolo_prompt: orange bottle
+  object_id: Sauce_high
+  template_dir: template/Sauce_high/templates
+  cad_ply: data/cad/Sauce_high/Sauce_color_with_normal_vertexcolor.ply
+  enabled: true
+- name: Sauce_low
+  yolo_prompt: brown bottle
+  object_id: Sauce_low
+  template_dir: template/Sauce_low/templates
+  cad_ply: data/cad/Sauce_low/Sauce_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: Sikhye_high
+  yolo_prompt: yellow can
+  object_id: Sikhye_high
+  template_dir: template/Sikhye_high/templates
+  cad_ply: data/cad/Sikhye_high/Sikhye_color_with_normal_vertexcolor.ply
+  enabled: true
+- name: Sikhye_low
+  yolo_prompt: yellow can
+  object_id: Sikhye_low
+  template_dir: template/Sikhye_low/templates
+  cad_ply: data/cad/Sikhye_low/Sikhye_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: Bear
+  yolo_prompt: brown bear doll
+  object_id: Bear
+  template_dir: template/Bear/templates
+  cad_ply: data/cad/Bear/bear_color_with_normal_vertexcolor.ply
+  enabled: true
+- name: Rabbit
+  yolo_prompt: white rabbit doll
+  object_id: Rabbit
+  template_dir: template/Rabbit/templates
+  cad_ply: data/cad/Rabbit/Rabbit_color_with_normal_vertexcolor.ply
+  enabled: false
+- name: Dinosaur
+  yolo_prompt: green dinosaur doll
+  hsv_hue_correction_ocv: 9
+  object_id: Dinosaur
+  template_dir: template/Dinosaur/templates
+  cad_ply: data/cad/Dinosaur/Dinosaur_color_with_normal_vertexcolor.ply
+  enabled: true
