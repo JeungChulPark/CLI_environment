@@ -1,3 +1,4 @@
+import functools
 import math
 
 import torch
@@ -827,6 +828,29 @@ def _attach_explorer_v2(info, pred_rs, physical_t, geo_scores, texture_scores,
     info['pem_explorer'] = payloads
 
 
+def _verify_in_fp32(fn):
+    """Run a verification step outside autocast, on fp32 copies of half-precision inputs.
+
+    With PEM under fp16/bf16 autocast (Sam6DCore precision=...) the network features come out
+    in half precision, and the verification geometry (det, projection, IoU, texture means)
+    would either fail (det has no Half kernel) or lose the thresholds' precision. In fp32
+    runs every tensor is already float, so this changes nothing there.
+    """
+    def _f(x):
+        return x.float() if torch.is_tensor(x) and x.dtype in (torch.float16, torch.bfloat16) else x
+
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        # args[3] is `appe` in both wrapped functions; it is read only, so a converted copy is
+        # safe. `info` / `verify_rows` (args[4]) are filled in place and must stay the caller's.
+        args = [({k: _f(v) for k, v in a.items()} if i == 3 and isinstance(a, dict) else _f(a))
+                for i, a in enumerate(args)]
+        with torch.autocast(device_type='cuda', enabled=False):
+            return fn(*args, **kwargs)
+    return wrapper
+
+
+@_verify_in_fp32
 def independent_candidate_verify(pred_rs, pred_ts, geo_scores, appe, info=None):
     """Measure all candidates and, when enabled, apply the production filter chain."""
     B, P = geo_scores.shape
@@ -857,8 +881,30 @@ def independent_candidate_verify(pred_rs, pred_ts, geo_scores, appe, info=None):
     diag_stride = max(1, int(diag.get('evidence_stride', 8)))
     radius = appe.get('radius')
     have_col = ('dense_cm' in appe) and ('dense_co' in appe)
-    shape = _candidate_shape_metrics(
-        pred_rs, pred_ts, appe.get('_projection_model_pts'), appe)
+    # Opt-in cost cut (verify.candidate_topk > 0): only the K best geometry candidates are
+    # projected and texture-scored; the rest read as projection-invalid with zero overlap/area,
+    # i.e. Mask failures (zeros, not NaN: per-candidate rows convert these to int).
+    # The `topk` above does not do this: with verify on, every candidate is measured.
+    cand_k = int(ver.get('candidate_topk', 0) or 0) if production_on else 0
+    if 0 < cand_k < P:
+        _, keep = torch.topk(torch.nan_to_num(geo_scores, nan=float('-inf')), cand_k, dim=1)
+        bi = torch.arange(B, device=keep.device)[:, None]
+        sub = _candidate_shape_metrics(
+            pred_rs[bi, keep], pred_ts[bi, keep], appe.get('_projection_model_pts'), appe)
+        shape = None
+        if sub is not None:
+            shape = dict(sub)
+            for key in ('rendered_bbox_area_px', 'size_ratio', 'mask_iou', 'coverage',
+                        'rendered_mask_area_px', 'projection_valid'):
+                v = sub[key]
+                full = (torch.zeros((B, P), dtype=torch.bool, device=v.device)
+                        if v.dtype == torch.bool else
+                        torch.zeros((B, P), dtype=v.dtype, device=v.device))
+                full[bi, keep] = v
+                shape[key] = full
+    else:
+        shape = _candidate_shape_metrics(
+            pred_rs, pred_ts, appe.get('_projection_model_pts'), appe)
     if production_on:
         texture_by_original = torch.full_like(geo_scores, float('nan'))
         mask_min = float(ver.get('mask_iou_min', ver.get('iou_min', 0.420998)))
@@ -891,7 +937,7 @@ def independent_candidate_verify(pred_rs, pred_ts, geo_scores, appe, info=None):
                 nearest = torch.cdist(
                     obj, po.unsqueeze(0).expand(obj.size(0), -1, -1)).argmin(2)
                 texture_by_original[b, subset] = torch.einsum(
-                    'nd,knd->kn', fm, fo[nearest]).mean(1)
+                    'nd,knd->kn', fm, fo[nearest]).mean(1).to(texture_by_original.dtype)
         physical_t = pred_ts.clone()
         if radius is not None:
             physical_t = physical_t * radius.reshape(-1, 1, 1)
@@ -920,7 +966,7 @@ def independent_candidate_verify(pred_rs, pred_ts, geo_scores, appe, info=None):
                     nearest = torch.cdist(
                         obj, po.unsqueeze(0).expand(obj.size(0), -1, -1)).argmin(2)
                     texture_by_original[b, subset] = torch.einsum(
-                        'nd,knd->kn', fm, fo[nearest]).mean(1)
+                        'nd,knd->kn', fm, fo[nearest]).mean(1).to(texture_by_original.dtype)
         _attach_explorer_v2(info, pred_rs, physical_t, geo_scores,
                             texture_by_original, shape, appe, rows, selected)
         for b, decision in enumerate(rows):
@@ -1278,6 +1324,7 @@ def independent_candidate_verify(pred_rs, pred_ts, geo_scores, appe, info=None):
     return selected
 
 
+@_verify_in_fp32
 def validate_refined_poses(pred_rs, pred_ts_m, pose_scores, appe, verify_rows):
     """Recompute 8192-point Mask and deep-feature Texture for fine poses in place."""
     ver = appe.get('verify') or {}

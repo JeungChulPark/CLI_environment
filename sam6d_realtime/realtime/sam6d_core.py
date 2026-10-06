@@ -362,12 +362,12 @@ class Sam6DCore:
                         inp["dense_co"] = torch.cat([self._tem[n][2] for n in names], 0)
                     inp["obj_names"] = names              # 대칭 선언 조회용
                     out = self.pem(inp)
-                coarse = out["score"].detach().cpu().numpy()
-                pose_s = (out["pred_pose_score"].detach().cpu().numpy()
+                coarse = out["score"].detach().float().cpu().numpy()
+                pose_s = (out["pred_pose_score"].detach().float().cpu().numpy()
                           if "pred_pose_score" in out else None)
                 ps = coarse * pose_s if pose_s is not None else coarse
-                Rs = out["pred_R"].detach().cpu().numpy()
-                ts = out["pred_t"].detach().cpu().numpy() * 1000.0
+                Rs = out["pred_R"].detach().float().cpu().numpy()
+                ts = out["pred_t"].detach().float().cpu().numpy() * 1000.0
                 vfs = out.get("verify") or [None] * len(names)
                 explorer_payloads = out.get("pem_explorer") or [None] * len(names)
                 pds = out.get("pem_diagnostic") or [None] * len(names)

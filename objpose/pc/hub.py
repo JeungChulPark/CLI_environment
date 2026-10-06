@@ -316,6 +316,10 @@ class Hub:
             cfg.setdefault("ism", {})["config"] = self.a.ism_config
         if self.a.cluster_occupancy > 0:   # YCB-V setting of the paper: 0.3 instead of 0.5
             cfg["runtime"].setdefault("verify", {})["cluster_min_occupancy"] = self.a.cluster_occupancy
+        if self.a.no_verify:               # pose verification off: PEM keeps its geometry-best pose
+            cfg["runtime"]["verify"] = {"enabled": False}
+        if self.a.verify_candidates > 0:   # pose verification measures only the K best geometry candidates
+            cfg["runtime"].setdefault("verify", {})["candidate_topk"] = self.a.verify_candidates
         cfg["anchor"]["enabled"] = False
         cfg_path = self.out / "sam6d_config.yaml"
         cfg_path.write_text(yaml.safe_dump(cfg, allow_unicode=True, sort_keys=False), encoding="utf-8")
@@ -1134,6 +1138,10 @@ def main():
     ap.add_argument("--map-prior-conf", type=float, default=0.25, help="detector score given to a map-projected box")
     ap.add_argument("--ism-config", default="", help="SAM-6D object list yaml (default: the run_split_example.yaml setting)")
     ap.add_argument("--cluster-occupancy", type=float, default=0.0, help="override verify.cluster_min_occupancy (0 = keep)")
+    ap.add_argument("--no-verify", action="store_true",
+                    help="turn pose verification off (ablation): PEM's geometry-best pose is published as is")
+    ap.add_argument("--verify-candidates", type=int, default=0,
+                    help="verify.candidate_topk: pose verification checks only the K best of 300 candidates (0 = all)")
     ap.add_argument("--no-memory", action="store_true", help="show raw latest estimates instead of the object memory")
     ap.add_argument("--assoc-gate-m", type=float, default=0.15, help="object memory association distance gate")
     # The memory's existence filter penalises a landmark that is in view and not re-detected,
