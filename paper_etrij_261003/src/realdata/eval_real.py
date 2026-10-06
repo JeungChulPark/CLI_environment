@@ -16,15 +16,39 @@ pose) . T_slam_sam . T_cam_obj. Reported at 10/30/60/120 s and at the end: corre
 score = correct / (8 + wrong); time to map per object; recognition rate.
 
     python eval_real.py --runs real_260901_ours real_260901_g13 ...
+
+EVAL_REAL_SESSION=<recording> scores another recording with the same 8 objects (REF_BY_SESSION below):
+its reference is the median over deployed runs on that recording (Mac ORB-SLAM3 f2000). Recordings
+without an earlier usable run get a reference run of the deployed recogniser first (ref_<session>_ours).
+Each run's own T_slam_sam (summary.json X_slam_sam) is used, so recordings with another extrinsic work.
 """
-import argparse, bisect, glob, json
+import argparse, bisect, glob, json, os
 from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[3] / "objpose" / "output"
-X = np.asarray(json.load(open(ROOT.parent / "rt/260901/X_slam_sam_260901.json"))["T_slam_sam"], float).reshape(4, 4)
+SESSION = os.environ.get("EVAL_REAL_SESSION", "260901")
+_XP = ROOT.parent / f"rt/{SESSION[:6]}/X_slam_sam_{SESSION[:6]}.json"
+X = np.asarray(json.load(open(_XP if _XP.exists() else ROOT.parent / "rt/X_slam_sam.json"))["T_slam_sam"],
+               float).reshape(4, 4)
+
+
+def run_X(run):
+    """T_slam_sam this run used (falls back to the session default)."""
+    s = json.load(open(Path(run) / "summary.json"))
+    return np.asarray(s["X_slam_sam"], float).reshape(4, 4) if s.get("X_slam_sam") else X
 REF_RUNS = ["live_260901_cbnu_bigeightcircle_orbslam3", "live_260901_cbnu_bigeightcircle_orbslam3_f2000_dev01",
             "live_260901_cbnu_bigeightcircle_orbslam3_f2000_dup5"]
+REF_BY_SESSION = {
+    "260915": ["live_260915_eightcircle_orbslam3"],
+    "260915_eightcircle": ["live_260915_eightcircle_orbslam3"],
+    "260826_etri_eightcircle_dark": ["live_260826_etri_dark_orbslam3_f2000", "live_260826_etri_dark_orbslam3_f2000_dup",
+                                     "live_260826_etri_dark_orbslam3_f2000_dup5"],
+    "260901_cbnu_eightcircle": ["live_260901_cbnu_eightcircle_orbslam3"],
+    "260901_cbnu_longcircle": ["ref_260901_cbnu_longcircle_ours"],
+    "260910_object": ["ref_260910_object_ours"],
+}
+REF_RUNS = REF_BY_SESSION.get(SESSION, REF_RUNS)
 OBJS = ["saffron", "Febreze_high", "Dinosaur", "Bear", "milk", "choco_hazelnut_high", "Mugcup_high", "Sikhye_high"]
 RADIUS = 0.20
 TT = [10, 30, 60, 120]
@@ -50,6 +74,7 @@ def judge(entries, ref):
 
 
 def run_one(run, ref):
+    Xr = run_X(run)
     poses = [json.loads(l) for l in open(run / "slam_poses.jsonl")]
     poses = [p for p in poses if p.get("T_wc")]
     pt = [p["t_ns"] for p in poses]
@@ -62,7 +87,7 @@ def run_one(run, ref):
         ents = []
         for o in d["objects"]:
             if o.get("T_cam_obj"):
-                p = (Twc @ X @ np.asarray(o["T_cam_obj"], float).reshape(4, 4))[:3, 3]
+                p = (Twc @ Xr @ np.asarray(o["T_cam_obj"], float).reshape(4, 4))[:3, 3]
                 ents.append((o["name"].split("#")[0], p))
         ok, wrong = judge(ents, ref)
         t = (d["t_ns"] - t0) / 1e9

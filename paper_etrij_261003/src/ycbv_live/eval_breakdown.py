@@ -18,7 +18,7 @@ FULL = Path.home() / "DeepLearning/Dataset/bop/ycbv/full/test"
 pts, diam = EL.load_models(str(Path.home() / "DeepLearning/Dataset/bop/ycbv"))
 out = {}
 for tag in sys.argv[1:]:
-    c = Counter(); absent_names = Counter()
+    c = Counter(); absent_names = Counter(); missed_names = []
     for run in sorted(ROOT.glob(f"ycbv_live_{tag}_0000??")):
         if not run.is_dir():
             continue
@@ -60,11 +60,12 @@ for tag in sys.argv[1:]:
             if o in correct:
                 continue
             c["missed_wrong_only" if o in present else "missed_never"] += 1
+            missed_names.append(f"{run.name[-2:]}:{EL.YCB[o - 1]}" + ("(wrong only)" if o in present else ""))
         c["scene"] += len(scene)
     w = c["wrong_absent"] + c["wrong_misplaced"] + c["wrong_duplicate"]
     miss = c["missed_never"] + c["missed_wrong_only"]
     out[tag] = {**c, "wrong_total": w, "missed_total": miss, "counted_as_missed": miss + w,
                 "score_pct": round(100 * c["correct"] / (c["scene"] + w), 1),
-                "absent_top": absent_names.most_common(6)}
+                "absent_top": absent_names.most_common(6), "missed_names": missed_names}
     print(tag, json.dumps(out[tag], ensure_ascii=False))
 json.dump(out, open(Path(__file__).parent / "results_breakdown.json", "w"), indent=1, ensure_ascii=False)

@@ -10,6 +10,11 @@ OBJPOSE_LIVE_MODE
            ViT-L), upstream scores, top-1 per object, PEM if ISM score > OBJPOSE_ORIG_THRESH
   hybrid   the same original ISM front end, then OUR recogniser's PEM + pose verification
            (Sam6DCore with its ISM replaced; same as run_ours.py --orig-ism)
+  gateA    option A of the ladder study, live: FastSAM-x segment-everything boxes (upstream settings)
+           offered to every object in place of the YOLO-World call, then OUR ISM unchanged (semantic /
+           appearance / colour gates + exclusive box assignment, masks re-made from the boxes by
+           MobileSAM), PEM and pose verification; top_k 200 per object (run_ours.py --proposer
+           fastsam --top-k 200). The gate thresholds are those of the hub's ISM config.
 """
 import os
 import sys
@@ -85,6 +90,21 @@ def build_orig(cfg, desc):
     return names, ism, net, tcfg, pobj
 
 
+class _PBoxes:
+    def __init__(self, xyxy, cls, conf):
+        self.xyxy = torch.tensor(xyxy, dtype=torch.float32).reshape(-1, 4)
+        self.cls = torch.tensor(cls, dtype=torch.float32)
+        self.conf = torch.tensor(conf, dtype=torch.float32)
+
+    def __len__(self):
+        return len(self.conf)
+
+
+class _PRes:
+    def __init__(self, boxes):
+        self.boxes = boxes
+
+
 class LiveCore:
     def __init__(self, cfg):
         np.random.seed(0); torch.manual_seed(0)
@@ -97,9 +117,47 @@ class LiveCore:
             self.names, self.ism, self.net, self.tcfg, self.pobj = build_orig(cfg, self.desc)
             self.objs = [{"name": n} for n in self.names]
             self.verify = {}
+        elif self.mode == "gateA":
+            self._build_gateA(cfg)
         else:
             self._build_hybrid(cfg)
         print(f"[live-core] mode={self.mode} objects={len(self.objs)} ISM>{self.thresh} {self.desc}", flush=True)
+
+    # ---------------------------------------------------------------- option A
+    def _build_gateA(self, cfg):
+        sys.path.insert(0, str(SR / "realtime")); sys.path.insert(0, str(SR))
+        import sam6d_core
+        import verify_config as VC
+        from ultralytics import YOLO
+        rt = cfg.get("runtime", {})
+        dev = rt.get("device", "cuda:0")
+        cwd = os.getcwd(); os.chdir(SR)
+        self.core = sam6d_core.Sam6DCore(cfg.get("ism", {}).get("config", "configs/yolo_ism_objects.yaml"),
+                                         cfg.get("ism", {}).get("objects", []), dev,
+                                         rt.get("det_score_thresh", 0.2), appe_rerank=rt.get("appe_rerank"),
+                                         verify=rt.get("verify", VC.UNSET), pem_diagnostic=rt.get("pem_diagnostic"))
+        os.chdir(cwd)
+        self.objs, self.verify = self.core.objs, self.core.verify
+        self.cur = {}                        # process() records depth/K here (used by the hybrid ISM only)
+        for o in self.core.objs:
+            o["top_k"] = 200
+        fs = YOLO(os.environ.get("FASTSAM_X", str(Path.home() / "DeepLearning/Dataset/bop/ycbv_work/FastSAM-x.pt")))
+        args = dict(iou=0.9, conf=0.25, max_det=200, imgsz=640, verbose=False, device=dev, half=False, save=False)
+        nprompt = len(self.core.unique_prompts)
+
+        def fastsam_predict(bgr, **k):      # det_study/proposers.py FastSAMProposer, every box to every prompt
+            r = fs.predict(bgr, **args)[0]
+            xy, cl, cf = [], [], []
+            if r.boxes is not None and r.masks is not None:
+                h, w = bgr.shape[:2]
+                area = r.masks.data.float().sum(dim=(1, 2)) / float(r.masks.data.shape[1] * r.masks.data.shape[2])
+                for b, sc, ma in zip(r.boxes.xyxy.tolist(), r.boxes.conf.tolist(), area.tolist()):
+                    if (b[2] - b[0]) * (b[3] - b[1]) / (w * h) <= 0.05 ** 2 or ma <= 3e-4:
+                        continue
+                    for ci in range(nprompt):
+                        xy.append(b); cl.append(ci); cf.append(float(sc))
+            return [_PRes(_PBoxes(xy, cl, cf))]
+        self.core.yolo.predict = fastsam_predict
 
     # ---------------------------------------------------------------- hybrid
     def _build_hybrid(self, cfg):
