@@ -1832,4 +1832,288 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>정리:</strong> 개발 대상 물체(실제 데이터)만 보면 A안 ≥ 개선안 3 &gt; 개선안 1 &gt; 원본 0.5 순으로 정확합니다. 처음 보는 물체(YCB)까지 보면 개선안 3이 가장 균형이 좋습니다. 속도는 개선안 1이 가장 빠릅니다.</li>
 <li>260910에서 A안 실행은 SLAM 루프 보정이 4번(최대 138 cm) 있었지만, 최종 지도는 8개 모두 기준 위치 20 cm 안이었습니다.</li>
 </ul>
-<p>모두 1회 측정입니다. 실제 데이터의 기준 위치는 우리 기술의 실행에서 가져왔습니다.</p></main></body></html>
+<p>모두 1회 측정입니다. 실제 데이터의 기준 위치는 우리 기술의 실행에서 가져왔습니다.</p>
+<h2>9. 마스크 생성 방식 비교 — YCB-V (2026-10-07)</h2>
+<p>마스크(물체 후보 영역)를 만드는 방식 세 가지를 비교했습니다. 측정은 두 단계입니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>마스크 생성</th>
+<th>어디에 쓰이나</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>FastSAM-x 전체 분할</strong> — FastSAM이 직접 낸 마스크</td>
+<td>원본 SAM-6D, 개선안 2·3·4</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>FastSAM-x 상자 + MobileSAM</strong> — 같은 FastSAM 상자에서 MobileSAM으로 마스크를 다시 만듦</td>
+<td>A안</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>YOLO-World 문구 상자 + MobileSAM</strong> — YCB용 문구(①)로 찾은 상자, 물체마다 상위 3개(점수 0.02 이상)</td>
+<td>개선안 1</td>
+</tr>
+</tbody>
+</table></div>
+<p>FastSAM 설정은 원본 SAM-6D 그대로입니다(iou 0.9, conf 0.25, max_det 200, imgsz 640, 화면 변의 5 % 미만 상자와 화면의 3e-4 미만 마스크 제외).</p>
+<h3>1단계: 마스크만 비교 (YCB-V 900장, 정답 물체 4,123개)</h3>
+<p>정답 물체마다 그 장의 후보 가운데 정답 마스크(mask_visib)와 가장 잘 겹치는 후보의 IoU를 셉니다. "좋은 마스크가 후보 안에 있는가"를 보는 지표입니다. 뒤 단계가 그 후보를 골라야 실제로 찾으므로, 최종 정확도의 상한에 해당합니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>1. FastSAM-x 마스크</th>
+<th>2. FastSAM-x 상자 + MobileSAM</th>
+<th>3. YOLO-World 상자 + MobileSAM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IoU 0.5 이상으로 잡힌 비율</td>
+<td><strong>97.6%</strong></td>
+<td>96.8%</td>
+<td>91.3% (그 물체 이름의 상자만: 83.9%)</td>
+</tr>
+<tr>
+<td>IoU 0.75 이상으로 잡힌 비율</td>
+<td><strong>88.0%</strong></td>
+<td>84.2%</td>
+<td>79.5% (72.7%)</td>
+</tr>
+<tr>
+<td>평균 최고 IoU</td>
+<td><strong>0.851</strong></td>
+<td>0.833</td>
+<td>0.792 (0.723)</td>
+</tr>
+<tr>
+<td>장당 후보 수</td>
+<td>41.8</td>
+<td>41.8</td>
+<td><strong>7.1</strong></td>
+</tr>
+<tr>
+<td>장당 시간 (중앙값): 상자 / 마스크 / 합계</td>
+<td>32.9 / – / <strong>32.9 ms</strong></td>
+<td>30.9 / 90.2 / 121.0 ms</td>
+<td>13.2 / 43.7 / 57.3 ms</td>
+</tr>
+<tr>
+<td>잘 못 잡는 물체 (IoU 0.5 기준)</td>
+<td>특대 집게 79.3%, 전동 드릴 86.7%, 가위 90.7%</td>
+<td>특대 집게 71.3%, 전동 드릴 83.7%, 가위 88.0%</td>
+<td>대형 집게 38.7%, 특대 집게 58.7%, 푸딩 상자 70.7%, 전동 드릴 73.3%, 젤라틴 상자 76.0%</td>
+</tr>
+</tbody>
+</table></div>
+<h3>1-2단계: 물체 판정 0.5 포함 (YCB-V 900장, 정답 물체 4,123개)</h3>
+<p>세 방식 모두 마스크 뒤에 같은 물체 판정을 붙였습니다. 순서는 원본 SAM-6D 후처리(작은 상자·마스크 제외) → DINOv2 특징 → 의미·외형·기하 점수 → 물체마다 1위 마스크이고, 점수가 0.5를 넘으면 답으로 냅니다. 자세 추정은 하지 않습니다(<code>det_study/mask_recog.py</code>).</p>
+<ul>
+<li><strong>맞음:</strong> 그 물체 이름으로 답했고, 마스크가 그 물체의 정답 마스크와 IoU 0.5 이상</li>
+<li><strong>오답:</strong> 답했지만 다른 물체를 가리키거나 마스크가 틀림</li>
+<li><strong>놓침:</strong> 답하지 않음</li>
+</ul>
+<p>특징 모델은 개선안 2·3과 같은 ViT-S와, 원본 0.5와 같은 ViT-L 두 가지로 쟀습니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>1. FastSAM-x 마스크</th>
+<th>2. FastSAM-x 상자 + MobileSAM</th>
+<th>3. YOLO-World 상자 + MobileSAM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ViT-S</strong> 찾은 비율</td>
+<td><strong>85.5%</strong> (3,525)</td>
+<td>84.3% (3,475)</td>
+<td>82.7% (3,408)</td>
+</tr>
+<tr>
+<td>ViT-S 오답 / 장</td>
+<td>0.292 (263)</td>
+<td>0.371 (334)</td>
+<td><strong>0.188</strong> (169)</td>
+</tr>
+<tr>
+<td>ViT-S 정밀도 (답 가운데 맞은 비율)</td>
+<td>93.1%</td>
+<td>91.2%</td>
+<td><strong>95.3%</strong></td>
+</tr>
+<tr>
+<td>ViT-S 장당 시간: 마스크 / 특징 / 판정 / 합계</td>
+<td>33 / 103 / 22 / 157 ms</td>
+<td>146 / 103 / 22 / 270 ms</td>
+<td>68 / 22 / 13 / <strong>103 ms</strong></td>
+</tr>
+<tr>
+<td><strong>ViT-L</strong> 찾은 비율</td>
+<td><strong>87.6%</strong> (3,610)</td>
+<td>85.4% (3,520)</td>
+<td>82.8% (3,413)</td>
+</tr>
+<tr>
+<td>ViT-L 오답 / 장</td>
+<td>0.182 (164)</td>
+<td>0.248 (223)</td>
+<td><strong>0.166</strong> (149)</td>
+</tr>
+<tr>
+<td>ViT-L 정밀도</td>
+<td>95.7%</td>
+<td>94.0%</td>
+<td><strong>95.8%</strong></td>
+</tr>
+<tr>
+<td>ViT-L 장당 시간: 마스크 / 특징 / 판정 / 합계</td>
+<td>35 / 857 / 32 / 925 ms</td>
+<td>155 / 830 / 32 / 1012 ms</td>
+<td>72 / 161 / 15 / <strong>248 ms</strong></td>
+</tr>
+<tr>
+<td>장당 후보 수</td>
+<td>41.0</td>
+<td>41.0</td>
+<td><strong>7.0</strong></td>
+</tr>
+<tr>
+<td>맞은 답의 평균 마스크 IoU</td>
+<td>0.864 / 0.861</td>
+<td>0.855 / 0.853</td>
+<td>0.859 / 0.857</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>판정 기준값에 따른 변화</strong> (찾은 비율 / 오답 / 장)</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>기준</th>
+<th>1. FastSAM-x 마스크 (ViT-S)</th>
+<th>3. YOLO-World 상자 (ViT-S)</th>
+<th>1. FastSAM-x 마스크 (ViT-L)</th>
+<th>3. YOLO-World 상자 (ViT-L)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.2 (원본 기본값)</td>
+<td>88.8% / 0.506</td>
+<td>87.4% / 0.287</td>
+<td>93.3% / 0.282</td>
+<td>88.3% / 0.254</td>
+</tr>
+<tr>
+<td>0.4</td>
+<td>88.5% / 0.473</td>
+<td>86.9% / 0.249</td>
+<td>91.8% / 0.222</td>
+<td>87.1% / 0.200</td>
+</tr>
+<tr>
+<td><strong>0.5</strong></td>
+<td>85.5% / 0.292</td>
+<td>82.7% / 0.188</td>
+<td>87.6% / 0.182</td>
+<td>82.8% / 0.166</td>
+</tr>
+<tr>
+<td>0.6</td>
+<td>73.5% / 0.124</td>
+<td>70.9% / 0.102</td>
+<td>73.0% / 0.120</td>
+<td>69.2% / 0.084</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>잘 못 찾는 물체 (ViT-S, 기준 0.5)</strong></p>
+<ul>
+<li>1번: 가위 12.0%, 특대 집게 48.0%, 푸딩 상자 58.7%</li>
+<li>3번: 가위 22.7%, 대형 집게 38.0%, 특대 집게 44.7%, 푸딩 상자 52.0%</li>
+</ul>
+<p><strong>물체 판정을 넣으면 달라지는 점</strong></p>
+<ul>
+<li>마스크만 볼 때의 차이(IoU 0.5 이상 97.6 / 96.8 / 91.3%)가 크게 줄어, 찾은 비율 차이는 2.8%p(ViT-S)·4.8%p(ViT-L)입니다. FastSAM이 좋은 마스크를 후보에 넣어도, 후보 40여 개 가운데서 판정이 그 마스크를 다 고르지는 못합니다.</li>
+<li>오답은 3번이 가장 적습니다. 후보가 7개뿐이고 문구로 이미 물체를 좁혔기 때문입니다.</li>
+<li>특징 계산 시간이 후보 수에 비례합니다. ViT-L에서는 1번 857 ms 대 3번 161 ms로, 3번이 장당 3.7배 빠릅니다.</li>
+</ul>
+<h3>2단계: 끝까지 비교 (YCB-V 36장, 물체 165개)</h3>
+<p>뒷단을 개선안 3(DINOv2 ViT-S → 원본 물체 판정 0.5 → PEM → 자세 검증)으로 고정하고 마스크 생성만 바꿨습니다(<code>run_ours.py --orig-ism 0.5 --orig-desc dinov2_vits14 --orig-seg &lt;방식&gt;</code>). 1번은 이전 개선안 3의 36장 결과(136 / 138, 82.4%)와 똑같이 나와, 측정 방식이 바뀌지 않았음을 확인했습니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>1. FastSAM-x 마스크</th>
+<th>2. FastSAM-x 상자 + MobileSAM</th>
+<th>3. YOLO-World 상자 + MobileSAM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>찾은 비율 (정답 자세)</td>
+<td><strong>82.4%</strong> (136)</td>
+<td>78.8% (130)</td>
+<td>75.8% (125)</td>
+</tr>
+<tr>
+<td>답한 수</td>
+<td>138</td>
+<td>132</td>
+<td>125</td>
+</tr>
+<tr>
+<td>찾았지만 오답 (자세 틀림)</td>
+<td>2</td>
+<td>2</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>오답 / 장</td>
+<td>0.056</td>
+<td>0.056</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>장당 전체 시간 (중앙값)</td>
+<td>1908 ms</td>
+<td>2096 ms</td>
+<td><strong>1566 ms</strong></td>
+</tr>
+<tr>
+<td>ㄴ 마스크 생성 + 물체 판정</td>
+<td>164 ms</td>
+<td>276 ms</td>
+<td><strong>109 ms</strong></td>
+</tr>
+<tr>
+<td>ㄴ 자세 추정 + 검증</td>
+<td>1739 ms</td>
+<td>1786 ms</td>
+<td><strong>1460 ms</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>참고로 같은 36장에서 원본 0.5는 89.7% / 0.056 / 1448 ms, 개선안 1은 76.4% / 0.056 / 1620 ms, A안은 61.2% / 0.111 / 1607 ms였습니다.</p>
+<h3>결론</h3>
+<ul>
+<li><strong>찾는 수는 1. FastSAM-x 마스크가 가장 많습니다.</strong> 물체 판정만 붙였을 때 85.5%(ViT-S)·87.6%(ViT-L), 자세까지 넣은 36장에서 82.4%입니다.</li>
+<li><strong>속도와 오답은 3. YOLO-World 문구 상자 + MobileSAM이 가장 좋습니다.</strong> 인식까지 장당 103 ms(ViT-S)·248 ms(ViT-L)로 1번보다 1.5배·3.7배 빠르고, 오답 / 장이 가장 적습니다(0.188·0.166). 자세까지 넣은 36장에서는 오답이 0이었습니다. 대신 1번보다 2.8~6.6%p 덜 찾습니다. 놓치는 것은 문구로 잘 안 잡히는 물체(집게, 가위, 푸딩 상자)입니다.</li>
+<li><strong>2. FastSAM-x 상자 + MobileSAM은 모든 측정에서 1번보다 느리고 덜 정확합니다.</strong> 같은 상자에서 마스크를 다시 만드는 데 장당 110~120 ms를 더 쓰고, 찾은 비율은 1.2~2.2%p 낮고 오답은 더 많습니다. 쓸 이유가 없습니다.</li>
+<li><strong>특징 모델에 따라 고를 것이 달라집니다.</strong></li>
+<li>ViT-S: 1번이 3번보다 54 ms 느린 대신 2.8%p 더 찾습니다. 정확도가 중요하면 1번이 낫습니다.</li>
+<li>ViT-L: 1번은 후보 40여 개를 모두 ViT-L로 계산하느라 장당 925 ms가 걸립니다(3번 248 ms). 속도가 중요하면 3번이 크게 유리합니다.</li>
+<li>1번은 ViT-L로 바꾸면 2.1%p 더 찾고 오답이 38% 줄지만, 3번은 ViT-L로 바꿔도 거의 그대로입니다(82.7 → 82.8%).</li>
+<li><strong>추천:</strong></li>
+<li>처음 보는 물체까지 찾아야 하면 1번 + ViT-S를 씁니다. 개선안 3과 같은 앞단입니다.</li>
+<li>정해진 물체를 빠르고 오답 없이 찾아야 하면 3번을 씁니다. 개선안 1과 같은 앞단이고, 실제 데이터처럼 문구를 맞춰 둔 물체에서는 놓치는 손실이 작습니다.</li>
+<li>자세 추정과 검증까지 넣으면 장당 시간의 대부분(76~93%)이 그 단계라, 마스크 방식 사이의 속도 차이는 18% 안팎으로 줄어듭니다(36장 1908 / 2096 / 1566 ms).</li>
+</ul>
+<p>1회 측정이고, 이 PC(RTX 3080 Ti Laptop)에서 쟀습니다. 결과는 <code>src/ycbv/det_study/out/mask_study_900.json</code>, <code>mask_recog_900_vits.json</code>, <code>mask_recog_900_vitl.json</code>, <code>mask_e2e.json</code>에 있습니다.</p></main></body></html>

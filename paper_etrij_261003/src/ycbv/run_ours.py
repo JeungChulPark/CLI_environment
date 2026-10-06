@@ -118,6 +118,9 @@ def main():
                     help="replace our ISM by the original SAM-6D ISM (FastSAM-x, top-1 per object, ISM score > x); "
                          "our PEM + pose verification run on its masks")
     ap.add_argument("--orig-desc", default="dinov2_vitl14", help="descriptor of --orig-ism (dinov2_vitl14 | dinov2_vits14)")
+    ap.add_argument("--orig-seg", default="fastsam_full", choices=["fastsam_full", "fastsam_msam", "text_msam"],
+                    help="mask source of --orig-ism: FastSAM-x masks (upstream) | FastSAM-x boxes + MobileSAM | "
+                         "YOLO-World text boxes (method-1 prompts, top-3 per target) + MobileSAM")
     ap.add_argument("--size-gate", type=float, default=0.0, help="gate study 2: reject masks whose depth extent > x * CAD diagonal")
     ap.add_argument("--gate-sem", type=float, default=0.0, help="gate study 3: semantic threshold override (0.35)")
     ap.add_argument("--gate-appe", type=float, default=0.0, help="gate study 3: masked-appearance threshold override (0.605)")
@@ -181,6 +184,38 @@ def main():
         ism_o, bank_o = ROG.build_ism(model_name=a.orig_desc)
         trimesh.load_mesh = patched
         cache_o, cur = {}, {}
+        if a.orig_seg != "fastsam_full":
+            # mask-source study: the same original ISM / PEM / verification, only the masks change
+            import cv2
+            import yolo_ism as yi
+            msam = yi.build_segmentor(str(P.REPO / "sam6d_realtime" / "mobile_sam.pt"), "cuda:0")
+            fs_model, fs_args = ism_o.segmentor_model.model, ism_o.segmentor_model.args
+            if a.orig_seg == "text_msam":
+                sys.path.insert(0, str(P.HERE / "det_study"))
+                import proposers
+                tprop = proposers.build("text:yolov8m-worldv2.pt:" + str(P.HERE / "det_study/out/prompts_best_m.json"))
+
+            def box_masks(image):
+                bgr_i = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+                if a.orig_seg == "fastsam_msam":       # FastSAM-x boxes (upstream call), masks by MobileSAM
+                    det = fs_model.predict(image, **fs_args)[0]
+                    boxes = det.boxes.xyxy.tolist() if det.boxes is not None else []
+                else:                                   # YOLO-World text boxes, top-3 per target, by MobileSAM
+                    tprop.activate(cur["oids"])
+                    top = {}
+                    for d in sorted(tprop.predict(bgr_i, 0.02), key=lambda d: -d[2]):
+                        if len(top.setdefault(d[1], [])) < 3:
+                            top[d[1]].append(d[0])
+                    boxes = [b for bs in top.values() for b in bs]
+                if not boxes:
+                    return None
+                ms = yi.segment_boxes(msam, bgr_i, boxes, "cuda:0")
+                keep = [j for j, m in enumerate(ms) if m is not None and m.any()]
+                if not keep:
+                    return None
+                return {"masks": torch.from_numpy(np.stack([ms[j] for j in keep])).float().to(ROG.DEV),
+                        "boxes": torch.tensor([boxes[j] for j in keep], dtype=torch.float32, device=ROG.DEV)}
+            ism_o.segmentor_model.generate_masks = box_masks
 
         def orig_recognize(groups, pb, bgr, rgb, norm_full, *args, **kw):
             """original ISM (run_orig.run_frame up to the top-1 masks), in our results format"""
@@ -256,7 +291,7 @@ def main():
         "proposals": (prop.name if prop is not None else "YOLO-World text prompts") if a.mode == "text"
         else "GT bbox_obj of target objects",
         "proposer_spec": a.proposer or None,
-        "orig_ism": {"thresh": a.orig_ism, "desc": a.orig_desc} if a.orig_ism else None,
+        "orig_ism": {"thresh": a.orig_ism, "desc": a.orig_desc, "seg": a.orig_seg} if a.orig_ism else None,
         "verify_cost": {"candidates": a.verify_candidates or None, "topk": a.verify_topk, "stride": a.verify_stride, "precision": a.precision or None},
         "gate_study": {"assign_fallback": a.assign_fallback, "size_gate": a.size_gate, "gate_sem": a.gate_sem,
                        "gate_appe": a.gate_appe, "gate_hsv": a.gate_hsv},
