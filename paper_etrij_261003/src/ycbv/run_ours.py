@@ -121,6 +121,9 @@ def main():
     ap.add_argument("--orig-seg", default="fastsam_full", choices=["fastsam_full", "fastsam_msam", "text_msam"],
                     help="mask source of --orig-ism: FastSAM-x masks (upstream) | FastSAM-x boxes + MobileSAM | "
                          "YOLO-World text boxes (method-1 prompts, top-3 per target) + MobileSAM")
+    ap.add_argument("--ism-only", action="store_true",
+                    help="recognition study: stop after the object decision (no PEM) and score the named masks "
+                         "against the GT visible masks (correct = IoU >= 0.5 with that object's mask)")
     ap.add_argument("--size-gate", type=float, default=0.0, help="gate study 2: reject masks whose depth extent > x * CAD diagonal")
     ap.add_argument("--gate-sem", type=float, default=0.0, help="gate study 3: semantic threshold override (0.35)")
     ap.add_argument("--gate-appe", type=float, default=0.0, help="gate study 3: masked-appearance threshold override (0.605)")
@@ -259,6 +262,15 @@ def main():
         o_n.recognize_frame_auto = orig_recognize
         core.yolo.predict = lambda bgr, **k: [_Res(_Boxes([], [], []))]
         orig = cur
+    cap = {}
+    if a.ism_only:                     # keep the decision, hand PEM nothing
+        real_rec = o_n.recognize_frame_auto
+
+        def capture(*args, **kw):
+            r = real_rec(*args, **kw)
+            cap["res"] = r
+            return {k: {**v, "accepted": False} for k, v in r.items()}
+        o_n.recognize_frame_auto = capture
     if a.mode == "gtbox_locked":
         for o in core._all_objs:
             o["relative_assignment_enabled"] = False
@@ -297,6 +309,46 @@ def main():
                        "gate_appe": a.gate_appe, "gate_hsv": a.gate_hsv},
         "prompts": {P.obj_name(i + 1): p for i, p in enumerate(P.PROMPTS)}})
     res["images"] = []
+    if a.ism_only:
+        import cv2
+        recog, tms = [], []
+        for n, (sid, iid, oids) in enumerate(items):
+            cap.clear()
+            rows, ms, nb, tot = run(sid, iid, oids)
+            tms.append({"total": tot, **ms})
+            r = cap.get("res") or {}
+            gt = D.scene(sid)["scene_gt"][str(iid)]
+            root = P.YCBV / "test" / f"{sid:06d}"
+            for o in oids:
+                v = r.get(P.obj_name(o)) or {}
+                m = v.get("mask") if v.get("accepted") else None
+                k = next((j for j, g in enumerate(gt) if g["obj_id"] == o), None)
+                iou = 0.0
+                if m is not None and k is not None:
+                    g = cv2.imread(str(root / "mask_visib" / f"{iid:06d}_{k:06d}.png"), cv2.IMREAD_GRAYSCALE) > 0
+                    m = np.asarray(m, bool)
+                    iou = float(np.logical_and(m, g).sum()) / float(max(np.logical_or(m, g).sum(), 1))
+                recog.append({"scene": sid, "im": iid, "obj": o, "answered": m is not None, "iou": round(iou, 4)})
+            if n % 50 == 0 or n == len(items) - 1:
+                c = sum(x["answered"] and x["iou"] >= 0.5 for x in recog)
+                print(f"[{n + 1}/{len(items)}] found {100 * c / len(recog):.1f}% {tot:.0f} ms", flush=True)
+        ans = [x for x in recog if x["answered"]]
+        cor = [x for x in ans if x["iou"] >= 0.5]
+        res["recognition"] = {
+            "targets": len(recog), "answers": len(ans), "correct": len(cor), "wrong": len(ans) - len(cor),
+            "found_pct": round(100 * len(cor) / max(len(recog), 1), 1),
+            "precision_pct": round(100 * len(cor) / max(len(ans), 1), 1),
+            "wrong_per_image": round((len(ans) - len(cor)) / max(len(items), 1), 3),
+            "mean_iou_correct": round(float(np.mean([x["iou"] for x in cor])), 3) if cor else None,
+            "time_ms_median": {k: round(float(np.median([t[k] for t in tms])), 1) for k in ("total", "yolo", "ism")},
+            "per_object_found_pct": {P.obj_name(o): round(100 * sum(x["answered"] and x["iou"] >= 0.5 for x in recog if x["obj"] == o)
+                                                          / max(sum(1 for x in recog if x["obj"] == o), 1), 1)
+                                     for o in sorted({x["obj"] for x in recog})}}
+        res["rows"] = recog
+        res["finished"] = time.strftime("%Y-%m-%d %H:%M:%S")
+        json.dump(res, open(out, "w"), indent=1, default=float)
+        print("->", out, {k: v for k, v in res["recognition"].items() if k != "per_object_found_pct"})
+        return
     for n, (sid, iid, oids) in enumerate(items):
         rows, ms, nb, tot = run(sid, iid, oids)
         preds = []
