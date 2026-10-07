@@ -1,0 +1,575 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>비교 대상 논문과 비교 수치 (논문 실험용 · 특허 비교용)</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1>비교 대상 논문과 비교 수치 (논문 실험용 · 특허 비교용)</h1>
+<p>작성일 2026-10-03. 수치는 각 논문의 arXiv 본문 표와 BOP 리더보드(오늘 조회)에서만 가져왔다. 확인하지 못한 값은 <strong>미확인</strong>으로 적었다. 투고 전에 원문 표와 한 번 더 대조해야 한다. 특허 쪽 비교 대상은 발표자료 0.06v의 종래 기술(7–12쪽), 추가 선행기술(61쪽), 관련 연구(64–65쪽)에서 가져왔다.</p>
+<p><strong>출처 키</strong> (<code>ax:</code> = <code><a href="https://arxiv.org/abs/">https://arxiv.org/abs/</a></code>)</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>키</th>
+<th>논문</th>
+<th>키</th>
+<th>논문</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1</td>
+<td>SAM-6D <a href="https://arxiv.org/abs/2311.15707">arXiv:2311.15707</a></td>
+<td>S10</td>
+<td>CNOS <a href="https://arxiv.org/abs/2307.11067">arXiv:2307.11067</a></td>
+</tr>
+<tr>
+<td>S2</td>
+<td>GigaPose <a href="https://arxiv.org/abs/2311.14155">arXiv:2311.14155</a></td>
+<td>S11</td>
+<td>NIDS-Net <a href="https://arxiv.org/abs/2405.17859">arXiv:2405.17859</a></td>
+</tr>
+<tr>
+<td>S3</td>
+<td>FoundPose <a href="https://arxiv.org/abs/2311.18809">arXiv:2311.18809</a></td>
+<td>S12</td>
+<td>MUSE <a href="https://arxiv.org/abs/2510.17866">arXiv:2510.17866</a></td>
+</tr>
+<tr>
+<td>S4</td>
+<td>FoundationPose <a href="https://arxiv.org/abs/2312.08344">arXiv:2312.08344</a></td>
+<td>S13</td>
+<td>CLON <a href="https://arxiv.org/abs/2609.04784">arXiv:2609.04784</a></td>
+</tr>
+<tr>
+<td>S5</td>
+<td>FreeZe <a href="https://arxiv.org/abs/2312.00947">arXiv:2312.00947</a></td>
+<td>S14</td>
+<td>YOLO-World <a href="https://arxiv.org/abs/2401.17270">arXiv:2401.17270</a></td>
+</tr>
+<tr>
+<td>S6</td>
+<td>Co-op <a href="https://arxiv.org/abs/2503.17731">arXiv:2503.17731</a></td>
+<td>S15</td>
+<td>YOLOE <a href="https://arxiv.org/abs/2503.07465">arXiv:2503.07465</a></td>
+</tr>
+<tr>
+<td>S7</td>
+<td>BOP 2024 결과 <a href="https://arxiv.org/abs/2504.02812">arXiv:2504.02812</a></td>
+<td>S16</td>
+<td>Grounding DINO <a href="https://arxiv.org/abs/2303.05499">arXiv:2303.05499</a></td>
+</tr>
+<tr>
+<td>S8</td>
+<td>BOP 2023 결과 <a href="https://arxiv.org/abs/2403.09799">arXiv:2403.09799</a></td>
+<td>S17</td>
+<td>Grounded-SAM <a href="https://arxiv.org/abs/2401.14159">arXiv:2401.14159</a></td>
+</tr>
+<tr>
+<td>S9</td>
+<td>BOP 리더보드 YCB-V <a href="https://bop.felk.cvut.cz/leaderboards/pose-estimation-unseen-bop23/ycb-v/">https://bop.felk.cvut.cz/leaderboards/pose-estimation-unseen-bop23/ycb-v/</a></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2>1. 논문 실험에서 비교할 대상</h2>
+<h3>1.1 실험별로 무엇과 비교하나</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>원고의 실험</th>
+<th>비교 대상</th>
+<th>비교 방식</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6.1 인식 (YCB-V BOP AR, 처리 시간)</td>
+<td>SAM-6D, GenFlow, MegaPose, ZeroPose, GigaPose, FoundPose, FreeZe, Co-op, FoundationPose</td>
+<td>논문 보고값을 표로 인용. 처리 시간은 <strong>같은 GPU에서 다시 측정</strong>해야 공정하다</td>
+</tr>
+<tr>
+<td>6.1 후보 생성·검출 (AP, 시간)</td>
+<td>CNOS, SAM-6D ISM, NIDS-Net, MUSE, CLON, YOLO-World, YOLOE</td>
+<td>논문 보고값 인용 + 우리 후보 생성 시간</td>
+</tr>
+<tr>
+<td>6.2 촬영 시각 키프레임 고정</td>
+<td>도착 시각 등록, tf2식 보간(지도 고정), 도착 시각 키프레임</td>
+<td><strong>이미 원고에 있음</strong> (방식 (a)~(c)). 같은 기능을 가진 공개 시스템이 없어 이 방식이 사실상 유일한 직접 비교다</td>
+</tr>
+<tr>
+<td>6.3 객체 지도 정확도</td>
+<td>CosyPose(다중 뷰), Merrill 외(객체 SLAM), PoseRBPF, FoundationPose 추적 모드</td>
+<td>우리 결과를 YCB-V ADD-S AUC로 다시 계산하면 수치 비교가 가능하다</td>
+</tr>
+<tr>
+<td>6.3 재연결·시간 일관성</td>
+<td>Zorina 외 (RA-L 2025)</td>
+<td>YCB-V 동영상 기준 recall / precision으로 다시 계산하면 비교 가능</td>
+</tr>
+<tr>
+<td>6.4 지연 보상 표시</td>
+<td>MaskFusion, Liu 외 (MobiCom19), Zorina 외</td>
+<td>정성 비교 (지표가 다름)</td>
+</tr>
+<tr>
+<td>시스템 전체</td>
+<td>Fusion++, MaskFusion, VOOM, QuadricSLAM, CubeSLAM, POCD, Khronos, Hydra, Lost &amp; Found, DSP-SLAM++</td>
+<td>관련 연구 표로 정성 비교</td>
+</tr>
+</tbody>
+</table></div>
+<h3>1.2 YCB-V 미학습 객체 6D 자세 (BOP Task 4, AR, RGB-D)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>검출</th>
+<th>YCB-V AR</th>
+<th>7개 데이터 평균</th>
+<th>장당 시간 · GPU</th>
+<th>출처</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SAM-6D (SAM)</td>
+<td>자체 ISM</td>
+<td>84.5</td>
+<td>70.4</td>
+<td>4.37 s, RTX 3090</td>
+<td>S1 Table 2, 6</td>
+</tr>
+<tr>
+<td>SAM-6D (FastSAM)</td>
+<td>자체 ISM</td>
+<td>83.4</td>
+<td>66.2</td>
+<td>1.43 s, RTX 3090</td>
+<td>S1 Table 2, 6</td>
+</tr>
+<tr>
+<td><em>우리 재실행 SAM-6D (FastSAM)</em></td>
+<td>자체</td>
+<td><em>78.7</em></td>
+<td>—</td>
+<td><em>1613 ms</em></td>
+<td>원고 표 1</td>
+</tr>
+<tr>
+<td><em>제안 (텍스트 / 정답 상자)</em></td>
+<td>—</td>
+<td><em>57.8 / 74.5</em></td>
+<td>—</td>
+<td><em>433 / 528 ms</em></td>
+<td>원고 표 1</td>
+</tr>
+<tr>
+<td>MegaPose + Teaser++</td>
+<td>CNOS-FastSAM</td>
+<td>76.4</td>
+<td>62.8</td>
+<td>142.0 s</td>
+<td>S7 Table 2</td>
+</tr>
+<tr>
+<td>ZeroPose</td>
+<td>CNOS-FastSAM</td>
+<td>65.3</td>
+<td>57.0</td>
+<td>16.2 s</td>
+<td>S7 Table 2</td>
+</tr>
+<tr>
+<td>GenFlow (16가설)</td>
+<td>CNOS-FastSAM</td>
+<td>83.3</td>
+<td>67.4</td>
+<td>34.6 s</td>
+<td>S8 Table 3</td>
+</tr>
+<tr>
+<td>GigaPose 거친 단계 (RGB)</td>
+<td>CNOS</td>
+<td>27.8</td>
+<td>26.8</td>
+<td>0.4 s, V100</td>
+<td>S2 Table 1</td>
+</tr>
+<tr>
+<td>GigaPose + GenFlow</td>
+<td>CNOS</td>
+<td>82.5</td>
+<td>68.6</td>
+<td>11.1 s</td>
+<td>S7 Table 2</td>
+</tr>
+<tr>
+<td>FoundPose + 정제 (RGB)</td>
+<td>CNOS</td>
+<td>69.0</td>
+<td>59.6</td>
+<td>20.5 s, P100</td>
+<td>S3 Table 1</td>
+</tr>
+<tr>
+<td>FreeZe (정제 없음 / 있음)</td>
+<td>CNOS</td>
+<td>78.7 / 85.3</td>
+<td>64.0 / 69.3</td>
+<td>정제 13.5 s</td>
+<td>S5 Table 1</td>
+</tr>
+<tr>
+<td>Co-op 거친 단계 / 5가설</td>
+<td>CNOS</td>
+<td>85.3 / 88.7</td>
+<td>72.1 / 75.2</td>
+<td>1.0 / 7.2 s, RTX 3090 Ti</td>
+<td>S6 Table 3</td>
+</tr>
+<tr>
+<td>FoundationPose</td>
+<td>SAM-6D 마스크</td>
+<td>88.9</td>
+<td>73.4</td>
+<td>29.3 s</td>
+<td>S7 Table 2</td>
+</tr>
+<tr>
+<td>FreeZeV2.2 (리더보드 1위, 2025-05)</td>
+<td>—</td>
+<td>91.8</td>
+<td>—</td>
+<td>24.3 s</td>
+<td>S9</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>원고에 반영할 점</strong></p>
+<ul>
+<li><strong>재실행 차이:</strong> 우리가 다시 돌린 SAM-6D(78.7)는 논문 값(83.4)보다 4.7 낮다. 원인(평가 프레임 수, 버전, 설정)을 확인해 원고에 적어야 한다. 그대로 두면 심사위원이 비교 전체를 의심할 수 있다.</li>
+<li><strong>우리 방법의 위치:</strong> 정확도 순위로는 경쟁이 되지 않는다. 대신 "1초 이하에서 틀린 답이 가장 적은 방법"으로 위치를 잡는 것이 맞다. 리더보드 상위권은 장당 7~35초가 걸린다. 표에 처리 시간과 틀린 답 비율을 함께 두면 이 점이 드러난다.</li>
+<li><strong>처리 시간 비교:</strong> 장당 시간은 GPU가 서로 달라 그대로 비교할 수 없다. 같은 GPU에서 SAM-6D, Co-op 거친 단계, GigaPose를 다시 재야 한다 (계획서 E4).</li>
+</ul>
+<h3>1.3 YCB-V 미학습 객체 검출·분할 (BOP Task 5/6)과 검출기 속도</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>검출 AP</th>
+<th>분할 AP</th>
+<th>시간 · GPU</th>
+<th>출처</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CNOS (FastSAM)</td>
+<td>56.8</td>
+<td>59.9</td>
+<td>0.22 s, V100</td>
+<td>S1, S8</td>
+</tr>
+<tr>
+<td>CNOS (SAM)</td>
+<td>49.0</td>
+<td>59.5</td>
+<td>1.85 s, V100</td>
+<td>S1, S8</td>
+</tr>
+<tr>
+<td>SAM-6D ISM (FastSAM)</td>
+<td>58.9</td>
+<td>62.1</td>
+<td>0.45 s, RTX 3090</td>
+<td>S1 Table 1, 10</td>
+</tr>
+<tr>
+<td>NIDS-Net</td>
+<td>62.4</td>
+<td>미확인</td>
+<td>0.48 s, A5000</td>
+<td>S7, S11</td>
+</tr>
+<tr>
+<td>MUSE</td>
+<td>67.4</td>
+<td>69.0</td>
+<td>0.51 s, RTX 4090</td>
+<td>S7, S12</td>
+</tr>
+<tr>
+<td>CLON</td>
+<td>66.9</td>
+<td>69.2</td>
+<td>미확인</td>
+<td>S13 Table 1</td>
+</tr>
+<tr>
+<td>YOLO-World-L</td>
+<td>LVIS AP 35.0</td>
+<td>—</td>
+<td>52 FPS, V100</td>
+<td>S14 Table 2</td>
+</tr>
+<tr>
+<td>YOLOE-v8-L</td>
+<td>LVIS AP 35.9</td>
+<td>—</td>
+<td>102.5 FPS, T4</td>
+<td>S15 Table 1</td>
+</tr>
+<tr>
+<td>Grounding DINO-T</td>
+<td>LVIS AP 27.4</td>
+<td>—</td>
+<td>1.5 FPS, V100</td>
+<td>S14</td>
+</tr>
+</tbody>
+</table></div>
+<p>우리 후보 생성은 장당 38 ms(특징 추출 기준)다. 검출 AP는 아직 재지 않았다. BOP Task 5 형식으로 다시 계산하면 이 표에 넣을 수 있다.</p>
+<h3>1.4 객체 SLAM · 객체 지도 (YCB-V 등)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>시스템</th>
+<th>데이터 · 지표</th>
+<th>수치</th>
+<th>속도</th>
+<th>출처</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CosyPose 다중 뷰 (ECCV20)</td>
+<td>YCB-V ADD-S AUC</td>
+<td>1뷰 89.8, 5뷰 93.4</td>
+<td>미확인</td>
+<td><a href="https://arxiv.org/abs/2008.08465">arXiv:2008.08465</a> Table 2a</td>
+</tr>
+<tr>
+<td>Merrill 외 (CVPR22)</td>
+<td>YCB-V ADD-S AUC / ADD(-S)</td>
+<td>90.3 / 84.7</td>
+<td>11 Hz / 2 Hz</td>
+<td><a href="https://arxiv.org/abs/2205.01823">arXiv:2205.01823</a> Table 1</td>
+</tr>
+<tr>
+<td>PoseRBPF (RSS19)</td>
+<td>YCB-V ADD-S (RGB-D)</td>
+<td>93.3</td>
+<td>20.3 fps</td>
+<td><a href="https://arxiv.org/abs/1905.09304">arXiv:1905.09304</a></td>
+</tr>
+<tr>
+<td>FoundationPose 추적</td>
+<td>YCB-V ADD-S AUC</td>
+<td>97.9</td>
+<td>약 32 Hz</td>
+<td>S4 Table 5</td>
+</tr>
+<tr>
+<td>Zorina 외 (RA-L 2025)</td>
+<td>YCB-V 동영상 recall / precision</td>
+<td>0.82 / 0.77</td>
+<td>인식 5 Hz</td>
+<td><a href="https://arxiv.org/abs/2605.02708">arXiv:2605.02708</a> Table II (arXiv 번호와 게재 연도 확인 필요)</td>
+</tr>
+<tr>
+<td>Fusion++ (3DV18)</td>
+<td>TUM ATE</td>
+<td>0.049 m</td>
+<td>4–8 Hz</td>
+<td><a href="https://arxiv.org/abs/1808.08378">arXiv:1808.08378</a></td>
+</tr>
+<tr>
+<td>VOOM (ICRA24)</td>
+<td>TUM ATE</td>
+<td>0.0080 m</td>
+<td>미확인</td>
+<td><a href="https://arxiv.org/abs/2402.13609">arXiv:2402.13609</a></td>
+</tr>
+<tr>
+<td>Lost &amp; Found (RA-L25)</td>
+<td>자체 데이터 위치 / 회전 RMSE</td>
+<td>6.02 cm / 7.79°</td>
+<td>지연 1.15 s</td>
+<td><a href="https://arxiv.org/abs/2411.19162">arXiv:2411.19162</a></td>
+</tr>
+<tr>
+<td>DSP-SLAM++ (arXiv 2026-06)</td>
+<td>실외</td>
+<td>객체 처리 지연 최대 70% 감소</td>
+<td>25 Hz</td>
+<td><a href="https://arxiv.org/abs/2606.25953">arXiv:2606.25953</a></td>
+</tr>
+</tbody>
+</table></div>
+<p>우리 YCB-V 실시간 결과(위치 오차 중앙값 5.2 mm, 90% 9.5 mm)를 ADD-S AUC로 다시 계산하면 CosyPose·Merrill·PoseRBPF와 같은 표에 넣을 수 있다. 다만 그 방법들은 물체마다 학습했거나 프레임마다 추적한다. 조건 차이(제로샷, 지연, 지도 보정)를 표에 함께 적어야 한다.</p>
+<h3>1.5 비동기 · 지연 처리</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>대상</th>
+<th>보고 내용</th>
+<th>출처</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MaskFusion (ISMAR18)</td>
+<td>분할 5 Hz, SLAM 30 Hz 초과. 프레임 큐 12장, 약 400 ms 지연. 한 장치 GPU 2장</td>
+<td><a href="https://arxiv.org/abs/1804.09194">arXiv:1804.09194</a> Sec.5, 6.3</td>
+</tr>
+<tr>
+<td>Liu 외 (MobiCom19)</td>
+<td>엣지 검출. 정확도 +20.2~34.8%, 오검출 −27.0~38.2%. 단말 2D 박스를 움직임 벡터로 보정</td>
+<td>MobiCom19 논문 Sec.1</td>
+</tr>
+<tr>
+<td>Zorina 외</td>
+<td>인식 5 Hz, 외삽 1 kHz (지도 없음)</td>
+<td>위 표</td>
+</tr>
+<tr>
+<td>ROS tf2</td>
+<td>시각을 지정한 변환 조회, 기본 캐시 10 s</td>
+<td>ros2/geometry2</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2>2. 특허 작성 시 비교할 논문·특허</h2>
+<p>발표자료 61쪽의 목록에 이번 조사 결과를 더했다. <strong>새로 확인된 항목에 표시</strong>를 했다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>대상</th>
+<th>겹치는 부분</th>
+<th>본 발명과 다른 점 (사실 기준)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SAM-6D (CVPR24)</td>
+<td>제로샷 6D 추정 전체 구조 (ISM, PEM)</td>
+<td>화면 전체 분할, 점수 가중 합과 1등 출력, '없음' 출력 없음, 지도 없음</td>
+</tr>
+<tr>
+<td>CNOS, FoundPose, GigaPose, FreeZeV2</td>
+<td>템플릿 기반 제로샷 인식</td>
+<td>한 장 단위 카메라 기준 결과, 순차 관문·색 관문·배타 배정 없음</td>
+</tr>
+<tr>
+<td><strong>CLON (arXiv 2609.04784, 2026-09-04)</strong> 새로 확인</td>
+<td><strong>색 서술을 넣은 텍스트 프롬프트로 후보 수를 67.3개에서 13.6개로 줄임</strong> → 본 발명의 텍스트 프롬프트 후보 생성과 가장 가깝다</td>
+<td>순차 관문, 색조·채도 분포 관문, '없음' 출력은 기술되지 않음. <strong>출원 전에 공개된 자료이므로 선행기술로 다루어야 한다</strong></td>
+</tr>
+<tr>
+<td>NIDS-Net, MUSE, Grounded-SAM</td>
+<td>문구 검출 후 템플릿 비교</td>
+<td>순차 관문·색 분포 관문·배타 판정 없음</td>
+</tr>
+<tr>
+<td>SLAM++, CubeSLAM, QuadricSLAM, VOOM</td>
+<td>객체를 지도에 둠</td>
+<td>객체로 카메라 위치를 보정, 물체별 검출기·형상 필요, 지연 처리 없음</td>
+</tr>
+<tr>
+<td>Fusion++</td>
+<td>존재확률(Beta 분포), 기댓값 0.1 미만 삭제</td>
+<td>미검출 판정이 거리 조건이 아닌 투영 크기(50² 픽셀) 기준. 중복 처리는 향후 과제로 남김. 한 시스템 4–8 Hz</td>
+</tr>
+<tr>
+<td>POCD, Khronos, Hydra</td>
+<td>변화하는 객체 지도, 베이즈 갱신</td>
+<td>제로샷 CAD 6D 아님, 촬영 시각 키프레임 고정 없음</td>
+</tr>
+<tr>
+<td>Merrill 외 (CVPR22)</td>
+<td>대칭 고려 객체 SLAM, YCB-V 6D</td>
+<td>카이제곱 이상치 게이트만 사용, 물체별 키포인트 학습</td>
+</tr>
+<tr>
+<td><strong>DSP-SLAM++ (arXiv 2606.25953, 2026-06-24)</strong> 새로 확인</td>
+<td><strong>비동기 객체 처리: 작업을 넣을 때 그 시점 자세를 묶고, 작업 큐와 결과 큐를 둠</strong></td>
+<td>한 장치, 키프레임 목록 재전송 없음, 실외. <strong>출원 전 공개 자료이므로 촬영 시각 고정 부분과 꼼꼼히 비교해야 한다</strong></td>
+</tr>
+<tr>
+<td>MaskFusion (ISMAR18)</td>
+<td>인식 비동기 실행</td>
+<td>한 장치·한 카메라, 프레임 큐로 SLAM 자체를 늦춤, 루프 보정 반영 없음</td>
+</tr>
+<tr>
+<td>Liu 외 (MobiCom19)</td>
+<td>두 장치(단말·엣지), 늦은 결과의 화면 보정</td>
+<td>2D 박스, 지도·키프레임 없음</td>
+</tr>
+<tr>
+<td>Zorina 외 (RA-L 2025)</td>
+<td>인식(5 Hz)과 출력(1 kHz) 주기 분리</td>
+<td>지도 없음, 한 물체 자세 궤적</td>
+</tr>
+<tr>
+<td>Lost &amp; Found (RA-L25)</td>
+<td>객체 추적, 1.15 s 지연 명시</td>
+<td>지연을 보상하지 않음, 지도 없음</td>
+</tr>
+<tr>
+<td>Magic Leap US 11,206,507 B2</td>
+<td>원점→키프레임→장치 변환을 연결</td>
+<td>사용자가 놓은 가상 객체 대상, 인식 결과의 촬영 시각 선택 없음</td>
+</tr>
+<tr>
+<td><strong>Rivian US 12,313,726 B2</strong> 새로 확인</td>
+<td>늦게 도착한 측정을 시간순으로 넣고 상태를 다시 전파</td>
+<td>차량 상태 추정. 객체를 키프레임에 고정하지 않음. 변리사 확인 필요</td>
+</tr>
+<tr>
+<td>ROS tf2</td>
+<td>시각 지정 변환 조회, 변환이 올 때까지 대기</td>
+<td>저장한 결과를 지도 보정 뒤에 다시 계산하지 않음</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>특허 쪽에서 할 일</strong></p>
+<ol>
+<li><strong>CLON과 DSP-SLAM++를 변리사에게 추가로 전달한다.</strong> 둘 다 2026년에 공개되어 출원보다 앞선다.</li>
+<li>CLON: 텍스트 프롬프트 후보 생성과 겹친다.</li>
+<li>DSP-SLAM++: 비동기 객체 처리와 시점 자세 묶기가 겹친다.</li>
+<li><strong>차이를 명세서에 분명히 적는다.</strong> 본 발명이 두 문헌과 다른 점은 다음과 같다.</li>
+<li>촬영 시각의 기준 키프레임과 함께 키프레임 목록을 다시 보낸다.</li>
+<li>다른 장치에서 SLAM 자세가 늦게 올 때 기다렸다가 등록한다.</li>
+<li>색조·채도 분포 관문과 '없음' 출력을 갖춘 순차 관문을 쓴다.</li>
+<li><strong>Rivian 특허는 변리사가 관련성을 판단한다.</strong> 늦게 온 측정을 시간순으로 다시 넣는 일반 기술이다.</li>
+</ol>
+<hr />
+<h2>3. 이번 조사에서 확인하지 못한 것</h2>
+<ul>
+<li>SLAM++, POCD·Khronos·Hydra의 정확도 수치</li>
+<li>GenFlow 원 논문의 자체 표 (위 수치는 BOP 결과 논문에서 가져옴)</li>
+<li>Grounded-SAM 속도, CLON 측정 GPU</li>
+<li>FRTPose-WAPR 처리 시간 단위 (232.4 s인지 ms인지)</li>
+<li>YCB-M에서 BOP AR을 보고한 기준선 (찾지 못함. 비교하려면 직접 실행해야 한다)</li>
+</ul></main></body></html>

@@ -1,0 +1,4384 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>C 실시간 객체지도</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1 id="_1">실시간 객체지도</h1>
+<blockquote>
+<p>실시간 객체 지도 — 실시간 비교 실험(05), 실시간 비교표(08), 4090 재측정(10), 원본 0.5 대 개선안 전 장면(13). 개별 문서 4개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-07.</p>
+</blockquote>
+<p><strong>이 묶음의 장</strong></p>
+<ul>
+<li><strong>05_실시간_지도_비교실험</strong> — 05. 실시간 객체 지도 비교 실험 — "같은 영상에서 더 빨리, 틀리지 않게 지도에 올린다"</li>
+<li><strong>08_실시간_비교표</strong> — 08. 실시간 객체 위치 찾기 비교표 — 원본 SAM-6D 0.5, 개선안, 기술 조합 (2026-10-06)</li>
+<li><strong>10_실시간_비교표_261006</strong> — 10. 실시간 비교표 — 원본 0.5 / 개선안(자세 검증 켬) / 개선안(자세 검증 끔) (2026-10-06)</li>
+<li><strong>13_실시간_원본_개선안_비교표_261007</strong> — 13. 실시간 객체 위치 찾기 비교표 — 원본 0.5 대 개선안(자세 검증 켬), 실제 영상 5개 + YCB-V (2026-10-07 정리)</li>
+</ul>
+<div class="toc">
+<ul>
+<li><a href="#_1">실시간 객체지도</a><ul>
+<li><a href="#05">05. 실시간 객체 지도 비교 실험 — "같은 영상에서 더 빨리, 틀리지 않게 지도에 올린다"</a><ul>
+<li><a href="#1">1. 요약</a></li>
+<li><a href="#2-sam-6d">2. 왜 원본 SAM-6D와 결과가 다른가</a></li>
+<li><a href="#3-ycb-v-900">3. 검출기 개선 실험 (한 장 평가, YCB-V 900장)</a></li>
+<li><a href="#4">4. 실시간 비교 실험 (핵심)</a><ul>
+<li><a href="#41">4.1 설정</a></li>
+<li><a href="#42">4.2 지표</a></li>
+<li><a href="#43">4.3 결과</a></li>
+<li><a href="#44-sam-6d">4.4 보강 실험: 원본 SAM-6D의 점수 기준 높이기, 장면 물체만 질의</a></li>
+<li><a href="#45">4.5 해석 (보강 실험 전, 원본 기본값 기준)</a></li>
+</ul>
+</li>
+<li><a href="#5">5. 논문 실험으로 쓸 때의 의견</a></li>
+<li><a href="#6-rtx-5090">6. 남은 일 (RTX 5090)</a></li>
+<li><a href="#7">7. 파일</a></li>
+</ul>
+</li>
+<li><a href="#08-sam-6d-05-2026-10-06">08. 실시간 객체 위치 찾기 비교표 — 원본 SAM-6D 0.5, 개선안, 기술 조합 (2026-10-06)</a><ul>
+<li><a href="#1-260901_cbnu_bigeightcircle-314-8">1. 실제 영상 (260901_cbnu_bigeightcircle, 314초, 선반 두 개의 물체 8개)</a></li>
+<li><a href="#2-ycb-v-12-20738-55">2. YCB-V (영상 12개, 20,738프레임, 장면 물체 55개)</a></li>
+<li><a href="#3">3. 정리</a></li>
+<li><a href="#4-5-2026-10-06">4. 기술 조합 비교 — 5개 구성 (2026-10-06)</a><ul>
+<li><a href="#41-260901_cbnu_bigeightcircle-314-8">4.1 실제 영상 (260901_cbnu_bigeightcircle, 314초, 물체 8개)</a></li>
+<li><a href="#42-ycb-v-12-20738-55">4.2 YCB-V (영상 12개, 20,738프레임, 장면 물체 55개)</a></li>
+<li><a href="#43_1">4.3 해석</a></li>
+</ul>
+</li>
+<li><a href="#5-5-2026-10-06-16301832">5. 실제 영상 5개 구성 한 번에 측정 (2026-10-06 16:30~18:32)</a></li>
+<li><a href="#6-260915_eightcircle-05-3-2026-10-06-19">6. 실제 영상 260915_eightcircle — 원본 0.5, 개선안, 개선안 3 (2026-10-06 19시)</a></li>
+<li><a href="#7-05-3-2026-10-06-1920">7. 실제 데이터 여러 개 — 원본 0.5, 개선안, 개선안 3 (2026-10-06 19~20시)</a><ul>
+<li><a href="#71">7.1 데이터별 비교</a></li>
+<li><a href="#72-4-32">7.2 합계 (요청한 4개 데이터, 물체 32개)</a></li>
+<li><a href="#73">7.3 해석</a></li>
+</ul>
+</li>
+<li><a href="#8-a-fastsam-x-2026-10-06-20302130">8. A안 실시간 — FastSAM-x 후보 + 우리 관문 + 자세 검증 (2026-10-06 20:30~21:30)</a><ul>
+<li><a href="#ycb-v-12-55">YCB-V 실시간 (영상 12개, 장면 물체 55개, 영상 끝 지도)</a></li>
+<li><a href="#5-8">실제 데이터 5개 (물체 8개씩)</a></li>
+</ul>
+</li>
+<li><a href="#9-ycb-v-2026-10-07">9. 마스크 생성 방식 비교 — YCB-V (2026-10-07)</a><ul>
+<li><a href="#1-ycb-v-900-4123">1단계: 마스크만 비교 (YCB-V 900장, 정답 물체 4,123개)</a></li>
+<li><a href="#1-2-05-ycb-v-900-4123">1-2단계: 물체 판정 0.5 포함 (YCB-V 900장, 정답 물체 4,123개)</a></li>
+<li><a href="#2-ycb-v-36-165">2단계: 끝까지 비교 (YCB-V 36장, 물체 165개)</a></li>
+<li><a href="#_2">결론</a></li>
+</ul>
+</li>
+<li><a href="#10-05-yolo-world-mobilesam-ycb-v-2026-10-07">10. 판정 방식 비교 — 원본 판정 0.5 대 우리 판정, YOLO-World 문구 상자 + MobileSAM 위에서 (YCB-V, 2026-10-07)</a><ul>
+<li><a href="#1-ycb-v-900-4123_1">1단계: 인식까지 (YCB-V 900장, 정답 물체 4,123개)</a></li>
+<li><a href="#2-ycb-v-36-165-pem">2단계: 자세까지 (YCB-V 36장, 물체 165개, PEM + 자세 검증)</a></li>
+<li><a href="#_3">해석</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#10-05-2026-10-06">10. 실시간 비교표 — 원본 0.5 / 개선안(자세 검증 켬) / 개선안(자세 검증 끔) (2026-10-06)</a><ul>
+<li><a href="#1-05-42">1. 지표 정의 (05 문서 4.2절과 같음)</a></li>
+<li><a href="#2-rtx-3080-ti-laptop">2. 비교표 (기존 수치, RTX 3080 Ti Laptop)</a><ul>
+<li><a href="#21-ycb-v-12-4859-20738-55-21-1">2.1 YCB-V 영상 12개 (48~59번, 20,738 프레임, 장면 물체 55개, 21 물체 모두 질의, 1배속)</a></li>
+<li><a href="#22-260901_cbnu_bigeightcircle-314-s-2-8-9-mac-orb-slam3-f2000">2.2 실제 영상 260901_cbnu_bigeightcircle (314 s, 선반 2개·물체 8개, 배포 물체 9종 질의, Mac ORB-SLAM3 f2000 + 노트북)</a></li>
+</ul>
+</li>
+<li><a href="#2-1-rtx-4090-260901-2026-10-06-1728-cli_env_paper-orb-slam3-f2000">2-1. RTX 4090 새 측정 — 실제 영상 260901 (2026-10-06 17:28, 노트북 코드 작업 트리 CLI_env_paper, 로컬 ORB-SLAM3 f2000 + 이 서버 인식)</a></li>
+<li><a href="#2-2-rtx-4090-ycb-v-3-495355-13-21-1-2026-10-06-1744">2-2. RTX 4090 새 측정 — YCB-V 영상 3개 (49·53·55, 장면 물체 13개, 21 물체 모두 질의, 1배속; 2026-10-06 17:44)</a></li>
+<li><a href="#3_1">3. (기록) 처음에 이 서버에서 새로 측정하지 못했던 이유와 해결</a></li>
+</ul>
+</li>
+<li><a href="#13-05-5-ycb-v-2026-10-07">13. 실시간 객체 위치 찾기 비교표 — 원본 0.5 대 개선안(자세 검증 켬), 실제 영상 5개 + YCB-V (2026-10-07 정리)</a><ul>
+<li><a href="#0">0. 구성과 지표</a></li>
+<li><a href="#1-rtx-3080-ti-8-mac-orb-slam3">1. 실제 영상 (노트북 RTX 3080 Ti, 물체 8개씩, Mac ORB-SLAM3)</a><ul>
+<li><a href="#11-5-40">1.1 실제 영상 합계 (5개, 물체 40개)</a></li>
+<li><a href="#12-rtx-4090-260901_cbnu_bigeightcircle-orb-slam3-10-2-1">1.2 같은 영상, RTX 4090 재측정 (260901_cbnu_bigeightcircle, 로컬 ORB-SLAM3, 10 문서 2-1절)</a></li>
+</ul>
+</li>
+<li><a href="#2-ycb-v-12-4859-20738-55-21">2. YCB-V (영상 12개, 48~59번, 20,738프레임, 장면 물체 55개, 21 물체 모두 질의, 노트북)</a><ul>
+<li><a href="#21-ycb-v-3-rtx-4090-495355-13-10-2-2-2026-10-06">2.1 YCB-V 3장면 간략 재측정, RTX 4090 (49·53·55, 장면 물체 13개, 10 문서 2-2절, 2026-10-06)</a></li>
+<li><a href="#22-ycb-v-12-rtx-4090-2026-10-07-12041304-orb-slam3-1">2.2 YCB-V 12영상 전체, RTX 4090 재측정 (2026-10-07 12:04~13:04, 로컬 ORB-SLAM3, 각 1회)</a></li>
+</ul>
+</li>
+<li><a href="#3_2">3. 정리</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<hr />
+<p><a id="05_실시간_지도_비교실험"></a></p>
+<h2 id="05">05. 실시간 객체 지도 비교 실험 — "같은 영상에서 더 빨리, 틀리지 않게 지도에 올린다"</h2>
+<blockquote>
+<p><strong>확인용 실행 (RTX 3080 Ti Laptop, 2026-10-05).</strong> 경향 확인용입니다. 논문 최종 수치는 RTX 5090 장비에서 같은 스크립트로 다시 측정합니다.</p>
+</blockquote>
+<h3 id="1">1. 요약</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>질문</th>
+<th>결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>한 장 평가(BOP)에서 원본 SAM-6D보다 점수가 낮은 이유</td>
+<td>답을 덜 내서입니다. 우리는 62%, 원본은 99%에 답합니다. 둘 다 답한 물체끼리는 우리가 더 정확합니다(ADD-S AUC 97.2 대 95.8).</td>
+</tr>
+<tr>
+<td>같은 SAM-6D 기반인데 결과가 다른 이유</td>
+<td>자세 추정(PEM)은 같습니다. 앞단 물체 찾기(ISM)를 "가장 닮은 것 1개를 무조건 고르기"에서 "관문을 통과할 때만 답하기"로 바꿨기 때문입니다.</td>
+</tr>
+<tr>
+<td>검출기를 개선하면 찾은 비율이 오르나</td>
+<td>조금 오릅니다. 문구 다시 고르기로 61.4% → 66.3%가 됩니다. 검출기 재현율을 96%까지 올려도 66%에서 멈춥니다. 병목은 ISM 관문입니다.</td>
+</tr>
+<tr>
+<td>실시간에서 원본 SAM-6D와 비교하면</td>
+<td><strong>원본 기본값(점수 기준 0.2)과 비교하면</strong> 우리가 앞섭니다(점수 59.1% 대 14.4%). <strong>원본의 점수 기준을 0.5로 올리면 원본이 앞섭니다</strong>(63.5% 대 59.1%, 모든 프레임 평균 64.6% 대 52.4%). 우리가 앞서는 것은 잘못 올라간 물체 수(11 대 30)와 인식 속도(0.68 대 0.57 Hz)입니다. 찾은 비율이 낮은 것(71% 대 98%)이 약점입니다. 4.4절 참고.</td>
+</tr>
+<tr>
+<td>인식 빈도의 효과</td>
+<td>처음 10초 안의 발견 속도를 좌우합니다. 5초 안에 찾은 비율은 0.25 Hz에서 1.8%, 0.68 Hz에서 36.4%입니다. 시간이 지나면 비슷해집니다.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="2-sam-6d">2. 왜 원본 SAM-6D와 결과가 다른가</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>단계</th>
+<th>원본 SAM-6D</th>
+<th>우리</th>
+<th>영향</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>후보 영역</td>
+<td>FastSAM-x로 화면 전체 분할</td>
+<td>YOLO-World 문구 검출 상자</td>
+<td>검출기가 놓치면 후보가 없음</td>
+</tr>
+<tr>
+<td>마스크</td>
+<td>FastSAM 영역</td>
+<td>상자 안 MobileSAM</td>
+<td>가볍고 빠름</td>
+</tr>
+<tr>
+<td>특징</td>
+<td>DINOv2 ViT-L</td>
+<td>DINOv2 ViT-S</td>
+<td>빠르지만 구분력이 약간 낮음</td>
+</tr>
+<tr>
+<td><strong>물체 결정</strong></td>
+<td>점수 합산 후 <strong>가장 높은 1개를 무조건 선택</strong></td>
+<td>의미·외형·색상 <strong>관문 통과</strong>, 닮은 물체끼리 <strong>상자 독점 배정</strong></td>
+<td><strong>결과 차이의 주원인</strong></td>
+</tr>
+<tr>
+<td>자세 추정 (PEM)</td>
+<td>원본</td>
+<td><strong>같은 모델·가중치</strong></td>
+<td>차이 없음</td>
+</tr>
+<tr>
+<td>자세 검증</td>
+<td>없음</td>
+<td>윤곽·무늬·합의 검증</td>
+<td>오답 감소</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>같은 물체끼리 비교한 결과 (YCB-V 900장)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>SAM-6D</th>
+<th>우리</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>답을 낸 물체 (4,123개 중)</td>
+<td>4,089 (99%)</td>
+<td>2,556 (62%)</td>
+</tr>
+<tr>
+<td>ADD-S AUC, 전체 기준 (논문 지표)</td>
+<td>92.3</td>
+<td>60.2</td>
+</tr>
+<tr>
+<td>ADD-S AUC, 둘 다 답한 2,555개</td>
+<td>95.8</td>
+<td><strong>97.2</strong></td>
+</tr>
+<tr>
+<td>위 2,555개의 오차 중앙값</td>
+<td>1.8 mm</td>
+<td><strong>1.7 mm</strong></td>
+</tr>
+<tr>
+<td>정답 비율</td>
+<td>93.7%</td>
+<td><strong>99.0%</strong></td>
+</tr>
+<tr>
+<td>오답 / 장</td>
+<td>0.287</td>
+<td><strong>0.028</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>답을 못 낸 원인 (우리, 4,123개 기준)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>단계</th>
+<th>비율</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>후보 상자 없음</td>
+<td>21.7%</td>
+<td>검출기 놓침, 또는 닮은 물체에게 상자를 빼앗김. 정답 상자를 줘도 937건이 남으므로 <strong>배정 단계가 주원인</strong>입니다(푸딩 75/75, 크래커 168/225, 참치 146/300).</td>
+</tr>
+<tr>
+<td>의미 관문</td>
+<td>6.7%</td>
+<td>마커, 푸딩, 폼 블록, 그릇</td>
+</tr>
+<tr>
+<td>외형 관문</td>
+<td>3.4%</td>
+<td>토마토 캔, 설탕 상자, 가위</td>
+</tr>
+<tr>
+<td>색상 관문</td>
+<td>2.2%</td>
+<td>마커(가늘고 검은 물체)</td>
+</tr>
+<tr>
+<td>자세 검증</td>
+<td>4.1%</td>
+<td>윤곽·무늬·합의 기준 미달</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="3-ycb-v-900">3. 검출기 개선 실험 (한 장 평가, YCB-V 900장)</h3>
+<p>문구는 평가에 쓰지 않는 검증 프레임에서 골랐습니다. 검증 프레임은 12개 테스트 영상에서 평가 목록과 5프레임 이상 떨어진 563장입니다. 검증 재현율(82.9%)과 테스트 재현율(83.9%)이 비슷하므로 테스트에 맞춘 효과는 없습니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>검출기 재현율</th>
+<th>찾은 비율</th>
+<th>정답 비율</th>
+<th>오답/장</th>
+<th>ADD-S AUC</th>
+<th>BOP AR</th>
+<th>처리 시간</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>기준 (YOLO-World m, 원래 문구)</td>
+<td>71.0%</td>
+<td>61.4%</td>
+<td>99.0%</td>
+<td>0.028</td>
+<td>60.3</td>
+<td>56.2</td>
+<td>1235 ms</td>
+</tr>
+<tr>
+<td>① 문구 다시 고르기</td>
+<td>83.9%</td>
+<td><strong>66.3%</strong></td>
+<td>99.1%</td>
+<td>0.029</td>
+<td>65.1</td>
+<td><strong>60.7</strong></td>
+<td>1310 ms</td>
+</tr>
+<tr>
+<td>② 물체당 문구 3개</td>
+<td>81.9%</td>
+<td><strong>66.6%</strong></td>
+<td>99.0%</td>
+<td>0.030</td>
+<td>65.4</td>
+<td><strong>60.7</strong></td>
+<td>1465 ms</td>
+</tr>
+<tr>
+<td>③ 큰 모델 (YOLO-World x)</td>
+<td>81.1%</td>
+<td>64.9%</td>
+<td>98.7%</td>
+<td>0.038</td>
+<td>63.6</td>
+<td>59.5</td>
+<td>1297 ms</td>
+</tr>
+<tr>
+<td>④ CAD 이미지 프롬프트 (YOLOE-11L)</td>
+<td>76.1%</td>
+<td>62.7%</td>
+<td>97.9%</td>
+<td>0.062</td>
+<td>61.7</td>
+<td>57.6</td>
+<td>1271 ms</td>
+</tr>
+<tr>
+<td>①+③+④ 조합</td>
+<td><strong>95.9%</strong></td>
+<td>66.2%</td>
+<td>97.9%</td>
+<td>0.064</td>
+<td>65.1</td>
+<td>60.4</td>
+<td>1450 ms</td>
+</tr>
+<tr>
+<td>(참고) 정답 상자, 배정 고정</td>
+<td>100%</td>
+<td>78.0%</td>
+<td>100%</td>
+<td>0.000</td>
+<td>76.4</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>(참고) 원본 SAM-6D</td>
+<td>–</td>
+<td>92.9%</td>
+<td>93.7%</td>
+<td>0.287</td>
+<td>92.4</td>
+<td>84.1</td>
+<td>1573 ms</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>① 문구 다시 고르기가 가장 효율적입니다.</strong> 비용이 거의 없고 오답이 늘지 않습니다. 바뀐 문구는 <code>src/ycbv/det_study/out/prompts_best_m.json</code>에 있습니다. 예: 폼 블록 "red brick" → "red rectangular block", 설탕 상자 → "yellow box", 토마토 캔 → "red can".</li>
+<li><strong>검출기 재현율 96%로도 찾은 비율이 66%에서 멈춥니다.</strong> 늘어난 후보는 ISM 관문에서 걸러지거나, 걸러지지 않으면 오답이 됩니다.</li>
+<li>검증 프레임 기준 모델별 재현율(문구 그대로): YOLO-World m 70.5%, l 81.6%, x 81.8%, YOLOE-11L 73.3%, YOLOE-26L 77.6%, YOLOE-26X 79.1%. 시각 프롬프트는 YOLOE-11L 75.0%, YOLOE-26L 28.8~37.9%였습니다.</li>
+</ul>
+<h3 id="4">4. 실시간 비교 실험 (핵심)</h3>
+<h4 id="41">4.1 설정</h4>
+<ul>
+<li><strong>영상:</strong> YCB-V 테스트 영상 12개(48~59번), 20,738프레임, 장면 물체 합계 55개입니다. rosbag으로 변환해 1배속으로 재생합니다.</li>
+<li><strong>시스템:</strong> 같은 지도 시스템을 씁니다. 허브, ORB-SLAM3 Linux 빌드, 객체 지도, 화면 표시가 모두 같고 GPU 한 장(RTX 3080 Ti Laptop)을 씁니다.</li>
+<li><strong>인식기만 교체:</strong></li>
+<li>우리: 배포 인식기</li>
+<li>원본 SAM-6D: <code>run_orig.run_frame</code> 그대로 사용(FastSAM-x + ViT-L, 물체별 1위, ISM 점수 &gt; 0.2이면 PEM)</li>
+<li><strong>질의 물체:</strong> 두 인식기 모두 21개 전체입니다. 실제 운용처럼 장면에 어떤 물체가 있는지 모르는 조건입니다.</li>
+<li><strong>추가 설정:</strong></li>
+<li>⑤ 지도 기반 후보: 지도의 물체를 현재 프레임에 투영해 후보 상자로 추가합니다(hub <code>--map-prior</code>).</li>
+<li>⑤ + ① 문구</li>
+<li>인식 빈도 제한: 0.25 Hz, 0.5 Hz(hub <code>--sam-feed-hz</code>)</li>
+</ul>
+<h4 id="42">4.2 지표</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>정의</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>지도에 올라간 시간</td>
+<td>장면 물체가 지도에서 처음 <strong>맞게</strong> 그려진 영상 시각입니다. 맞음의 기준은 ADD-S &lt; 지름의 10%입니다.</td>
+</tr>
+<tr>
+<td>t초 안에 찾은 비율</td>
+<td>55개 중 t초까지 맞게 올라간 물체의 비율</td>
+</tr>
+<tr>
+<td>잘못 올라간 물체</td>
+<td>장면에 없는 물체, 위치가 틀린 물체, 같은 물체의 중복</td>
+</tr>
+<tr>
+<td><strong>점수 (잘못 = 못 찾음)</strong></td>
+<td>맞게 올라간 물체 ÷ (55 + 잘못 올라간 물체). 잘못 올린 물체 1개를 못 찾은 물체 1개와 같은 손해로 봅니다. 검출 문헌의 TP / (TP + FN + FP)와 같은 형태입니다.</td>
+</tr>
+<tr>
+<td>화면 일치율, 프레임당 잘못된 상자</td>
+<td>매 표시 프레임에서 보이는 GT 물체 중 맞게 그려진 비율, 그리고 잘못 그려진 상자 수</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="43">4.3 결과</h4>
+<p><img alt="시간에 따른 찾은 비율, 잘못된 물체, 점수" src="images/fig_live_time_to_map.png" /></p>
+<p><strong>표 A. 잘못 올라간 물체를 못 찾은 것으로 계산한 점수</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>시점</th>
+<th>원본 SAM-6D</th>
+<th><strong>우리</strong></th>
+<th>우리 + ⑤</th>
+<th>우리 + ⑤ + ①</th>
+<th>우리 0.5 Hz</th>
+<th>우리 0.25 Hz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5초</td>
+<td>5.4% (3/1)</td>
+<td><strong>33.3%</strong> (20/5)</td>
+<td>21.7% (13/5)</td>
+<td><strong>33.9%</strong> (20/4)</td>
+<td><strong>33.9%</strong> (20/4)</td>
+<td>1.8% (1/0)</td>
+</tr>
+<tr>
+<td>10초</td>
+<td>39.0% (41/50)</td>
+<td>45.2% (28/7)</td>
+<td>44.4% (28/8)</td>
+<td><strong>50.0%</strong> (31/7)</td>
+<td>46.8% (29/7)</td>
+<td>38.3% (23/5)</td>
+</tr>
+<tr>
+<td>20초</td>
+<td>31.6% (54/116)</td>
+<td>55.6% (35/8)</td>
+<td>53.8% (35/10)</td>
+<td><strong>57.1%</strong> (36/8)</td>
+<td>56.5% (35/7)</td>
+<td>52.5% (32/6)</td>
+</tr>
+<tr>
+<td>30초</td>
+<td>22.8% (54/182)</td>
+<td><strong>57.8%</strong> (37/9)</td>
+<td>57.6% (38/11)</td>
+<td>56.9% (37/10)</td>
+<td><strong>57.8%</strong> (37/9)</td>
+<td>57.4% (35/6)</td>
+</tr>
+<tr>
+<td>영상 끝</td>
+<td>14.4% (55/326)</td>
+<td>59.1% (39/11)</td>
+<td>59.7% (40/12)</td>
+<td>60.6% (40/11)</td>
+<td>61.5% (40/10)</td>
+<td><strong>62.3%</strong> (38/6)</td>
+</tr>
+<tr>
+<td>모든 프레임 평균</td>
+<td>21.7%</td>
+<td>52.4%</td>
+<td>52.1%</td>
+<td>52.1%</td>
+<td><strong>52.8%</strong></td>
+<td>50.7%</td>
+</tr>
+</tbody>
+</table></div>
+<p>괄호는 (맞게 올라간 물체 / 잘못 올라간 물체), 12개 영상 합계입니다.</p>
+<p><strong>표 B. 찾은 속도와 오류 (잘못 올린 물체를 따로 셈)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>원본 SAM-6D</th>
+<th><strong>우리</strong></th>
+<th>우리 + ⑤</th>
+<th>우리 + ⑤ + ①</th>
+<th>우리 0.5 Hz</th>
+<th>우리 0.25 Hz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>인식 빈도</td>
+<td>0.39 Hz</td>
+<td><strong>0.68 Hz</strong></td>
+<td>0.62 Hz</td>
+<td>0.61 Hz</td>
+<td>0.49 Hz</td>
+<td>0.26 Hz</td>
+</tr>
+<tr>
+<td>지도에 올라간 시간 중앙값</td>
+<td>6.9초</td>
+<td><strong>4.6초</strong></td>
+<td>6.2초</td>
+<td>5.1초</td>
+<td>5.3초</td>
+<td>6.4초</td>
+</tr>
+<tr>
+<td>5초 안에 찾은 비율</td>
+<td>5.5%</td>
+<td><strong>36.4%</strong></td>
+<td>23.6%</td>
+<td><strong>36.4%</strong></td>
+<td><strong>36.4%</strong></td>
+<td>1.8%</td>
+</tr>
+<tr>
+<td>10초 안에 찾은 비율</td>
+<td><strong>74.5%</strong></td>
+<td>50.9%</td>
+<td>50.9%</td>
+<td>56.4%</td>
+<td>52.7%</td>
+<td>41.8%</td>
+</tr>
+<tr>
+<td>영상 끝까지 찾은 비율</td>
+<td><strong>100%</strong></td>
+<td>70.9%</td>
+<td>72.7%</td>
+<td>72.7%</td>
+<td>72.7%</td>
+<td>69.1%</td>
+</tr>
+<tr>
+<td>최종 지도의 잘못된 물체 / 전체</td>
+<td>153 / 204</td>
+<td>14 / 54</td>
+<td>15 / 55</td>
+<td>17 / 57</td>
+<td>16 / 56</td>
+<td><strong>9 / 48</strong></td>
+</tr>
+<tr>
+<td>프레임당 잘못된 상자</td>
+<td>16.2</td>
+<td>0.80</td>
+<td>0.87</td>
+<td>0.85</td>
+<td>0.77</td>
+<td><strong>0.50</strong></td>
+</tr>
+<tr>
+<td>화면 일치율</td>
+<td><strong>86.2%</strong></td>
+<td>60.3%</td>
+<td>61.1%</td>
+<td>60.2%</td>
+<td>60.3%</td>
+<td>56.0%</td>
+</tr>
+<tr>
+<td>지도 위치 오차 중앙값</td>
+<td>9.0 mm</td>
+<td>8.8 mm</td>
+<td>7.8 mm</td>
+<td>7.9 mm</td>
+<td>7.3 mm</td>
+<td>7.3 mm</td>
+</tr>
+<tr>
+<td>지도 ADD-S AUC</td>
+<td><strong>87.8</strong></td>
+<td>68.6</td>
+<td>68.8</td>
+<td>68.6</td>
+<td>68.8</td>
+<td>67.1</td>
+</tr>
+</tbody>
+</table></div>
+<p>"최종 지도의 잘못된 물체"는 최종 지도(summary) 기준이고, 표 A의 잘못된 물체는 화면에 그려진 지도 기준입니다. 화면 기준에는 중복 등록도 포함되므로 원본에서 수가 더 큽니다.</p>
+<p><strong>표 C. 오류 유형 분석 (영상 끝 시점의 지도, 12개 영상 합계, 장면 물체 55개)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구분</th>
+<th>원본 SAM-6D (기준 0.2)</th>
+<th>우리 방법</th>
+<th>우리 + ⑤ + ① 문구</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>맞게 올라간 물체</strong></td>
+<td><strong>55</strong></td>
+<td>39</td>
+<td>40</td>
+</tr>
+<tr>
+<td><strong>못 찾은 물체</strong></td>
+<td><strong>0</strong></td>
+<td>16</td>
+<td>15</td>
+</tr>
+<tr>
+<td>ㄴ 지도에 아예 없음</td>
+<td>0</td>
+<td>15</td>
+<td>14</td>
+</tr>
+<tr>
+<td>ㄴ 잘못된 위치로만 있음</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>잘못 올라간 물체</strong></td>
+<td>326</td>
+<td><strong>11</strong></td>
+<td><strong>11</strong></td>
+</tr>
+<tr>
+<td>ㄴ 장면에 없는 물체</td>
+<td>320</td>
+<td>8</td>
+<td>8</td>
+</tr>
+<tr>
+<td>ㄴ 장면에 있지만 위치가 틀림</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>ㄴ 같은 물체 중복</td>
+<td>6</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td><strong>손실 합계</strong> (못 찾음 + 잘못 올라감)</td>
+<td>326</td>
+<td><strong>27</strong></td>
+<td><strong>26</strong></td>
+</tr>
+<tr>
+<td>잘못 올라간 물체 ÷ 맞게 올라간 물체</td>
+<td>5.9배</td>
+<td><strong>0.28배</strong></td>
+<td><strong>0.28배</strong></td>
+</tr>
+<tr>
+<td>점수: 맞음 ÷ (55 + 잘못)</td>
+<td>14.4%</td>
+<td>59.1%</td>
+<td><strong>60.6%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>원본이 장면에 없는데 가장 많이 올린 물체는 폼 블록 51, 가위 47, 큰 집게 45, 작은 집게 40, 젤라틴 상자 20, 나무 블록 18입니다. 단색이거나 모양이 단순한 물체입니다. 우리 방법은 머스터드병 4건이 가장 많았습니다.</p>
+<ul>
+<li><strong>원본의 손실:</strong> 거의 전부(320/326) <strong>"없는 물체를 있다고 함"</strong>입니다. 21개 물체 모두에 대해 가장 닮은 영역을 무조건 하나씩 고르므로, 장면에 없는 물체도 다른 물체나 배경에 붙여서 지도에 올립니다. 위치를 바꿔 가며 반복해서 쌓입니다.</li>
+<li><strong>우리 방법의 손실:</strong> 주로(15/27) <strong>"있는 물체를 못 찾음"</strong>입니다. 관문에서 걸러진 경우로, 한 장 평가의 원인과 같습니다.</li>
+<li><strong>손실 합계:</strong> 우리가 12배 적습니다(27 대 326).</li>
+</ul>
+<p><strong>표 D. 엄격한 기준의 찾은 비율</strong> (잘못 올라간 물체가 찾은 비율을 부풀리지 않는지 확인)</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>시점</th>
+<th>원본 SAM-6D: 기준 A → C</th>
+<th>우리 방법: A → C</th>
+<th>우리 + ⑤ + ①: A → C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5초 안</td>
+<td>5.5% → 5.5%</td>
+<td>36.4% → 36.4%</td>
+<td>36.4% → 36.4%</td>
+</tr>
+<tr>
+<td>10초 안</td>
+<td>74.5% → 74.5%</td>
+<td>50.9% → 50.9%</td>
+<td>56.4% → 56.4%</td>
+</tr>
+<tr>
+<td>20초 안</td>
+<td>98.2% → 94.5%</td>
+<td>63.6% → 63.6%</td>
+<td>65.5% → 65.5%</td>
+</tr>
+<tr>
+<td>30초 안</td>
+<td>98.2% → 92.7%</td>
+<td>67.3% → 67.3%</td>
+<td>67.3% → 67.3%</td>
+</tr>
+<tr>
+<td>영상 끝</td>
+<td>100% → 90.9%</td>
+<td>70.9% → 69.1%</td>
+<td>72.7% → 70.9%</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>기준 A (표 B):</strong> t초까지 한 번이라도 맞게 올라감. 잘못 올라간 것은 원래 세지 않습니다.</li>
+<li><strong>기준 B:</strong> t초 시점의 지도에 맞게 있음. 결과는 모든 설정에서 A와 같았습니다.</li>
+<li><strong>기준 C:</strong> B를 만족하고, 같은 물체의 잘못된 복사본도 없음.</li>
+<li>엄격하게 세도 결론은 같습니다. 원본의 잘못된 물체는 대부분 장면에 없는 물체라서 찾은 비율에는 영향이 없고, 지도만 더럽힙니다. 그래서 핵심 지표는 표 A의 점수(잘못 = 못 찾음)입니다.</li>
+</ul>
+<h4 id="44-sam-6d">4.4 보강 실험: 원본 SAM-6D의 점수 기준 높이기, 장면 물체만 질의</h4>
+<p>원본도 "확실할 때만 답하기"를 하면 어떻게 되는지 확인했습니다. ISM 점수 기준을 0.2(기본값)에서 0.3·0.4·0.5로 올렸습니다. 원본에 정답 물체 목록을 알려주는 상한선 설정(장면 물체만 질의)도 돌렸습니다. 시스템과 영상은 같습니다.</p>
+<p><img alt="원본 점수 기준별 비교" src="images/fig_live_orig_thresholds.png" /></p>
+<p><strong>표 E. 원본 SAM-6D 설정별 실시간 결과</strong> (영상 12개, 장면 물체 55개)</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>원본 0.2 (기본)</th>
+<th>원본 0.3</th>
+<th>원본 0.4</th>
+<th><strong>원본 0.5</strong></th>
+<th>원본, 장면 물체만 (상한선)</th>
+<th><strong>우리</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>인식 빈도</td>
+<td>0.39 Hz</td>
+<td>0.41 Hz</td>
+<td>0.51 Hz</td>
+<td>0.57 Hz</td>
+<td>0.58 Hz</td>
+<td><strong>0.68 Hz</strong></td>
+</tr>
+<tr>
+<td>지도에 올라간 시간 중앙값</td>
+<td>6.9초</td>
+<td>7.0초</td>
+<td>5.6초</td>
+<td>5.2초</td>
+<td>5.0초</td>
+<td><strong>4.6초</strong></td>
+</tr>
+<tr>
+<td>5초 안에 찾은 비율</td>
+<td>5.5%</td>
+<td>10.9%</td>
+<td>34.5%</td>
+<td><strong>45.5%</strong></td>
+<td>65.5%</td>
+<td>36.4%</td>
+</tr>
+<tr>
+<td>10초 안에 찾은 비율</td>
+<td>74.5%</td>
+<td>90.9%</td>
+<td>92.7%</td>
+<td><strong>90.9%</strong></td>
+<td>96.4%</td>
+<td>50.9%</td>
+</tr>
+<tr>
+<td>영상 끝까지 찾은 비율</td>
+<td>100%</td>
+<td>100%</td>
+<td>100%</td>
+<td><strong>98.2%</strong></td>
+<td>100%</td>
+<td>70.9%</td>
+</tr>
+<tr>
+<td>엄격한 기준 (C), 영상 끝</td>
+<td>90.9%</td>
+<td>89.1%</td>
+<td>92.7%</td>
+<td><strong>92.7%</strong></td>
+<td>90.9%</td>
+<td>69.1%</td>
+</tr>
+<tr>
+<td>잘못 올라간 물체 (화면 지도, 영상 끝)</td>
+<td>326</td>
+<td>289</td>
+<td>105</td>
+<td><strong>30</strong></td>
+<td>5</td>
+<td><strong>11</strong></td>
+</tr>
+<tr>
+<td>ㄴ 장면에 없는 물체</td>
+<td>320</td>
+<td>281</td>
+<td>101</td>
+<td>26</td>
+<td>0</td>
+<td>8</td>
+</tr>
+<tr>
+<td>프레임당 잘못된 상자</td>
+<td>16.2</td>
+<td>14.1</td>
+<td>5.5</td>
+<td>1.8</td>
+<td>0.38</td>
+<td><strong>0.80</strong></td>
+</tr>
+<tr>
+<td>화면 일치율</td>
+<td>86.2%</td>
+<td>85.9%</td>
+<td>87.9%</td>
+<td><strong>85.8%</strong></td>
+<td>90.1%</td>
+<td>60.3%</td>
+</tr>
+<tr>
+<td><strong>점수 (잘못 = 못 찾음), 10초</strong></td>
+<td>39.0%</td>
+<td>46.7%</td>
+<td>63.8%</td>
+<td><strong>76.6%</strong></td>
+<td>93.0%</td>
+<td>45.2%</td>
+</tr>
+<tr>
+<td><strong>점수, 영상 끝</strong></td>
+<td>14.4%</td>
+<td>15.7%</td>
+<td>34.4%</td>
+<td><strong>63.5%</strong></td>
+<td>90.0%</td>
+<td>59.1%</td>
+</tr>
+<tr>
+<td><strong>점수, 모든 프레임 평균</strong></td>
+<td>21.7%</td>
+<td>23.4%</td>
+<td>44.0%</td>
+<td><strong>64.6%</strong></td>
+<td>84.7%</td>
+<td>52.4%</td>
+</tr>
+<tr>
+<td>지도 위치 오차 중앙값</td>
+<td>9.0 mm</td>
+<td>9.4 mm</td>
+<td>9.6 mm</td>
+<td>9.0 mm</td>
+<td>8.1 mm</td>
+<td>8.8 mm</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>보강 실험의 결론 (이전 결론을 고쳐야 함)</strong></p>
+<ol>
+<li><strong>원본도 점수 기준을 0.5로 올리면 우리보다 점수가 높습니다.</strong></li>
+<li>영상 끝 63.5% 대 59.1%, 모든 프레임 평균 64.6% 대 52.4%입니다.</li>
+<li>잘못 올라간 물체는 30개로 우리(11개)의 약 3배지만, 맞게 찾은 물체가 54개 대 39개로 훨씬 많습니다.</li>
+<li>따라서 "원본은 지도를 오염시키고 우리는 깨끗하다"는 비교는 <strong>원본 기본값(0.2)에만 성립</strong>합니다. 원본의 기준을 조절하면 성립하지 않습니다.</li>
+<li><strong>기준을 올리면 원본도 빨라집니다.</strong> PEM을 돌릴 물체가 줄어서 0.39 → 0.57 Hz가 됩니다. 우리(0.68 Hz)와의 속도 차이는 1.2배로 줄어듭니다.</li>
+<li><strong>우리가 여전히 앞서는 지표</strong></li>
+<li>잘못 올라간 물체가 가장 적습니다(11개 대 원본 0.5의 30개). 장면 물체만 질의하는 상한선은 제외한 비교입니다.</li>
+<li>프레임당 잘못된 상자가 적습니다(0.80 대 1.8).</li>
+<li>인식이 가장 빠릅니다(0.68 Hz).</li>
+<li><strong>우리가 뒤지는 지표:</strong> 찾은 비율(70.9% 대 98.2%). 이것이 점수를 끌어내립니다. 원인은 앞서 분석한 대로 우리 ISM의 상자 독점 배정과 관문 기준입니다.</li>
+<li><strong>장면 물체만 질의(상한선):</strong> 물체 목록을 알면 원본은 점수 90%입니다. 원본의 잘못된 물체는 거의 전부 "장면에 없는 물체를 물어봐서" 생깁니다.</li>
+</ol>
+<p><strong>표 F. 원본 판정 + ViT-S (단계별 분해의 L1) 실시간 결과</strong> (영상 12개, 장면 물체 55개)</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>원본 ViT-L 0.5</th>
+<th><strong>원본 판정 + ViT-S 0.5</strong></th>
+<th>원본 판정 + ViT-S 0.4</th>
+<th>우리</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>인식 빈도</td>
+<td>0.57 Hz</td>
+<td><strong>0.96 Hz</strong></td>
+<td>0.65 Hz</td>
+<td>0.68 Hz</td>
+</tr>
+<tr>
+<td>지도에 올라간 시간 중앙값</td>
+<td>5.2초</td>
+<td><strong>4.0초</strong></td>
+<td>5.0초</td>
+<td>4.6초</td>
+</tr>
+<tr>
+<td>5초 안에 찾은 비율</td>
+<td>45.5%</td>
+<td><strong>76.4%</strong></td>
+<td>47.3%</td>
+<td>36.4%</td>
+</tr>
+<tr>
+<td>10초 안에 찾은 비율</td>
+<td>89.1%</td>
+<td><strong>92.7%</strong></td>
+<td>90.9%</td>
+<td>50.9%</td>
+</tr>
+<tr>
+<td>영상 끝까지 찾은 비율 (기준 C)</td>
+<td>92.7%</td>
+<td>92.7%</td>
+<td>89.1%</td>
+<td>69.1%</td>
+</tr>
+<tr>
+<td>잘못 올라간 물체 (화면 지도, 영상 끝)</td>
+<td>30</td>
+<td>143</td>
+<td>376</td>
+<td><strong>11</strong></td>
+</tr>
+<tr>
+<td>프레임당 잘못된 상자</td>
+<td>1.8</td>
+<td>8.1</td>
+<td>20.2</td>
+<td><strong>0.80</strong></td>
+</tr>
+<tr>
+<td>점수 (잘못 = 못 찾음), 5초</td>
+<td>43.9%</td>
+<td><strong>58.3%</strong></td>
+<td>35.6%</td>
+<td>33.3%</td>
+</tr>
+<tr>
+<td>점수, 10초</td>
+<td><strong>76.6%</strong></td>
+<td>57.3%</td>
+<td>35.5%</td>
+<td>45.2%</td>
+</tr>
+<tr>
+<td>점수, 영상 끝</td>
+<td><strong>63.5%</strong></td>
+<td>27.3%</td>
+<td>12.5%</td>
+<td>59.1%</td>
+</tr>
+<tr>
+<td>점수, 모든 프레임 평균</td>
+<td><strong>64.6%</strong></td>
+<td>37.0%</td>
+<td>19.0%</td>
+<td>52.4%</td>
+</tr>
+<tr>
+<td>지도 위치 오차 중앙값</td>
+<td>9.0 mm</td>
+<td>7.7 mm</td>
+<td>7.8 mm</td>
+<td>8.8 mm</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>ViT-S로 바꾸면 매우 빨라집니다.</strong> 0.96 Hz로 우리(0.68 Hz)보다 빠르고, 5초 안에 76%를 찾습니다.</li>
+<li><strong>그러나 잘못된 물체가 크게 늘어납니다.</strong> 같은 기준 0.5에서 30개 → 143개입니다. ViT-S는 물체 구분력이 낮아, 장면에 없는 물체도 0.5를 넘는 경우가 많습니다. 그래서 종합 점수는 영상 끝 27.3%로 원본 ViT-L 0.5(63.5%)와 우리(59.1%)보다 낮습니다.</li>
+<li><strong>ViT-S에는 더 높은 기준이 필요합니다.</strong> 0.4로 낮추면 오히려 오답이 376개로 폭증합니다.</li>
+</ul>
+<h4 id="45">4.5 해석 (보강 실험 전, 원본 기본값 기준)</h4>
+<ol>
+<li><strong>잘못 올린 물체를 손해로 치면 원본보다 2.4~4배 높습니다.</strong></li>
+<li>원본은 확실하지 않아도 21개 물체 모두에 답합니다.</li>
+<li>그래서 잘못된 물체가 계속 쌓이고(10초 50개 → 끝 326개), 점수가 8초 무렵 최고(약 48%)를 찍은 뒤 끝까지 떨어집니다(14%).</li>
+<li>우리는 잘못된 물체가 10개 안팎에서 멈추고, 점수가 꾸준히 오릅니다(59~62%).</li>
+<li><strong>처음 몇 초는 우리가 더 빨리 지도에 올립니다.</strong> 인식이 1.7배 빨라서 5초에 36% 대 5.5%입니다. 다만 우위 구간은 약 5~8초로 짧습니다. 10초 이후 "찾은 비율"만 보면 원본이 앞섭니다.</li>
+<li><strong>인식 빈도는 초기 발견 속도를 좌우합니다.</strong> 0.25 Hz로 제한하면 5초 안에 찾은 비율이 1.8%로 떨어집니다. 30초가 지나면 빈도와 관계없이 비슷해집니다. 따라서 빠른 인식의 가치는 처음 몇 초 안에 지도를 채우는 데 있습니다.</li>
+<li><strong>⑤ 지도 기반 후보는 효과가 거의 없습니다.</strong> 투영 후보도 관문에서 걸러지고 인식 빈도가 조금 떨어집니다. ⑤ + ① 문구 조합이 10~20초 구간에서 약간 높습니다(+3~5%p).</li>
+<li><strong>한계:</strong> 장면 물체를 다 찾는 완성도는 원본이 앞섭니다(100% 대 71%). 원인은 ISM 관문, 특히 닮은 물체 간 상자 독점 배정입니다.</li>
+</ol>
+<h3 id="5">5. 논문 실험으로 쓸 때의 의견</h3>
+<blockquote>
+<p><strong>보강 실험(4.4절) 뒤 수정:</strong> 원본의 점수 기준을 0.5로 올리면 종합 점수에서 원본이 앞섭니다. 따라서 아래 원래 의견 중 "틀리지 않게 지도에 올린다"를 종합 점수로 주장하는 부분은 그대로 쓸 수 없습니다. 바꿀 방향은 다음과 같습니다.
+1. 비교는 원본 기본값만이 아니라 <strong>점수 기준별 곡선 전체</strong>(0.2~0.5)와 함께 제시합니다(심사 대비 필수).
+2. 우리의 주장 범위를 줄입니다. 가장 적은 잘못된 물체, 가장 빠른 인식, 시스템 기여(키프레임 앵커링·지연 보정)를 주장합니다.
+3. 찾은 비율을 올리는 개선을 함께 진행합니다. 상자 독점 배정을 완화하고 ① 문구를 적용합니다. 개선 뒤 같은 실시간 비교로 원본 0.5보다 높은 점수를 얻는지 확인해야 합니다.
+4. 단계별 변경 실험(E1, <code>src/ycbv/ladder/</code>)으로 어떤 변경이 속도와 정밀도를 만들고, 어떤 변경이 찾은 비율을 깎았는지 보여줍니다.</p>
+</blockquote>
+<p><strong>(보강 실험 전 의견)</strong></p>
+<p><strong>결론: 논문 실험으로 쓰는 것을 추천합니다.</strong> 다만 다음을 함께 넣어야 심사를 통과하기 쉽습니다.</p>
+<p><strong>쓸 수 있는 근거</strong>
+- 같은 영상, 같은 GPU, 같은 지도 시스템에서 인식기만 바꾼 비교라서 공정성 설명이 쉽습니다.
+- 객체 지도를 목표로 하는 시스템에서는 "잘못 올린 물체"가 실제 비용입니다. 이 지표는 그 비용을 그대로 반영합니다.
+- 한 장 평가(BOP)에서 지는 이유(답을 덜 냄)와 실시간에서 이기는 이유(오답이 쌓이지 않음)가 같은 설계 선택에서 나온다는 일관된 이야기가 됩니다.</p>
+<p><strong>보완이 필요한 점 (심사 예상 지적)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>예상 지적</th>
+<th>대응</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"원본 SAM-6D에 불리한 설정이다" (21개 전체 질의, 점수 기준 없음)</td>
+<td>원본에 <strong>점수 기준을 높인 설정</strong>(예: 0.3, 0.4, 0.5)과 <strong>장면 물체만 질의하는 설정</strong>을 추가합니다. 기준을 높이면 오답이 줄고 찾은 비율도 줄어듭니다. 두 방법을 같은 그래프에 놓으면 공정한 비교가 됩니다.</td>
+</tr>
+<tr>
+<td>"새로 만든 점수 지표다"</td>
+<td>TP / (TP + FN + FP) 형태임을 밝히고, 찾은 비율(재현율)과 잘못된 물체 수(정밀도)를 따로도 보고합니다(표 B).</td>
+</tr>
+<tr>
+<td>"한 번 실행 결과다"</td>
+<td>장면별로 3회 반복해 평균과 편차를 보고합니다. 실시간 실행은 타이밍에 따라 결과가 달라집니다.</td>
+</tr>
+<tr>
+<td>"YCB-V는 정적이고 짧은 영상이다"</td>
+<td>우리 실측 데이터(260915 eightcircle 등)를 정성 결과로 함께 제시합니다. 정답 자세가 없으므로 표에는 넣지 않습니다.</td>
+</tr>
+<tr>
+<td>"완성도가 낮다"</td>
+<td>한계로 명시합니다. 관문 완화(배정 고정 등) 설정을 추가해 완성도와 오답의 맞교환 곡선을 함께 보여주면 더 좋습니다.</td>
+</tr>
+<tr>
+<td>"속도는 GPU에 따라 다르다"</td>
+<td>최종 수치는 RTX 5090에서 측정합니다. 이 PC 결과는 확인용입니다.</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>논문 구성안</strong>
+- <strong>Table:</strong> 표 A의 5초·10초·30초·영상 끝 점수 + 표 B의 핵심 행(인식 빈도, 시간 중앙값, 끝까지 찾은 비율, 잘못된 물체, 위치 오차)
+- <strong>Figure:</strong> 시간에 따른 찾은 비율 / 잘못된 물체 / 점수 3칸 그림(위 그림)
+- <strong>문장 예:</strong> "On the same videos and GPU, the proposed system places objects in the map earlier (36% vs 5% within 5 s) and keeps wrong map entries at 11 vs 326, so its map score with wrong entries counted as misses is 59% vs 14% at the end of the video. The original SAM-6D eventually finds all objects, at the cost of a map dominated by wrong entries."</p>
+<h3 id="6-rtx-5090">6. 남은 일 (RTX 5090)</h3>
+<ol>
+<li>위 실시간 실험 전체 재측정, 장면별 3회 반복</li>
+<li>원본 SAM-6D 추가 설정: 점수 기준 0.3·0.4·0.5, 장면 물체만 질의</li>
+<li>우리 관문 완화 설정: 배정 고정, 의미 기준 완화</li>
+<li>① 문구 다시 고르기를 기본값으로 채택할지 결정</li>
+</ol>
+<h3 id="7">7. 파일</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>내용</th>
+<th>위치</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>검출기 공급기 (①~④)</td>
+<td><code>src/ycbv/det_study/proposers.py</code></td>
+</tr>
+<tr>
+<td>검증·테스트 재현율</td>
+<td><code>src/ycbv/det_study/det_recall.py</code>, <code>out/val_*.json</code>, <code>out/test_detector.json</code></td>
+</tr>
+<tr>
+<td>문구 선택 결과</td>
+<td><code>src/ycbv/det_study/out/prompt_selection_m.json</code>, <code>prompts_best_m.json</code>, <code>prompts_ensemble_m.json</code></td>
+</tr>
+<tr>
+<td>900장 결과</td>
+<td><code>src/ycbv/det_study/results_det.json</code>, 단계별 손실 <code>out/loss_stages.json</code></td>
+</tr>
+<tr>
+<td>원본 SAM-6D 실시간 연결</td>
+<td><code>src/ycbv_live/orig_live_core.py</code> (hub <code>--recognizer</code>)</td>
+</tr>
+<tr>
+<td>지도 기반 후보</td>
+<td><code>objpose/pc/hub.py --map-prior</code>, <code>sam6d_realtime/realtime/sam6d_core.py</code> (<code>extra_proposals</code>)</td>
+</tr>
+<tr>
+<td>실시간 채점</td>
+<td><code>src/ycbv_live/eval_live.py</code> (시간·잘못된 물체 추가), <code>eval_penalized.py</code>, <code>eval_breakdown.py</code> (오류 유형), <code>eval_strict_found.py</code> (엄격한 찾은 비율)</td>
+</tr>
+<tr>
+<td>실시간 결과</td>
+<td><code>src/ycbv_live/results_{v2,m5,m15,orig,hz05,hz025}.json</code>, <code>results_penalized.json</code>, <code>results_breakdown.json</code>, <code>results_strict_found.json</code></td>
+</tr>
+<tr>
+<td>실행 출력</td>
+<td><code>objpose/output/ycbv_live_{v2,m5,m15,orig,hz05,hz025}_0000NN</code></td>
+</tr>
+<tr>
+<td>그림</td>
+<td><code>images/fig_live_time_to_map.png</code>, <code>images/fig_live_orig_thresholds.png</code></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<p><a id="08_실시간_비교표"></a></p>
+<h2 id="08-sam-6d-05-2026-10-06">08. 실시간 객체 위치 찾기 비교표 — 원본 SAM-6D 0.5, 개선안, 기술 조합 (2026-10-06)</h2>
+<p>영상을 실시간 속도(1배속)로 재생하면서 SLAM 지도 위에 물체 위치를 올리는 실험입니다. 같은 영상, 같은 SLAM(ORB-SLAM3, 특징점 2000), 같은 PC(RTX 3080 Ti Laptop)에서 인식기만 바꿨습니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>이름</th>
+<th>조합</th>
+<th>후보 영역</th>
+<th>특징 모델</th>
+<th>물체 판정</th>
+<th>자세 답 고르기</th>
+<th>결과 태그 (YCB / 실제 데이터)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>원본 0.5</strong></td>
+<td>FastSAM-x → DINOv2 ViT-L → 물체 판정 0.5 → PEM (기하 점수 1위를 답으로)</td>
+<td>FastSAM-x 전체 분할</td>
+<td>ViT-L</td>
+<td>원본 판정, 기준 0.5</td>
+<td>기하 점수 1위 (검증 없음)</td>
+<td>orig_th05 / origL05</td>
+</tr>
+<tr>
+<td><strong>개선안 1</strong> (본문의 "개선안")</td>
+<td>YOLO-World 문구 상자 + MobileSAM → DINOv2 ViT-S → 의미·외형·색상 관문(새 기준값) + 배정 대안 → PEM → 자세 검증 켬</td>
+<td>YOLO-World 문구 상자 + MobileSAM</td>
+<td>ViT-S</td>
+<td>우리 관문 + 상자 배정(대안 허용)</td>
+<td>자세 검증 켬</td>
+<td>g13p / g13</td>
+</tr>
+<tr>
+<td><strong>개선안 2</strong></td>
+<td>FastSAM-x → DINOv2 ViT-S → 물체 판정 0.5 → PEM (기하 점수 1위를 답으로)</td>
+<td>FastSAM-x 전체 분할</td>
+<td>ViT-S</td>
+<td>원본 판정, 기준 0.5</td>
+<td>기하 점수 1위 (검증 없음)</td>
+<td>origS_th05 / origS05</td>
+</tr>
+<tr>
+<td><strong>개선안 3</strong></td>
+<td>FastSAM-x → DINOv2 ViT-S → 물체 판정 0.5 → PEM (같은 모델 가중치) → 자세 검증 켬</td>
+<td>FastSAM-x 전체 분할</td>
+<td>ViT-S</td>
+<td>원본 판정, 기준 0.5</td>
+<td>자세 검증 켬</td>
+<td>hybS05 / hybS05</td>
+</tr>
+<tr>
+<td>개선안 4</td>
+<td>FastSAM-x → DINOv2 ViT-S → 물체 판정 0.5 → PEM (같은 모델 가중치) → 자세 검증 끔</td>
+<td>FastSAM-x 전체 분할</td>
+<td>ViT-S</td>
+<td>원본 판정, 기준 0.5</td>
+<td>우리 PEM 코드, 검증 끔</td>
+<td>hybS05_nover / hybS05_nover</td>
+</tr>
+<tr>
+<td>A안</td>
+<td>FastSAM-x → DINOv2 ViT-S → 의미·외형·색상 관문 + 상자 독점 배정 → PEM → 자세 검증 켬</td>
+<td>FastSAM-x 상자 (마스크는 MobileSAM으로 다시 만듦)</td>
+<td>ViT-S</td>
+<td>우리 관문(배포 기준값) + 상자 독점 배정</td>
+<td>자세 검증 켬</td>
+<td>gateA / gateA</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>모든 구성의 PEM은 같은 모델 가중치를 씁니다.</li>
+<li>원본 0.5와 개선안 2의 PEM은 원본 SAM-6D 코드입니다. 개선안 1·3·4와 A안은 우리 PEM 코드입니다.</li>
+<li>YCB-V에서 개선안 1은 YCB용 문구(g13p)를, 실제 데이터에서는 기존 문구(g13)를 씁니다.</li>
+<li>본문 표의 "개선안"은 개선안 1입니다. 개선안 3은 07 문서 3.5·3.7절의 "혼합 S"와 같은 구성입니다.</li>
+</ul>
+<p><strong>용어</strong>
+- <strong>찾은 객체:</strong> 영상 끝 지도에 맞는 위치로 올라간 물체. YCB는 정답 자세로 채점(ADD-S가 지름의 10% 미만)하고, 실제 데이터는 기준 위치에서 20 cm 이내면 맞음으로 봅니다.
+- <strong>찾지 못한 객체:</strong> 끝까지 맞는 항목이 없는 물체. 틀린 위치로만 올라간 물체도 여기에 넣습니다.
+- <strong>오답률:</strong> 지도에 올라간 항목 중 잘못된 항목의 비율 = 잘못 / (맞음 + 잘못). 잘못은 장면에 없는 물체, 위치 틀림, 같은 물체 중복입니다.
+- <strong>프레임당 처리 시간:</strong> 인식기가 한 프레임을 처리하는 데 걸린 시간(첫 프레임 제외). 실제 데이터는 물체가 없는 프레임이 많아 전체 중앙값과 물체가 검출된 프레임의 중앙값을 함께 적었습니다.</p>
+<h3 id="1-260901_cbnu_bigeightcircle-314-8">1. 실제 영상 (260901_cbnu_bigeightcircle, 314초, 선반 두 개의 물체 8개)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구분</th>
+<th>지표</th>
+<th>원본 0.5</th>
+<th>개선안 (검증 켬)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>시간</strong></td>
+<td>인식 빈도</td>
+<td>0.89 Hz</td>
+<td><strong>3.68 Hz</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (전체 중앙값)</td>
+<td>1094 ms</td>
+<td><strong>72 ms</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (물체 검출 프레임 중앙값)</td>
+<td>1392 ms</td>
+<td><strong>491 ms</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>처음 찾기까지 시간 (중앙값)</td>
+<td><strong>52.3초</strong></td>
+<td>69.2초</td>
+</tr>
+<tr>
+<td></td>
+<td>8개를 모두 찾은 시점</td>
+<td>끝까지 못 찾음</td>
+<td><strong>91.1초</strong></td>
+</tr>
+<tr>
+<td><strong>찾은 객체</strong></td>
+<td>최종 지도 (8개 중)</td>
+<td>5</td>
+<td><strong>8</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>목록</td>
+<td>페브리즈, 곰 인형, 초코 헤이즐넛, 머그컵, 식혜</td>
+<td>8개 모두</td>
+</tr>
+<tr>
+<td><strong>찾지 못한 객체</strong></td>
+<td>개수</td>
+<td>3</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>목록 (위치 오차)</td>
+<td>세제 21 cm, 공룡 인형 34 cm, 우유 3.4 m (모두 틀린 위치로만 올라감)</td>
+<td>없음</td>
+</tr>
+<tr>
+<td><strong>오답</strong></td>
+<td>최종 지도 잘못된 항목</td>
+<td>4 (위치 틀림 3, 장면에 없는 소스 1)</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><strong>오답률 (최종 지도)</strong></td>
+<td><strong>44.4%</strong> (4 / 9)</td>
+<td><strong>0%</strong> (0 / 8)</td>
+</tr>
+<tr>
+<td></td>
+<td>영상 끝 화면: 맞음 / 잘못</td>
+<td>7 / 3 (중복 1, 위치 틀림 1, 소스 1)</td>
+<td><strong>8 / 0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>오답률 (영상 끝 화면)</td>
+<td>30.0% (3 / 10)</td>
+<td><strong>0%</strong></td>
+</tr>
+<tr>
+<td><strong>기존 점수</strong></td>
+<td>120초 점수</td>
+<td>63.6%</td>
+<td><strong>100%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>영상 끝 점수 (맞음 / (8 + 잘못))</td>
+<td>63.6%</td>
+<td><strong>100%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>평균 점수</td>
+<td>53.6%</td>
+<td><strong>79.2%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>물체별 처음 찾은 시간 (초)</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>물체</th>
+<th>원본 0.5</th>
+<th>개선안</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>우유</td>
+<td>29.8 (최종 지도에서는 3.4 m 틀림)</td>
+<td><strong>28.0</strong></td>
+</tr>
+<tr>
+<td>머그컵</td>
+<td><strong>51.1</strong></td>
+<td>51.3</td>
+</tr>
+<tr>
+<td>초코 헤이즐넛</td>
+<td>52.3</td>
+<td><strong>52.1</strong></td>
+</tr>
+<tr>
+<td>식혜</td>
+<td>52.3</td>
+<td><strong>52.1</strong></td>
+</tr>
+<tr>
+<td>곰 인형</td>
+<td><strong>78.7</strong></td>
+<td>89.4</td>
+</tr>
+<tr>
+<td>세제</td>
+<td><strong>85.8</strong> (최종 지도에서는 21 cm 틀림)</td>
+<td>91.1</td>
+</tr>
+<tr>
+<td>페브리즈</td>
+<td><strong>90.3</strong></td>
+<td>91.1</td>
+</tr>
+<tr>
+<td>공룡 인형</td>
+<td>못 찾음</td>
+<td><strong>86.2</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="2-ycb-v-12-20738-55">2. YCB-V (영상 12개, 20,738프레임, 장면 물체 55개)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구분</th>
+<th>지표</th>
+<th>원본 0.5</th>
+<th>개선안 (검증 켬)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>시간</strong></td>
+<td>인식 빈도</td>
+<td><strong>0.57 Hz</strong></td>
+<td>0.29 Hz</td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (중앙값)</td>
+<td><strong>1643 ms</strong></td>
+<td>2764 ms</td>
+</tr>
+<tr>
+<td></td>
+<td>ㄴ 단계별 (후보 / 판정 / 자세)</td>
+<td>34 / 867 / 704 ms</td>
+<td>16 / 198 / 2541 ms</td>
+</tr>
+<tr>
+<td></td>
+<td>처음 찾기까지 시간 (중앙값)</td>
+<td><strong>5.2초</strong></td>
+<td>8.6초</td>
+</tr>
+<tr>
+<td></td>
+<td>10초 / 20초 / 30초 안에 찾음</td>
+<td><strong>90.9% / 92.7% / 92.7%</strong></td>
+<td>56.4% / 76.4% / 81.8%</td>
+</tr>
+<tr>
+<td><strong>찾은 객체</strong></td>
+<td>영상 끝 지도 (55개 중)</td>
+<td><strong>54 (98.2%)</strong></td>
+<td>49 (89.1%)</td>
+</tr>
+<tr>
+<td><strong>찾지 못한 객체</strong></td>
+<td>개수</td>
+<td><strong>1</strong></td>
+<td>6</td>
+</tr>
+<tr>
+<td></td>
+<td>목록 (장면 번호)</td>
+<td>설탕 상자(55, 틀린 위치로만 올라감)</td>
+<td>머그(48), 대형 집게(48, 틀린 위치로만), 그릇(49), 참치 캔(49), 그릇(53), 토마토 수프 캔(55)</td>
+</tr>
+<tr>
+<td><strong>오답</strong></td>
+<td>영상 끝 지도 잘못된 항목</td>
+<td>30</td>
+<td><strong>12</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>ㄴ 장면에 없는 물체</td>
+<td>26</td>
+<td><strong>11</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>ㄴ 위치 틀림</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td></td>
+<td>ㄴ 같은 물체 중복</td>
+<td>3</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><strong>오답률 (영상 끝 지도)</strong></td>
+<td>35.7% (30 / 84)</td>
+<td><strong>19.7%</strong> (12 / 61)</td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 잘못된 상자</td>
+<td>1.80</td>
+<td><strong>0.75</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>장면에 없는데 자주 올린 물체</td>
+<td>푸딩 상자 8, 폼 블록 6, 젤라틴 상자 6</td>
+<td>머스터드 병 4, 특대 집게 2</td>
+</tr>
+<tr>
+<td><strong>기존 점수</strong></td>
+<td>영상 끝 점수 (맞음 / (55 + 잘못))</td>
+<td>63.5%</td>
+<td><strong>73.1%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>평균 점수</td>
+<td><strong>64.6%</strong></td>
+<td>60.4%</td>
+</tr>
+<tr>
+<td></td>
+<td>지도 자세 정확도 (ADD-S AUC)</td>
+<td><strong>87.9</strong></td>
+<td>87.8</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="3">3. 정리</h3>
+<ul>
+<li><strong>실제 영상:</strong> 개선안이 모든 핵심 지표에서 앞섭니다. 4.1배 빠르고(3.68 대 0.89 Hz), 91초에 8개를 모두 찾았으며 오답률 0%입니다. 원본은 8개 중 5개만 맞는 위치에 남았고, 최종 지도 오답률이 44.4%입니다. 원본이 못 찾은 세 물체는 종류는 맞게 골랐지만 위치가 21 cm~3.4 m 틀렸습니다.</li>
+<li><strong>YCB-V:</strong> 원본이 더 빨리, 더 많이 찾습니다(54 대 49). 개선안은 오답률이 절반 수준(19.7% 대 35.7%)이라 오답을 감점하는 영상 끝 점수는 더 높습니다. 개선안이 놓친 물체는 닮은 캔과 무늬 없는 그릇처럼 문구로 구별하기 어려운 물체입니다. 개선안이 YCB에서 느린 것은 물체 21종을 모두 질의해 자세 검증할 후보가 많기 때문입니다(자세 단계 2541 ms).</li>
+<li>두 데이터에서 결과가 엇갈리는 이유는 07 문서 3.6절에 있습니다.</li>
+</ul>
+<p><strong>주의:</strong> 모두 1회 측정입니다. 실제 영상은 자세 정답이 없어 기준 위치를 우리 기술 실행 결과에서 가져왔고, 이 점이 개선안에 유리하게 작용했을 수 있습니다. YCB-V는 정답 자세로 채점합니다.</p>
+<h3 id="4-5-2026-10-06">4. 기술 조합 비교 — 5개 구성 (2026-10-06)</h3>
+<p>새 개선안을 만들기 위해 앞단과 뒷단을 바꿔 가며 비교했습니다. 개선안 2·3·4는 앞단(FastSAM-x → DINOv2 ViT-S → 원본 물체 판정 0.5)이 같고 뒷단만 다릅니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>이름</th>
+<th>구성</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>원본 0.5</strong></td>
+<td>FastSAM-x → ViT-L → 물체 판정 0.5 → PEM (자세 후보 중 기하 점수 1위를 답으로)</td>
+</tr>
+<tr>
+<td><strong>개선안</strong></td>
+<td>YOLO-World 문구 상자 + MobileSAM → ViT-S → 우리 관문 + 배정 대안 → PEM → 자세 검증 켬</td>
+</tr>
+<tr>
+<td><strong>개선안 2</strong></td>
+<td>FastSAM-x → ViT-S → 물체 판정 0.5 → PEM (기하 점수 1위를 답으로)</td>
+</tr>
+<tr>
+<td><strong>개선안 3</strong></td>
+<td>FastSAM-x → ViT-S → 물체 판정 0.5 → PEM (같은 모델 가중치) → 자세 검증 켬</td>
+</tr>
+<tr>
+<td><strong>개선안 4</strong></td>
+<td>FastSAM-x → ViT-S → 물체 판정 0.5 → PEM (같은 모델 가중치) → 자세 검증 끔</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="41-260901_cbnu_bigeightcircle-314-8">4.1 실제 영상 (260901_cbnu_bigeightcircle, 314초, 물체 8개)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구분</th>
+<th>지표</th>
+<th>원본 0.5</th>
+<th>개선안</th>
+<th>개선안 2</th>
+<th>개선안 3</th>
+<th>개선안 4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>시간</strong></td>
+<td>인식 빈도</td>
+<td>0.89 Hz</td>
+<td>3.68 Hz</td>
+<td>3.70 Hz</td>
+<td>2.77 Hz</td>
+<td><strong>3.98 Hz</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (물체 검출 프레임 중앙값)</td>
+<td>1392 ms</td>
+<td>491 ms</td>
+<td>345 ms</td>
+<td>584 ms</td>
+<td><strong>311 ms</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (전체 중앙값)</td>
+<td>1094 ms</td>
+<td><strong>72 ms</strong></td>
+<td>207 ms</td>
+<td>197 ms</td>
+<td>215 ms</td>
+</tr>
+<tr>
+<td></td>
+<td>처음 찾기까지 시간 (중앙값)</td>
+<td>52.3초</td>
+<td>69.2초</td>
+<td>50.6초</td>
+<td>72.8초</td>
+<td><strong>50.0초</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>8개를 모두 한 번 이상 찾은 시점</td>
+<td>못 찾음</td>
+<td>91.1초</td>
+<td>90.2초</td>
+<td>99.4초</td>
+<td><strong>88.5초</strong></td>
+</tr>
+<tr>
+<td><strong>찾은 객체</strong></td>
+<td>최종 지도 (8개 중)</td>
+<td>5</td>
+<td><strong>8</strong></td>
+<td>4</td>
+<td><strong>8</strong></td>
+<td>3</td>
+</tr>
+<tr>
+<td><strong>찾지 못한 객체</strong></td>
+<td>개수</td>
+<td>3</td>
+<td><strong>0</strong></td>
+<td>4</td>
+<td><strong>0</strong></td>
+<td>5</td>
+</tr>
+<tr>
+<td></td>
+<td>목록 (위치 오차, 모두 틀린 위치로만 올라감)</td>
+<td>세제 21 cm, 공룡 34 cm, 우유 3.4 m</td>
+<td>없음</td>
+<td>공룡 27 cm, 우유 31 cm, 초코 3.3 m, 식혜 3.3 m</td>
+<td>없음</td>
+<td>세제 21 cm, 공룡 26 cm, 초코 3.3 m, 식혜 3.3 m, 우유 3.4 m</td>
+</tr>
+<tr>
+<td><strong>오답</strong></td>
+<td>최종 지도 잘못된 항목 (위치 틀림 / 없는 물체)</td>
+<td>4 (3 / 1)</td>
+<td><strong>0</strong></td>
+<td>5 (4 / 1)</td>
+<td><strong>0</strong></td>
+<td>6 (5 / 1)</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>오답률 (최종 지도)</strong></td>
+<td>44.4%</td>
+<td><strong>0%</strong></td>
+<td>55.6%</td>
+<td><strong>0%</strong></td>
+<td>66.7%</td>
+</tr>
+<tr>
+<td></td>
+<td>영상 끝 화면: 맞음 / 잘못</td>
+<td>7 / 3</td>
+<td><strong>8 / 0</strong></td>
+<td>8 / 22</td>
+<td><strong>8 / 0</strong></td>
+<td>8 / 22</td>
+</tr>
+<tr>
+<td></td>
+<td>ㄴ 잘못의 내역</td>
+<td>중복 1, 위치 틀림 1, 소스 1</td>
+<td>없음</td>
+<td>중복 20 (초코 17), 소스 2</td>
+<td>없음</td>
+<td>중복 20 (초코 17), 소스 2</td>
+</tr>
+<tr>
+<td></td>
+<td>오답률 (영상 끝 화면)</td>
+<td>30.0%</td>
+<td><strong>0%</strong></td>
+<td>73.3%</td>
+<td><strong>0%</strong></td>
+<td>73.3%</td>
+</tr>
+<tr>
+<td><strong>기존 점수</strong></td>
+<td>120초 점수</td>
+<td>63.6%</td>
+<td><strong>100%</strong></td>
+<td>30.8%</td>
+<td><strong>100%</strong></td>
+<td>36.4%</td>
+</tr>
+<tr>
+<td></td>
+<td>영상 끝 점수</td>
+<td>63.6%</td>
+<td><strong>100%</strong></td>
+<td>26.7%</td>
+<td><strong>100%</strong></td>
+<td>26.7%</td>
+</tr>
+<tr>
+<td></td>
+<td>평균 점수</td>
+<td>53.6%</td>
+<td><strong>79.2%</strong></td>
+<td>25.0%</td>
+<td>77.3%</td>
+<td>24.4%</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="42-ycb-v-12-20738-55">4.2 YCB-V (영상 12개, 20,738프레임, 장면 물체 55개)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구분</th>
+<th>지표</th>
+<th>원본 0.5</th>
+<th>개선안</th>
+<th>개선안 2</th>
+<th>개선안 3</th>
+<th>개선안 4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>시간</strong></td>
+<td>인식 빈도</td>
+<td>0.57 Hz</td>
+<td>0.29 Hz</td>
+<td>0.96 Hz</td>
+<td>0.37 Hz</td>
+<td><strong>1.32 Hz</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (중앙값)</td>
+<td>1643 ms</td>
+<td>2764 ms</td>
+<td>982 ms</td>
+<td>2513 ms</td>
+<td><strong>610 ms</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>ㄴ 자세 단계 (중앙값)</td>
+<td>704 ms</td>
+<td>2541 ms</td>
+<td>813 ms</td>
+<td>2322 ms</td>
+<td><strong>419 ms</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>처음 찾기까지 시간 (중앙값)</td>
+<td>5.2초</td>
+<td>8.6초</td>
+<td>4.0초</td>
+<td>8.0초</td>
+<td><strong>3.2초</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>10초 / 20초 / 30초 안에 찾음</td>
+<td>90.9 / 92.7 / 92.7%</td>
+<td>56.4 / 76.4 / 81.8%</td>
+<td><strong>92.7 / 94.5 / 94.5%</strong></td>
+<td>60.0 / 90.9 / 94.5%</td>
+<td>90.9 / <strong>94.5 / 94.5%</strong></td>
+</tr>
+<tr>
+<td><strong>찾은 객체</strong></td>
+<td>영상 끝 지도 (55개 중)</td>
+<td>54</td>
+<td>49</td>
+<td>54</td>
+<td>54</td>
+<td><strong>55</strong></td>
+</tr>
+<tr>
+<td><strong>찾지 못한 객체</strong></td>
+<td>개수</td>
+<td>1</td>
+<td>6</td>
+<td>1</td>
+<td>1</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>목록 (장면 번호)</td>
+<td>설탕 상자(55, 틀린 위치로만)</td>
+<td>머그(48), 대형 집게(48, 틀린 위치로만), 그릇(49), 참치 캔(49), 그릇(53), 토마토 수프 캔(55)</td>
+<td>특대 집게(48, 틀린 위치로만)</td>
+<td>특대 집게(48)</td>
+<td>없음</td>
+</tr>
+<tr>
+<td><strong>오답</strong></td>
+<td>영상 끝 지도 잘못된 항목</td>
+<td>30</td>
+<td><strong>12</strong></td>
+<td>143</td>
+<td>15</td>
+<td>160</td>
+</tr>
+<tr>
+<td></td>
+<td>ㄴ 장면에 없는 물체</td>
+<td>26</td>
+<td><strong>11</strong></td>
+<td>130</td>
+<td>14</td>
+<td>154</td>
+</tr>
+<tr>
+<td></td>
+<td>ㄴ 위치 틀림</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td><strong>0</strong></td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>ㄴ 같은 물체 중복</td>
+<td>3</td>
+<td><strong>0</strong></td>
+<td>12</td>
+<td>1</td>
+<td>6</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>오답률 (영상 끝 지도)</strong></td>
+<td>35.7%</td>
+<td><strong>19.7%</strong></td>
+<td>72.6%</td>
+<td>21.7%</td>
+<td>74.4%</td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 잘못된 상자</td>
+<td>1.80</td>
+<td><strong>0.75</strong></td>
+<td>8.14</td>
+<td>0.92</td>
+<td>9.35</td>
+</tr>
+<tr>
+<td><strong>기존 점수</strong></td>
+<td>영상 끝 점수</td>
+<td>63.5%</td>
+<td>73.1%</td>
+<td>27.3%</td>
+<td><strong>77.1%</strong></td>
+<td>25.6%</td>
+</tr>
+<tr>
+<td></td>
+<td>평균 점수</td>
+<td>64.6%</td>
+<td>60.4%</td>
+<td>37.0%</td>
+<td><strong>70.1%</strong></td>
+<td>34.2%</td>
+</tr>
+<tr>
+<td></td>
+<td>지도 자세 정확도 (ADD-S AUC)</td>
+<td>87.9</td>
+<td>87.8</td>
+<td>86.3</td>
+<td><strong>91.2</strong></td>
+<td>85.7</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="43_1">4.3 해석</h4>
+<ul>
+<li><strong>개선안 2 (원본에서 ViT-S만 바꿈):</strong> 원본 0.5보다 빨라지고(YCB 0.57 → 0.96 Hz, 실제 0.89 → 3.70 Hz) 더 일찍 찾습니다. 하지만 ViT-S 특징으로는 원본 판정 0.5가 느슨해져 오답이 크게 늘었습니다(YCB 30 → 143개, 실제 데이터 최종 지도 맞음 5 → 4).</li>
+<li><strong>개선안 4 대 개선안 2 (PEM 코드만 다름, 둘 다 검증 없음):</strong> 결과가 거의 같습니다(YCB 오답률 74.4% 대 72.6%, 실제 데이터 영상 끝 화면 둘 다 8 / 22). 우리 PEM 코드 자체가 오답을 줄이는 것은 아닙니다.</li>
+<li><strong>개선안 3 대 개선안 4 (자세 검증만 다름):</strong> 검증을 켜면 YCB 잘못된 항목이 160 → 15개, 실제 데이터 최종 지도 오답이 6 → 0개로 줄고, 자세 정확도도 85.7 → 91.2로 오릅니다. 대가는 속도입니다(YCB 1.32 → 0.37 Hz, 실제 3.98 → 2.77 Hz). 찾은 수는 거의 그대로입니다(YCB 55 → 54, 실제 8 → 8).</li>
+<li><strong>실제 데이터의 같은 물체 중복:</strong> 검증이 없는 개선안 2·4는 초코 헤이즐넛을 화면 지도에 17번 올렸습니다. 최종 지도에서는 초코·식혜·우유가 다른 선반(3.3 m 떨어진 곳)에 남았습니다.</li>
+<li><strong>두 데이터 모두에서 균형이 가장 좋은 구성은 개선안 3입니다.</strong> YCB에서 원본만큼 찾고(54/55) 오답률은 21.7%(원본 35.7%)이며 자세 정확도가 가장 높습니다. 실제 데이터에서도 8/8, 오답 0입니다. 다만 실제 데이터에서 8개를 모두 찾은 시점은 99.4초로 개선안(91.1초)보다 늦고, 인식 빈도도 낮습니다(2.77 대 3.68 Hz).</li>
+<li><strong>개선안은 실제 데이터에서 여전히 가장 좋은 구성입니다</strong>(평균 점수 79.2%). 그러나 YCB에서 문구로 구별하기 어려운 물체 6개를 놓칩니다.</li>
+</ul>
+<p><strong>주의:</strong> 모두 1회 측정이고 이 PC(RTX 3080 Ti Laptop)에서 쟀습니다. 실제 영상은 기준 위치를 우리 기술 실행 결과에서 가져왔습니다. 원본 0.5, 개선안, 개선안 3의 실제 영상과 개선안 2·3의 YCB 결과는 이전에 잰 것을 그대로 썼습니다.</p>
+<h3 id="5-5-2026-10-06-16301832">5. 실제 영상 5개 구성 한 번에 측정 (2026-10-06 16:30~18:32)</h3>
+<p>4.1절은 측정 시간대가 다른 실행을 모은 것입니다. 측정 조건을 맞추려고 5개 구성을 같은 시간대에 연달아 다시 돌렸습니다(결과 폴더 <code>real5_260901_*</code>). 개선안 2의 첫 실행은 SLAM 루프 오연결로 지도가 최대 305 cm 보정돼 모든 물체가 0.4~0.6 m 밀렸습니다. 그래서 그 실행은 빼고(<code>real5_260901_origS05_slambad</code>) 다시 측정했습니다. 다시 잰 실행은 루프 보정 2번, 최대 보정 26.6 cm로 다른 실행(13~19 cm)과 비슷했습니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구분</th>
+<th>지표</th>
+<th>원본 0.5</th>
+<th>개선안</th>
+<th>개선안 2</th>
+<th>개선안 3</th>
+<th>개선안 4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>시간</strong></td>
+<td>인식 빈도</td>
+<td>0.89 Hz</td>
+<td>3.61 Hz</td>
+<td>3.71 Hz</td>
+<td>2.70 Hz</td>
+<td><strong>3.91 Hz</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (물체 검출 프레임 중앙값)</td>
+<td>1378 ms</td>
+<td>507 ms</td>
+<td>341 ms</td>
+<td>597 ms</td>
+<td><strong>319 ms</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (전체 중앙값)</td>
+<td>1107 ms</td>
+<td><strong>74 ms</strong></td>
+<td>208 ms</td>
+<td>197 ms</td>
+<td>222 ms</td>
+</tr>
+<tr>
+<td></td>
+<td>처음 찾기까지 시간 (중앙값)</td>
+<td>52.0초</td>
+<td>70.7초</td>
+<td>63.6초</td>
+<td>71.7초</td>
+<td><strong>50.4초</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>8개를 모두 한 번 이상 찾은 시점</td>
+<td>못 찾음 (공룡)</td>
+<td>94.8초</td>
+<td>89.9초</td>
+<td>96.0초</td>
+<td><strong>88.0초</strong></td>
+</tr>
+<tr>
+<td><strong>찾은 객체</strong></td>
+<td>최종 지도 (8개 중)</td>
+<td>7</td>
+<td><strong>8</strong></td>
+<td>5</td>
+<td><strong>8</strong></td>
+<td>5</td>
+</tr>
+<tr>
+<td><strong>찾지 못한 객체</strong></td>
+<td>개수</td>
+<td>1</td>
+<td><strong>0</strong></td>
+<td>3</td>
+<td><strong>0</strong></td>
+<td>3</td>
+</tr>
+<tr>
+<td></td>
+<td>목록 (위치 오차, 모두 틀린 위치로만 올라감)</td>
+<td>공룡 23 cm</td>
+<td>없음</td>
+<td>공룡 25 cm, 식혜 3.3 m, 초코 3.5 m</td>
+<td>없음</td>
+<td>공룡 27 cm, 식혜 3.3 m, 초코 3.4 m</td>
+</tr>
+<tr>
+<td><strong>오답</strong></td>
+<td>최종 지도 잘못된 항목 (위치 틀림 / 없는 물체)</td>
+<td>2 (1 / 1)</td>
+<td><strong>0</strong></td>
+<td>4 (3 / 1)</td>
+<td><strong>0</strong></td>
+<td>4 (3 / 1)</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>오답률 (최종 지도)</strong></td>
+<td>22.2%</td>
+<td><strong>0%</strong></td>
+<td>44.4%</td>
+<td><strong>0%</strong></td>
+<td>44.4%</td>
+</tr>
+<tr>
+<td></td>
+<td>영상 끝 화면: 맞음 / 잘못</td>
+<td>7 / 3</td>
+<td><strong>8 / 0</strong></td>
+<td>8 / 25</td>
+<td><strong>8 / 0</strong></td>
+<td>8 / 23</td>
+</tr>
+<tr>
+<td></td>
+<td>ㄴ 잘못의 내역</td>
+<td>중복 1, 위치 틀림 1, 소스 1</td>
+<td>없음</td>
+<td>중복 23, 소스 2</td>
+<td>없음</td>
+<td>중복 21, 소스 2</td>
+</tr>
+<tr>
+<td></td>
+<td>오답률 (영상 끝 화면)</td>
+<td>30.0%</td>
+<td><strong>0%</strong></td>
+<td>75.8%</td>
+<td><strong>0%</strong></td>
+<td>74.2%</td>
+</tr>
+<tr>
+<td><strong>기존 점수</strong></td>
+<td>120초 점수</td>
+<td>63.6%</td>
+<td><strong>100%</strong></td>
+<td>33.3%</td>
+<td><strong>100%</strong></td>
+<td>42.1%</td>
+</tr>
+<tr>
+<td></td>
+<td>영상 끝 점수</td>
+<td>63.6%</td>
+<td><strong>100%</strong></td>
+<td>24.2%</td>
+<td><strong>100%</strong></td>
+<td>25.8%</td>
+</tr>
+<tr>
+<td></td>
+<td>평균 점수</td>
+<td>52.6%</td>
+<td><strong>78.9%</strong></td>
+<td>25.0%</td>
+<td>77.8%</td>
+<td>28.6%</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>4.1절(따로 잰 실행)과 비교</strong>
+- 개선안, 개선안 2, 개선안 3, 개선안 4는 같은 결과가 다시 나왔습니다. 인식 빈도 차이는 3% 이내이고, 최종 지도 맞음 개수는 개선안 2만 4 → 5개로 1개 달라졌습니다.
+- 원본 0.5는 실행마다 차이가 큽니다(최종 지도 5 / 4 → 7 / 2). 0.89 Hz로 처리하는 프레임이 적어, 어느 프레임에서 오판이 나오느냐에 결과가 크게 좌우됩니다.</p>
+<p><strong>정리:</strong> 자세 검증이 있는 두 구성(개선안, 개선안 3)만 8개를 모두 맞게 찾고 오답이 0입니다. 검증이 없는 개선안 2·4는 가장 빨리 8개를 한 번씩 찾지만, 영상 끝 화면에 같은 물체가 20개 넘게 중복되고 최종 지도의 오답률이 44%입니다.</p>
+<h3 id="6-260915_eightcircle-05-3-2026-10-06-19">6. 실제 영상 260915_eightcircle — 원본 0.5, 개선안, 개선안 3 (2026-10-06 19시)</h3>
+<p>128초 영상, 물체 8개(260901과 같은 물체), Mac ORB-SLAM3 특징점 2000. 세 실행 모두 SLAM이 정상이었습니다(루프 보정 2번, 최대 보정 9~16 cm). 기준 위치는 10월 4일에 우리 기술로 돌린 실행 <code>live_260915_eightcircle_orbslam3</code>(8 / 8, 오답 0) 한 개에서 가져왔습니다(260901은 3개). 채점은 <code>EVAL_REAL_SESSION=260915 python eval_real.py</code>로 합니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구분</th>
+<th>지표</th>
+<th>원본 0.5</th>
+<th>개선안</th>
+<th>개선안 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>시간</strong></td>
+<td>인식 빈도</td>
+<td>0.60 Hz</td>
+<td>1.43 Hz</td>
+<td><strong>1.44 Hz</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (물체 검출 프레임 중앙값)</td>
+<td>1922 ms</td>
+<td><strong>1214 ms</strong></td>
+<td>1449 ms</td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (전체 중앙값)</td>
+<td>1808 ms</td>
+<td>460 ms</td>
+<td><strong>197 ms</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>처음 찾기까지 시간 (중앙값)</td>
+<td>47.5초</td>
+<td><strong>46.3초</strong></td>
+<td>48.0초</td>
+</tr>
+<tr>
+<td></td>
+<td>8개를 모두 한 번 이상 찾은 시점</td>
+<td>72.4초</td>
+<td><strong>71.0초</strong></td>
+<td>77.6초</td>
+</tr>
+<tr>
+<td><strong>찾은 객체</strong></td>
+<td>최종 지도 (8개 중)</td>
+<td>7</td>
+<td>7</td>
+<td><strong>8</strong></td>
+</tr>
+<tr>
+<td><strong>찾지 못한 객체</strong></td>
+<td>목록</td>
+<td>곰 인형 (공룡 인형 위치에 곰 인형 이름이 붙음, 1.89 m 틀림)</td>
+<td>초코 헤이즐넛 (1.83 m 틀린 곳, 다른 물체와도 1.7 m 넘게 떨어짐)</td>
+<td><strong>없음</strong></td>
+</tr>
+<tr>
+<td><strong>오답</strong></td>
+<td>최종 지도 잘못된 항목</td>
+<td>2 (위치 틀림 1, 장면에 없는 소스 1)</td>
+<td>1 (위치 틀림 1)</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><strong>오답률 (최종 지도)</strong></td>
+<td>22.2% (2 / 9)</td>
+<td>12.5% (1 / 8)</td>
+<td><strong>0%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>영상 끝 화면: 맞음 / 잘못</td>
+<td>8 / 1 (곰 인형 중복)</td>
+<td>8 / 1 (초코 중복)</td>
+<td><strong>8 / 0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>오답률 (영상 끝 화면)</td>
+<td>11.1%</td>
+<td>11.1%</td>
+<td><strong>0%</strong></td>
+</tr>
+<tr>
+<td><strong>기존 점수</strong></td>
+<td>60초 점수</td>
+<td>55.6%</td>
+<td>66.7%</td>
+<td><strong>75.0%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>120초 점수</td>
+<td>88.9%</td>
+<td>88.9%</td>
+<td><strong>100%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>영상 끝 점수</td>
+<td>88.9%</td>
+<td>88.9%</td>
+<td><strong>100%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>평균 점수</td>
+<td>59.3%</td>
+<td>60.7%</td>
+<td><strong>67.7%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>설명</strong>
+- <strong>개선안 3만 8개를 모두 맞게 남기고 오답이 0입니다.</strong> 원본 0.5와 개선안은 영상 끝 화면에서는 8개를 모두 맞게 보여 주지만, 같은 물체 사본이 하나씩 더 생겼습니다. 최종 지도에는 그 사본 쪽이 남아 한 물체씩 틀렸습니다.
+- <strong>원본 0.5의 오답은 이름 혼동입니다.</strong> 공룡 인형 위치(0.01 m)에 곰 인형 이름이 붙었습니다. 260901에서 본 것과 같은 유형입니다.
+- <strong>개선안의 오답은 초코 헤이즐넛 사본입니다.</strong> 자세 검증을 통과했지만 위치가 1.83 m 틀린 항목이 하나 남았습니다. 검증이 있어도 드물게 틀린 항목이 통과할 수 있습니다.
+- <strong>속도:</strong> 이 영상에서는 개선안과 개선안 3이 같은 속도(1.4 Hz)입니다. 260901(3.6 Hz 대 2.7 Hz)보다 느린데, 물체가 보이는 프레임이 많아 자세 검증할 후보가 자주 생기기 때문입니다(물체 검출 프레임 1.2~1.4초). 원본 0.5는 0.60 Hz로 가장 느립니다.
+- <strong>세 구성 모두 8개를 처음 찾는 시점은 비슷합니다</strong>(71~78초). 이 영상은 로봇이 선반 앞을 지나가는 시점이 정해져 있어서, 인식 속도보다 물체가 화면에 들어오는 시점이 찾는 시점을 결정합니다.</p>
+<p><strong>주의:</strong> 1회 측정이고, 기준 위치가 우리 기술의 실행 1개에서 왔습니다.</p>
+<h3 id="7-05-3-2026-10-06-1920">7. 실제 데이터 여러 개 — 원본 0.5, 개선안, 개선안 3 (2026-10-06 19~20시)</h3>
+<p>세 구성을 실제 녹화 4개에서 돌렸습니다. 물체는 모두 같은 8개이고, SLAM은 Mac ORB-SLAM3 특징점 2000입니다. 260901_cbnu_bigeightcircle(5절, 같은 날 측정)도 참고로 함께 적었습니다.</p>
+<ul>
+<li><strong>260901_cbnu_longcircle은 제외했습니다.</strong> PC의 영상 파일 <code>SAM/SAM_0.db3</code>(4.1 GB)가 손상됐습니다(sqlite quick_check에서 페이지 오류 수십 개). Mac에는 이 데이터의 영상 폴더가 없습니다.</li>
+<li><strong>260826_etri_eightcircle_dark:</strong> 영상 폴더에 0바이트 <code>SAM_0.db3</code>가 있어 hub가 시작하지 못했습니다. 빈 파일을 임시 폴더로 옮긴 뒤 다시 측정했습니다.</li>
+<li><strong>채점 기준 위치:</strong> 모두 우리 기술의 실행에서 가져왔습니다.</li>
+<li>dark: 이전 실행 3개</li>
+<li>cbnu_eightcircle, 260915: 이전 실행 1개</li>
+<li>260910_object: 쓸 만한 이전 실행이 없어(ORB 실행은 지도 2 m 어긋남, 나머지는 LiDAR 좌표계) 오늘 배포 설정으로 기준 실행을 새로 만듦(<code>ref_260910_object_ours</code>, 8 / 8)</li>
+<li><strong>소스(Sauce_high):</strong> 장면에 없는 물체로 채점했습니다. 260910에서 소스로 올라간 항목은 식혜 위치에서 3 cm였습니다. 식혜를 소스로 잘못 판정한 것입니다.</li>
+<li><strong>SLAM:</strong> 모든 실행이 루프 보정 2번이었습니다. 다만 260910 개선안 실행은 도중 최대 보정이 219 cm로 컸습니다. 최종 지도는 8개 모두 기준 위치 20 cm 안이었습니다.</li>
+</ul>
+<h4 id="71">7.1 데이터별 비교</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>데이터 (길이)</th>
+<th>지표</th>
+<th>원본 0.5</th>
+<th>개선안</th>
+<th>개선안 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>260826_etri_eightcircle_dark</strong> (284초, 어두움)</td>
+<td>인식 빈도</td>
+<td>0.59 Hz</td>
+<td>0.91 Hz</td>
+<td><strong>0.93 Hz</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (물체 검출 프레임)</td>
+<td>1716 ms</td>
+<td><strong>1019 ms</strong></td>
+<td>1102 ms</td>
+</tr>
+<tr>
+<td></td>
+<td>8개를 모두 한 번 이상 찾은 시점</td>
+<td>188.7초</td>
+<td>69.2초</td>
+<td><strong>66.5초</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>찾은 객체 (최종 지도)</td>
+<td>7</td>
+<td><strong>8</strong></td>
+<td><strong>8</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>찾지 못한 객체</td>
+<td>초코 헤이즐넛 (0.65 m 틀린 곳)</td>
+<td>없음</td>
+<td>없음</td>
+</tr>
+<tr>
+<td></td>
+<td>최종 지도 잘못된 항목</td>
+<td>2 (위치 틀림 1, 소스 1)</td>
+<td>1 (소스)</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><strong>오답률 (최종 지도)</strong></td>
+<td>22.2%</td>
+<td>11.1%</td>
+<td><strong>0%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>영상 끝 화면: 맞음 / 잘못</td>
+<td>8 / 2 (중복)</td>
+<td><strong>8 / 0</strong></td>
+<td><strong>8 / 0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>60초 / 120초 / 영상 끝 / 평균 점수</td>
+<td>50.0 / 63.6 / 80.0 / 63.5%</td>
+<td>66.7 / 100 / 100 / 88.0%</td>
+<td><strong>75.0 / 100 / 100 / 88.2%</strong></td>
+</tr>
+<tr>
+<td><strong>260901_cbnu_eightcircle</strong> (151초)</td>
+<td>인식 빈도</td>
+<td>0.89 Hz</td>
+<td>1.99 Hz</td>
+<td><strong>2.48 Hz</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (물체 검출 프레임)</td>
+<td>1371 ms</td>
+<td>776 ms</td>
+<td><strong>623 ms</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>8개를 모두 한 번 이상 찾은 시점</td>
+<td>못 찾음</td>
+<td><strong>41.8초</strong></td>
+<td>못 찾음 (머그컵)</td>
+</tr>
+<tr>
+<td></td>
+<td>찾은 객체 (최종 지도)</td>
+<td>6</td>
+<td><strong>8</strong></td>
+<td>7</td>
+</tr>
+<tr>
+<td></td>
+<td>찾지 못한 객체</td>
+<td>곰 인형 27 cm, 공룡 인형 21 cm (틀린 위치로만)</td>
+<td>없음</td>
+<td>머그컵 (한 번도 못 올림)</td>
+</tr>
+<tr>
+<td></td>
+<td>최종 지도 잘못된 항목</td>
+<td>3 (위치 틀림 2, 소스 1)</td>
+<td>1 (소스)</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><strong>오답률 (최종 지도)</strong></td>
+<td>33.3%</td>
+<td>11.1%</td>
+<td><strong>0%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>영상 끝 화면: 맞음 / 잘못</td>
+<td>7 / 2 (중복 1, 소스 1)</td>
+<td><strong>8 / 0</strong></td>
+<td>7 / 0</td>
+</tr>
+<tr>
+<td></td>
+<td>60초 / 120초 / 영상 끝 / 평균 점수</td>
+<td>77.8 / 70.0 / 70.0 / 62.3%</td>
+<td><strong>100 / 100 / 100 / 80.1%</strong></td>
+<td>87.5 / 87.5 / 87.5 / 69.6%</td>
+</tr>
+<tr>
+<td><strong>260910_object</strong> (159초)</td>
+<td>인식 빈도</td>
+<td>0.75 Hz</td>
+<td><strong>4.03 Hz</strong></td>
+<td>2.08 Hz</td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (물체 검출 프레임)</td>
+<td>2011 ms</td>
+<td><strong>527 ms</strong></td>
+<td>646 ms</td>
+</tr>
+<tr>
+<td></td>
+<td>8개를 모두 한 번 이상 찾은 시점</td>
+<td>138.1초</td>
+<td>57.6초</td>
+<td><strong>49.8초</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>찾은 객체 (최종 지도)</td>
+<td>7</td>
+<td><strong>8</strong></td>
+<td><strong>8</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>찾지 못한 객체</td>
+<td>페브리즈 (0.72 m 틀린 곳)</td>
+<td>없음</td>
+<td>없음</td>
+</tr>
+<tr>
+<td></td>
+<td>최종 지도 잘못된 항목</td>
+<td>1 (위치 틀림)</td>
+<td>1 (소스 = 식혜 오판)</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><strong>오답률 (최종 지도)</strong></td>
+<td>12.5%</td>
+<td>11.1%</td>
+<td><strong>0%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>영상 끝 화면: 맞음 / 잘못</td>
+<td>8 / 1 (중복)</td>
+<td><strong>8 / 0</strong></td>
+<td><strong>8 / 0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>60초 / 120초 / 영상 끝 / 평균 점수</td>
+<td>87.5 / 70.0 / 88.9 / 61.1%</td>
+<td><strong>100 / 100 / 100 / 72.9%</strong></td>
+<td>88.9 / 100 / 100 / 71.0%</td>
+</tr>
+<tr>
+<td><strong>260915_eightcircle</strong> (128초, 6절)</td>
+<td>인식 빈도</td>
+<td>0.60 Hz</td>
+<td>1.43 Hz</td>
+<td><strong>1.44 Hz</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (물체 검출 프레임)</td>
+<td>1922 ms</td>
+<td><strong>1214 ms</strong></td>
+<td>1449 ms</td>
+</tr>
+<tr>
+<td></td>
+<td>8개를 모두 한 번 이상 찾은 시점</td>
+<td>72.4초</td>
+<td><strong>71.0초</strong></td>
+<td>77.6초</td>
+</tr>
+<tr>
+<td></td>
+<td>찾은 객체 (최종 지도)</td>
+<td>7</td>
+<td>7</td>
+<td><strong>8</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>찾지 못한 객체</td>
+<td>곰 인형 (공룡 인형 위치에 곰 이름)</td>
+<td>초코 헤이즐넛 (1.83 m 틀린 곳)</td>
+<td>없음</td>
+</tr>
+<tr>
+<td></td>
+<td>최종 지도 잘못된 항목</td>
+<td>2 (위치 틀림 1, 소스 1)</td>
+<td>1 (위치 틀림)</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><strong>오답률 (최종 지도)</strong></td>
+<td>22.2%</td>
+<td>12.5%</td>
+<td><strong>0%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>영상 끝 화면: 맞음 / 잘못</td>
+<td>8 / 1</td>
+<td>8 / 1</td>
+<td><strong>8 / 0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>60초 / 120초 / 영상 끝 / 평균 점수</td>
+<td>55.6 / 88.9 / 88.9 / 59.3%</td>
+<td>66.7 / 88.9 / 88.9 / 60.7%</td>
+<td><strong>75.0 / 100 / 100 / 67.7%</strong></td>
+</tr>
+<tr>
+<td><em>참고: 260901_cbnu_bigeightcircle</em> (314초, 5절)</td>
+<td>인식 빈도</td>
+<td>0.89 Hz</td>
+<td><strong>3.61 Hz</strong></td>
+<td>2.70 Hz</td>
+</tr>
+<tr>
+<td></td>
+<td>찾은 객체 / 최종 지도 잘못된 항목</td>
+<td>7 / 2</td>
+<td><strong>8 / 0</strong></td>
+<td><strong>8 / 0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>오답률 (최종 지도)</td>
+<td>22.2%</td>
+<td><strong>0%</strong></td>
+<td><strong>0%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="72-4-32">7.2 합계 (요청한 4개 데이터, 물체 32개)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>원본 0.5</th>
+<th>개선안</th>
+<th>개선안 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>찾은 객체 (최종 지도)</td>
+<td>27 / 32</td>
+<td><strong>31 / 32</strong></td>
+<td><strong>31 / 32</strong></td>
+</tr>
+<tr>
+<td>찾지 못한 객체</td>
+<td>5 (모두 틀린 위치로만 올라감)</td>
+<td>1 (틀린 위치로만)</td>
+<td>1 (한 번도 못 올림)</td>
+</tr>
+<tr>
+<td>최종 지도 잘못된 항목</td>
+<td>8</td>
+<td>4</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td><strong>오답률 (최종 지도)</strong></td>
+<td>22.9% (8 / 35)</td>
+<td>11.4% (4 / 35)</td>
+<td><strong>0%</strong> (0 / 31)</td>
+</tr>
+<tr>
+<td>8개 모두 맞게 남긴 데이터</td>
+<td>0 / 4</td>
+<td>2 / 4</td>
+<td><strong>3 / 4</strong></td>
+</tr>
+<tr>
+<td>인식 빈도 범위</td>
+<td>0.59~0.89 Hz</td>
+<td>0.91~4.03 Hz</td>
+<td>0.93~2.48 Hz</td>
+</tr>
+</tbody>
+</table></div>
+<p>260901_cbnu_bigeightcircle까지 더하면(물체 40개): 찾은 객체 원본 34, 개선안 39, 개선안 3 39. 잘못된 항목은 원본 10, 개선안 4, 개선안 3 0입니다.</p>
+<h4 id="73">7.3 해석</h4>
+<ul>
+<li><strong>개선안 3은 5개 데이터 모두에서 최종 지도 오답이 0입니다.</strong> 놓친 물체는 260901_cbnu_eightcircle의 머그컵 하나뿐입니다. 이 머그컵은 틀린 위치로 올린 것이 아니라 한 번도 올리지 못했습니다.</li>
+<li><strong>개선안의 오답 4개 가운데 3개는 식혜를 소스로 잘못 판정한 것입니다</strong>(dark, cbnu_eightcircle, 260910). 나머지 1개는 260915의 초코 헤이즐넛 사본입니다. 영상 끝 화면에는 오답이 거의 없지만, 한 번 지도에 올라간 오판이 최종 지도에 남습니다.</li>
+<li><strong>원본 0.5는 모든 데이터에서 가장 느리고</strong>(0.59~0.89 Hz), 최종 지도에 이름 혼동과 위치 틀림이 남습니다. 놓친 5개는 모두 다른 물체 자리나 틀린 위치에 그 이름이 붙은 경우입니다.</li>
+<li><strong>속도는 데이터마다 순위가 바뀝니다.</strong> 260910과 bigeightcircle에서는 개선안이 가장 빠르고(4.03, 3.61 Hz), cbnu_eightcircle에서는 개선안 3이 빠릅니다(2.48 대 1.99 Hz). dark와 260915에서는 비슷합니다. 물체가 보이는 프레임이 많을수록 자세 검증 비용이 커져 두 구성 모두 느려집니다(dark 0.9 Hz).</li>
+<li><strong>찾는 시점:</strong> 개선안과 개선안 3이 8개를 모두 찾는 시점은 비슷합니다(차이 3~8초, cbnu_eightcircle 제외). 원본 0.5는 dark(189초)와 260910(138초)에서 크게 늦습니다.</li>
+</ul>
+<p><strong>주의:</strong> 모두 1회 측정입니다. 기준 위치가 우리 기술의 실행에서 왔고, 260910은 오늘 만든 기준 실행 1개(도중 보정 65 cm)에 기대고 있습니다.</p>
+<h3 id="8-a-fastsam-x-2026-10-06-20302130">8. A안 실시간 — FastSAM-x 후보 + 우리 관문 + 자세 검증 (2026-10-06 20:30~21:30)</h3>
+<p>A안: FastSAM-x → DINOv2 ViT-S → 의미·외형·색상 관문 + 상자 독점 배정 → PEM → 자세 검증 켬. FastSAM-x 상자(원본 SAM-6D 설정)를 모든 물체에 후보로 주고, 물체마다 상위 200개를 우리 ISM에 넣습니다. 마스크는 상자에서 MobileSAM으로 다시 만듭니다. 관문 기준값은 배포 설정(YCB <code>ycbv_objects.yaml</code>, 실제 데이터 <code>yolo_ism_objects.yaml</code>)이고, 새 기준값·배정 대안은 쓰지 않았습니다. 실시간 인식기 <code>src/realdata/live_cores.py</code>의 <code>OBJPOSE_LIVE_MODE=gateA</code>입니다.</p>
+<h4 id="ycb-v-12-55">YCB-V 실시간 (영상 12개, 장면 물체 55개, 영상 끝 지도)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>원본 0.5</th>
+<th>개선안 1</th>
+<th>개선안 3</th>
+<th>개선안 3 재측정</th>
+<th>A안</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>인식 빈도</td>
+<td><strong>0.57 Hz</strong></td>
+<td>0.29 Hz</td>
+<td>0.37 Hz</td>
+<td>0.39 Hz</td>
+<td>0.41 Hz</td>
+</tr>
+<tr>
+<td>프레임당 처리 시간 (중앙값)</td>
+<td><strong>1643 ms</strong></td>
+<td>2764 ms</td>
+<td>2513 ms</td>
+<td>2366 ms</td>
+<td>2225 ms</td>
+</tr>
+<tr>
+<td>처음 찾기까지 시간 (중앙값)</td>
+<td><strong>5.2초</strong></td>
+<td>8.6초</td>
+<td>8.0초</td>
+<td>7.4초</td>
+<td>9.8초</td>
+</tr>
+<tr>
+<td>10초 / 20초 / 30초 안에 찾음</td>
+<td><strong>90.9 / 92.7 / 92.7%</strong></td>
+<td>56.4 / 76.4 / 81.8%</td>
+<td>60.0 / 90.9 / 94.5%</td>
+<td>69.1 / 89.1 / 89.1%</td>
+<td>36.4 / 60.0 / 63.6%</td>
+</tr>
+<tr>
+<td>찾은 객체</td>
+<td><strong>54</strong></td>
+<td>49</td>
+<td><strong>54</strong></td>
+<td>52</td>
+<td>39</td>
+</tr>
+<tr>
+<td>찾지 못한 객체</td>
+<td><strong>1</strong></td>
+<td>6</td>
+<td><strong>1</strong></td>
+<td>3</td>
+<td>16</td>
+</tr>
+<tr>
+<td>잘못된 항목 (장면에 없음 / 위치 틀림 / 중복)</td>
+<td>30 (26 / 1 / 3)</td>
+<td>12 (11 / 1 / 0)</td>
+<td>15 (14 / 0 / 1)</td>
+<td>16 (15 / 0 / 1)</td>
+<td><strong>9 (7 / 1 / 1)</strong></td>
+</tr>
+<tr>
+<td><strong>오답률</strong></td>
+<td>35.7%</td>
+<td>19.7%</td>
+<td>21.7%</td>
+<td>23.5%</td>
+<td><strong>18.8%</strong></td>
+</tr>
+<tr>
+<td>영상 끝 점수</td>
+<td>63.5%</td>
+<td>73.1%</td>
+<td><strong>77.1%</strong></td>
+<td>73.2%</td>
+<td>60.9%</td>
+</tr>
+<tr>
+<td>평균 점수</td>
+<td>64.6%</td>
+<td>60.4%</td>
+<td><strong>70.1%</strong></td>
+<td>66.4%</td>
+<td>49.1%</td>
+</tr>
+<tr>
+<td>지도 자세 정확도 (ADD-S AUC)</td>
+<td>87.9</td>
+<td>87.8</td>
+<td><strong>91.2</strong></td>
+<td>89.4</td>
+<td>70.2</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>A안이 놓친 16개: 참치 캔 4(장면 48·49·52·59), 특대 집게 2(48·57), 큰 마커 2(57·59), 표백제 2(51·54), 그릇(49), 크래커 상자(54), 토마토 수프 캔(55), 머그(55), 커피 캔(56), 푸딩 상자(58, 틀린 위치로만)</li>
+<li>A안이 장면에 없는데 올린 물체: 머스터드 병 4, 폼 블록 2, 대형 집게 1</li>
+</ul>
+<h4 id="5-8">실제 데이터 5개 (물체 8개씩)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>데이터</th>
+<th>지표</th>
+<th>원본 0.5</th>
+<th>개선안 1</th>
+<th>개선안 3</th>
+<th>A안</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>260901_cbnu_bigeightcircle</strong> (314초)</td>
+<td>인식 빈도</td>
+<td>0.89 Hz</td>
+<td><strong>3.61 Hz</strong></td>
+<td>2.70 Hz</td>
+<td>1.70 Hz</td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (물체 검출 프레임)</td>
+<td>1378 ms</td>
+<td><strong>507 ms</strong></td>
+<td>597 ms</td>
+<td>702 ms</td>
+</tr>
+<tr>
+<td></td>
+<td>찾은 객체 / 최종 지도 잘못된 항목</td>
+<td>7 / 2</td>
+<td><strong>8 / 0</strong></td>
+<td><strong>8 / 0</strong></td>
+<td><strong>8 / 0</strong> ※</td>
+</tr>
+<tr>
+<td></td>
+<td>오답률 (최종 지도)</td>
+<td>22.2%</td>
+<td><strong>0%</strong></td>
+<td><strong>0%</strong></td>
+<td><strong>0%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>평균 점수</td>
+<td>52.6%</td>
+<td><strong>78.9%</strong></td>
+<td>77.8%</td>
+<td>68.5%</td>
+</tr>
+<tr>
+<td><strong>260826_etri_eightcircle_dark</strong> (284초)</td>
+<td>인식 빈도</td>
+<td>0.59 Hz</td>
+<td>0.91 Hz</td>
+<td><strong>0.93 Hz</strong></td>
+<td>0.71 Hz</td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (물체 검출 프레임)</td>
+<td>1716 ms</td>
+<td><strong>1019 ms</strong></td>
+<td>1102 ms</td>
+<td>1350 ms</td>
+</tr>
+<tr>
+<td></td>
+<td>8개를 모두 한 번 이상 찾은 시점</td>
+<td>188.7초</td>
+<td>69.2초</td>
+<td><strong>66.5초</strong></td>
+<td>69.9초</td>
+</tr>
+<tr>
+<td></td>
+<td>찾은 객체 / 최종 지도 잘못된 항목</td>
+<td>7 / 2</td>
+<td>8 / 1</td>
+<td><strong>8 / 0</strong></td>
+<td><strong>8 / 0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>오답률 (최종 지도)</td>
+<td>22.2%</td>
+<td>11.1%</td>
+<td><strong>0%</strong></td>
+<td><strong>0%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>평균 점수</td>
+<td>63.5%</td>
+<td>88.0%</td>
+<td><strong>88.2%</strong></td>
+<td>86.6%</td>
+</tr>
+<tr>
+<td><strong>260901_cbnu_eightcircle</strong> (151초)</td>
+<td>인식 빈도</td>
+<td>0.89 Hz</td>
+<td>1.99 Hz</td>
+<td><strong>2.48 Hz</strong></td>
+<td>1.27 Hz</td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (물체 검출 프레임)</td>
+<td>1371 ms</td>
+<td>776 ms</td>
+<td><strong>623 ms</strong></td>
+<td>716 ms</td>
+</tr>
+<tr>
+<td></td>
+<td>8개를 모두 한 번 이상 찾은 시점</td>
+<td>못 찾음</td>
+<td><strong>41.8초</strong></td>
+<td>못 찾음</td>
+<td>66.2초</td>
+</tr>
+<tr>
+<td></td>
+<td>찾은 객체 / 최종 지도 잘못된 항목</td>
+<td>6 / 3</td>
+<td>8 / 1</td>
+<td>7 / <strong>0</strong></td>
+<td><strong>8 / 0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>오답률 (최종 지도)</td>
+<td>33.3%</td>
+<td>11.1%</td>
+<td><strong>0%</strong></td>
+<td><strong>0%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>평균 점수</td>
+<td>62.3%</td>
+<td><strong>80.1%</strong></td>
+<td>69.6%</td>
+<td>77.7%</td>
+</tr>
+<tr>
+<td><strong>260910_object</strong> (159초)</td>
+<td>인식 빈도</td>
+<td>0.75 Hz</td>
+<td><strong>4.03 Hz</strong></td>
+<td>2.08 Hz</td>
+<td>1.17 Hz</td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (물체 검출 프레임)</td>
+<td>2011 ms</td>
+<td><strong>527 ms</strong></td>
+<td>646 ms</td>
+<td>629 ms</td>
+</tr>
+<tr>
+<td></td>
+<td>8개를 모두 한 번 이상 찾은 시점</td>
+<td>138.1초</td>
+<td>57.6초</td>
+<td><strong>49.8초</strong></td>
+<td>136.4초</td>
+</tr>
+<tr>
+<td></td>
+<td>찾은 객체 / 최종 지도 잘못된 항목</td>
+<td>7 / 1</td>
+<td>8 / 1</td>
+<td><strong>8 / 0</strong></td>
+<td><strong>8 / 0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>오답률 (최종 지도)</td>
+<td>12.5%</td>
+<td>11.1%</td>
+<td><strong>0%</strong></td>
+<td><strong>0%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>평균 점수</td>
+<td>61.1%</td>
+<td><strong>72.9%</strong></td>
+<td>71.0%</td>
+<td>56.0%</td>
+</tr>
+<tr>
+<td><strong>260915_eightcircle</strong> (128초)</td>
+<td>인식 빈도</td>
+<td>0.60 Hz</td>
+<td>1.43 Hz</td>
+<td><strong>1.44 Hz</strong></td>
+<td>0.69 Hz</td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (물체 검출 프레임)</td>
+<td>1922 ms</td>
+<td><strong>1214 ms</strong></td>
+<td>1449 ms</td>
+<td>1219 ms</td>
+</tr>
+<tr>
+<td></td>
+<td>8개를 모두 한 번 이상 찾은 시점</td>
+<td>72.4초</td>
+<td><strong>71.0초</strong></td>
+<td>77.6초</td>
+<td>77.2초</td>
+</tr>
+<tr>
+<td></td>
+<td>찾은 객체 / 최종 지도 잘못된 항목</td>
+<td>7 / 2</td>
+<td>7 / 1</td>
+<td><strong>8 / 0</strong></td>
+<td><strong>8 / 0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>오답률 (최종 지도)</td>
+<td>22.2%</td>
+<td>12.5%</td>
+<td><strong>0%</strong></td>
+<td><strong>0%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>평균 점수</td>
+<td>59.3%</td>
+<td>60.7%</td>
+<td><strong>67.7%</strong></td>
+<td>66.9%</td>
+</tr>
+</tbody>
+</table></div>
+<p>※ bigeightcircle에서 A안은 초코 헤이즐넛을 한 번만 관측했습니다. 최종 지도에는 맞는 위치로 남았지만 화면 지도에는 끝까지 나오지 않았습니다(영상 끝 화면 7 / 0).</p>
+<p><strong>합계 (5개 데이터, 물체 40개)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>원본 0.5</th>
+<th>개선안 1</th>
+<th>개선안 3</th>
+<th>A안</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>찾은 객체 (최종 지도)</td>
+<td>34 / 40</td>
+<td>39 / 40</td>
+<td>39 / 40</td>
+<td><strong>40 / 40</strong></td>
+</tr>
+<tr>
+<td>최종 지도 잘못된 항목</td>
+<td>10</td>
+<td>4</td>
+<td><strong>0</strong></td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td><strong>오답률</strong></td>
+<td>22.7%</td>
+<td>9.3%</td>
+<td><strong>0%</strong></td>
+<td><strong>0%</strong></td>
+</tr>
+<tr>
+<td>8개 모두 맞게 남긴 데이터</td>
+<td>0 / 5</td>
+<td>2 / 5</td>
+<td>4 / 5</td>
+<td><strong>5 / 5</strong></td>
+</tr>
+<tr>
+<td>인식 빈도 범위</td>
+<td>0.59~0.89 Hz</td>
+<td><strong>0.91~4.03 Hz</strong></td>
+<td>0.93~2.70 Hz</td>
+<td>0.69~1.70 Hz</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>해석</strong>
+- <strong>실제 데이터에서는 A안이 가장 정확합니다.</strong> 5개 데이터 모두 8 / 8, 오답 0입니다. 개선안 3이 놓친 cbnu_eightcircle의 머그컵도 찾았습니다. FastSAM이 문구 없이 모든 덩어리를 후보로 내고, 실제 물체에 맞춰 둔 우리 관문과 자세 검증이 오답을 걸렀습니다.
+- <strong>대신 느립니다.</strong> 실제 데이터에서 개선안 3보다 1.2~2.1배 느리고(예: 260910 1.17 대 2.08 Hz), 개선안 1보다 최대 3.4배 느립니다. FastSAM 상자 40개 안팎이 8개 물체 모두에 후보로 들어가 관문 계산이 늘기 때문입니다. 그래서 260910에서는 8개를 모두 찾는 데 136초가 걸렸습니다(개선안 3 50초).
+- <strong>YCB-V에서는 가장 적게 찾습니다</strong>(39 / 55). 오답률은 가장 낮지만(18.8%), 우리 관문 기준값이 YCB 물체에서는 맞는 후보를 많이 거릅니다. 한 장 평가(06 문서)에서도 같은 경향이었습니다(A안 61.2%, 개선안 3 82.4%). 관문을 거치지 않고 원본 판정을 쓰는 개선안 3이 처음 보는 물체에는 더 강합니다.
+- <strong>정리:</strong> 개발 대상 물체(실제 데이터)만 보면 A안 ≥ 개선안 3 &gt; 개선안 1 &gt; 원본 0.5 순으로 정확합니다. 처음 보는 물체(YCB)까지 보면 개선안 3이 가장 균형이 좋습니다. 속도는 개선안 1이 가장 빠릅니다.
+- 260910에서 A안 실행은 SLAM 루프 보정이 4번(최대 138 cm) 있었지만, 최종 지도는 8개 모두 기준 위치 20 cm 안이었습니다.</p>
+<p>모두 1회 측정입니다. 실제 데이터의 기준 위치는 우리 기술의 실행에서 가져왔습니다.</p>
+<h3 id="9-ycb-v-2026-10-07">9. 마스크 생성 방식 비교 — YCB-V (2026-10-07)</h3>
+<p>마스크(물체 후보 영역)를 만드는 방식 세 가지를 비교했습니다. 측정은 두 단계입니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>마스크 생성</th>
+<th>어디에 쓰이나</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>FastSAM-x 전체 분할</strong> — FastSAM이 직접 낸 마스크</td>
+<td>원본 SAM-6D, 개선안 2·3·4</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>FastSAM-x 상자 + MobileSAM</strong> — 같은 FastSAM 상자에서 MobileSAM으로 마스크를 다시 만듦</td>
+<td>A안</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>YOLO-World 문구 상자 + MobileSAM</strong> — YCB용 문구(①)로 찾은 상자, 물체마다 상위 3개(점수 0.02 이상)</td>
+<td>개선안 1</td>
+</tr>
+</tbody>
+</table></div>
+<p>FastSAM 설정은 원본 SAM-6D 그대로입니다(iou 0.9, conf 0.25, max_det 200, imgsz 640, 화면 변의 5 % 미만 상자와 화면의 3e-4 미만 마스크 제외).</p>
+<h4 id="1-ycb-v-900-4123">1단계: 마스크만 비교 (YCB-V 900장, 정답 물체 4,123개)</h4>
+<p>정답 물체마다 그 장의 후보 가운데 정답 마스크(mask_visib)와 가장 잘 겹치는 후보의 IoU를 셉니다. "좋은 마스크가 후보 안에 있는가"를 보는 지표입니다. 뒤 단계가 그 후보를 골라야 실제로 찾으므로, 최종 정확도의 상한에 해당합니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>1. FastSAM-x 마스크</th>
+<th>2. FastSAM-x 상자 + MobileSAM</th>
+<th>3. YOLO-World 상자 + MobileSAM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IoU 0.5 이상으로 잡힌 비율</td>
+<td><strong>97.6%</strong></td>
+<td>96.8%</td>
+<td>91.3% (그 물체 이름의 상자만: 83.9%)</td>
+</tr>
+<tr>
+<td>IoU 0.75 이상으로 잡힌 비율</td>
+<td><strong>88.0%</strong></td>
+<td>84.2%</td>
+<td>79.5% (72.7%)</td>
+</tr>
+<tr>
+<td>평균 최고 IoU</td>
+<td><strong>0.851</strong></td>
+<td>0.833</td>
+<td>0.792 (0.723)</td>
+</tr>
+<tr>
+<td>장당 후보 수</td>
+<td>41.8</td>
+<td>41.8</td>
+<td><strong>7.1</strong></td>
+</tr>
+<tr>
+<td>장당 시간 (중앙값): 상자 / 마스크 / 합계</td>
+<td>32.9 / – / <strong>32.9 ms</strong></td>
+<td>30.9 / 90.2 / 121.0 ms</td>
+<td>13.2 / 43.7 / 57.3 ms</td>
+</tr>
+<tr>
+<td>잘 못 잡는 물체 (IoU 0.5 기준)</td>
+<td>특대 집게 79.3%, 전동 드릴 86.7%, 가위 90.7%</td>
+<td>특대 집게 71.3%, 전동 드릴 83.7%, 가위 88.0%</td>
+<td>대형 집게 38.7%, 특대 집게 58.7%, 푸딩 상자 70.7%, 전동 드릴 73.3%, 젤라틴 상자 76.0%</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="1-2-05-ycb-v-900-4123">1-2단계: 물체 판정 0.5 포함 (YCB-V 900장, 정답 물체 4,123개)</h4>
+<p>세 방식 모두 마스크 뒤에 같은 물체 판정을 붙였습니다. 순서는 원본 SAM-6D 후처리(작은 상자·마스크 제외) → DINOv2 특징 → 의미·외형·기하 점수 → 물체마다 1위 마스크이고, 점수가 0.5를 넘으면 답으로 냅니다. 자세 추정은 하지 않습니다(<code>det_study/mask_recog.py</code>).
+- <strong>맞음:</strong> 그 물체 이름으로 답했고, 마스크가 그 물체의 정답 마스크와 IoU 0.5 이상
+- <strong>오답:</strong> 답했지만 다른 물체를 가리키거나 마스크가 틀림
+- <strong>놓침:</strong> 답하지 않음</p>
+<p>특징 모델은 개선안 2·3과 같은 ViT-S와, 원본 0.5와 같은 ViT-L 두 가지로 쟀습니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>1. FastSAM-x 마스크</th>
+<th>2. FastSAM-x 상자 + MobileSAM</th>
+<th>3. YOLO-World 상자 + MobileSAM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ViT-S</strong> 찾은 비율</td>
+<td><strong>85.5%</strong> (3,525)</td>
+<td>84.3% (3,475)</td>
+<td>82.7% (3,408)</td>
+</tr>
+<tr>
+<td>ViT-S 오답 / 장</td>
+<td>0.292 (263)</td>
+<td>0.371 (334)</td>
+<td><strong>0.188</strong> (169)</td>
+</tr>
+<tr>
+<td>ViT-S 정밀도 (답 가운데 맞은 비율)</td>
+<td>93.1%</td>
+<td>91.2%</td>
+<td><strong>95.3%</strong></td>
+</tr>
+<tr>
+<td>ViT-S 장당 시간: 마스크 / 특징 / 판정 / 합계</td>
+<td>33 / 103 / 22 / 157 ms</td>
+<td>146 / 103 / 22 / 270 ms</td>
+<td>68 / 22 / 13 / <strong>103 ms</strong></td>
+</tr>
+<tr>
+<td><strong>ViT-L</strong> 찾은 비율</td>
+<td><strong>87.6%</strong> (3,610)</td>
+<td>85.4% (3,520)</td>
+<td>82.8% (3,413)</td>
+</tr>
+<tr>
+<td>ViT-L 오답 / 장</td>
+<td>0.182 (164)</td>
+<td>0.248 (223)</td>
+<td><strong>0.166</strong> (149)</td>
+</tr>
+<tr>
+<td>ViT-L 정밀도</td>
+<td>95.7%</td>
+<td>94.0%</td>
+<td><strong>95.8%</strong></td>
+</tr>
+<tr>
+<td>ViT-L 장당 시간: 마스크 / 특징 / 판정 / 합계</td>
+<td>35 / 857 / 32 / 925 ms</td>
+<td>155 / 830 / 32 / 1012 ms</td>
+<td>72 / 161 / 15 / <strong>248 ms</strong></td>
+</tr>
+<tr>
+<td>장당 후보 수</td>
+<td>41.0</td>
+<td>41.0</td>
+<td><strong>7.0</strong></td>
+</tr>
+<tr>
+<td>맞은 답의 평균 마스크 IoU</td>
+<td>0.864 / 0.861</td>
+<td>0.855 / 0.853</td>
+<td>0.859 / 0.857</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>판정 기준값에 따른 변화</strong> (찾은 비율 / 오답 / 장)</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>기준</th>
+<th>1. FastSAM-x 마스크 (ViT-S)</th>
+<th>3. YOLO-World 상자 (ViT-S)</th>
+<th>1. FastSAM-x 마스크 (ViT-L)</th>
+<th>3. YOLO-World 상자 (ViT-L)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.2 (원본 기본값)</td>
+<td>88.8% / 0.506</td>
+<td>87.4% / 0.287</td>
+<td>93.3% / 0.282</td>
+<td>88.3% / 0.254</td>
+</tr>
+<tr>
+<td>0.4</td>
+<td>88.5% / 0.473</td>
+<td>86.9% / 0.249</td>
+<td>91.8% / 0.222</td>
+<td>87.1% / 0.200</td>
+</tr>
+<tr>
+<td><strong>0.5</strong></td>
+<td>85.5% / 0.292</td>
+<td>82.7% / 0.188</td>
+<td>87.6% / 0.182</td>
+<td>82.8% / 0.166</td>
+</tr>
+<tr>
+<td>0.6</td>
+<td>73.5% / 0.124</td>
+<td>70.9% / 0.102</td>
+<td>73.0% / 0.120</td>
+<td>69.2% / 0.084</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>잘 못 찾는 물체 (ViT-S, 기준 0.5)</strong>
+- 1번: 가위 12.0%, 특대 집게 48.0%, 푸딩 상자 58.7%
+- 3번: 가위 22.7%, 대형 집게 38.0%, 특대 집게 44.7%, 푸딩 상자 52.0%</p>
+<p><strong>물체 판정을 넣으면 달라지는 점</strong>
+- 마스크만 볼 때의 차이(IoU 0.5 이상 97.6 / 96.8 / 91.3%)가 크게 줄어, 찾은 비율 차이는 2.8%p(ViT-S)·4.8%p(ViT-L)입니다. FastSAM이 좋은 마스크를 후보에 넣어도, 후보 40여 개 가운데서 판정이 그 마스크를 다 고르지는 못합니다.
+- 오답은 3번이 가장 적습니다. 후보가 7개뿐이고 문구로 이미 물체를 좁혔기 때문입니다.
+- 특징 계산 시간이 후보 수에 비례합니다. ViT-L에서는 1번 857 ms 대 3번 161 ms로, 3번이 장당 3.7배 빠릅니다.</p>
+<h4 id="2-ycb-v-36-165">2단계: 끝까지 비교 (YCB-V 36장, 물체 165개)</h4>
+<p>뒷단을 개선안 3(DINOv2 ViT-S → 원본 물체 판정 0.5 → PEM → 자세 검증)으로 고정하고 마스크 생성만 바꿨습니다(<code>run_ours.py --orig-ism 0.5 --orig-desc dinov2_vits14 --orig-seg &lt;방식&gt;</code>). 1번은 이전 개선안 3의 36장 결과(136 / 138, 82.4%)와 똑같이 나와, 측정 방식이 바뀌지 않았음을 확인했습니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>1. FastSAM-x 마스크</th>
+<th>2. FastSAM-x 상자 + MobileSAM</th>
+<th>3. YOLO-World 상자 + MobileSAM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>찾은 비율 (정답 자세)</td>
+<td><strong>82.4%</strong> (136)</td>
+<td>78.8% (130)</td>
+<td>75.8% (125)</td>
+</tr>
+<tr>
+<td>답한 수</td>
+<td>138</td>
+<td>132</td>
+<td>125</td>
+</tr>
+<tr>
+<td>찾았지만 오답 (자세 틀림)</td>
+<td>2</td>
+<td>2</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>오답 / 장</td>
+<td>0.056</td>
+<td>0.056</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>장당 전체 시간 (중앙값)</td>
+<td>1908 ms</td>
+<td>2096 ms</td>
+<td><strong>1566 ms</strong></td>
+</tr>
+<tr>
+<td>ㄴ 마스크 생성 + 물체 판정</td>
+<td>164 ms</td>
+<td>276 ms</td>
+<td><strong>109 ms</strong></td>
+</tr>
+<tr>
+<td>ㄴ 자세 추정 + 검증</td>
+<td>1739 ms</td>
+<td>1786 ms</td>
+<td><strong>1460 ms</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>참고로 같은 36장에서 원본 0.5는 89.7% / 0.056 / 1448 ms, 개선안 1은 76.4% / 0.056 / 1620 ms, A안은 61.2% / 0.111 / 1607 ms였습니다.</p>
+<h4 id="_2">결론</h4>
+<ul>
+<li><strong>찾는 수는 1. FastSAM-x 마스크가 가장 많습니다.</strong> 물체 판정만 붙였을 때 85.5%(ViT-S)·87.6%(ViT-L), 자세까지 넣은 36장에서 82.4%입니다.</li>
+<li><strong>속도와 오답은 3. YOLO-World 문구 상자 + MobileSAM이 가장 좋습니다.</strong> 인식까지 장당 103 ms(ViT-S)·248 ms(ViT-L)로 1번보다 1.5배·3.7배 빠르고, 오답 / 장이 가장 적습니다(0.188·0.166). 자세까지 넣은 36장에서는 오답이 0이었습니다. 대신 1번보다 2.8~6.6%p 덜 찾습니다. 놓치는 것은 문구로 잘 안 잡히는 물체(집게, 가위, 푸딩 상자)입니다.</li>
+<li><strong>2. FastSAM-x 상자 + MobileSAM은 모든 측정에서 1번보다 느리고 덜 정확합니다.</strong> 같은 상자에서 마스크를 다시 만드는 데 장당 110~120 ms를 더 쓰고, 찾은 비율은 1.2~2.2%p 낮고 오답은 더 많습니다. 쓸 이유가 없습니다.</li>
+<li><strong>특징 모델에 따라 고를 것이 달라집니다.</strong></li>
+<li>ViT-S: 1번이 3번보다 54 ms 느린 대신 2.8%p 더 찾습니다. 정확도가 중요하면 1번이 낫습니다.</li>
+<li>ViT-L: 1번은 후보 40여 개를 모두 ViT-L로 계산하느라 장당 925 ms가 걸립니다(3번 248 ms). 속도가 중요하면 3번이 크게 유리합니다.</li>
+<li>1번은 ViT-L로 바꾸면 2.1%p 더 찾고 오답이 38% 줄지만, 3번은 ViT-L로 바꿔도 거의 그대로입니다(82.7 → 82.8%).</li>
+<li><strong>추천:</strong></li>
+<li>처음 보는 물체까지 찾아야 하면 1번 + ViT-S를 씁니다. 개선안 3과 같은 앞단입니다.</li>
+<li>정해진 물체를 빠르고 오답 없이 찾아야 하면 3번을 씁니다. 개선안 1과 같은 앞단이고, 실제 데이터처럼 문구를 맞춰 둔 물체에서는 놓치는 손실이 작습니다.</li>
+<li>자세 추정과 검증까지 넣으면 장당 시간의 대부분(76~93%)이 그 단계라, 마스크 방식 사이의 속도 차이는 18% 안팎으로 줄어듭니다(36장 1908 / 2096 / 1566 ms).</li>
+</ul>
+<p>1회 측정이고, 이 PC(RTX 3080 Ti Laptop)에서 쟀습니다. 결과는 <code>src/ycbv/det_study/out/mask_study_900.json</code>, <code>mask_recog_900_vits.json</code>, <code>mask_recog_900_vitl.json</code>, <code>mask_e2e.json</code>에 있습니다.</p>
+<h3 id="10-05-yolo-world-mobilesam-ycb-v-2026-10-07">10. 판정 방식 비교 — 원본 판정 0.5 대 우리 판정, YOLO-World 문구 상자 + MobileSAM 위에서 (YCB-V, 2026-10-07)</h3>
+<p>앞단은 세 구성이 같습니다. YOLO-World 문구 상자(YCB용 문구 ①, 물체마다 상위 3개, 점수 0.02 이상)로 후보를 찾고, MobileSAM으로 마스크를 만듭니다. 그 뒤의 물체 판정만 다릅니다. 원본 판정은 지금까지 비교표의 "원본 0.5"와 같은 DINOv2 ViT-L을 쓰고, 우리 판정은 배포 설정대로 ViT-S를 씁니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>이름</th>
+<th>특징 모델</th>
+<th>판정</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. 원본 판정 0.5</strong></td>
+<td>ViT-L</td>
+<td>원본 SAM-6D 판정: (의미 + 외형 + 기하 × 가시도) / (2 + 가시도), 물체마다 1위 마스크, 0.5 초과면 답</td>
+</tr>
+<tr>
+<td><strong>B. 우리 판정</strong></td>
+<td>ViT-S</td>
+<td>관문(의미 0.25, 외형 0.605, 색상 0.06) + 상자 독점 배정. 상자는 의미 점수 1위 물체에게만 주고, 그 물체가 관문에서 떨어지면 버림</td>
+</tr>
+<tr>
+<td><strong>B1. 우리 판정 + 배정 대안</strong></td>
+<td>ViT-S</td>
+<td>B에서 1위 물체가 떨어지면 2위·3위 물체에게 차례로 상자를 줌. 개선안 1의 판정</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>실행: <code>run_ours.py --mode text</code> + A <code>--orig-ism 0.5 --orig-desc dinov2_vitl14 --orig-seg text_msam</code> / B <code>--proposer text:...prompts_best_m.json --gate-sem 0.25 --gate-appe 0.605 --gate-hsv 0.06</code> / B1 B + <code>--assign-fallback</code></li>
+<li>1단계는 <code>--ism-only</code>로 자세 추정 전에 멈추고 인식 결과만 채점했습니다. 맞음은 그 물체 이름으로 답했고 마스크가 정답 마스크와 IoU 0.5 이상인 경우입니다.</li>
+</ul>
+<h4 id="1-ycb-v-900-4123_1">1단계: 인식까지 (YCB-V 900장, 정답 물체 4,123개)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>A. 원본 판정 0.5 (ViT-L)</th>
+<th>B. 우리 판정</th>
+<th>B1. 우리 판정 + 배정 대안</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>찾은 비율</td>
+<td><strong>82.7%</strong> (3,410)</td>
+<td>72.3% (2,982)</td>
+<td>80.6% (3,323)</td>
+</tr>
+<tr>
+<td>답한 수</td>
+<td>3,560</td>
+<td>3,220</td>
+<td>3,713</td>
+</tr>
+<tr>
+<td>오답 (다른 물체 또는 틀린 마스크)</td>
+<td><strong>150</strong></td>
+<td>238</td>
+<td>390</td>
+</tr>
+<tr>
+<td>오답 / 장</td>
+<td><strong>0.167</strong></td>
+<td>0.264</td>
+<td>0.433</td>
+</tr>
+<tr>
+<td>정밀도</td>
+<td><strong>95.8%</strong></td>
+<td>92.6%</td>
+<td>89.5%</td>
+</tr>
+<tr>
+<td>맞은 답의 평균 마스크 IoU</td>
+<td>0.858</td>
+<td>0.856</td>
+<td>0.853</td>
+</tr>
+<tr>
+<td>장당 시간 (문구 상자 + 마스크 + 판정, 중앙값)</td>
+<td>246 ms</td>
+<td>95 ms</td>
+<td><strong>93 ms</strong></td>
+</tr>
+<tr>
+<td>잘 못 찾는 물체</td>
+<td>대형 집게 33.3%, 푸딩 상자 44.0%, 특대 집게 50.7%, 그릇 56.7%, 가위 66.7%</td>
+<td><strong>푸딩 상자 0.0%</strong>, 나무 블록 13.3%, 대형 집게 27.3%, 특대 집게 32.7%, 크래커 상자 40.9%, 그릇 44.0%</td>
+<td>푸딩 상자 12.0%, 나무 블록 17.3%, 특대 집게 32.7%, 대형 집게 38.0%, 젤라틴 상자 49.3%</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="2-ycb-v-36-165-pem">2단계: 자세까지 (YCB-V 36장, 물체 165개, PEM + 자세 검증)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>A. 원본 판정 0.5 (ViT-L)</th>
+<th>B. 우리 판정</th>
+<th>B1. 우리 판정 + 배정 대안</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>찾은 비율 (정답 자세)</td>
+<td>75.8% (125)</td>
+<td>69.1% (114)</td>
+<td><strong>77.6%</strong> (128)</td>
+</tr>
+<tr>
+<td>찾았지만 오답 (자세 틀림)</td>
+<td><strong>1</strong></td>
+<td><strong>1</strong></td>
+<td>2</td>
+</tr>
+<tr>
+<td>오답 / 장</td>
+<td><strong>0.028</strong></td>
+<td><strong>0.028</strong></td>
+<td>0.056</td>
+</tr>
+<tr>
+<td>장당 전체 시간 (중앙값)</td>
+<td>1747 ms</td>
+<td><strong>1265 ms</strong></td>
+<td>1679 ms</td>
+</tr>
+<tr>
+<td>ㄴ 판정까지 / 자세 추정 + 검증</td>
+<td>274 / 1496 ms</td>
+<td>100 / 1167 ms</td>
+<td>94 / 1582 ms</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="_3">해석</h4>
+<ul>
+<li><strong>인식까지는 원본 판정 0.5가 가장 좋습니다.</strong> 가장 많이 찾고(82.7%), 오답도 가장 적습니다(0.167 / 장). 우리 판정(B)보다 10.4%p 더 찾고, 오답은 37% 적습니다. 대신 ViT-L이라 판정까지 장당 246 ms로, 우리 판정(93~95 ms)의 2.6배입니다.</li>
+<li><strong>우리 판정(B)이 많이 놓치는 이유는 상자 독점 배정입니다.</strong> 푸딩 상자는 900장에서 한 번도 맞히지 못했고(0%), 나무 블록(13%)과 크래커 상자(41%)도 낮습니다. 상자를 의미 점수 1위 물체에게만 주는데, 그 물체가 관문에서 떨어지면 상자가 버려지기 때문입니다.</li>
+<li><strong>배정 대안(B1)은 찾은 비율을 8.3%p 되살리지만, 오답이 1.6배가 됩니다</strong>(0.264 → 0.433 / 장). 2·3위 물체에게 상자를 넘기면서 다른 물체 이름이 붙는 경우가 늘기 때문입니다. 인식 단계에서는 원본 판정보다 2.1%p 덜 찾고 오답은 2.6배입니다.</li>
+<li><strong>자세 검증이 B1의 오답을 대부분 걸러냅니다.</strong> 36장 끝까지 보면 B1이 가장 많이 찾고(77.6%, 원본 판정보다 3개 더), 오답은 2개입니다.</li>
+<li><strong>속도:</strong> 끝까지의 시간은 우리 판정(B)이 가장 빠르고(1265 ms), 원본 판정이 가장 느립니다(1747 ms). 원본 판정은 ViT-L 특징 계산 때문에 판정 단계가 느리고, B1은 자세 검증으로 넘기는 후보가 많아 느립니다.</li>
+<li><strong>정리:</strong></li>
+<li>원본 판정 0.5는 인식 정확도와 오답 모두 가장 좋습니다. 대신 ViT-L이라 판정 단계가 2.6배 느립니다.</li>
+<li>우리 판정은 배정 대안이 있어야(B1) 원본 판정과 비슷하게 찾고, 그때는 인식 단계 오답이 많아 자세 검증에 기대게 됩니다.</li>
+<li>배정 대안이 없는 우리 판정(B)은 가장 빠르지만 10%p 덜 찾습니다.</li>
+</ul>
+<p>1회 측정이고, 이 PC(RTX 3080 Ti Laptop)에서 쟀습니다. 결과는 <code>src/ycbv/det_study/out/decision_900_{AL,B,B1}.json</code>, <code>decision_e2e.json</code>에 있습니다.</p>
+<hr />
+<p><a id="10_실시간_비교표_261006"></a></p>
+<h2 id="10-05-2026-10-06">10. 실시간 비교표 — 원본 0.5 / 개선안(자세 검증 켬) / 개선안(자세 검증 끔) (2026-10-06)</h2>
+<blockquote>
+<p>요청: 실시간으로 영상을 재생하며 객체 위치를 찾는 세 구성을 실제 영상(260901_cbnu_bigeightcircle)과 YCB-V 영상에서 비교. 필수 수치는 시간, 찾은 객체, 찾지 못한 객체, 오답률.
+<strong>이 문서의 수치는 모두 노트북(RTX 3080 Ti Laptop, 2026-10-05~06)에서 이미 측정한 기존 결과입니다</strong>(<code>src/ycbv_live/results_*.json</code>, <code>src/realdata/results_real.json</code>). 이 서버(RTX 4090)에서의 새 측정은 3절의 이유로 아직 못 했습니다.</p>
+<p><strong>참고:</strong> 노트북에서 12영상·실제 데이터 여러 개로 정리한 정식 비교표는 <code>08_실시간_비교표.md</code>(2026-10-07 GitHub 에서 받음)입니다. 이 문서는 이 서버(RTX 4090)에서 간략히 재측정한 결과와 그 과정의 기록입니다.</p>
+</blockquote>
+<h3 id="1-05-42">1. 지표 정의 (05 문서 4.2절과 같음)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>수치</th>
+<th>정의</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>인식 빈도</td>
+<td>인식기가 프레임을 처리한 빈도(Hz). 높을수록 빠름</td>
+</tr>
+<tr>
+<td>지도에 올라간 시간</td>
+<td>장면 물체가 지도에 처음 <strong>맞게</strong> 그려진 영상 시각의 중앙값(초). YCB 는 ADD-S &lt; 지름 10%, 실제 영상은 기준 위치 20 cm 이내</td>
+</tr>
+<tr>
+<td>찾은 객체</td>
+<td>영상 끝 지도에 맞게 올라간 장면 물체 수 (YCB 55개, 실제 8개 중)</td>
+</tr>
+<tr>
+<td>찾지 못한 객체</td>
+<td>장면 물체 − 찾은 객체</td>
+</tr>
+<tr>
+<td>잘못 올라간 객체</td>
+<td>장면에 없는 물체 + 위치 틀림 + 같은 물체 중복</td>
+</tr>
+<tr>
+<td><strong>오답률</strong></td>
+<td>잘못 올라간 객체 ÷ (찾은 객체 + 잘못 올라간 객체). 지도에 올라간 것 중 틀린 비율</td>
+</tr>
+<tr>
+<td>점수 (영상 끝)</td>
+<td>찾은 객체 ÷ (장면 물체 + 잘못 올라간 객체). 잘못 올린 1개 = 못 찾은 1개</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="2-rtx-3080-ti-laptop">2. 비교표 (기존 수치, RTX 3080 Ti Laptop)</h3>
+<h4 id="21-ycb-v-12-4859-20738-55-21-1">2.1 YCB-V 영상 12개 (48~59번, 20,738 프레임, 장면 물체 55개, 21 물체 모두 질의, 1배속)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>지도에 올라간 시간</th>
+<th>찾은 객체</th>
+<th>찾지 못한 객체</th>
+<th>잘못 올라간 객체</th>
+<th><strong>오답률</strong></th>
+<th>점수 (영상 끝)</th>
+<th>출처 태그</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. 원본 SAM-6D ViT-L, 점수 기준 0.5</strong></td>
+<td>0.57 Hz</td>
+<td>5.2 s</td>
+<td><strong>54</strong></td>
+<td><strong>1</strong></td>
+<td>30</td>
+<td>35.7%</td>
+<td>63.5%</td>
+<td><code>orig_th05</code></td>
+</tr>
+<tr>
+<td><strong>2. 개선안 (새 기준값 + 배정 대안 + ① 문구), 자세 검증 켬</strong></td>
+<td>0.29 Hz</td>
+<td>8.6 s</td>
+<td>49</td>
+<td>6</td>
+<td><strong>12</strong></td>
+<td><strong>19.7%</strong></td>
+<td><strong>73.1%</strong></td>
+<td><code>g13p</code></td>
+</tr>
+<tr>
+<td>2'. 개선안 + 검증 후보 50개, 자세 검증 켬</td>
+<td>0.43 Hz</td>
+<td>6.0 s</td>
+<td>49</td>
+<td>6</td>
+<td>17</td>
+<td>25.8%</td>
+<td>68.1%</td>
+<td><code>g13p_k50</code></td>
+</tr>
+<tr>
+<td><strong>3. 개선안, 자세 검증 끔</strong></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td><strong>미측정</strong> (어디서도 돌린 적 없음)</td>
+</tr>
+<tr>
+<td>(참고) 우리 기술 배포 설정</td>
+<td>0.68 Hz</td>
+<td>4.6 s</td>
+<td>39</td>
+<td>16</td>
+<td>11</td>
+<td>22.0%</td>
+<td>59.1%</td>
+<td><code>v2</code></td>
+</tr>
+<tr>
+<td>(참고) 원본 ViT-L 기준 0.2 (원본 기본값)</td>
+<td>0.39 Hz</td>
+<td>6.9 s</td>
+<td>55</td>
+<td>0</td>
+<td>326</td>
+<td>85.6%</td>
+<td>14.4%</td>
+<td><code>orig</code></td>
+</tr>
+<tr>
+<td>(참고) 원본 판정 + ViT-S 0.6</td>
+<td>1.34 Hz</td>
+<td>3.2 s</td>
+<td>52</td>
+<td>3</td>
+<td>46</td>
+<td>46.9%</td>
+<td>51.5%</td>
+<td><code>origS_th06</code></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>개선안은 우리 기술보다 10개 더 찾고(39 → 49) 잘못 올라간 물체는 거의 같아(11 → 12) 점수 1위(73.1%)입니다. 대신 관문을 통과하는 물체가 늘어 자세 검증 부담이 커지고 인식 빈도가 0.68 → 0.29 Hz 로 떨어졌습니다. 검증 후보 50개로 줄이면 0.43 Hz 로 회복되지만 잘못 올라간 물체가 12 → 17 로 늘어 점수가 68.1% 로 내려갑니다.</li>
+<li>원본 0.5 는 가장 많이 찾지만(54) 지도에 올라간 것의 36% 가 틀린 물체입니다.</li>
+</ul>
+<h4 id="22-260901_cbnu_bigeightcircle-314-s-2-8-9-mac-orb-slam3-f2000">2.2 실제 영상 260901_cbnu_bigeightcircle (314 s, 선반 2개·물체 8개, 배포 물체 9종 질의, Mac ORB-SLAM3 f2000 + 노트북)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>지도에 올라간 시간</th>
+<th>찾은 객체</th>
+<th>찾지 못한 객체</th>
+<th>잘못 올라간 객체</th>
+<th><strong>오답률</strong></th>
+<th>점수 (영상 끝)</th>
+<th>출처 태그</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. 원본 SAM-6D ViT-L, 점수 기준 0.5</strong></td>
+<td>0.89 Hz</td>
+<td><strong>52.3 s</strong></td>
+<td>5</td>
+<td>3 (공룡 인형, 우유, 세제)</td>
+<td>4</td>
+<td>44.4%</td>
+<td>63.6%</td>
+<td><code>origL05</code></td>
+</tr>
+<tr>
+<td><strong>2. 개선안 (새 기준값 + 배정 대안), 자세 검증 켬</strong></td>
+<td>3.68 Hz</td>
+<td>69.2 s</td>
+<td><strong>8</strong></td>
+<td><strong>0</strong></td>
+<td><strong>0</strong></td>
+<td><strong>0%</strong></td>
+<td><strong>100%</strong></td>
+<td><code>g13</code></td>
+</tr>
+<tr>
+<td><strong>3. 개선안, 자세 검증 끔</strong></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td><strong>미측정</strong></td>
+</tr>
+<tr>
+<td>(참고) 우리 기술 배포 설정</td>
+<td><strong>4.58 Hz</strong></td>
+<td>69.7 s</td>
+<td>8</td>
+<td>0</td>
+<td>0</td>
+<td>0%</td>
+<td>100%</td>
+<td><code>ours</code></td>
+</tr>
+<tr>
+<td>(참고) 원본 0.5 + 우리 자세 검증</td>
+<td>0.84 Hz</td>
+<td>144.9 s</td>
+<td>7</td>
+<td>1 (공룡 인형)</td>
+<td>0</td>
+<td>0%</td>
+<td>87.5%</td>
+<td><code>hybL05</code></td>
+</tr>
+<tr>
+<td>(참고) ViT-S 0.5 + 우리 자세 검증</td>
+<td>2.77 Hz</td>
+<td>72.8 s</td>
+<td>8</td>
+<td>0</td>
+<td>0</td>
+<td>0%</td>
+<td>100%</td>
+<td><code>hybS05</code></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>실제 영상의 개선안은 YCB 와 달리 ① 문구가 없습니다(① 문구는 YCB 21 물체용). 설정 파일은 노트북의 <code>sam6d_realtime/configs/yolo_ism_objects_g13.yaml</code>.</li>
+<li>기준 위치는 우리 기술 이전 실행 3회의 중앙값이라 우리 쪽에 유리할 수 있습니다. 물체 8개가 실제로 있는 것은 영상으로 확인했습니다. 각 구성 1회 실행.</li>
+<li>원본 0.5 는 지도에 더 빨리 올리지만(52 s) 3개를 못 찾고 4개를 잘못 올립니다.</li>
+</ul>
+<h3 id="2-1-rtx-4090-260901-2026-10-06-1728-cli_env_paper-orb-slam3-f2000">2-1. RTX 4090 새 측정 — 실제 영상 260901 (2026-10-06 17:28, 노트북 코드 작업 트리 CLI_env_paper, 로컬 ORB-SLAM3 f2000 + 이 서버 인식)</h3>
+<p>GitHub <code>objpose/memory-dup-suppression</code> 브랜치에서 노트북 코드(개선안 옵션, 허브 <code>--no-verify</code>/<code>--recognizer</code>)를 받아 같은 영상을 다시 돌렸습니다. 채점은 노트북 실행의 기준 위치(20 cm 이내)를 그대로 썼습니다. SLAM 은 Mac 대신 이 서버의 ORB-SLAM3 로컬 빌드입니다. 결과 <code>src/realdata/results_real_4090.json</code>(작업 트리), 실행 폴더 <code>CLI_env_paper/objpose/output/real_260901_*</code>.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>지도에 올라간 시간</th>
+<th>찾은 객체</th>
+<th>찾지 못한 객체</th>
+<th>잘못 올라간 객체</th>
+<th><strong>오답률</strong></th>
+<th>점수 (영상 끝)</th>
+<th>평균 점수</th>
+<th>노트북 (3080 Ti)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. 원본 SAM-6D ViT-L 0.5</strong></td>
+<td>3.65 Hz</td>
+<td>67.4 s</td>
+<td>6</td>
+<td>2 (공룡 인형, 세제)</td>
+<td>3</td>
+<td>33.3%</td>
+<td>63.6%</td>
+<td>54.3%</td>
+<td>0.89 Hz, 52.3 s, 5 / 3 / 4, 63.6%</td>
+</tr>
+<tr>
+<td><strong>2. 개선안 (새 기준값 + 배정 대안), 자세 검증 켬</strong></td>
+<td>4.70 Hz</td>
+<td><strong>51.0 s</strong></td>
+<td><strong>8</strong></td>
+<td><strong>0</strong></td>
+<td><strong>0</strong></td>
+<td><strong>0%</strong></td>
+<td><strong>100%</strong></td>
+<td><strong>81.4%</strong></td>
+<td>3.68 Hz, 69.2 s, 8 / 0 / 0, 100%</td>
+</tr>
+<tr>
+<td><strong>3. 개선안, 자세 검증 끔</strong></td>
+<td><strong>6.11 Hz</strong></td>
+<td>25.9 s</td>
+<td>5</td>
+<td>3 (우유, 초코 상자, 머그컵)</td>
+<td>4</td>
+<td>44.4%</td>
+<td>36.4%</td>
+<td>41.9%</td>
+<td>미측정</td>
+</tr>
+<tr>
+<td>4. 우리 기술 배포 설정, 자세 검증 끔 (L3)</td>
+<td><strong>7.15 Hz</strong></td>
+<td>28.2 s</td>
+<td>6</td>
+<td>2 (공룡 인형, 우유)</td>
+<td>3</td>
+<td>33.3%</td>
+<td>47.1%</td>
+<td>46.1%</td>
+<td>미측정</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>검증 끔 첫 실행은 버렸습니다.</strong> ORB-SLAM3 가 잘못된 루프를 닫아 보정이 3.0 m 로 들어가 선반 1 물체 네 개가 모두 0.7 m 떠 있었습니다(<code>real_260901_g13_noverify_slamfail1</code>). 재실행(루프 보정 35 cm)이 위 표입니다. 같은 영상에서 SLAM 지도가 깨지는 일은 노트북 기록에도 있었습니다(40회 중 2회).</li>
+<li><strong>해석</strong></li>
+<li>4090 에서도 개선안(검증 켬)이 가장 좋습니다. 8개 모두 맞게 올리고 잘못 올린 것이 없으며, 지도에 올라간 시간도 가장 짧습니다(51 s). 노트북보다 인식 빈도가 1.3배 높고 지도 올라간 시간이 18 s 짧은 것은 GPU 차이입니다.</li>
+<li><strong>자세 검증을 끄면 빠르지만(6.1 Hz, 26 s) 지도가 틀립니다.</strong> 잘못 올라간 물체 4개, 못 찾은 물체 3개로 점수가 100% → 36%. 선반 2 의 우유·초코 상자·머그컵이 틀린 자세로 먼저 올라가 맞는 자세가 들어오지 못한 것으로 보입니다. 검증이 "빠르게 찾기"가 아니라 "틀리지 않게 올리기"를 담당한다는 것을 실제 영상에서 확인했습니다.</li>
+<li>원본 0.5 는 4090 에서 3.65 Hz 로 노트북(0.89 Hz)보다 4배 빨라졌지만 결과는 같은 모습입니다. 2개를 못 찾고 3개를 잘못 올려 지도에 올라간 것의 1/3 이 틀린 물체입니다.</li>
+<li>배포 설정에서 검증만 끈 L3 도 같은 경향입니다. 7.2 Hz 로 가장 빠르지만 잘못 3 / 못 찾음 2 로 점수 47%. 검증을 끈 두 구성 모두 원본 0.5 보다 못합니다.</li>
+</ul>
+<h3 id="2-2-rtx-4090-ycb-v-3-495355-13-21-1-2026-10-06-1744">2-2. RTX 4090 새 측정 — YCB-V 영상 3개 (49·53·55, 장면 물체 13개, 21 물체 모두 질의, 1배속; 2026-10-06 17:44)</h3>
+<p>12개 영상 대신 영상 원본이 먼저 도착한 3개로 간략히 돌렸습니다(사용자 요청). 노트북 비교값은 같은 3개 장면만 뽑은 것입니다. 결과 <code>src/ycbv_live/results_4090/</code>(<code>results_orig_th05/g13p/g13p_nover.json</code>, <code>results_penalized_4090.json</code>), 실행 폴더 <code>CLI_env_paper/objpose/output/ycbv_live_*_0000{49,53,55}</code>.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>지도에 올라간 시간</th>
+<th>찾은 객체 (13)</th>
+<th>찾지 못한 객체</th>
+<th>잘못 올라간 객체</th>
+<th><strong>오답률</strong></th>
+<th>점수 (영상 끝)</th>
+<th>노트북 같은 3장면 (찾은 / 잘못)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. 원본 SAM-6D ViT-L 0.5</strong></td>
+<td>2.22 Hz</td>
+<td>3.2 s</td>
+<td><strong>12</strong></td>
+<td><strong>1</strong></td>
+<td>8</td>
+<td>40.0%</td>
+<td>57.1%</td>
+<td>13 / 8</td>
+</tr>
+<tr>
+<td><strong>2. 개선안 (새 기준값 + 배정 대안 + ① 문구), 자세 검증 켬</strong></td>
+<td>0.89 Hz</td>
+<td>3.0 s</td>
+<td>11</td>
+<td>2</td>
+<td><strong>5</strong></td>
+<td><strong>31.2%</strong></td>
+<td><strong>61.1%</strong></td>
+<td>10 / 6</td>
+</tr>
+<tr>
+<td><strong>3. 개선안, 자세 검증 끔</strong></td>
+<td>2.37 Hz</td>
+<td><strong>2.4 s</strong></td>
+<td>11</td>
+<td>2</td>
+<td>42</td>
+<td>79.2%</td>
+<td>20.0%</td>
+<td>미측정</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>처음 실행의 개선안(검증 켬) 53·55 장면은 버렸습니다.</strong> 앞 장면의 허브가 포트(8765, 17001)를 놓기 전에 다음 허브가 떠서 SAM-6D 가 한 프레임도 처리하지 못했습니다. 장면 사이에 프로세스 종료·포트 해제를 기다리게 고친 뒤 다시 돌린 결과가 위 표입니다(<code>_bad*</code>, <code>_broken_*</code> 폴더가 버린 실행).</li>
+<li><strong>해석</strong></li>
+<li><strong>3장면에서는 개선안(검증 켬)이 점수 1위(61.1%)입니다.</strong> 원본 0.5 보다 1개 덜 찾지만 잘못 올라간 물체가 8 → 5 로 적습니다. 노트북 12영상 결과(원본 63.5% 대 개선안 73.1%)와 같은 방향입니다. 다만 3장면·13개라 통계적으로는 약합니다.</li>
+<li><strong>검증을 끄면 잘못 올라간 물체가 5 → 42 로 8배 늘어 점수가 20% 로 떨어집니다.</strong> 찾은 수는 같습니다(11). 실제 영상(2-1절)과 같은 결론으로, 자세 검증은 찾는 수가 아니라 오답을 담당합니다.</li>
+<li>인식 빈도: 개선안(검증 켬)이 0.89 Hz 로 가장 느립니다. 관문을 넓혀 검증할 물체가 늘었기 때문이며, 노트북(0.29 Hz)의 3배 속도입니다. 원본 0.5 는 2.22 Hz(노트북 0.57).</li>
+<li>지도에 올라간 시간은 세 구성 모두 2~3 s 로 노트북(5~9 s)보다 짧습니다. GPU 가 빨라 첫 인식이 일찍 나오기 때문입니다.</li>
+</ul>
+<h3 id="3_1">3. (기록) 처음에 이 서버에서 새로 측정하지 못했던 이유와 해결</h3>
+<p>아래 표의 항목은 2026-10-06 오후에 모두 해결했습니다. 노트북 코드는 GitHub <code>objpose/memory-dup-suppression</code> 브랜치에 있었고, 이 서버에는 <code>~/DeepLearning/CLI_env_paper</code> 작업 트리로 받아 자산(템플릿·가중치·HSV 캐시·YCB-V PEM 자산)을 링크해 썼습니다. YCB-V 영상은 다른 PC 에서 복사해 왔습니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>필요한 것</th>
+<th>이 서버 상태</th>
+<th>조치</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>실시간 허브의 인식기 교체·설정 옵션 (<code>hub.py --recognizer</code>, <code>--ism-config</code>, <code>--cluster-occupancy</code>, <code>--verify-candidates</code>, <code>--map-prior</code>, <code>catalog.py</code>)</td>
+<td>없음. 이 서버 <code>objpose</code> 는 2026-09-18 판이고 노트북에서 10-04~06 에 추가한 변경이 커밋·동기화되지 않음</td>
+<td>노트북 <code>CLI_environment/objpose</code> 를 이 서버로 동기화</td>
+</tr>
+<tr>
+<td>개선안 인식기 코드 (<code>assignment_fallback</code>, <code>size_gate_max</code>, <code>verify.candidate_topk</code>) 와 설정 <code>yolo_ism_objects_g13.yaml</code>, <code>ycbv_objects_g13p.yaml</code></td>
+<td>없음 (노트북 <code>sam6d_realtime</code> 에만 있음)</td>
+<td>노트북 <code>sam6d_realtime</code> 동기화</td>
+</tr>
+<tr>
+<td>자세 검증 끔 옵션 (실시간)</td>
+<td>허브에 끄는 인자가 있는지 미확인. 한 장 평가(<code>run_ours.py --no-verify</code>)에는 있음</td>
+<td>동기화 후 확인, 없으면 <code>verify.enabled=false</code> 설정 파일로 대체</td>
+</tr>
+<tr>
+<td>YCB-V 영상 12개 rosbag (<code>ycbv_bags/ycbv_0000{48..59}</code>)</td>
+<td>55번 한 개만 있음. 원본 영상(BOP <code>ycbv/full/test</code>, 전체 프레임)이 없고 BOP19 900장만 있음</td>
+<td>BOP 전체 테스트 영상 내려받기(약 15 GB) 후 <code>make_bags.py</code></td>
+</tr>
+<tr>
+<td>실제 영상 260901 rosbag</td>
+<td>있음 (NAS <code>data_slam_converted/260901_cbnu_bigeightcircle</code>), <code>objpose/run_one.sh</code> 로 재생 가능</td>
+<td>–</td>
+</tr>
+<tr>
+<td>원본 SAM-6D 가중치 (FastSAM-x, DINOv2 ViT-L)</td>
+<td>오늘 내려받음 (<code>~/Dataset/bop/ycbv_work/weights_dl</code>)</td>
+<td>–</td>
+</tr>
+<tr>
+<td>SLAM 호스트</td>
+<td><code>~/objpose/build/slam_stream</code> 로컬 빌드 있음, Mac/.3/.55 도 가능</td>
+<td>–</td>
+</tr>
+</tbody>
+</table></div>
+<p>지금 이 서버에서 바로 돌릴 수 있는 것은 "우리 기술 배포 설정 × 실제 영상 260901" 한 가지뿐입니다. 요청한 세 구성 중 <strong>개선안 자세 검증 끔</strong>은 노트북에서도 실시간으로 돌린 적이 없어, 어느 쪽에서 하든 새 실행이 필요합니다.</p>
+<hr />
+<p><a id="13_실시간_원본_개선안_비교표_261007"></a></p>
+<h2 id="13-05-5-ycb-v-2026-10-07">13. 실시간 객체 위치 찾기 비교표 — 원본 0.5 대 개선안(자세 검증 켬), 실제 영상 5개 + YCB-V (2026-10-07 정리)</h2>
+<blockquote>
+<p>영상을 1배속으로 재생하며 SLAM(ORB-SLAM3, 특징점 2000) 지도 위에 물체 위치를 올리는 실험입니다. 수치는 <code>08_실시간_비교표.md</code>(노트북 RTX 3080 Ti, 2026-10-05~06)와 <code>10_실시간_비교표_261006.md</code>(RTX 4090, 2026-10-06)에서 가져와 두 구성만 나란히 놓았습니다. 새로 돌린 것은 없습니다. 모두 <strong>1회 측정</strong>입니다.</p>
+</blockquote>
+<h3 id="0">0. 구성과 지표</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>후보 영역</th>
+<th>특징</th>
+<th>물체 판정</th>
+<th>자세</th>
+<th>결과 태그</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>원본 0.5</strong></td>
+<td>FastSAM-x 전체 분할</td>
+<td>DINOv2 ViT-L</td>
+<td>원본 SAM-6D 판정, 기준 0.5</td>
+<td>PEM, 기하 점수 1위를 답으로 (검증 없음)</td>
+<td>orig_th05 / origL05</td>
+</tr>
+<tr>
+<td><strong>개선안 (자세 검증 켬)</strong></td>
+<td>YOLO-World 문구 상자 + MobileSAM</td>
+<td>DINOv2 ViT-S</td>
+<td>우리 관문(새 기준값: 의미 0.25, 외형 0.605, 색상 0.06) + 상자 배정(배정 대안 허용)</td>
+<td>PEM → 우리 자세 검증(윤곽·무늬·합의)</td>
+<td>g13p (YCB, ① 문구) / g13 (실제 영상, 배포 문구)</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>찾은 객체:</strong> 영상 끝 지도에 맞는 위치로 올라간 물체. YCB-V 는 정답 자세로 채점(ADD-S &lt; 지름의 10%), 실제 영상은 기준 위치에서 20 cm 이내.</li>
+<li><strong>찾지 못한 객체:</strong> 끝까지 맞는 항목이 없는 물체(틀린 위치로만 올라간 것 포함).</li>
+<li><strong>잘못 올라간 항목:</strong> 장면에 없는 물체, 위치 틀림, 같은 물체 중복. <strong>오답률</strong> = 잘못 / (맞음 + 잘못).</li>
+<li><strong>점수 (영상 끝):</strong> 맞음 / (장면 물체 수 + 잘못). 오답을 감점하는 점수입니다. <strong>평균 점수</strong>는 시간 축 전체의 평균.</li>
+<li><strong>인식 빈도:</strong> 인식기가 처리한 프레임 수 / 영상 길이. 실제 영상은 물체 없는 프레임이 많아 "물체 검출 프레임"의 처리 시간을 함께 적었습니다.</li>
+<li>실제 영상의 기준 위치는 우리 기술의 이전 실행에서 가져온 것이라 개선안에 유리할 수 있습니다. 물체 8종이 실제로 있는 것은 영상으로 확인했습니다.</li>
+</ul>
+<h3 id="1-rtx-3080-ti-8-mac-orb-slam3">1. 실제 영상 (노트북 RTX 3080 Ti, 물체 8개씩, Mac ORB-SLAM3)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>영상 (길이)</th>
+<th>지표</th>
+<th>원본 0.5</th>
+<th>개선안 (검증 켬)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>260901_cbnu_bigeightcircle</strong> (314초)</td>
+<td>인식 빈도 / 물체 검출 프레임 처리 시간</td>
+<td>0.89 Hz / 1392 ms</td>
+<td><strong>3.68 Hz / 491 ms</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>8개를 모두 찾은 시점</td>
+<td>끝까지 못 찾음</td>
+<td><strong>91.1초</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>찾은 / 못 찾은 / 잘못 올라간</td>
+<td>5 / 3 / 4</td>
+<td><strong>8 / 0 / 0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>못 찾은 물체</td>
+<td>세제 21 cm, 공룡 인형 34 cm, 우유 3.4 m (모두 틀린 위치로만)</td>
+<td>없음</td>
+</tr>
+<tr>
+<td></td>
+<td>오답률 (최종 지도)</td>
+<td>44.4%</td>
+<td><strong>0%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>점수 (영상 끝) / 평균 점수</td>
+<td>63.6% / 53.6%</td>
+<td><strong>100% / 79.2%</strong></td>
+</tr>
+<tr>
+<td><strong>260901_cbnu_eightcircle</strong> (151초)</td>
+<td>인식 빈도 / 물체 검출 프레임 처리 시간</td>
+<td>0.89 Hz / 1371 ms</td>
+<td><strong>1.99 Hz / 776 ms</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>8개를 모두 찾은 시점</td>
+<td>못 찾음</td>
+<td><strong>41.8초</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>찾은 / 못 찾은 / 잘못 올라간</td>
+<td>6 / 2 / 3</td>
+<td><strong>8 / 0 / 1</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>못 찾은 물체 · 잘못의 내용</td>
+<td>곰 인형 27 cm, 공룡 인형 21 cm · 위치 틀림 2, 소스 1</td>
+<td>없음 · 소스 1 (식혜 오판)</td>
+</tr>
+<tr>
+<td></td>
+<td>오답률 (최종 지도)</td>
+<td>33.3%</td>
+<td><strong>11.1%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>점수 (영상 끝) / 평균 점수</td>
+<td>70.0% / 62.3%</td>
+<td><strong>100% / 80.1%</strong></td>
+</tr>
+<tr>
+<td><strong>260826_etri_eightcircle_dark</strong> (284초, 어두움)</td>
+<td>인식 빈도 / 물체 검출 프레임 처리 시간</td>
+<td>0.59 Hz / 1716 ms</td>
+<td><strong>0.91 Hz / 1019 ms</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>8개를 모두 찾은 시점</td>
+<td>188.7초</td>
+<td><strong>69.2초</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>찾은 / 못 찾은 / 잘못 올라간</td>
+<td>7 / 1 / 2</td>
+<td><strong>8 / 0 / 1</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>못 찾은 물체 · 잘못의 내용</td>
+<td>초코 헤이즐넛 0.65 m · 위치 틀림 1, 소스 1</td>
+<td>없음 · 소스 1</td>
+</tr>
+<tr>
+<td></td>
+<td>오답률 (최종 지도)</td>
+<td>22.2%</td>
+<td><strong>11.1%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>점수 (영상 끝) / 평균 점수</td>
+<td>80.0% / 63.5%</td>
+<td><strong>100% / 88.0%</strong></td>
+</tr>
+<tr>
+<td><strong>260910_object</strong> (159초)</td>
+<td>인식 빈도 / 물체 검출 프레임 처리 시간</td>
+<td>0.75 Hz / 2011 ms</td>
+<td><strong>4.03 Hz / 527 ms</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>8개를 모두 찾은 시점</td>
+<td>138.1초</td>
+<td><strong>57.6초</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>찾은 / 못 찾은 / 잘못 올라간</td>
+<td>7 / 1 / 1</td>
+<td><strong>8 / 0 / 1</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>못 찾은 물체 · 잘못의 내용</td>
+<td>페브리즈 0.72 m · 위치 틀림 1</td>
+<td>없음 · 소스 1 (식혜 위치 3 cm)</td>
+</tr>
+<tr>
+<td></td>
+<td>오답률 (최종 지도)</td>
+<td>12.5%</td>
+<td>11.1%</td>
+</tr>
+<tr>
+<td></td>
+<td>점수 (영상 끝) / 평균 점수</td>
+<td>88.9% / 61.1%</td>
+<td><strong>100% / 72.9%</strong></td>
+</tr>
+<tr>
+<td><strong>260915_eightcircle</strong> (128초)</td>
+<td>인식 빈도 / 물체 검출 프레임 처리 시간</td>
+<td>0.60 Hz / 1922 ms</td>
+<td><strong>1.43 Hz / 1214 ms</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>8개를 모두 찾은 시점</td>
+<td>72.4초</td>
+<td><strong>71.0초</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>찾은 / 못 찾은 / 잘못 올라간</td>
+<td>7 / 1 / 2</td>
+<td>7 / 1 / 1</td>
+</tr>
+<tr>
+<td></td>
+<td>못 찾은 물체 · 잘못의 내용</td>
+<td>곰 인형 (공룡 인형 자리에 곰 이름) · 위치 틀림 1, 소스 1</td>
+<td>초코 헤이즐넛 1.83 m 사본 · 위치 틀림 1</td>
+</tr>
+<tr>
+<td></td>
+<td>오답률 (최종 지도)</td>
+<td>22.2%</td>
+<td><strong>12.5%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>점수 (영상 끝) / 평균 점수</td>
+<td>88.9% / 59.3%</td>
+<td>88.9% / <strong>60.7%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="11-5-40">1.1 실제 영상 합계 (5개, 물체 40개)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>원본 0.5</th>
+<th>개선안 (검증 켬)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>찾은 객체 (최종 지도)</td>
+<td>32 / 40</td>
+<td><strong>39 / 40</strong></td>
+</tr>
+<tr>
+<td>찾지 못한 객체</td>
+<td>8 (모두 틀린 위치로만 올라감)</td>
+<td>1 (틀린 위치로만)</td>
+</tr>
+<tr>
+<td>최종 지도 잘못된 항목</td>
+<td>12</td>
+<td><strong>4</strong> (식혜→소스 3, 사본 1)</td>
+</tr>
+<tr>
+<td>오답률 (최종 지도)</td>
+<td>27.3% (12 / 44)</td>
+<td><strong>9.3%</strong> (4 / 43)</td>
+</tr>
+<tr>
+<td>8개 모두 맞게 남긴 영상</td>
+<td>0 / 5</td>
+<td><strong>4 / 5</strong></td>
+</tr>
+<tr>
+<td>인식 빈도 범위</td>
+<td>0.59~0.89 Hz</td>
+<td><strong>0.91~4.03 Hz</strong></td>
+</tr>
+<tr>
+<td>8개 모두 찾은 시점</td>
+<td>2개 영상에서 못 찾음, 나머지 72~189초</td>
+<td>42~91초</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>260901_cbnu_bigeightcircle 은 같은 날 다시 돌린 결과(08 문서 5절)가 원본 0.5 에서 7 / 1 / 2(오답률 22.2%)로 첫 측정(5 / 3 / 4)과 다릅니다. 원본 0.5 는 실행마다 결과가 흔들립니다. 재측정으로 합계를 내면 원본 34 / 40, 잘못 10 입니다. 개선안은 두 번 모두 8 / 0 / 0 이었습니다.</li>
+<li>원본 0.5 가 놓친 8개는 모두 <strong>이름은 맞게 골랐지만 위치가 틀린</strong> 경우이거나 다른 물체 자리에 그 이름이 붙은 경우입니다(공룡 인형 ↔ 곰 인형). 개선안의 오답 4개 중 3개는 <strong>식혜를 소스로</strong> 판정한 것입니다.</li>
+</ul>
+<h4 id="12-rtx-4090-260901_cbnu_bigeightcircle-orb-slam3-10-2-1">1.2 같은 영상, RTX 4090 재측정 (260901_cbnu_bigeightcircle, 로컬 ORB-SLAM3, 10 문서 2-1절)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>지도에 올라간 시간</th>
+<th>찾은 / 못 찾은 / 잘못</th>
+<th>오답률</th>
+<th>점수 (영상 끝) / 평균</th>
+<th>노트북</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 0.5</td>
+<td>3.65 Hz</td>
+<td>67.4초</td>
+<td>6 / 2 / 3</td>
+<td>33.3%</td>
+<td>63.6% / 54.3%</td>
+<td>0.89 Hz, 5 / 3 / 4</td>
+</tr>
+<tr>
+<td><strong>개선안 (검증 켬)</strong></td>
+<td><strong>4.70 Hz</strong></td>
+<td><strong>51.0초</strong></td>
+<td><strong>8 / 0 / 0</strong></td>
+<td><strong>0%</strong></td>
+<td><strong>100% / 81.4%</strong></td>
+<td>3.68 Hz, 8 / 0 / 0</td>
+</tr>
+</tbody>
+</table></div>
+<p>GPU 가 빨라져 원본 0.5 의 인식 빈도는 4배가 되었지만 결과 모습은 같습니다(2개 못 찾고 3개 잘못). 개선안은 두 PC 모두 8 / 0 / 0 입니다.</p>
+<h3 id="2-ycb-v-12-4859-20738-55-21">2. YCB-V (영상 12개, 48~59번, 20,738프레임, 장면 물체 55개, 21 물체 모두 질의, 노트북)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구분</th>
+<th>지표</th>
+<th>원본 0.5</th>
+<th>개선안 (검증 켬)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>시간</strong></td>
+<td>인식 빈도</td>
+<td><strong>0.57 Hz</strong></td>
+<td>0.29 Hz</td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 처리 시간 (중앙값)</td>
+<td><strong>1643 ms</strong></td>
+<td>2764 ms</td>
+</tr>
+<tr>
+<td></td>
+<td>ㄴ 후보 / 판정 / 자세</td>
+<td>34 / 867 / 704 ms</td>
+<td>16 / 198 / 2541 ms</td>
+</tr>
+<tr>
+<td></td>
+<td>처음 찾기까지 시간 (중앙값)</td>
+<td><strong>5.2초</strong></td>
+<td>8.6초</td>
+</tr>
+<tr>
+<td></td>
+<td>10초 / 20초 / 30초 안에 찾음</td>
+<td><strong>90.9% / 92.7% / 92.7%</strong></td>
+<td>56.4% / 76.4% / 81.8%</td>
+</tr>
+<tr>
+<td><strong>찾은 객체</strong></td>
+<td>영상 끝 지도 (55개 중)</td>
+<td><strong>54 (98.2%)</strong></td>
+<td>49 (89.1%)</td>
+</tr>
+<tr>
+<td><strong>찾지 못한 객체</strong></td>
+<td>개수 · 목록</td>
+<td><strong>1</strong> · 설탕 상자(55, 틀린 위치로만)</td>
+<td>6 · 머그(48), 대형 집게(48), 그릇(49), 참치 캔(49), 그릇(53), 토마토 수프 캔(55)</td>
+</tr>
+<tr>
+<td><strong>오답</strong></td>
+<td>영상 끝 지도 잘못된 항목</td>
+<td>30</td>
+<td><strong>12</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>ㄴ 장면에 없는 물체 / 위치 틀림 / 중복</td>
+<td>26 / 1 / 3</td>
+<td><strong>11</strong> / 1 / <strong>0</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>오답률 (영상 끝 지도)</td>
+<td>35.7% (30 / 84)</td>
+<td><strong>19.7%</strong> (12 / 61)</td>
+</tr>
+<tr>
+<td></td>
+<td>프레임당 잘못된 상자</td>
+<td>1.80</td>
+<td><strong>0.75</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>장면에 없는데 자주 올린 물체</td>
+<td>푸딩 상자 8, 폼 블록 6, 젤라틴 상자 6</td>
+<td>머스터드 병 4, 특대 집게 2</td>
+</tr>
+<tr>
+<td><strong>점수</strong></td>
+<td>영상 끝 (맞음 / (55 + 잘못))</td>
+<td>63.5%</td>
+<td><strong>73.1%</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>평균 점수</td>
+<td><strong>64.6%</strong></td>
+<td>60.4%</td>
+</tr>
+<tr>
+<td></td>
+<td>지도 자세 정확도 (ADD-S AUC)</td>
+<td><strong>87.9</strong></td>
+<td>87.8</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="21-ycb-v-3-rtx-4090-495355-13-10-2-2-2026-10-06">2.1 YCB-V 3장면 간략 재측정, RTX 4090 (49·53·55, 장면 물체 13개, 10 문서 2-2절, 2026-10-06)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>지도에 올라간 시간</th>
+<th>찾은 (13) / 못 찾은 / 잘못</th>
+<th>오답률</th>
+<th>점수 (영상 끝)</th>
+<th>노트북 같은 3장면 (찾은 / 잘못)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 0.5</td>
+<td><strong>2.22 Hz</strong></td>
+<td>3.2초</td>
+<td><strong>12</strong> / 1 / 8</td>
+<td>40.0%</td>
+<td>57.1%</td>
+<td>13 / 8</td>
+</tr>
+<tr>
+<td><strong>개선안 (검증 켬)</strong></td>
+<td>0.89 Hz</td>
+<td><strong>3.0초</strong></td>
+<td>11 / 2 / <strong>5</strong></td>
+<td><strong>31.2%</strong></td>
+<td><strong>61.1%</strong></td>
+<td>10 / 6</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="22-ycb-v-12-rtx-4090-2026-10-07-12041304-orb-slam3-1">2.2 YCB-V 12영상 전체, RTX 4090 재측정 (2026-10-07 12:04~13:04, 로컬 ORB-SLAM3, 각 1회)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>원본 0.5</th>
+<th>개선안 (검증 켬)</th>
+<th>노트북 (원본 / 개선안)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>인식 빈도 (처리 프레임 / 20,738)</td>
+<td><strong>1.77 Hz</strong> (1,225)</td>
+<td>0.77 Hz (530)</td>
+<td>0.57 / 0.29 Hz (392 / 200)</td>
+</tr>
+<tr>
+<td>지도에 올라간 시간 (중앙값 / p90)</td>
+<td><strong>3.4 / 5.6초</strong></td>
+<td>4.4 / 22.0초</td>
+<td>5.2 / 8.1 · 8.6 / 24.4초</td>
+</tr>
+<tr>
+<td>5초 / 10초 / 30초 안에 찾음</td>
+<td><strong>87.3 / 89.1 / 94.5%</strong></td>
+<td>65.5 / 74.5 / 87.3%</td>
+<td>45.5 / 90.9 / 92.7 · 5.5 / 56.4 / 81.8%</td>
+</tr>
+<tr>
+<td>영상 끝 찾은 객체 (55개 중)</td>
+<td><strong>54 (98.2%)</strong></td>
+<td>50 (90.9%)</td>
+<td>54 / 49</td>
+</tr>
+<tr>
+<td>영상 끝 잘못 올라간 항목</td>
+<td>49</td>
+<td><strong>25</strong></td>
+<td>30 / 12</td>
+</tr>
+<tr>
+<td><strong>오답률 (영상 끝)</strong></td>
+<td>47.6% (49 / 103)</td>
+<td><strong>33.3%</strong> (25 / 75)</td>
+<td>35.7% / 19.7%</td>
+</tr>
+<tr>
+<td>점수 (영상 끝, 맞음 / (55 + 잘못))</td>
+<td>51.9%</td>
+<td><strong>62.5%</strong></td>
+<td>63.5% / 73.1%</td>
+</tr>
+<tr>
+<td>화면 일치율 (그려진 상자가 맞은 비율)</td>
+<td><strong>87.9%</strong></td>
+<td>80.2%</td>
+<td>85.8 / 70.7%</td>
+</tr>
+<tr>
+<td>프레임당 잘못된 상자</td>
+<td>3.17</td>
+<td><strong>1.65</strong></td>
+<td>1.80 / 0.75</td>
+</tr>
+<tr>
+<td>지도 자세 정확도 (ADD-S AUC)</td>
+<td>88.9</td>
+<td><strong>89.7</strong></td>
+<td>87.9 / 87.8</td>
+</tr>
+<tr>
+<td>같은 물체 중복</td>
+<td>0</td>
+<td>0</td>
+<td>0 / 0</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>순위는 노트북과 같습니다.</strong> 원본이 더 많이·더 빨리 찾고(54 대 50, 3.4 대 4.4초), 개선안은 잘못 올라간 항목이 절반(25 대 49)이라 오답을 감점하는 점수에서 앞섭니다(62.5 대 51.9%).</li>
+<li><strong>두 구성 모두 노트북보다 잘못 올라간 항목이 늘었습니다</strong>(원본 30 → 49, 개선안 12 → 25). GPU 가 빨라져 같은 영상에서 인식 횟수가 2.7~3.1배 늘었고(392 → 1,225, 200 → 530), 잘못된 답이 지도에 올라갈 기회도 그만큼 늘었기 때문입니다. 찾은 수(54, 50)와 ADD-S 는 거의 그대로입니다. 즉 YCB-V 실시간 점수는 처리 속도에 따라 변하므로, 두 PC 의 절대값을 섞어 비교하면 안 되고 같은 PC 안에서만 비교해야 합니다.</li>
+<li>개선안이 더 찾은 1개(49 → 50)와 늘어난 오답 13개는 같은 원인(인식 횟수 증가)입니다.</li>
+<li>결과: <code>src/ycbv_live/results_4090/results_{orig_th05,g13p}.json</code>, <code>results_penalized_orig_g13p_4090.json</code>. 나머지 4구성(우리 배포 켬/끔, 개선안 2·3)은 15번 문서에 정리합니다.</li>
+</ul>
+<h3 id="3_2">3. 정리</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>실제 영상 5개 (물체 40개)</th>
+<th>YCB-V 12영상 (물체 55개)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>더 많이 찾는 쪽</td>
+<td><strong>개선안</strong> 39 대 32</td>
+<td><strong>원본 0.5</strong> 54 대 49</td>
+</tr>
+<tr>
+<td>잘못 올라간 항목</td>
+<td>원본 12 대 <strong>개선안 4</strong></td>
+<td>원본 30 대 <strong>개선안 12</strong></td>
+</tr>
+<tr>
+<td>오답률</td>
+<td>27.3% 대 <strong>9.3%</strong></td>
+<td>35.7% 대 <strong>19.7%</strong></td>
+</tr>
+<tr>
+<td>점수 (영상 끝)</td>
+<td>원본 63.6~88.9% 대 <strong>개선안 88.9~100%</strong></td>
+<td>63.5% 대 <strong>73.1%</strong></td>
+</tr>
+<tr>
+<td>인식 빈도</td>
+<td>원본 0.6~0.9 Hz 대 <strong>개선안 0.9~4.0 Hz</strong></td>
+<td><strong>원본 0.57 Hz</strong> 대 개선안 0.29 Hz</td>
+</tr>
+<tr>
+<td>처음 찾는 속도</td>
+<td>비슷하거나 개선안이 빠름</td>
+<td><strong>원본</strong>이 빠름 (5.2 대 8.6초)</td>
+</tr>
+</tbody>
+</table></div>
+<ol>
+<li><strong>실제 영상에서는 개선안이 모든 지표에서 앞섭니다.</strong> 더 많이 찾고(39 대 32), 잘못 올리는 것이 3분의 1 이고, 1.5~4.5배 빠릅니다. 원본 0.5 는 다섯 영상 모두에서 8개를 다 맞게 남기지 못했고, 놓친 것은 전부 위치 틀림이나 이름 혼동(곰 인형 ↔ 공룡 인형)입니다.</li>
+<li><strong>YCB-V 에서는 엇갈립니다.</strong> 원본 0.5 가 더 많이, 더 빨리 찾지만(54 대 49, 0.57 대 0.29 Hz) 지도에 올라간 것의 36% 가 장면에 없는 물체입니다. 개선안은 5개를 놓치는 대신 잘못 올린 것이 절반 이하라 오답을 감점하는 점수에서 앞섭니다(73.1 대 63.5%). 놓친 5개는 닮은 캔과 무늬 없는 그릇처럼 문구로 구별하기 어려운 물체입니다.</li>
+<li><strong>속도가 뒤집히는 이유:</strong> 실제 영상은 물체가 보이는 프레임이 적어 개선안의 자세 검증이 자주 돌지 않습니다. YCB-V 는 매 프레임 물체 3~6개가 보여 검증(2.5초/프레임)이 늘 돌아 개선안이 느려집니다. 원본 0.5 는 어느 영상이든 ViT-L 특징 계산(0.9초)이 고정 비용입니다.</li>
+<li><strong>개선안의 남은 약점</strong>은 실제 영상의 식혜 → 소스 오판 3건(색·모양이 닮은 병)과 YCB-V 의 닮은 캔·그릇 놓침입니다. 두 결과가 엇갈리는 이유는 07 문서 3.6절에 있습니다.</li>
+<li>4090 재측정은 두 데이터 모두 노트북과 같은 방향이었습니다. GPU 가 빨라지면 원본 0.5 의 속도 단점은 줄지만(0.89 → 3.65 Hz) 오답은 그대로이고, YCB-V 에서는 인식 횟수가 늘어 두 구성 모두 잘못 올라간 항목이 늘었습니다(2.2절). 실시간 점수는 같은 PC 안에서만 비교해야 합니다.</li>
+</ol>
+<p><strong>출처:</strong> 실제 영상 08 문서 1·6·7절, YCB-V 08 문서 2절, 4090 재측정 10 문서 2-1·2-2절. 결과 태그 orig_th05/origL05(원본 0.5), g13p/g13(개선안).</p></main></body></html>

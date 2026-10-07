@@ -1,0 +1,53 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>08. 재시작 메모 (2026-10-06 새벽, 사용자 요청으로 중단)</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1>08. 재시작 메모 (2026-10-06 새벽, 사용자 요청으로 중단)</h1>
+<h2>중단 시점의 상태</h2>
+<ul>
+<li>모든 실행을 멈췄습니다. GPU는 비어 있습니다.</li>
+<li>끝난 결과는 <code>07_전체_비교표.md</code>(3.2절 YCB 36장, 3절 YCB 실시간, 3.3절 실제 데이터)에 있습니다.</li>
+</ul>
+<h2>진행 기록</h2>
+<ul>
+<li>2026-10-06 06시: 실제 데이터 6개 설정 완료. 결과는 <code>07_전체_비교표.md</code> 3.3절에 있습니다.</li>
+<li>hybrid 실패 원인(불러오는 순서) 수정</li>
+<li>Mac은 실행 중 2시간 caffeinate로 잠자기 방지</li>
+</ul>
+<h2>남은 일 (다시 시작할 때 순서)</h2>
+<ol>
+<li>~~실제 데이터의 "원본 판정 + 우리 자세 검증"이 지도를 비우는 원인 찾기~~ (완료: 불러오는 순서 문제)</li>
+<li>증상: 모든 후보가 <code>candidate_verification_failed</code>, 일부는 PEM 입력 깊이 부족(<code>no valid PEM instances</code>)입니다.</li>
+<li>확인 스크립트: <code>src/realdata/debug_hybrid.py hybrid</code> (실제 프레임 한 장으로 재현)</li>
+<li>코드: <code>src/realdata/live_cores.py</code> (hybrid 모드)</li>
+<li>~~Mac 연결 복구 후 실제 데이터 남은 실행~~ (완료). 참고:: <code>src/realdata/run_real.sh</code> 안의 hybL05, hybS05(수정 후 재실행), hybS06</li>
+<li>Mac IP가 바뀌었을 수 있습니다(192.168.219.111 응답 없음).</li>
+<li><strong>자세 검증 경량화 실험</strong> (시작 전에 중단): <code>src/ycbv/det_study/run_verify_cost.sh</code></li>
+<li>검증 후보 100/50/30/10, 간격 3/10, fp16/bf16, 조합. 대기 조건 줄(<code>until grep ... real.log</code>)은 지우고 실행합니다.</li>
+<li>경량화 결과가 좋으면 우리 개선안을 그 설정으로 YCB와 실제 데이터 실시간 재측정</li>
+<li>최종 수치는 RTX 5090에서 장면별 3회 반복</li>
+</ol>
+<h2>실행 결과 위치</h2>
+<ul>
+<li>YCB 36장: <code>src/ycbv/out/quick/</code> (요약 <code>ladder/quick_combo.py</code>)</li>
+<li>YCB 실시간: <code>objpose/output/ycbv_live_*</code>, 채점 <code>src/ycbv_live/results_*.json</code>, <code>results_penalized.json</code></li>
+<li>실제 데이터: <code>objpose/output/real_260901_*</code>, 채점 <code>src/realdata/results_real.json</code></li>
+</ul></main></body></html>
