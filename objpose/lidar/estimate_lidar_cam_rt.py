@@ -179,12 +179,27 @@ def main():
     ap.add_argument("--pairs", type=int, default=120)
     ap.add_argument("--max-speed", type=float, default=0.12)
     ap.add_argument("--max-yaw-rate", type=float, default=8.0)
+    ap.add_argument("--height", type=float, default=None, metavar="DZ",
+                    help="use this height along down [m] instead of the overlap maximum. The "
+                         "per-camera argmax is weak when the depth surface constrains it poorly; "
+                         "fit_lidar_height_joint.py combines both cameras' scans into one value.")
+    ap.add_argument("--tau-range", type=float, default=0.10,
+                    help="clock-offset search half-width [s]; widen when the camera bag carries "
+                         "a residual offset against the LiDAR clock")
     ap.add_argument("--out", default=str(rt / "T_cam_lidar.json"))
     a = ap.parse_args()
 
     info = json.loads((Path(a.dataset) / "info.json").read_text())
-    K = np.array(info[a.camera]["K"], np.float64).reshape(3, 3)
-    D = np.array(info[a.camera]["D"], np.float64)
+    if "K" in info.get(a.camera, {}):
+        K = np.array(info[a.camera]["K"], np.float64).reshape(3, 3)
+        D = np.array(info[a.camera]["D"], np.float64)
+    else:                                  # not every conversion writes the camera block
+        from conv_session import parse_camera_info
+        b = Bag(Path(a.dataset) / a.camera)
+        topic = next(t for t in b.topic_id if t.endswith("color/camera_info"))
+        ids, _ = b.stamps(topic)
+        _, _, K, D = parse_camera_info(b.blob(ids[0]))
+        print(f"camera intrinsics read from {topic}: fx={K[0, 0]:.3f} cx={K[0, 2]:.3f}")
 
     ts_c, T_c = read_tum(a.cam_traj)
     ts_l, T_l = read_tum(a.lidar_traj)
@@ -195,7 +210,7 @@ def main():
     print(f"down cam {np.round(d_c, 4)} (plane rms {pr_c*100:.2f} cm) | down lidar {np.round(d_l, 4)} (plane rms {pr_l*100:.2f} cm)")
 
     best = None
-    for tau in np.round(np.arange(-0.10, 0.1001, 0.002), 3):
+    for tau in np.round(np.arange(-a.tau_range, a.tau_range + 1e-9, 0.002), 3):
         P = rel_pairs(tr_c, tr_l, float(tau), [1.0], 6)
         if len(P) < 50:
             continue
@@ -235,10 +250,18 @@ def main():
         if den < 0:
             dz_peak = float(dzs[k] + 0.05 * 0.5 * (y0 - y2) / den)
     print(f"height by overlap maximum: {dz_peak:+.3f} m (peak {int(cnt[k])} points)")
-    X_final = compose(dz_peak)
+    if a.height is None:
+        dz_used, how, unc = dz_peak, "height from LiDAR/depth overlap maximum", 0.1
+    else:
+        dz_used, how, unc = a.height, "height supplied (joint fit over both cameras)", 0.03
+        print(f"height overridden: {dz_used:+.3f} m")
+    X_final = compose(dz_used)
     final = {"T_cam_lidar": X_final.tolist(), "camera": a.camera,
-             "method": "planar hand-eye (tx, ty, yaw, tilt) + height from LiDAR/depth overlap maximum",
-             "height_along_down_m": dz_peak, "height_uncertainty_m": 0.1, "tau_s": tau,
+             "dataset": Path(a.dataset).name,   # geometry carries over to the day's other
+                                                # recordings; tau_s was measured on this one
+             "method": f"planar hand-eye (tx, ty, yaw, tilt) + {how}",
+             "height_along_down_m": dz_used, "height_uncertainty_m": unc,
+             "height_overlap_argmax_m": dz_peak, "tau_s": tau,
              "stage1": {"pairs": int(len(P)), "tx_m": tx, "ty_m": ty, "phi_deg": float(np.degrees(phi)),
                         "residual_median_cm": round(float(np.median(res)) * 100, 2)},
              "overlap_scan": scan}

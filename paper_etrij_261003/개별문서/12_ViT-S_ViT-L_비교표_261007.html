@@ -1,0 +1,366 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>12. 특징 모델 비교 — DINOv2 ViT-S 대 ViT-L, 인식 방법 4가지 (YCB-V, RTX 4090, 2026-10-07)</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1>12. 특징 모델 비교 — DINOv2 ViT-S 대 ViT-L, 인식 방법 4가지 (YCB-V, RTX 4090, 2026-10-07)</h1>
+<blockquote>
+<p>2026-10-07 이 PC(RTX 4090, GPU0)에서 1회 측정. 네 구성 × 두 특징 모델 = 8개를 같은 코드(<code>run_ours.py</code>)와 같은 데이터로 돌렸습니다. 노트북(RTX 3080 Ti) 수치는 <code>07_전체_비교표.md</code> 3.11·3.12절에서 가져와 참고 열에 두었습니다. 구성 정의는 <code>11_인식방법_비교표_261007.md</code> 1절과 같습니다.</p>
+<p><strong>읽기 전에:</strong> 구성 3·4 의 관문 기준값(의미 0.25, 외형 0.605, 색상 0.06)은 ViT-S 점수 분포에 맞춰 고른 값입니다. ViT-L 실험은 이 기준값을 <strong>그대로 둔</strong> 채 특징 모델만 바꾼 것이므로, 3·4 의 ViT-L 수치는 "ViT-L 에 맞춰 다시 조정하지 않은" 결과입니다. 1·2 의 원본 판정 0.5 는 원본 SAM-6D 가 ViT-L 기준으로 만든 판정이라 두 모델에 같은 뜻으로 적용됩니다.</p>
+</blockquote>
+<h2>1. 구성과 ViT-L 적용 방법</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>구성</th>
+<th>ViT-S 실행</th>
+<th>ViT-L 실행</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>FastSAM-x 전체 분할 → 특징 → 원본 판정 0.5</td>
+<td>원본 SAM-6D 코드, <code>--orig-desc dinov2_vits14</code></td>
+<td>원본 SAM-6D 그대로 (<code>dinov2_vitl14</code>)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>문구 상자 + MobileSAM → 특징 → 원본 판정 0.5</td>
+<td>원본 판정 코드에 앞단만 교체 (<code>--orig-seg text_msam</code>)</td>
+<td>같음, <code>dinov2_vitl14</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>문구 상자 + MobileSAM → 특징 → 관문 + 상자 독점 (1순위)</td>
+<td>우리 인식기 배포 코드, <code>ycbv_objects.yaml</code></td>
+<td>우리 인식기 + <code>ycbv_objects_vitl.yaml</code>: ViT-L 가중치, 외형 점수 블록 [2,9]→[4,19]·[11]→[23] (12층→24층 비례), 템플릿 특징 캐시 별도(<code>features_vitl/</code>)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>3 + 배정 대안 (<code>--assign-fallback</code>)</td>
+<td>같음</td>
+<td>같음</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>문구 상자는 YCB 문구 ①, 물체마다 상위 3개(점수 0.02 이상). 3·4 의 관문은 의미 0.25 / 외형 0.605 / 색상 0.06 (07 의 "새 기준값"). 1·2 의 FastSAM·판정 설정은 원본 SAM-6D 그대로.</li>
+<li>우리 인식기가 ViT-L 을 받도록 <code>sam6d_realtime/yolo_ism.py</code> 의 DINOv2 생성을 체크포인트 이름(vits14/vitl14)으로 크기를 고르게 바꿨습니다(ViT-S 동작은 그대로). 설정 파일은 환경변수 <code>YCBV_OURS_CFG</code> 로 바꿉니다.</li>
+</ul>
+<h2>2. 인식까지 — YCB-V 900장, 정답 물체 4,123개 (자세 추정 없음)</h2>
+<p>맞음 = 그 물체 이름으로 답했고 마스크가 정답 마스크와 IoU 0.5 이상. 시간 = 마스크 생성 + 특징 + 판정의 장당 중앙값(이 PC).</p>
+<p>장당 실제 물체는 평균 4.58개(3~6개, 장면마다 고정: 3개 2장면·4개 3장면·5개 5장면·6개 2장면, 같은 물체 중복 없음). 후보는 문구 상자 장당 7개, FastSAM-x 전체 분할 장당 41개입니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>구성</th>
+<th>모델</th>
+<th>찾은 비율</th>
+<th>답한 수</th>
+<th>오답 수</th>
+<th>오답 / 장</th>
+<th>정밀도</th>
+<th>맞은 답 IoU</th>
+<th>장당 시간</th>
+<th>ViT-L − ViT-S</th>
+<th>노트북 (찾음 / 오답 / ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>FastSAM-x 전체 분할 → 원본 판정 0.5</td>
+<td>ViT-S</td>
+<td>85.3% (3,516)</td>
+<td>3,794</td>
+<td>278</td>
+<td>0.309</td>
+<td>92.7%</td>
+<td>0.865</td>
+<td>48 ms</td>
+<td></td>
+<td>85.5% / 0.292 / 157</td>
+</tr>
+<tr>
+<td>1</td>
+<td></td>
+<td>ViT-L</td>
+<td><strong>86.6%</strong> (3,572)</td>
+<td>3,753</td>
+<td>181</td>
+<td>0.201</td>
+<td>95.2%</td>
+<td>0.862</td>
+<td>200 ms</td>
+<td>+1.3%p 찾음, 오답 ×0.65, 시간 ×4.2</td>
+<td>87.6% / 0.182 / 925</td>
+</tr>
+<tr>
+<td>2</td>
+<td>YOLO-World 문구 상자 + MobileSAM → 원본 판정 0.5</td>
+<td>ViT-S</td>
+<td>82.8% (3,412)</td>
+<td>3,583</td>
+<td>171</td>
+<td>0.190</td>
+<td>95.2%</td>
+<td>0.859</td>
+<td><strong>38 ms</strong></td>
+<td></td>
+<td>82.7% / 0.188 / 103</td>
+</tr>
+<tr>
+<td>2</td>
+<td></td>
+<td>ViT-L</td>
+<td>82.7% (3,410)</td>
+<td>3,561</td>
+<td>151</td>
+<td>0.168</td>
+<td>95.8%</td>
+<td>0.857</td>
+<td>72 ms</td>
+<td>-0.1%p 찾음, 오답 ×0.88, 시간 ×1.9</td>
+<td>82.7% / 0.167 / 246</td>
+</tr>
+<tr>
+<td>3</td>
+<td>YOLO-World 문구 상자 + MobileSAM → 관문 + 상자 독점 (1순위)</td>
+<td>ViT-S</td>
+<td>72.2% (2,975)</td>
+<td>3,212</td>
+<td>237</td>
+<td>0.263</td>
+<td>92.6%</td>
+<td>0.857</td>
+<td>57 ms</td>
+<td></td>
+<td>72.3% / 0.264 / 95</td>
+</tr>
+<tr>
+<td>3</td>
+<td></td>
+<td>ViT-L</td>
+<td>43.8% (1,806)</td>
+<td>1,843</td>
+<td>37</td>
+<td><strong>0.041</strong></td>
+<td>98.0%</td>
+<td>0.872</td>
+<td>148 ms</td>
+<td>-28.4%p 찾음, 오답 ×0.16, 시간 ×2.6</td>
+<td>–</td>
+</tr>
+<tr>
+<td>4</td>
+<td>YOLO-World 문구 상자 + MobileSAM → 관문 + 상자 독점 (배정 대안)</td>
+<td>ViT-S</td>
+<td>80.7% (3,329)</td>
+<td>3,711</td>
+<td>382</td>
+<td>0.424</td>
+<td>89.7%</td>
+<td>0.854</td>
+<td>55 ms</td>
+<td></td>
+<td>80.6% / 0.433 / 93</td>
+</tr>
+<tr>
+<td>4</td>
+<td></td>
+<td>ViT-L</td>
+<td>48.5% (1,998)</td>
+<td>2,057</td>
+<td>59</td>
+<td>0.066</td>
+<td>97.1%</td>
+<td>0.872</td>
+<td>131 ms</td>
+<td>-32.2%p 찾음, 오답 ×0.16, 시간 ×2.4</td>
+<td>–</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>잘 못 찾는 물체 (900장, 찾은 비율 낮은 순 5개)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>ViT-S</th>
+<th>ViT-L</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>가위 13.3%, 특대 집게 48.7%, 푸딩 상자 58.7%, 대형 집게 69.3%, 스팸 캔 69.8%</td>
+<td>나무 블록 52.0%, 그릇 53.3%, 대형 집게 55.3%, 특대 집게 60.0%, 푸딩 상자 72.0%</td>
+</tr>
+<tr>
+<td>2</td>
+<td>가위 21.3%, 대형 집게 38.7%, 특대 집게 45.3%, 푸딩 상자 49.3%, 전동 드릴 72.3%</td>
+<td>대형 집게 32.0%, 특대 집게 51.3%, 푸딩 상자 52.0%, 그릇 52.0%, 가위 68.0%</td>
+</tr>
+<tr>
+<td>3</td>
+<td>푸딩 상자 0.0%, 나무 블록 12.0%, 대형 집게 27.3%, 특대 집게 32.0%, 크래커 상자 40.9%</td>
+<td>푸딩 상자 0.0%, 젤라틴 상자 0.0%, 나무 블록 0.0%, 가위 0.0%, 전동 드릴 4.7%</td>
+</tr>
+<tr>
+<td>4</td>
+<td>푸딩 상자 12.0%, 나무 블록 17.3%, 특대 집게 32.7%, 대형 집게 38.0%, 젤라틴 상자 49.3%</td>
+<td>푸딩 상자 0.0%, 젤라틴 상자 0.0%, 나무 블록 0.0%, 가위 0.0%, 전동 드릴 4.7%</td>
+</tr>
+</tbody>
+</table></div>
+<h2>3. 자세까지 — YCB-V 36장, 물체 165개 (PEM + 우리 자세 검증)</h2>
+<p>여덟 구성 모두 뒷단은 PEM → 우리 자세 검증으로 같습니다(구성 1·2 도 원본 판정 뒤에 우리 검증을 붙인 것). 36장은 900장 중 25장마다 1장이며 900장보다 조금 쉬운 장이 뽑혔으므로 절대값보다 구성 간 차이를 보는 것이 맞습니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>구성</th>
+<th>모델</th>
+<th>찾은 비율 (정답 자세)</th>
+<th>답한 수</th>
+<th>자세 틀림</th>
+<th>오답 / 장</th>
+<th>장당 시간</th>
+<th>ㄴ 판정까지 / 자세 추정 + 검증</th>
+<th>노트북 (찾음 / 오답 / ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>FastSAM-x 전체 분할 → 원본 판정 0.5</td>
+<td>ViT-S</td>
+<td>81.8% (135)</td>
+<td>136</td>
+<td>1</td>
+<td>0.028</td>
+<td>578 ms</td>
+<td>55 / 500</td>
+<td>82.4% / 0.056 / 1908</td>
+</tr>
+<tr>
+<td>1</td>
+<td></td>
+<td>ViT-L</td>
+<td><strong>83.0%</strong> (137)</td>
+<td>138</td>
+<td>1</td>
+<td>0.028</td>
+<td>696 ms</td>
+<td>202 / 494</td>
+<td>84.2% / 0.028 / 2661</td>
+</tr>
+<tr>
+<td>2</td>
+<td>YOLO-World 문구 상자 + MobileSAM → 원본 판정 0.5</td>
+<td>ViT-S</td>
+<td>76.4% (126)</td>
+<td>126</td>
+<td>0</td>
+<td>0.000</td>
+<td>494 ms</td>
+<td>48 / 450</td>
+<td>75.8% / 0.0 / 1566</td>
+</tr>
+<tr>
+<td>2</td>
+<td></td>
+<td>ViT-L</td>
+<td>77.0% (127)</td>
+<td>128</td>
+<td>1</td>
+<td>0.028</td>
+<td>557 ms</td>
+<td>82 / 476</td>
+<td>75.8% / 0.028 / 1747</td>
+</tr>
+<tr>
+<td>3</td>
+<td>YOLO-World 문구 상자 + MobileSAM → 관문 + 상자 독점 (1순위)</td>
+<td>ViT-S</td>
+<td>70.9% (117)</td>
+<td>119</td>
+<td>2</td>
+<td>0.056</td>
+<td>633 ms</td>
+<td>180 / 405</td>
+<td>69.1% / 0.028 / 1265</td>
+</tr>
+<tr>
+<td>3</td>
+<td></td>
+<td>ViT-L</td>
+<td>38.2% (63)</td>
+<td>63</td>
+<td>0</td>
+<td>0.000</td>
+<td><strong>374 ms</strong></td>
+<td>148 / 254</td>
+<td>–</td>
+</tr>
+<tr>
+<td>4</td>
+<td>YOLO-World 문구 상자 + MobileSAM → 관문 + 상자 독점 (배정 대안)</td>
+<td>ViT-S</td>
+<td>77.6% (128)</td>
+<td>130</td>
+<td>2</td>
+<td>0.056</td>
+<td>659 ms</td>
+<td>154 / 506</td>
+<td>77.6% / 0.056 / 1679</td>
+</tr>
+<tr>
+<td>4</td>
+<td></td>
+<td>ViT-L</td>
+<td>43.6% (72)</td>
+<td>72</td>
+<td>0</td>
+<td>0.000</td>
+<td>479 ms</td>
+<td>136 / 266</td>
+<td>–</td>
+</tr>
+</tbody>
+</table></div>
+<h2>4. 정리</h2>
+<ol>
+<li><strong>구성 1(FastSAM-x 전체 분할)은 ViT-L 의 덕을 봅니다.</strong> 찾은 비율 85.3% → 86.6%, 오답 0.309 → 0.201 / 장. 후보 41개를 모두 ViT-L 로 계산하므로 시간은 48 → 200 ms 입니다. 36장 자세까지는 81.8% → 83.0%.</li>
+<li><strong>구성 2(문구 상자 + 원본 판정)는 ViT-L 로 바꿔도 거의 그대로입니다.</strong> 찾은 비율 82.8% → 82.7%, 오답 0.19 → 0.168 / 장, 시간 38 → 72 ms. 문구가 후보를 7개로 좁혀 놓아 특징 모델이 가를 것이 적습니다. 36장 자세까지 76.4% → 77.0%.</li>
+<li><strong>구성 3·4(우리 관문 + 독점 배정)는 기준값을 그대로 둔 채 ViT-L 을 넣으면 크게 나빠집니다.</strong> 찾은 비율 3: 72.2% → 43.8%, 4: 80.7% → 48.5%. 오답은 3: 0.263 → 0.041, 4: 0.424 → 0.066 / 장으로 6분의 1 수준이 되어 정밀도는 98.0·97.1% 까지 오릅니다. 즉 같은 기준값이 ViT-L 점수 분포에서는 훨씬 엄격한 동작점이 됩니다. ViT-L 에서는 젤라틴 상자·나무 블록·가위·푸딩 상자가 900장에서 한 번도 통과하지 못했고 전동 드릴은 5% 미만입니다.</li>
+<li>36장 자세까지도 같은 그림입니다: 3: 70.9% → 38.2%, 4: 77.6% → 43.6%. 오답은 ViT-L 에서 0 입니다. 관문을 통과하는 후보가 적어 자세 추정 부담이 줄어 전체 시간은 오히려 짧습니다(3: 633 → 374 ms).</li>
+<li><strong>속도:</strong> 인식까지 ViT-L 은 구성 2 에서 ×1.9, 구성 3·4 에서 ×2.6·×2.4 느립니다. 4090 에서는 모두 150 ms 안이지만, 노트북(3080 Ti)에서는 구성 2 가 103 → 246 ms 였습니다.</li>
+<li>
+<p><strong>결론:</strong> 지금 설정에서 ViT-L 로 바꿀 이유가 있는 것은 구성 1 뿐입니다. 구성 2 는 효과가 없고, 구성 3·4 는 ViT-L 을 쓰려면 관문 기준값(특히 외형 0.605 와 블록 선택)을 ViT-L 점수 분포로 다시 고르는 탐색(07 의 2.6절과 같은 방식, 검증 프레임 188장)이 먼저 필요합니다. 그 전까지의 3·4 ViT-L 수치는 "오답을 극단적으로 줄인 동작점"으로만 읽어야 합니다.</p>
+</li>
+<li>
+<p>재현: <code>~/Dataset/bop/ycbv_work/run_decision_vitl_4090.sh</code>(1부: 3·4 ViT-L, 기준값 ViT-S·구성 2), <code>_part2.sh</code>(구성 1 ViT-L), <code>_part3.sh</code>(구성 1 ViT-S). 결과 <code>src/ycbv/det_study/out_4090/decision_900_{O,A,B,B1}_{S,L}.json</code>, <code>decision_e2e_4090.json</code>, 로그 <code>ycbv_work/logs/decision_vitl_4090.log</code>. ViT-S 수치는 노트북 07 §3.12 와 1%p 안에서 일치(구성 3: 72.2 대 72.3%, 구성 4: 80.7 대 80.6%).</p>
+</li>
+<li>이 문서는 <code>src/ycbv/det_study/make_vit_table.py</code> 가 결과 json 에서 생성합니다.</li>
+</ol></main></body></html>

@@ -1,0 +1,441 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>10. 실시간 비교표 — 원본 0.5 / 개선안(자세 검증 켬) / 개선안(자세 검증 끔) (2026-10-06)</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1>10. 실시간 비교표 — 원본 0.5 / 개선안(자세 검증 켬) / 개선안(자세 검증 끔) (2026-10-06)</h1>
+<blockquote>
+<p>요청: 실시간으로 영상을 재생하며 객체 위치를 찾는 세 구성을 실제 영상(260901_cbnu_bigeightcircle)과 YCB-V 영상에서 비교. 필수 수치는 시간, 찾은 객체, 찾지 못한 객체, 오답률.
+<strong>이 문서의 수치는 모두 노트북(RTX 3080 Ti Laptop, 2026-10-05~06)에서 이미 측정한 기존 결과입니다</strong>(<code>src/ycbv_live/results_*.json</code>, <code>src/realdata/results_real.json</code>). 이 서버(RTX 4090)에서의 새 측정은 3절의 이유로 아직 못 했습니다.</p>
+<p><strong>참고:</strong> 노트북에서 12영상·실제 데이터 여러 개로 정리한 정식 비교표는 <code>08_실시간_비교표.md</code>(2026-10-07 GitHub 에서 받음)입니다. 이 문서는 이 서버(RTX 4090)에서 간략히 재측정한 결과와 그 과정의 기록입니다.</p>
+</blockquote>
+<h2>1. 지표 정의 (05 문서 4.2절과 같음)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>수치</th>
+<th>정의</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>인식 빈도</td>
+<td>인식기가 프레임을 처리한 빈도(Hz). 높을수록 빠름</td>
+</tr>
+<tr>
+<td>지도에 올라간 시간</td>
+<td>장면 물체가 지도에 처음 <strong>맞게</strong> 그려진 영상 시각의 중앙값(초). YCB 는 ADD-S &lt; 지름 10%, 실제 영상은 기준 위치 20 cm 이내</td>
+</tr>
+<tr>
+<td>찾은 객체</td>
+<td>영상 끝 지도에 맞게 올라간 장면 물체 수 (YCB 55개, 실제 8개 중)</td>
+</tr>
+<tr>
+<td>찾지 못한 객체</td>
+<td>장면 물체 − 찾은 객체</td>
+</tr>
+<tr>
+<td>잘못 올라간 객체</td>
+<td>장면에 없는 물체 + 위치 틀림 + 같은 물체 중복</td>
+</tr>
+<tr>
+<td><strong>오답률</strong></td>
+<td>잘못 올라간 객체 ÷ (찾은 객체 + 잘못 올라간 객체). 지도에 올라간 것 중 틀린 비율</td>
+</tr>
+<tr>
+<td>점수 (영상 끝)</td>
+<td>찾은 객체 ÷ (장면 물체 + 잘못 올라간 객체). 잘못 올린 1개 = 못 찾은 1개</td>
+</tr>
+</tbody>
+</table></div>
+<h2>2. 비교표 (기존 수치, RTX 3080 Ti Laptop)</h2>
+<h3>2.1 YCB-V 영상 12개 (48~59번, 20,738 프레임, 장면 물체 55개, 21 물체 모두 질의, 1배속)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>지도에 올라간 시간</th>
+<th>찾은 객체</th>
+<th>찾지 못한 객체</th>
+<th>잘못 올라간 객체</th>
+<th><strong>오답률</strong></th>
+<th>점수 (영상 끝)</th>
+<th>출처 태그</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. 원본 SAM-6D ViT-L, 점수 기준 0.5</strong></td>
+<td>0.57 Hz</td>
+<td>5.2 s</td>
+<td><strong>54</strong></td>
+<td><strong>1</strong></td>
+<td>30</td>
+<td>35.7%</td>
+<td>63.5%</td>
+<td><code>orig_th05</code></td>
+</tr>
+<tr>
+<td><strong>2. 개선안 (새 기준값 + 배정 대안 + ① 문구), 자세 검증 켬</strong></td>
+<td>0.29 Hz</td>
+<td>8.6 s</td>
+<td>49</td>
+<td>6</td>
+<td><strong>12</strong></td>
+<td><strong>19.7%</strong></td>
+<td><strong>73.1%</strong></td>
+<td><code>g13p</code></td>
+</tr>
+<tr>
+<td>2'. 개선안 + 검증 후보 50개, 자세 검증 켬</td>
+<td>0.43 Hz</td>
+<td>6.0 s</td>
+<td>49</td>
+<td>6</td>
+<td>17</td>
+<td>25.8%</td>
+<td>68.1%</td>
+<td><code>g13p_k50</code></td>
+</tr>
+<tr>
+<td><strong>3. 개선안, 자세 검증 끔</strong></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td><strong>미측정</strong> (어디서도 돌린 적 없음)</td>
+</tr>
+<tr>
+<td>(참고) 우리 기술 배포 설정</td>
+<td>0.68 Hz</td>
+<td>4.6 s</td>
+<td>39</td>
+<td>16</td>
+<td>11</td>
+<td>22.0%</td>
+<td>59.1%</td>
+<td><code>v2</code></td>
+</tr>
+<tr>
+<td>(참고) 원본 ViT-L 기준 0.2 (원본 기본값)</td>
+<td>0.39 Hz</td>
+<td>6.9 s</td>
+<td>55</td>
+<td>0</td>
+<td>326</td>
+<td>85.6%</td>
+<td>14.4%</td>
+<td><code>orig</code></td>
+</tr>
+<tr>
+<td>(참고) 원본 판정 + ViT-S 0.6</td>
+<td>1.34 Hz</td>
+<td>3.2 s</td>
+<td>52</td>
+<td>3</td>
+<td>46</td>
+<td>46.9%</td>
+<td>51.5%</td>
+<td><code>origS_th06</code></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>개선안은 우리 기술보다 10개 더 찾고(39 → 49) 잘못 올라간 물체는 거의 같아(11 → 12) 점수 1위(73.1%)입니다. 대신 관문을 통과하는 물체가 늘어 자세 검증 부담이 커지고 인식 빈도가 0.68 → 0.29 Hz 로 떨어졌습니다. 검증 후보 50개로 줄이면 0.43 Hz 로 회복되지만 잘못 올라간 물체가 12 → 17 로 늘어 점수가 68.1% 로 내려갑니다.</li>
+<li>원본 0.5 는 가장 많이 찾지만(54) 지도에 올라간 것의 36% 가 틀린 물체입니다.</li>
+</ul>
+<h3>2.2 실제 영상 260901_cbnu_bigeightcircle (314 s, 선반 2개·물체 8개, 배포 물체 9종 질의, Mac ORB-SLAM3 f2000 + 노트북)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>지도에 올라간 시간</th>
+<th>찾은 객체</th>
+<th>찾지 못한 객체</th>
+<th>잘못 올라간 객체</th>
+<th><strong>오답률</strong></th>
+<th>점수 (영상 끝)</th>
+<th>출처 태그</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. 원본 SAM-6D ViT-L, 점수 기준 0.5</strong></td>
+<td>0.89 Hz</td>
+<td><strong>52.3 s</strong></td>
+<td>5</td>
+<td>3 (공룡 인형, 우유, 세제)</td>
+<td>4</td>
+<td>44.4%</td>
+<td>63.6%</td>
+<td><code>origL05</code></td>
+</tr>
+<tr>
+<td><strong>2. 개선안 (새 기준값 + 배정 대안), 자세 검증 켬</strong></td>
+<td>3.68 Hz</td>
+<td>69.2 s</td>
+<td><strong>8</strong></td>
+<td><strong>0</strong></td>
+<td><strong>0</strong></td>
+<td><strong>0%</strong></td>
+<td><strong>100%</strong></td>
+<td><code>g13</code></td>
+</tr>
+<tr>
+<td><strong>3. 개선안, 자세 검증 끔</strong></td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td><strong>미측정</strong></td>
+</tr>
+<tr>
+<td>(참고) 우리 기술 배포 설정</td>
+<td><strong>4.58 Hz</strong></td>
+<td>69.7 s</td>
+<td>8</td>
+<td>0</td>
+<td>0</td>
+<td>0%</td>
+<td>100%</td>
+<td><code>ours</code></td>
+</tr>
+<tr>
+<td>(참고) 원본 0.5 + 우리 자세 검증</td>
+<td>0.84 Hz</td>
+<td>144.9 s</td>
+<td>7</td>
+<td>1 (공룡 인형)</td>
+<td>0</td>
+<td>0%</td>
+<td>87.5%</td>
+<td><code>hybL05</code></td>
+</tr>
+<tr>
+<td>(참고) ViT-S 0.5 + 우리 자세 검증</td>
+<td>2.77 Hz</td>
+<td>72.8 s</td>
+<td>8</td>
+<td>0</td>
+<td>0</td>
+<td>0%</td>
+<td>100%</td>
+<td><code>hybS05</code></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>실제 영상의 개선안은 YCB 와 달리 ① 문구가 없습니다(① 문구는 YCB 21 물체용). 설정 파일은 노트북의 <code>sam6d_realtime/configs/yolo_ism_objects_g13.yaml</code>.</li>
+<li>기준 위치는 우리 기술 이전 실행 3회의 중앙값이라 우리 쪽에 유리할 수 있습니다. 물체 8개가 실제로 있는 것은 영상으로 확인했습니다. 각 구성 1회 실행.</li>
+<li>원본 0.5 는 지도에 더 빨리 올리지만(52 s) 3개를 못 찾고 4개를 잘못 올립니다.</li>
+</ul>
+<h2>2-1. RTX 4090 새 측정 — 실제 영상 260901 (2026-10-06 17:28, 노트북 코드 작업 트리 CLI_env_paper, 로컬 ORB-SLAM3 f2000 + 이 서버 인식)</h2>
+<p>GitHub <code>objpose/memory-dup-suppression</code> 브랜치에서 노트북 코드(개선안 옵션, 허브 <code>--no-verify</code>/<code>--recognizer</code>)를 받아 같은 영상을 다시 돌렸습니다. 채점은 노트북 실행의 기준 위치(20 cm 이내)를 그대로 썼습니다. SLAM 은 Mac 대신 이 서버의 ORB-SLAM3 로컬 빌드입니다. 결과 <code>src/realdata/results_real_4090.json</code>(작업 트리), 실행 폴더 <code>CLI_env_paper/objpose/output/real_260901_*</code>.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>지도에 올라간 시간</th>
+<th>찾은 객체</th>
+<th>찾지 못한 객체</th>
+<th>잘못 올라간 객체</th>
+<th><strong>오답률</strong></th>
+<th>점수 (영상 끝)</th>
+<th>평균 점수</th>
+<th>노트북 (3080 Ti)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. 원본 SAM-6D ViT-L 0.5</strong></td>
+<td>3.65 Hz</td>
+<td>67.4 s</td>
+<td>6</td>
+<td>2 (공룡 인형, 세제)</td>
+<td>3</td>
+<td>33.3%</td>
+<td>63.6%</td>
+<td>54.3%</td>
+<td>0.89 Hz, 52.3 s, 5 / 3 / 4, 63.6%</td>
+</tr>
+<tr>
+<td><strong>2. 개선안 (새 기준값 + 배정 대안), 자세 검증 켬</strong></td>
+<td>4.70 Hz</td>
+<td><strong>51.0 s</strong></td>
+<td><strong>8</strong></td>
+<td><strong>0</strong></td>
+<td><strong>0</strong></td>
+<td><strong>0%</strong></td>
+<td><strong>100%</strong></td>
+<td><strong>81.4%</strong></td>
+<td>3.68 Hz, 69.2 s, 8 / 0 / 0, 100%</td>
+</tr>
+<tr>
+<td><strong>3. 개선안, 자세 검증 끔</strong></td>
+<td><strong>6.11 Hz</strong></td>
+<td>25.9 s</td>
+<td>5</td>
+<td>3 (우유, 초코 상자, 머그컵)</td>
+<td>4</td>
+<td>44.4%</td>
+<td>36.4%</td>
+<td>41.9%</td>
+<td>미측정</td>
+</tr>
+<tr>
+<td>4. 우리 기술 배포 설정, 자세 검증 끔 (L3)</td>
+<td><strong>7.15 Hz</strong></td>
+<td>28.2 s</td>
+<td>6</td>
+<td>2 (공룡 인형, 우유)</td>
+<td>3</td>
+<td>33.3%</td>
+<td>47.1%</td>
+<td>46.1%</td>
+<td>미측정</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>검증 끔 첫 실행은 버렸습니다.</strong> ORB-SLAM3 가 잘못된 루프를 닫아 보정이 3.0 m 로 들어가 선반 1 물체 네 개가 모두 0.7 m 떠 있었습니다(<code>real_260901_g13_noverify_slamfail1</code>). 재실행(루프 보정 35 cm)이 위 표입니다. 같은 영상에서 SLAM 지도가 깨지는 일은 노트북 기록에도 있었습니다(40회 중 2회).</li>
+<li><strong>해석</strong></li>
+<li>4090 에서도 개선안(검증 켬)이 가장 좋습니다. 8개 모두 맞게 올리고 잘못 올린 것이 없으며, 지도에 올라간 시간도 가장 짧습니다(51 s). 노트북보다 인식 빈도가 1.3배 높고 지도 올라간 시간이 18 s 짧은 것은 GPU 차이입니다.</li>
+<li><strong>자세 검증을 끄면 빠르지만(6.1 Hz, 26 s) 지도가 틀립니다.</strong> 잘못 올라간 물체 4개, 못 찾은 물체 3개로 점수가 100% → 36%. 선반 2 의 우유·초코 상자·머그컵이 틀린 자세로 먼저 올라가 맞는 자세가 들어오지 못한 것으로 보입니다. 검증이 "빠르게 찾기"가 아니라 "틀리지 않게 올리기"를 담당한다는 것을 실제 영상에서 확인했습니다.</li>
+<li>원본 0.5 는 4090 에서 3.65 Hz 로 노트북(0.89 Hz)보다 4배 빨라졌지만 결과는 같은 모습입니다. 2개를 못 찾고 3개를 잘못 올려 지도에 올라간 것의 1/3 이 틀린 물체입니다.</li>
+<li>배포 설정에서 검증만 끈 L3 도 같은 경향입니다. 7.2 Hz 로 가장 빠르지만 잘못 3 / 못 찾음 2 로 점수 47%. 검증을 끈 두 구성 모두 원본 0.5 보다 못합니다.</li>
+</ul>
+<h2>2-2. RTX 4090 새 측정 — YCB-V 영상 3개 (49·53·55, 장면 물체 13개, 21 물체 모두 질의, 1배속; 2026-10-06 17:44)</h2>
+<p>12개 영상 대신 영상 원본이 먼저 도착한 3개로 간략히 돌렸습니다(사용자 요청). 노트북 비교값은 같은 3개 장면만 뽑은 것입니다. 결과 <code>src/ycbv_live/results_4090/</code>(<code>results_orig_th05/g13p/g13p_nover.json</code>, <code>results_penalized_4090.json</code>), 실행 폴더 <code>CLI_env_paper/objpose/output/ycbv_live_*_0000{49,53,55}</code>.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>지도에 올라간 시간</th>
+<th>찾은 객체 (13)</th>
+<th>찾지 못한 객체</th>
+<th>잘못 올라간 객체</th>
+<th><strong>오답률</strong></th>
+<th>점수 (영상 끝)</th>
+<th>노트북 같은 3장면 (찾은 / 잘못)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. 원본 SAM-6D ViT-L 0.5</strong></td>
+<td>2.22 Hz</td>
+<td>3.2 s</td>
+<td><strong>12</strong></td>
+<td><strong>1</strong></td>
+<td>8</td>
+<td>40.0%</td>
+<td>57.1%</td>
+<td>13 / 8</td>
+</tr>
+<tr>
+<td><strong>2. 개선안 (새 기준값 + 배정 대안 + ① 문구), 자세 검증 켬</strong></td>
+<td>0.89 Hz</td>
+<td>3.0 s</td>
+<td>11</td>
+<td>2</td>
+<td><strong>5</strong></td>
+<td><strong>31.2%</strong></td>
+<td><strong>61.1%</strong></td>
+<td>10 / 6</td>
+</tr>
+<tr>
+<td><strong>3. 개선안, 자세 검증 끔</strong></td>
+<td>2.37 Hz</td>
+<td><strong>2.4 s</strong></td>
+<td>11</td>
+<td>2</td>
+<td>42</td>
+<td>79.2%</td>
+<td>20.0%</td>
+<td>미측정</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>처음 실행의 개선안(검증 켬) 53·55 장면은 버렸습니다.</strong> 앞 장면의 허브가 포트(8765, 17001)를 놓기 전에 다음 허브가 떠서 SAM-6D 가 한 프레임도 처리하지 못했습니다. 장면 사이에 프로세스 종료·포트 해제를 기다리게 고친 뒤 다시 돌린 결과가 위 표입니다(<code>_bad*</code>, <code>_broken_*</code> 폴더가 버린 실행).</li>
+<li><strong>해석</strong></li>
+<li><strong>3장면에서는 개선안(검증 켬)이 점수 1위(61.1%)입니다.</strong> 원본 0.5 보다 1개 덜 찾지만 잘못 올라간 물체가 8 → 5 로 적습니다. 노트북 12영상 결과(원본 63.5% 대 개선안 73.1%)와 같은 방향입니다. 다만 3장면·13개라 통계적으로는 약합니다.</li>
+<li><strong>검증을 끄면 잘못 올라간 물체가 5 → 42 로 8배 늘어 점수가 20% 로 떨어집니다.</strong> 찾은 수는 같습니다(11). 실제 영상(2-1절)과 같은 결론으로, 자세 검증은 찾는 수가 아니라 오답을 담당합니다.</li>
+<li>인식 빈도: 개선안(검증 켬)이 0.89 Hz 로 가장 느립니다. 관문을 넓혀 검증할 물체가 늘었기 때문이며, 노트북(0.29 Hz)의 3배 속도입니다. 원본 0.5 는 2.22 Hz(노트북 0.57).</li>
+<li>지도에 올라간 시간은 세 구성 모두 2~3 s 로 노트북(5~9 s)보다 짧습니다. GPU 가 빨라 첫 인식이 일찍 나오기 때문입니다.</li>
+</ul>
+<h2>3. (기록) 처음에 이 서버에서 새로 측정하지 못했던 이유와 해결</h2>
+<p>아래 표의 항목은 2026-10-06 오후에 모두 해결했습니다. 노트북 코드는 GitHub <code>objpose/memory-dup-suppression</code> 브랜치에 있었고, 이 서버에는 <code>~/DeepLearning/CLI_env_paper</code> 작업 트리로 받아 자산(템플릿·가중치·HSV 캐시·YCB-V PEM 자산)을 링크해 썼습니다. YCB-V 영상은 다른 PC 에서 복사해 왔습니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>필요한 것</th>
+<th>이 서버 상태</th>
+<th>조치</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>실시간 허브의 인식기 교체·설정 옵션 (<code>hub.py --recognizer</code>, <code>--ism-config</code>, <code>--cluster-occupancy</code>, <code>--verify-candidates</code>, <code>--map-prior</code>, <code>catalog.py</code>)</td>
+<td>없음. 이 서버 <code>objpose</code> 는 2026-09-18 판이고 노트북에서 10-04~06 에 추가한 변경이 커밋·동기화되지 않음</td>
+<td>노트북 <code>CLI_environment/objpose</code> 를 이 서버로 동기화</td>
+</tr>
+<tr>
+<td>개선안 인식기 코드 (<code>assignment_fallback</code>, <code>size_gate_max</code>, <code>verify.candidate_topk</code>) 와 설정 <code>yolo_ism_objects_g13.yaml</code>, <code>ycbv_objects_g13p.yaml</code></td>
+<td>없음 (노트북 <code>sam6d_realtime</code> 에만 있음)</td>
+<td>노트북 <code>sam6d_realtime</code> 동기화</td>
+</tr>
+<tr>
+<td>자세 검증 끔 옵션 (실시간)</td>
+<td>허브에 끄는 인자가 있는지 미확인. 한 장 평가(<code>run_ours.py --no-verify</code>)에는 있음</td>
+<td>동기화 후 확인, 없으면 <code>verify.enabled=false</code> 설정 파일로 대체</td>
+</tr>
+<tr>
+<td>YCB-V 영상 12개 rosbag (<code>ycbv_bags/ycbv_0000{48..59}</code>)</td>
+<td>55번 한 개만 있음. 원본 영상(BOP <code>ycbv/full/test</code>, 전체 프레임)이 없고 BOP19 900장만 있음</td>
+<td>BOP 전체 테스트 영상 내려받기(약 15 GB) 후 <code>make_bags.py</code></td>
+</tr>
+<tr>
+<td>실제 영상 260901 rosbag</td>
+<td>있음 (NAS <code>data_slam_converted/260901_cbnu_bigeightcircle</code>), <code>objpose/run_one.sh</code> 로 재생 가능</td>
+<td>–</td>
+</tr>
+<tr>
+<td>원본 SAM-6D 가중치 (FastSAM-x, DINOv2 ViT-L)</td>
+<td>오늘 내려받음 (<code>~/Dataset/bop/ycbv_work/weights_dl</code>)</td>
+<td>–</td>
+</tr>
+<tr>
+<td>SLAM 호스트</td>
+<td><code>~/objpose/build/slam_stream</code> 로컬 빌드 있음, Mac/.3/.55 도 가능</td>
+<td>–</td>
+</tr>
+</tbody>
+</table></div>
+<p>지금 이 서버에서 바로 돌릴 수 있는 것은 "우리 기술 배포 설정 × 실제 영상 260901" 한 가지뿐입니다. 요청한 세 구성 중 <strong>개선안 자세 검증 끔</strong>은 노트북에서도 실시간으로 돌린 적이 없어, 어느 쪽에서 하든 새 실행이 필요합니다.</p></main></body></html>

@@ -48,10 +48,18 @@ def expected_p_d(
     pd_base: float = PD_BASE,
     margin: float = FOV_MARGIN,
     fallback_half_angle_deg: float = FALLBACK_HALF_ANGLE_DEG,
+    max_range_m: Optional[float] = None,
 ) -> float:
-    """Expected detection probability of a landmark for this camera pose."""
+    """Expected detection probability of a landmark for this camera pose.
+
+    max_range_m: depth beyond which the detector is not expected to find the object
+    at all (P_D = 0). Being in the image is not enough for a small object: it can
+    span a few pixels there, and counting that as a miss retires real objects
+    that were merely seen from afar. None keeps the image test alone."""
     x, y, z = _point_in_camera(T_map_cam, T_map_obj)
     if z <= 0.0:
+        return 0.0
+    if max_range_m is not None and z > max_range_m:
         return 0.0
     if cam_K is not None and img_size is not None:
         w, h = img_size

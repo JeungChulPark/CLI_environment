@@ -50,10 +50,75 @@ from shm_channel import FrameWriter, JsonReader         # noqa: E402
 
 SAM_MINUS_SLAM_CLOCK_NS = 18225662057   # SLAM/peer_timestamp_comparison.json
 PY_SAM6D = "/home/jucpark/anaconda3/envs/sam6d/bin/python"
+# backends whose world is the Velodyne's (z up, no camera frame clock), not a camera's
+LIDAR_BACKENDS = ("lidar", "hdl")
+# what a run leaves behind on the SLAM host. The [x] brackets keep each pattern from matching
+# the pkill command line that carries it.
+MAC_STREAMERS = ("objpose/[b]uild/slam_stream", "objpose/[b]uild_linux/slam_stream",
+                 "objpose/[b]uild_rtab/rtab_stream",
+                 "objpose/lidar/[l]idar_stream.py", "objpose/lidar/[h]dl_stream.py",
+                 "[h]dl_graph_slam")
 
 
 def log(*a):
     print(time.strftime("%H:%M:%S"), "[hub]", *a, flush=True)
+
+
+class _WallClock:
+    """Seconds that tick at the real rate on average, without ever jumping.
+
+    The replay is paced against a Mac that streams at true real time, so the hub's clock has
+    to agree with it on how long a second is. CLOCK_MONOTONIC does not on WSL2 without a
+    disciplined kernel clock: its rate was off by +3.5 % on one boot and -2.1 .. -2.5 % on
+    the next (tsc and hyperv_clocksource_tsc_page alike), and over a 150 s replay that alone
+    read as 3-4 s of link lag that did not exist. Realtime is right on average, but only
+    because the Hyper-V time sync steps it (~0.77 s every ~32 s); between steps it runs at
+    monotonic's wrong rate. Following realtime directly would jolt the schedule on every
+    step, so this clock runs on monotonic and slews toward realtime instead, at most
+    MAX_SLEW faster or slower, closing the gap with time constant TAU_S. With a disciplined
+    kernel clock (chrony) the gap stays ~0 and this is plain monotonic.
+    """
+
+    TAU_S = 10.0
+    MAX_SLEW = 0.08
+
+    def __init__(self):
+        self._lock = threading.Lock()
+        self._last_m = None
+        self._c = 0.0
+
+    def __call__(self) -> float:
+        with self._lock:
+            m, r = time.monotonic(), time.time()
+            if self._last_m is None:
+                self._c = r
+            else:
+                dm = m - self._last_m
+                slew = max(-self.MAX_SLEW, min(self.MAX_SLEW, (r - self._c) / self.TAU_S))
+                self._c += dm * (1.0 + slew)
+            self._last_m = m
+            return self._c
+
+
+wall_clock = _WallClock()
+
+
+def _child_setup():
+    """Own process group (so the hub can signal the whole tree) + die with the hub.
+
+    The children are a session of their own so that shutdown() can killpg them, but that
+    also means they outlive a hub that is killed rather than asked to stop. A stale
+    sam6d_infer.py keeps its share of the CPU and its GPU memory: five of them accumulated
+    over a debugging session took ~90 % of a core between them and starved the hub's pose
+    reader, so poses that had left the Mac on time were read late and the arrival lag grew
+    from 0.02 s to 3.1 s over one replay. PR_SET_PDEATHSIG closes that hole even for SIGKILL.
+    """
+    os.setsid()
+    try:
+        import ctypes
+        ctypes.CDLL("libc.so.6", use_errno=True).prctl(1, signal.SIGTERM)   # PR_SET_PDEATHSIG
+    except Exception:
+        pass                      # not Linux, or no libc — the signal handlers still cover it
 
 
 # ── extrinsic ────────────────────────────────────────────────────────────────
@@ -184,19 +249,34 @@ class Hub:
             self.sam = ConvSession(a.sam_session, offset_ns=self.sam_tau_ns)
         # frame-index remapping of SLAM poses only exists for raw camera SLAM sessions
         self.slam_clock = (frame_clock(a.slam_session, clock_dir)
-                           if a.slam != "lidar" and (Path(a.slam_session) / "rgbd_timestamp_associations.json").exists()
+                           if a.slam not in LIDAR_BACKENDS and (Path(a.slam_session) / "rgbd_timestamp_associations.json").exists()
                            else None)
         self.K = self.sam.K
         self.dist = np.asarray(self.sam.kc, np.float64)
         X, xsrc = load_extrinsic(Path(a.extrinsic))
         self.extrinsic_source = xsrc
+        # keep the rig used with the run: comparing runs across backends needs T_slam_sam to put
+        # their different SLAM sensors (a camera, the Velodyne) back on the same physical camera
+        self.X_slam_sam = X
+        self._compare, self._compare_key = None, None
+        self._mac_datasets, self._mac_stale, self._restart = None, False, None
+        self.lag_window = deque(maxlen=150)      # recent pose arrival lags, for display_delay
+        self.pending: list = []                  # estimates waiting for their SLAM pose
+        self.deferred_placed = self.deferred_dropped = 0
+        self._last_retry = 0.0
+        # which catalog entry this run is, so the viewer can highlight the active tab
+        self.dataset_name = Path(a.sam_session).parent.name
+        self.backend_id = a.backend_id or (f"{a.slam}_imu" if any("--gyro" in s for s in a.slam_arg)
+                                           else a.slam)
         self.poses = PoseBuffer(max_gap_s=a.max_gap)
         self.fusion = Fusion(X, self.poses)
         # position-only association: box-like objects flip 180 deg between SAM-6D estimates,
         # and a rotation gate split one object into two instances on this dataset
         self.memory = None if a.no_memory else ObjectMemory(
             self.fusion, self.sam.K, (self.sam.W, self.sam.H),
-            assoc_trans_gate_m=a.assoc_gate_m, assoc_rot_gate_deg=None)
+            dup_ratio=a.dup_ratio,
+            assoc_trans_gate_m=a.assoc_gate_m, assoc_rot_gate_deg=None,
+            pd_base=a.pd_base, clutter_ratio=a.clutter_ratio, pd_max_range_m=a.pd_max_range or None)
         self.extents = json.loads((REPO / "integration" / "cad_extents.json").read_text())
         self.clients: list[queue.Queue] = []
         self.clients_lock = threading.Lock()
@@ -216,7 +296,7 @@ class Hub:
         self.last_result = None
         self.procs: list[subprocess.Popen] = []
         self.logs = {k: open(self.out / f"{k}.jsonl", "w", encoding="utf-8")
-                     for k in ("slam_poses", "sam6d_estimates", "display_objects", "kf_updates", "sam6d_frames")}
+                     for k in ("slam_poses", "sam6d_estimates", "display_objects", "kf_updates", "sam6d_frames", "map_prior")}
         self.log_lock = threading.Lock()
         self.status = "starting"
         log(f"SAM session {self.sam.dir} ({'raw' if self.raw_sam else 'converted'}) frames={len(self.sam)} "
@@ -232,6 +312,14 @@ class Hub:
         cfg["output"] = {"dir": str(self.out / "sam6d"), "diagnostics": False}
         cfg["runtime"]["idle_exit_s"] = 0
         cfg.pop("bag", None)
+        if self.a.ism_config:              # e.g. a YCB-V object list for benchmark replays
+            cfg.setdefault("ism", {})["config"] = self.a.ism_config
+        if self.a.cluster_occupancy > 0:   # YCB-V setting of the paper: 0.3 instead of 0.5
+            cfg["runtime"].setdefault("verify", {})["cluster_min_occupancy"] = self.a.cluster_occupancy
+        if self.a.no_verify:               # pose verification off: PEM keeps its geometry-best pose
+            cfg["runtime"]["verify"] = {"enabled": False}
+        if self.a.verify_candidates > 0:   # pose verification measures only the K best geometry candidates
+            cfg["runtime"].setdefault("verify", {})["candidate_topk"] = self.a.verify_candidates
         cfg["anchor"]["enabled"] = False
         cfg_path = self.out / "sam6d_config.yaml"
         cfg_path.write_text(yaml.safe_dump(cfg, allow_unicode=True, sort_keys=False), encoding="utf-8")
@@ -242,27 +330,77 @@ class Hub:
             pass
         env = dict(os.environ)
         env.pop("ROS_DOMAIN_ID", None)
+        if self.a.recognizer:              # e.g. the original SAM-6D for the live baseline
+            env["OBJPOSE_RECOGNIZER"] = str(Path(self.a.recognizer).resolve())
+        if self.a.map_prior:               # map-projected proposals, read by sam6d_infer per frame
+            env["OBJPOSE_MAP_PRIOR"] = str(self.out / "sam6d" / "map_prior.json")
         f = open(self.out / "sam6d_infer.log", "w")
         p = subprocess.Popen([PY_SAM6D, "-u", str(SAM6D / "realtime" / "sam6d_infer.py"), "--config", str(cfg_path)],
                              cwd=str(self.out / "sam6d"), stdout=f, stderr=subprocess.STDOUT, env=env,
-                             start_new_session=True)
+                             preexec_fn=_child_setup)
         self.procs.append(p)
         log(f"SAM-6D started pid={p.pid} (log {self.out / 'sam6d_infer.log'})")
 
+    def kill_mac_streamers(self, why: str):
+        """Kill any streamer left running on the SLAM host.
+
+        ssh without a PTY does not hang up the remote command when the local ssh process
+        dies, so a backend switch — or a hub that was SIGKILLed — can leave a streamer
+        running on the Mac. The next run then competes with it for the same cores: an
+        orphaned KISS-ICP at 600 % CPU pushed ORB-SLAM3's pose lag from 0.04 s to 2.2 s,
+        which is far past --max-gap, so display frames had no pose to place objects with
+        and not one object box was drawn on the video.
+        """
+        if self.a.no_mac:
+            return
+        try:
+            subprocess.run(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
+                            self.a.mac_host, "; ".join(f"pkill -f '{p}'" for p in MAC_STREAMERS)],
+                           capture_output=True, timeout=30)
+        except (subprocess.TimeoutExpired, OSError) as e:
+            log(f"could not clean up Mac streamers ({why}): {e!r}")
+
+    def remote_uname(self) -> str:
+        """`uname -s` of the SLAM host, asked once; "" when the probe fails."""
+        if getattr(self, "_uname", None) is None:
+            try:
+                r = subprocess.run(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
+                                    self.a.mac_host, "uname -s"], capture_output=True, timeout=20)
+                self._uname = r.stdout.decode().strip()
+            except (subprocess.TimeoutExpired, OSError) as e:
+                log(f"could not read the SLAM host's uname: {e!r}")
+                self._uname = ""
+        return self._uname
+
     def start_mac_slam(self):
-        if self.a.slam == "lidar":
-            remote = (f"~/objpose/lidar/venv/bin/python -u ~/objpose/lidar/lidar_stream.py --session {self.a.mac_slam_session} "
+        self.kill_mac_streamers("before launch")
+        if self.a.slam in LIDAR_BACKENDS:
+            # hdl_graph_slam brings its own ROS 2 environment up, so it runs through a wrapper
+            runner = ("~/objpose/lidar/run_hdl_stream.sh" if self.a.slam == "hdl" else
+                      "~/objpose/lidar/venv/bin/python -u ~/objpose/lidar/lidar_stream.py")
+            remote = (f"{runner} --session {self.a.mac_slam_session} "
                       f"--mode live --connect 127.0.0.1:{self.a.slam_port} --rate {self.a.rate} "
-                      # --slam-param deskew_passes=1 -> --deskew-passes 1 (lidar_stream.py options)
+                      # --slam-param deskew_passes=1 -> --deskew-passes 1 (streamer options)
                       + " ".join(f"--{k.replace('_', '-')} {v}" for k, v in (x.split("=", 1) for x in self.a.slam_param)))
         else:
             remote = (f"{self.a.mac_runner} --slam {self.a.slam} --session {self.a.mac_slam_session} --features {self.a.features} "
                       f"--time-source frame {' '.join('--param ' + x for x in self.a.slam_param)} "
                       f"--mode live --connect 127.0.0.1:{self.a.slam_port} --rate {self.a.rate}")
+        if self.a.slam_arg:
+            remote += " " + " ".join(self.a.slam_arg)
+        # The Mac follows its idle-sleep timer (1 min on battery here) even while the streamer
+        # is working: an ssh command without a PTY holds no power assertion, so the machine
+        # slept 3 s into a run, the pose stream stopped, and ssh's keepalive dropped the tunnel
+        # 40 s later. Meanwhile the sleeping Wi-Fi card kept answering pings, which is what made
+        # this look like a flaky link. caffeinate holds the assertion for as long as SLAM runs.
+        # It is a macOS command, and the SLAM host need not be the Mac — a Linux box running the
+        # same streamer would fail the whole launch on a missing binary.
+        if self.remote_uname() == "Darwin":
+            remote = f"caffeinate -ims {remote}"
         cmd = ["ssh", "-o", "BatchMode=yes", "-o", "ExitOnForwardFailure=yes", "-o", "ServerAliveInterval=10",
                "-R", f"{self.a.slam_port}:127.0.0.1:{self.a.slam_port}", self.a.mac_host, remote]
         f = open(self.out / "mac_slam.log", "w")
-        p = subprocess.Popen(cmd, stdout=f, stderr=subprocess.STDOUT, start_new_session=True)
+        p = subprocess.Popen(cmd, stdout=f, stderr=subprocess.STDOUT, preexec_fn=_child_setup)
         self.procs.append(p)
         (self.out / "mac_command.txt").write_text(" ".join(cmd) + "\n")
         log(f"Mac {self.a.slam} launched over ssh (features={self.a.features}): {remote}")
@@ -311,7 +449,7 @@ class Hub:
                                             else int(m["first_ns"]))
             log(f"SLAM hello: {m}")
         elif kind == "pose":
-            recv = time.monotonic()
+            recv = wall_clock()
             if "frame_idx" in m and self.slam_clock is not None:
                 m["t_ns_streamer"] = m["t_ns"]
                 m["t_ns"] = int(self.slam_clock["frame_ns"][int(m["frame_idx"])])
@@ -331,12 +469,14 @@ class Hub:
             else:
                 self.write_log("slam_poses", m)
             self.slam_lag = lag
+            if lag is not None:
+                self.lag_window.append(lag)
             self.slam_track_ms = m.get("track_ms")
             self.slam_dropped = m.get("dropped", 0)
         elif kind == "pose_refine":
             # delayed smoothed pose (lidar_stream --smooth-scans): replaces the raw one in the buffer; the log keeps
             # the final pose in T_wc and the streamed one in T_wc_raw
-            recv = time.monotonic()
+            recv = wall_clock()
             ok = self.poses.refine(int(m["t_ns"]), m["T_wc"])
             p = self.unrefined.pop(int(m["t_ns"]), None)
             if p is not None:
@@ -367,8 +507,10 @@ class Hub:
     # ── coordinator + SAM replay ────────────────────────────────────────────
     def run_replay(self):
         ready = self.out / "sam6d" / "READY"
-        self.status = "loading SAM-6D and ORB-SLAM3"
-        while not self.stop.is_set() and not (ready.exists() and self.hello and self.slam_sock):
+        # with --no-sam6d nothing ever writes READY, so only the SLAM side gates the start
+        sam6d_ready = (lambda: True) if self.a.no_sam6d else ready.exists
+        self.status = "loading SLAM" if self.a.no_sam6d else "loading SAM-6D and SLAM"
+        while not self.stop.is_set() and not (sam6d_ready() and self.hello and self.slam_sock):
             time.sleep(0.2)
         if self.stop.is_set():
             return
@@ -376,7 +518,7 @@ class Hub:
         t0 = max(int(self.sam.t_ns[0]), int(self.hello["first_ns_frame"])) + int(max(start, 0.3) * 1e9)
         self.t0_ns = t0
         self.send_slam({"type": "start", "t0_ns": t0, "rate": self.a.rate})
-        self.wall0 = time.monotonic()
+        self.wall0 = wall_clock()
         self.status = "running"
         log(f"START t0_ns={t0} (dataset +{(t0 - int(self.hello['first_ns_frame'])) / 1e9:.2f}s) rate={self.a.rate}")
         end_ns = int(self.sam.t_ns[-1]) if self.a.duration_s <= 0 else t0 + int(self.a.duration_s * 1e9)
@@ -385,7 +527,7 @@ class Hub:
         next_feed = 0.0
         while not self.stop.is_set() and i < len(self.sam) and self.sam.t_ns[i] <= end_ns:
             due = self.wall0 + (int(self.sam.t_ns[i]) - t0) / 1e9 / self.a.rate
-            now = time.monotonic()
+            now = wall_clock()
             if due > now:
                 time.sleep(min(due - now, 0.05))
                 continue
@@ -401,6 +543,8 @@ class Hub:
             self.replay_t_ns = fr.t_ns
             if feed:
                 depth = self.sam.align(fr.depth_raw)
+                if self.a.map_prior:
+                    self.write_map_prior(fr.t_ns, fr.color_bgr.shape[:2])
                 self.fw.write(np.ascontiguousarray(fr.color_bgr[:, :, ::-1]), depth, self.K, fr.t_ns, time.time(),
                               {"tracking_state": "TRACKING_LOST", "map_id": "primary_sam_camera"},
                               depth_stamp_ns=fr.t_ns)
@@ -429,21 +573,25 @@ class Hub:
                     continue
             r = jr.read_new()
             if r is None:
+                if self.pending and wall_clock() - self._last_retry > 0.3:
+                    self._last_retry = wall_clock()
+                    self.retry_pending()
                 time.sleep(0.01)
                 continue
             self.sam6d_frames += 1
             stamp = int(r["stamp_ns"])
-            done_wall = time.monotonic()
+            done_wall = wall_clock()
             frame_age = ((done_wall - self.wall0) - (stamp - self.t0_ns) / 1e9 / self.a.rate) if self.wall0 else None
             placed = []
             for d in r.get("dets", []):
                 res = self.fusion.add_estimate(stamp, d["object"], d["R"], d["t_mm"], d.get("score", 0.0))
                 placed.append(res)
-                self.write_log("sam6d_estimates", {
-                    "t_ns": stamp, "object": d["object"], "score": d.get("score"), "R": d["R"], "t_mm": d["t_mm"],
-                    "placed": res["placed"], "slam_interp": res.get("slam"),
-                    "anchor_kf": res.get("kf"), "near_loop_closure": res.get("near_loop"),
-                    "T_w_obj": mat16(res.get("T_w_obj")), "result_age_s": frame_age, "ms": r.get("ms")})
+                if res["placed"]:
+                    self.log_estimate(stamp, d, res, frame_age, r.get("ms"), 0.0)
+                else:
+                    # its pose has not crossed the tunnel yet — keep it and try again
+                    self.pending.append({"t_ns": stamp, "det": d, "age_s": frame_age,
+                                         "ms": r.get("ms"), "since": wall_clock()})
             self.write_log("sam6d_frames", {"t_ns": stamp, "dets": [{k: d.get(k) for k in ("object", "score", "R", "t_mm")}
                                                                    for d in r.get("dets", [])]})
             if self.memory is not None:
@@ -453,15 +601,78 @@ class Hub:
                                 "age_s": frame_age, "objects": [p["name"] for p in placed if p["placed"]],
                                 "unplaced": [p["name"] for p in placed if not p["placed"]]}
             self.sam6d_runs.append(frame_age)
+            self.retry_pending()
+
+    def log_estimate(self, stamp, d, res, frame_age, ms, waited_s):
+        self.write_log("sam6d_estimates", {
+            "t_ns": stamp, "object": d["object"], "score": d.get("score"), "R": d["R"], "t_mm": d["t_mm"],
+            "placed": res["placed"], "slam_interp": res.get("slam"),
+            "anchor_kf": res.get("kf"), "near_loop_closure": res.get("near_loop"),
+            "T_w_obj": mat16(res.get("T_w_obj")), "result_age_s": frame_age, "ms": ms,
+            "deferred_s": round(waited_s, 3) if waited_s else None})
+
+    def retry_pending(self):
+        """Place estimates whose SLAM pose had not arrived when SAM-6D answered.
+
+        SAM-6D replies about 1.5 s after the frame it was handed; a pose takes longer than
+        that whenever the SLAM host slips behind the replay, and the estimate used to be
+        dropped on the spot. On a run where the arrival lag grew to 3 s that threw away 54 %
+        of all detections — the recognition and memory work upstream cannot matter for a
+        detection that never reaches the map. Poses do arrive, just late, so the estimate
+        waits for its own instead. It is abandoned only once --pending-timeout has passed,
+        by which point no pose for that instant is coming.
+        """
+        if not self.pending:
+            return
+        now = wall_clock()
+        keep = []
+        for p in self.pending:
+            d = p["det"]
+            res = self.fusion.add_estimate(p["t_ns"], d["object"], d["R"], d["t_mm"],
+                                           d.get("score", 0.0), count_unplaced=False)
+            if res["placed"]:
+                self.deferred_placed += 1
+                self.log_estimate(p["t_ns"], d, res, p["age_s"], p["ms"], now - p["since"])
+            elif now - p["since"] < self.a.pending_timeout:
+                keep.append(p)
+            else:
+                self.deferred_dropped += 1
+                self.log_estimate(p["t_ns"], d, res, p["age_s"], p["ms"], now - p["since"])
+        self.pending = keep
+
+    def display_delay(self) -> float:
+        """How far behind the replay clock to draw, in seconds.
+
+        A display frame can only carry objects if a SLAM pose for its instant has already
+        arrived. Poses come from the Mac over an ssh tunnel, so their arrival lag depends on
+        the link and on how loaded that machine is: 0.04 s on a quiet wired run, but 0.5-2.5 s
+        over Wi-Fi or with something else eating its cores. When the lag exceeds this delay
+        the hub asks the pose buffer for a time it has not reached yet, gets nothing back, and
+        every object silently drops off the video while the 3D map still shows them.
+
+        So the delay follows the lag instead of being fixed: the recent nine-in-ten lag plus a
+        margin, never below the configured value and never above --max-display-delay. It rises
+        quickly when the link degrades and falls back slowly, so a single spike does not leave
+        the video permanently behind.
+        """
+        floor = self.a.display_delay
+        if not self.lag_window:
+            return floor
+        want = float(np.percentile(np.asarray(self.lag_window), 90)) + 0.15
+        want = min(max(want, floor), self.a.max_display_delay)
+        prev = getattr(self, "_display_delay", floor)
+        # up fast (objects come back immediately), down slow (no jitter from one quiet moment)
+        self._display_delay = want if want > prev else prev + (want - prev) * 0.02
+        return self._display_delay
 
     # ── render + broadcast ──────────────────────────────────────────────────
     def run_render(self):
         period = 1.0 / self.a.view_hz
         last_traj = 0.0
         while not self.stop.is_set():
-            t_loop = time.monotonic()
+            t_loop = wall_clock()
             if self.frames:
-                target = self.replay_t_ns - int(self.a.display_delay * 1e9)
+                target = self.replay_t_ns - int(self.display_delay() * 1e9)
                 pick = None
                 for t_ns, idx, img in reversed(self.frames):
                     if t_ns <= target:
@@ -496,11 +707,11 @@ class Hub:
                                                    "objects": [{"name": o["name"], "source": o["source"],
                                                                 "age_s": o["age_s"], "T_cam_obj": o["T_cam_obj"]}
                                                                for o in payload["objects"]]})
-                if time.monotonic() - last_traj > 1.0:
+                if wall_clock() - last_traj > 1.0:
                     payload["trajectory"] = self.poses.positions(step=3)
-                    last_traj = time.monotonic()
+                    last_traj = wall_clock()
                 self.broadcast(payload)
-            time.sleep(max(0.0, period - (time.monotonic() - t_loop)))
+            time.sleep(max(0.0, period - (wall_clock() - t_loop)))
 
     def run_memory(self):
         while not self.stop.is_set():
@@ -508,10 +719,68 @@ class Hub:
                 self.memory.update()
             time.sleep(0.2)
 
+    def write_map_prior(self, t_ns, hw):
+        """Boxes of the objects already in the map, projected into the frame about to be recognised.
+
+        The recogniser adds them as extra proposals for those objects, so an object the text
+        detector misses in this frame is still offered to the gates; a wrong box (the object has
+        moved, or is hidden) is rejected there like any other proposal. The camera pose is the
+        SLAM pose at the frame time, or the newest one when SLAM has not reached it yet.
+        """
+        boxes = []
+        if self.memory is not None:
+            T_ws, _ = self.fusion.T_w_sam(t_ns)
+            if T_ws is None and self.poses.latest_t():
+                T_ws, _ = self.fusion.T_w_sam(self.poses.latest_t())
+            if T_ws is not None:
+                T_sw = inv_se3(T_ws)
+                h, w = hw
+                for l in self.memory.landmarks():
+                    if l["status"] not in ("active", "lost", "remembered") or l["dup_suppressed"]:
+                        continue
+                    c = self._prior_corners(l["name"])
+                    if c is None:
+                        continue
+                    T = T_sw @ l["T_w_obj"]
+                    cam = (T[:3, :3] @ c.T).T + T[:3, 3]
+                    if np.any(cam[:, 2] < 0.1):
+                        continue
+                    uv = (self.K @ (cam / cam[:, 2:3]).T).T[:, :2]
+                    x1, y1 = uv.min(0); x2, y2 = uv.max(0)
+                    cx1, cy1, cx2, cy2 = max(0, x1), max(0, y1), min(w, x2), min(h, y2)
+                    if cx2 - cx1 < 10 or cy2 - cy1 < 10:
+                        continue
+                    if (cx2 - cx1) * (cy2 - cy1) < 0.3 * (x2 - x1) * (y2 - y1):   # mostly outside the image
+                        continue
+                    boxes.append({"name": l["name"], "xyxy": [float(cx1), float(cy1), float(cx2), float(cy2)],
+                                  "conf": self.a.map_prior_conf})
+        path = self.out / "sam6d" / "map_prior.json"
+        tmp = path.with_suffix(".tmp")
+        tmp.write_text(json.dumps({"stamp_ns": int(t_ns), "boxes": boxes}))
+        os.replace(tmp, path)
+        self.write_log("map_prior", {"t_ns": int(t_ns), "n": len(boxes), "names": [b["name"] for b in boxes]})
+
+    def _prior_corners(self, name):
+        if not hasattr(self, "_corner_cache"):
+            self._corner_cache = {}
+        if name not in self._corner_cache:
+            f = SAM6D / "assets" / "model_points" / f"{name}.npy"
+            if f.exists():
+                pts = np.load(f) / 1000.0
+                lo, hi = pts.min(0), pts.max(0)
+                self._corner_cache[name] = np.array([[x, y, z] for x in (lo[0], hi[0]) for y in (lo[1], hi[1])
+                                                     for z in (lo[2], hi[2])])
+            elif name in self.extents:
+                self._corner_cache[name] = box_corners(self.extents[name])
+            else:
+                self._corner_cache[name] = None
+        return self._corner_cache[name]
+
     def memory_rows(self, t_ns, T_ws, fusion_rows, exact_window_ns=20_000_000):
         """display rows from the object memory: one per kept instance, in the corrected map."""
         hist = {r["name"]: r["history"] for r in fusion_rows}
-        lms = [l for l in self.memory.landmarks() if l["status"] in ("active", "lost", "remembered")]
+        lms = [l for l in self.memory.landmarks()
+               if l["status"] in ("active", "lost", "remembered") and not l["dup_suppressed"]]
         per_class = {}
         for l in lms:
             per_class[l["name"]] = per_class.get(l["name"], 0) + 1
@@ -528,6 +797,80 @@ class Hub:
                            "sam6d" if abs(t_ns - l["last_seen_ns"]) <= exact_window_ns else "slam_interp"),
             })
         return rows
+
+    def catalog(self):
+        """날짜 > 데이터셋 > 백엔드 tree for the viewer, plus what is running now.
+
+        The Mac listing needs an ssh round trip, so it is fetched once and reused; the
+        viewer's refresh button asks for it again.
+        """
+        import catalog as cat
+        if self._mac_datasets is None or self._mac_stale:
+            self._mac_datasets = cat.mac_datasets(self.a.mac_host)
+            self._mac_stale = False
+        c = cat.scan(self._mac_datasets)
+        c["current"] = {"dataset": self.dataset_name, "backend": self.backend_id,
+                        "features": self.a.features if cat.BY_ID[self.backend_id].sized else None,
+                        "status": self.status, "out": self.out.name}
+        return c
+
+    def request_restart(self, dataset: str, backend: str,
+                        features: int | None = None) -> tuple[bool, str]:
+        """Queue a restart of this hub onto another dataset/backend (applied in run())."""
+        import catalog as cat
+        if backend not in cat.BY_ID:
+            return False, f"알 수 없는 백엔드 {backend}"
+        try:
+            argv = cat.hub_args(dataset, backend, features or cat.DEFAULT_FEATURES)
+        except (ValueError, KeyError) as e:
+            return False, str(e)
+        self._restart = argv
+        f = f" f{features}" if features and cat.BY_ID[backend].sized else ""
+        self.status = f"{dataset} · {cat.BY_ID[backend].label}{f} 로 재시작하는 중"
+        log(f"restart requested: {dataset} / {backend}")
+        self.stop_replay_for_restart()
+        return True, self.status
+
+    def stop_replay_for_restart(self):
+        self.stop.set()
+
+    def exec_restart(self):
+        """Replace this process with a hub configured for the requested run.
+
+        Restarting rather than reconfiguring in place keeps one code path for starting a
+        run: everything (SAM-6D, the ssh tunnel, the clocks) is built once, at startup, from
+        the arguments. The browser's EventSource reconnects on its own once the new process
+        binds the port.
+        """
+        argv = [sys.executable, "-u", str(HERE / "hub.py"), *self._restart,
+                "--http-host", self.a.http_host, "--http-port", str(self.a.http_port),
+                "--mac-host", self.a.mac_host]
+        if self.a.compare_glob:
+            argv += ["--compare-glob", self.a.compare_glob]
+        log("exec " + " ".join(argv[3:]))
+        sys.stdout.flush()
+        os.execv(sys.executable, argv)
+
+    def comparison(self):
+        """Every finished run of this session, aligned into one world (see compare_api.py).
+
+        Served to the viewer so the four SLAM backends can be drawn together. Rebuilt only
+        when a run directory's summary changes, since the Umeyama fits are not free.
+        """
+        patterns = [p.strip() for p in self.a.compare_glob.split(",") if p.strip()] \
+            or [self.out.name.rsplit("_", 1)[0] + "_*"]
+        dirs = sorted({p for pat in patterns for p in self.out.parent.glob(pat)
+                       if (p / "summary.json").exists()})
+        key = tuple((p.name, (p / "summary.json").stat().st_mtime_ns) for p in dirs)
+        if key != self._compare_key:
+            try:
+                from compare_api import build
+                self._compare = build(dirs, reference=None)
+            except Exception as e:                      # a half-written run must not kill the page
+                log(f"comparison failed: {e!r}")
+                self._compare = {"reference": None, "runs": [], "error": repr(e)}
+            self._compare_key = key
+        return self._compare
 
     def stats(self):
         lags = [v for v in self.sam6d_runs if v is not None]
@@ -550,13 +893,17 @@ class Hub:
             "sam6d_last": self.last_result,
             "sam6d_age_median_s": round(float(np.median(lags)), 2) if lags else None,
             "objects_unplaced": self.fusion.unplaced,
+            "estimates_waiting_for_pose": len(self.pending),
+            "estimates_placed_late": self.deferred_placed,
+            "estimates_given_up": self.deferred_dropped,
             "kf_anchoring": getattr(self, "kf_anchoring", False),
             "kf_count": len(self.poses.kfs.T), "kf_updates": self.poses.kfs.updates,
             "kf_culled": self.poses.kfs.culled,
             "kf_max_correction_cm": round(self.poses.kfs.max_correction_m * 100, 2),
             "near_loop_estimates": self.fusion.near_loop_estimates,
             "memory": None if self.memory is None else self.memory.stats(),
-            "display_delay_s": self.a.display_delay,
+            "display_delay_s": round(self.display_delay(), 3),
+            "display_delay_floor_s": self.a.display_delay,
             "slam_refined_poses": getattr(self, "refined", 0),
             "overlay_max_age_s": self.a.overlay_max_age,
             "replay_t_rel_s": round((self.replay_t_ns - self.t0_ns) / 1e9, 2) if self.t0_ns else 0,
@@ -621,8 +968,34 @@ class Hub:
                     self.send_header("Content-Type", "application/json")
                     self.end_headers()
                     self.wfile.write(body)
+                elif self.path in ("/catalog", "/catalog?refresh=1"):
+                    if self.path.endswith("refresh=1"):
+                        hub._mac_stale = True
+                    self._json(hub.catalog())
                 else:
                     self.send_error(HTTPStatus.NOT_FOUND)
+
+            def do_POST(self):
+                if self.path != "/run":
+                    self.send_error(HTTPStatus.NOT_FOUND)
+                    return
+                try:
+                    n = int(self.headers.get("Content-Length", 0))
+                    req = json.loads(self.rfile.read(n) or b"{}")
+                    ok, msg = hub.request_restart(str(req.get("dataset", "")), str(req.get("backend", "")),
+                                                  int(req["features"]) if req.get("features") else None)
+                except Exception as e:                    # a malformed request must not kill the server
+                    ok, msg = False, repr(e)
+                self._json({"ok": ok, "message": msg}, HTTPStatus.ACCEPTED if ok else HTTPStatus.BAD_REQUEST)
+
+            def _json(self, obj, status=HTTPStatus.OK):
+                body = json.dumps(obj, default=str).encode()
+                self.send_response(status)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(body)))
+                self.send_header("Cache-Control", "no-store")
+                self.end_headers()
+                self.wfile.write(body)
 
         srv = ThreadingHTTPServer((self.a.http_host, self.a.http_port), H)
         srv.daemon_threads = True
@@ -631,6 +1004,12 @@ class Hub:
 
     # ── lifecycle ───────────────────────────────────────────────────────────
     def run(self):
+        # a plain `kill` must tear the children down too, not just this process
+        for sig in (signal.SIGTERM, signal.SIGHUP):
+            try:
+                signal.signal(sig, lambda *_: (_ for _ in ()).throw(KeyboardInterrupt))
+            except (ValueError, OSError):
+                pass                                   # not the main thread; PDEATHSIG covers it
         self.fw = FrameWriter()
         threads = [threading.Thread(target=self.http, daemon=True),
                    threading.Thread(target=self.slam_server, daemon=True),
@@ -648,6 +1027,9 @@ class Hub:
         try:
             while True:
                 time.sleep(1.0)
+                if self._restart:
+                    self.shutdown()
+                    self.exec_restart()          # never returns
                 for p in self.procs:
                     if p.poll() is not None and not getattr(p, "_reported", False):
                         p._reported = True
@@ -670,6 +1052,9 @@ class Hub:
                             "t_est_ns": v.current.t_ns, "anchor_kf": v.current.kf}
                         for k, v in self.fusion.objects.items()}
         s["t0_ns"] = self.t0_ns
+        s["extrinsic_path"] = str(self.a.extrinsic)
+        s["X_slam_sam"] = mat16(self.X_slam_sam)
+        s["slam_backend"] = self.a.slam
         s["observations_final"] = self.fusion.dump_observations()
         if self.memory is not None:
             self.memory.update()
@@ -695,6 +1080,7 @@ class Hub:
                 p.wait(timeout=max(0.1, deadline - time.time()))
             except subprocess.TimeoutExpired:
                 os.killpg(p.pid, signal.SIGKILL)
+        self.kill_mac_streamers("shutdown")
         for f in self.logs.values():
             f.close()
         self.fw.close()
@@ -712,9 +1098,21 @@ def main():
     ap.add_argument("--mac-runner", default="~/objpose/run_slam.sh")
     ap.add_argument("--mac-slam-session", default="~/Documents/DefenseMeta/Dataset/260826_etri_eightcircle_dark/SLAM")
     ap.add_argument("--features", type=int, default=2000)
-    ap.add_argument("--slam", choices=["orbslam3", "rtabmap", "lidar"], default="orbslam3", help="SLAM backend on the Mac")
+    ap.add_argument("--slam", choices=["orbslam3", "rtabmap", "lidar", "hdl"], default="orbslam3",
+                    help="SLAM backend on the Mac ('lidar' = KISS-ICP, 'hdl' = hdl_graph_slam)")
     ap.add_argument("--slam-param", action="append", default=[], metavar="Key=Value",
                     help="backend parameter override passed to the Mac streamer (repeatable)")
+    ap.add_argument("--slam-arg", action="append", default=[], metavar="ARG",
+                    help="extra argument passed verbatim to the Mac streamer (repeatable), for options "
+                         "that are not settings keys — e.g. gyro-aided ORB-SLAM3: "
+                         "--slam-arg=--gyro --slam-arg=<rig.json> --slam-arg=--imu --slam-arg=<imu dir>")
+    ap.add_argument("--backend-id", default="",
+                    help="catalog backend id of this run, for variants the --slam/--slam-arg "
+                         "pair cannot name (e.g. rtabmap_hdl1); derived from them when empty")
+    ap.add_argument("--compare-glob", default="",
+                    help="which sibling run dirs the viewer's backend comparison covers: one glob, "
+                         "or several separated by commas (default: this run's name up to the last "
+                         "'_', plus '_*')")
     ap.add_argument("--slam-port", type=int, default=17001)
     ap.add_argument("--http-host", default="0.0.0.0")
     ap.add_argument("--http-port", type=int, default=8765)
@@ -723,15 +1121,66 @@ def main():
     ap.add_argument("--duration-s", type=float, default=0.0, help="0 = to the end")
     ap.add_argument("--sam-feed-hz", type=float, default=10.0)
     ap.add_argument("--view-hz", type=float, default=15.0)
-    ap.add_argument("--display-delay", type=float, default=0.3)
+    ap.add_argument("--display-delay", type=float, default=0.3,
+                    help="minimum delay behind the replay clock; the hub raises it to follow the "
+                         "measured SLAM pose arrival lag (see Hub.display_delay)")
+    ap.add_argument("--max-display-delay", type=float, default=3.0,
+                    help="ceiling for that adaptive delay")
     ap.add_argument("--overlay-max-age", type=float, default=60.0,
                     help="draw an object on the video only if SAM-6D saw it within this many seconds")
     ap.add_argument("--max-gap", type=float, default=0.25, help="max SLAM pose gap to interpolate across [s]")
     ap.add_argument("--tail-s", type=float, default=8.0)
     ap.add_argument("--no-mac", action="store_true", help="don't launch the Mac; wait for an external SLAM client")
     ap.add_argument("--no-sam6d", action="store_true")
+    ap.add_argument("--recognizer", default="", help="python file with a LiveCore class to use instead of Sam6DCore")
+    ap.add_argument("--map-prior", action="store_true",
+                    help="give the recogniser the map objects projected into each frame as extra proposals")
+    ap.add_argument("--map-prior-conf", type=float, default=0.25, help="detector score given to a map-projected box")
+    ap.add_argument("--ism-config", default="", help="SAM-6D object list yaml (default: the run_split_example.yaml setting)")
+    ap.add_argument("--cluster-occupancy", type=float, default=0.0, help="override verify.cluster_min_occupancy (0 = keep)")
+    ap.add_argument("--no-verify", action="store_true",
+                    help="turn pose verification off (ablation): PEM's geometry-best pose is published as is")
+    ap.add_argument("--verify-candidates", type=int, default=0,
+                    help="verify.candidate_topk: pose verification checks only the K best of 300 candidates (0 = all)")
     ap.add_argument("--no-memory", action="store_true", help="show raw latest estimates instead of the object memory")
     ap.add_argument("--assoc-gate-m", type=float, default=0.15, help="object memory association distance gate")
+    # The memory's existence filter penalises a landmark that is in view and not re-detected,
+    # in proportion to P_D — the detection rate it EXPECTS of a visible object. objectmemory_ws
+    # defaults to 0.5, calibrated on a 9-bag audit whose recall was 0.62; this pipeline runs
+    # SAM-6D at ~2.5 Hz against a live replay and its measured in-view recall is 0.055-0.17, so
+    # at 0.5 six ordinary misses in a row retire a real object. Replaying four finished runs
+    # (objpose/pc/tune_memory.py) puts the knee at 0.15. The clutter ratio drops with it to keep
+    # the evidence a single detection carries (P_D / clutter = 5) exactly where it was.
+    ap.add_argument("--pending-timeout", type=float, default=20.0,
+                    help="how long an estimate waits for a SLAM pose that has not arrived "
+                         "yet before it is abandoned [s]")
+    # measured on 260901_cbnu_eightcircle once every frame got its pose: SAM-6D finds an in-view
+    # object in only 6-20 % of processed frames (most 7-9 %). With 0.15/0.03 an object needs
+    # >9.2 % to hold its existence, so 5 of 8 ended lost; 0.08/0.01 keeps all 8 active.
+    ap.add_argument("--pd-base", type=float, default=0.08,
+                    help="expected in-view detection rate used by the object memory")
+    ap.add_argument("--clutter-ratio", type=float, default=0.01,
+                    help="false-alarm likelihood; a detection is evidence FOR existence only "
+                         "while --pd-base stays above it")
+    # SAM-6D finds Mugcup/Sikhye only within ~0.6 m (others up to ~2.2 m). Without a range the
+    # memory counted every frame they sat in the image from 2-4 m away as a miss, and on
+    # 260901_cbnu_bigeightcircle retired both 50 s after seeing them; 1.5 m keeps all 8.
+    ap.add_argument("--pd-max-range", type=float, default=1.5,
+                    help="depth (m) beyond which an unseen object is not counted as missed; 0 = no limit")
+    # A top-scoring SAM-6D misread puts a second landmark of a known class metres away from the
+    # real one, too far for the association gate and too confident for the score to reject; with
+    # --pd-base low enough to keep real objects it then survives. A landmark is hidden while
+    # another of its class holds more than --dup-ratio times its observations, so a LARGER value
+    # is the more permissive one. Across three 260826 runs the real milk led its ghost 65:3,
+    # 72:3 and 68:4 — ratios of 21.7, 24.0 and 17.0, so a threshold near 20 catches the ghost in
+    # one run and misses it in the next. Every healthy object survives ratios down to 3 on all
+    # five replayed runs (the sparsest class of all, 260901 choco_hazelnut_high at 4
+    # observations, is the only landmark of its name and so is never compared), which leaves
+    # room to sit well clear of the ghosts: at 5 a duplicate needs a fifth of the leader's
+    # evidence to be drawn, and the observed ghosts have a seventeenth.
+    ap.add_argument("--dup-ratio", type=float, default=5.0,
+                    help="hide a landmark while another of its class has more than this many "
+                         "times its observations; 0 = show every instance")
     ap.add_argument("--exit-when-done", action="store_true")
     Hub(ap.parse_args()).run()
 

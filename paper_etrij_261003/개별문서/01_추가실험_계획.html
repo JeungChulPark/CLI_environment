@@ -1,0 +1,204 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>논문을 위한 추가 실험 계획</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1>논문을 위한 추가 실험 계획</h1>
+<p>작성일 2026-10-03. 지금 있는 실험(원고 6절)으로 무엇이 증명되었고 무엇이 비어 있는지 나눈 뒤, 비어 있는 부분을 채울 실험을 우선순위대로 정리했다.</p>
+<h2>1. 지금 실험이 증명하는 것과 빈 곳</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>주장</th>
+<th>지금 근거</th>
+<th>빈 곳 (심사에서 물을 것)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>촬영 시각 키프레임 고정이 지도 보정을 흡수한다</td>
+<td>실행 기록 61회 재생, 등록 방식 (a)~(d) 비교 (8,964건, 보정이 끼어든 130건)</td>
+<td>① 정답 좌표 대비 <strong>절대 오차</strong>가 없다 (지금은 같은 물체 관측의 일관성만 있다) ② 지연 길이에 따라 효과가 어떻게 변하는지 곡선이 없다 ③ LiDAR SLAM에서 같은 비교가 없다</td>
+</tr>
+<tr>
+<td>두 장치로 나눠야 SLAM이 실시간을 지킨다</td>
+<td>같은 장치에 부하가 걸리면 자세 전달 지연이 0.04 → 2.5초 (한 번 측정)</td>
+<td>한 장치에서 SLAM과 인식을 함께 돌린 기준 실험이 체계적이지 않다 (프레임 누락, 궤적 오차, 객체 지도 오차)</td>
+</tr>
+<tr>
+<td>시간 정렬과 외부 파라미터가 정확하다</td>
+<td>정지 물체 흩어짐 5.6 → 1.5 cm, 잔차 0.41 cm</td>
+<td>시각 오차(τ)를 일부러 틀렸을 때 얼마나 나빠지는지 민감도가 없다</td>
+</tr>
+<tr>
+<td>인식기가 빠르고 틀린 답이 적다</td>
+<td>한 장 비교 (YCB-V, YCB-M, 실내), 관문 효과 실험</td>
+<td>다른 제로샷 방법(FoundPose, GigaPose, FoundationPose 등)과 같은 조건에서 비교하지 않았다. GPU가 실험마다 다르다</td>
+</tr>
+<tr>
+<td>객체 기억과 재연결</td>
+<td>실내 2회 72/74, YCB-M 101건</td>
+<td>같은 종류 물체가 여러 개인 장면이 없다. 물체를 옮기는 장면이 없다</td>
+</tr>
+<tr>
+<td>지연 보상 표시</td>
+<td>YCB-V·YCB-M 화면 일치율</td>
+<td>실제 주행에서는 정답이 없어 화면 일치율을 재지 못했다</td>
+</tr>
+<tr>
+<td>실시간 동작</td>
+<td>녹화를 두 장치에서 1배속으로 재생</td>
+<td>카트에서 카메라를 직접 받아 실행한 기록이 없다</td>
+</tr>
+</tbody>
+</table></div>
+<h2>2. 필요한 실험 (우선순위 순)</h2>
+<h3>꼭 필요 (P1): 심사 통과에 직접 영향</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>실험</th>
+<th>방법</th>
+<th>얻는 수치</th>
+<th>새 녹화</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E1</td>
+<td><strong>정답이 있는 실내 주행</strong></td>
+<td><code>apriltag_gt/GT_APRILTAG_GUIDE.md</code>대로 태그 8~20개와 물체 8종의 위치를 측량한다. 물체 바닥에도 태그를 붙여 물체 정답을 만든다. 같은 경로를 2~3회 주행한다</td>
+<td>물체 위치 절대 오차(중앙값, 90%), 카메라 궤적 앵커 오차, 등록 방식 (a)~(d)의 <strong>절대 오차</strong></td>
+<td>필요 (2~3회)</td>
+</tr>
+<tr>
+<td>E2</td>
+<td><strong>지연 길이 실험</strong></td>
+<td><code>objpose/pc/anchor_ablation.py</code> 재생에서 인식 결과 도착 시각을 인위적으로 0, 0.5, 1, 2, 4, 8초 늦추고 (a)~(d)를 다시 계산한다</td>
+<td>지연-오차 곡선 4개. "지연이 길수록 (d)만 버틴다"를 그래프로 보인다</td>
+<td>불필요</td>
+</tr>
+<tr>
+<td>E3</td>
+<td><strong>한 장치 대 두 장치</strong></td>
+<td>같은 녹화를 ① 한 장치에서 SLAM과 SAM-6D를 함께 실행, ② 두 장치로 나눠 실행한다</td>
+<td>SLAM 처리 프레임 비율, 추적 실패 횟수, 루프 보정 크기, 객체 흩어짐, 중복 수</td>
+<td>불필요</td>
+</tr>
+<tr>
+<td>E4</td>
+<td><strong>같은 GPU에서 제로샷 방법 비교</strong></td>
+<td>YCB-V BOP 평가 목록에서 SAM-6D, 제안 방법, 그리고 공개 코드가 있는 1~2개(FoundPose 또는 GigaPose, CNOS+SAM-6D PEM)를 같은 GPU로 실행한다</td>
+<td>BOP AR, 장당 처리 시간 (논문 보고값과 같은 조건 비교)</td>
+<td>불필요</td>
+</tr>
+<tr>
+<td>E5</td>
+<td><strong>반복 통계</strong></td>
+<td>주요 수치(표 2, 표 3, 화면 일치율)를 실행별로 나눠 평균 ± 표준편차 또는 95% 신뢰구간을 낸다</td>
+<td>오차 막대, 유의성</td>
+<td>불필요 (기존 113회 기록)</td>
+</tr>
+</tbody>
+</table></div>
+<h3>있으면 좋음 (P2): 범용성과 견고성</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>실험</th>
+<th>방법</th>
+<th>얻는 수치</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E6</td>
+<td>LiDAR SLAM 등록 방식 비교</td>
+<td>HDL-Graph-SLAM 실행 기록으로 (a)~(d)를 다시 계산한다</td>
+<td>표 2의 LiDAR 판. "SLAM 방식과 무관"을 보인다</td>
+</tr>
+<tr>
+<td>E7</td>
+<td>네트워크 지연·손실 주입</td>
+<td>Linux <code>tc netem</code>으로 지연 50~500 ms, 지터, 손실 1~5%를 넣는다</td>
+<td>대기 목록 등록률, 적응형 표시 지연, 자세 없는 표시 프레임 비율</td>
+</tr>
+<tr>
+<td>E8</td>
+<td>시각 오차 민감도</td>
+<td>τ를 ±10, 20, 50, 100 ms만큼 일부러 틀리게 넣는다</td>
+<td>흩어짐-τ 곡선. 메타데이터 시각과 오프셋 추정이 왜 필요한지 보인다</td>
+</tr>
+<tr>
+<td>E9</td>
+<td>카트 실시간 실행</td>
+<td>녹화 재생 대신 카메라를 직접 받아 1~2회 실행한다</td>
+<td>"재생이 아닌 실제 실시간"이라는 근거, 장치 자원 사용량</td>
+</tr>
+<tr>
+<td>E10</td>
+<td>처리 시간 분해</td>
+<td>모듈별 시간(후보, 관문, PEM, 검증, 등록, 표시)과 GPU·CPU 사용량을 잰다</td>
+<td>처리 시간 표, 병목 설명</td>
+</tr>
+</tbody>
+</table></div>
+<h3>한계를 줄이는 실험 (P3): 후속 논문으로 미뤄도 됨</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>실험</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E11</td>
+<td>같은 종류 물체 여러 개</td>
+<td>같은 물체 2~3개를 배치해 연결 성능을 본다 (지금은 미평가로 적혀 있다)</td>
+</tr>
+<tr>
+<td>E12</td>
+<td>물체 이동·제거</td>
+<td>주행 중 물체를 치우거나 옮겨 삭제·재등록 동작을 정량화한다</td>
+</tr>
+<tr>
+<td>E13</td>
+<td>가림 정도별</td>
+<td>가림 30~50% 구간이 약점(3%)이므로 개선안과 함께 실험한다</td>
+</tr>
+<tr>
+<td>E14</td>
+<td>잘못된 루프 보정 검출</td>
+<td>40회 중 2회 망가진 지도를 자동으로 판정하는 방법(LiDAR 궤적과 비교 등)</td>
+</tr>
+</tbody>
+</table></div>
+<h2>3. 권장 순서</h2>
+<ol>
+<li><strong>새 녹화 없이 할 수 있는 실험을 먼저 한다.</strong> E2(지연 곡선), E5(통계), E3(한 장치 대 두 장치), E6(LiDAR 판)은 기존 기록과 도구로 할 수 있고, 원고의 약점을 가장 많이 메운다.</li>
+<li><strong>E4(같은 GPU 비교)</strong>는 공개 코드를 설치해야 하지만 새 녹화가 필요 없다.</li>
+<li><strong>E1(AprilTag 정답 주행)</strong>은 준비(인쇄·측량)가 필요하다. 논문의 신뢰도를 가장 크게 올리므로 IROS 마감(2027년 3월) 전에 끝내는 것을 목표로 한다.</li>
+<li>E7~E10은 E1 녹화 때 함께 기록한다.</li>
+</ol>
+<p><strong>주의:</strong> E3의 "한 장치" 실행은 논문의 비교 기준(baseline)으로만 쓴다. 특허 문서에는 넣지 않는다 (특허는 두 장치 분리를 전제로 한다).</p></main></body></html>

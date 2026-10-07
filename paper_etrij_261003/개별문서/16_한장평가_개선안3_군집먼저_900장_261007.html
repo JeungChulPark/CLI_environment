@@ -1,0 +1,177 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>16. 한 장 평가 900장 — 원본 / 개선안 2 / 개선안 3 / 개선안 3 + 군집 먼저 / 배포, 같은 물체끼리 ADD-S (RTX 4090, 2026-10-07)</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1>16. 한 장 평가 900장 — 원본 / 개선안 2 / 개선안 3 / 개선안 3 + 군집 먼저 / 배포, 같은 물체끼리 ADD-S (RTX 4090, 2026-10-07)</h1>
+<blockquote>
+<p>YCB-V 900장(BOP19 목록, 정답 물체 4,123개). 원본(L0)·개선안 2·배포(L4)는 2026-10-06 4090 사다리 실행(09 문서), 개선안 3 두 가지는 2026-10-07 15:4x GPU1 실행. 코드는 모두 검증 기록 벡터화 뒤의 <code>CLI_env_paper</code>. 채점 <code>evaluate.py</code>(ADD-S &lt; 지름 10%, VOCap 0~10 cm), 같은 물체끼리 비교 <code>ladder/same_object_adds.py</code>. 결과 <code>src/ycbv/out_4090/results_main_4090.json</code>, <code>same_object_adds_4090.json</code>.</p>
+</blockquote>
+<h2>1. 전체 (900장)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>장당 시간 (중앙값)</th>
+<th>찾은 비율</th>
+<th>답한 수</th>
+<th>정답 비율</th>
+<th>오답 / 장</th>
+<th>ADD-S AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 SAM-6D (L0: FastSAM-x → ViT-L → 판정 0.2 → PEM 기하 1위)</td>
+<td>530 ms</td>
+<td><strong>92.4%</strong></td>
+<td>4,087</td>
+<td>93.2%</td>
+<td>0.308</td>
+<td><strong>91.9</strong></td>
+</tr>
+<tr>
+<td>개선안 2 (FastSAM-x → ViT-S → 판정 0.5 → PEM, 검증 끔)</td>
+<td>327 ms</td>
+<td>86.9%</td>
+<td>3,790</td>
+<td>94.5%</td>
+<td>0.232</td>
+<td>86.4</td>
+</tr>
+<tr>
+<td><strong>개선안 3</strong> (= 개선안 2 + 자세 검증)</td>
+<td>342 ms</td>
+<td>80.8%</td>
+<td>3,376</td>
+<td><strong>98.7%</strong></td>
+<td><strong>0.049</strong></td>
+<td>79.2</td>
+</tr>
+<tr>
+<td><strong>개선안 3 + 군집 먼저</strong></td>
+<td><strong>240 ms</strong></td>
+<td>80.9%</td>
+<td>3,380</td>
+<td>98.6%</td>
+<td>0.051</td>
+<td>79.3</td>
+</tr>
+<tr>
+<td>우리 기술 배포 (L4)</td>
+<td>513 ms</td>
+<td>60.9%</td>
+<td>2,532</td>
+<td><strong>99.1%</strong></td>
+<td><strong>0.026</strong></td>
+<td>59.7</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>자세 검증의 효과(개선안 2 → 3, 같은 앞단):</strong> 오답 0.232 → 0.049/장(−79%), 정답 비율 94.5 → 98.7%, 찾은 비율 86.9 → 80.8%(−6.1%p). 검증이 버린 414개 답 가운데 165개가 오답, 249개가 맞는 답이었습니다.</li>
+<li><strong>군집 먼저:</strong> 개선안 3 과 찾은 수·오답이 같고(3,334 대 3,332, 46 대 44) 장당 시간은 342 → 240 ms(−30%). 자세 단계 274 → 180 ms.</li>
+<li><strong>원본 대비(개선안 3 + 군집 먼저):</strong> 찾은 비율 −11.5%p, 오답 6분의 1, 정답 비율 +5.4%p, 시간 55%. 전체 ADD-S AUC 는 찾은 비율에 끌려 낮아 보이므로(놓친 물체는 0), 자세 자체의 정확도는 2절처럼 같은 물체끼리 비교해야 합니다.</li>
+</ul>
+<h2>2. 같은 물체끼리 자세 정확도 (두 방법이 모두 답한 물체만)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>비교</th>
+<th>공통 물체 수</th>
+<th>ADD-S AUC (앞 / 뒤)</th>
+<th>자세 오차 중앙값 mm (앞 / 뒤)</th>
+<th>뒤가 더 정확한 비율</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 L0 → <strong>개선안 3</strong></td>
+<td>3,374</td>
+<td>94.6 → <strong>96.8</strong></td>
+<td>1.79 → <strong>1.73</strong></td>
+<td>56.5%</td>
+</tr>
+<tr>
+<td>원본 L0 → 개선안 3 + 군집 먼저</td>
+<td>3,378</td>
+<td>94.6 → 96.7</td>
+<td>1.79 → 1.73</td>
+<td>56.3%</td>
+</tr>
+<tr>
+<td>개선안 2 → 개선안 3 (검증만 켬)</td>
+<td>3,376</td>
+<td>96.4 → 96.8</td>
+<td>1.78 → 1.73</td>
+<td>55.3%</td>
+</tr>
+<tr>
+<td>개선안 3 → 개선안 3 + 군집 먼저</td>
+<td>3,371</td>
+<td>96.8 → 96.8</td>
+<td>1.73 → 1.73</td>
+<td>0.9% (= 거의 같은 자세)</td>
+</tr>
+<tr>
+<td>원본 L0 → 배포 L4</td>
+<td>2,530</td>
+<td>95.4 → 97.2</td>
+<td>1.77 → 1.70</td>
+<td>56.4%</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>같은 물체에서 개선안 3 의 자세가 원본보다 정확합니다(AUC +2.2, 오차 중앙값 −0.06 mm, 56.5% 에서 더 좋음). 검증이 기하 1위 대신 윤곽·무늬·합의를 통과한 가설의 군집 중심을 고르기 때문입니다. 07 §2.3 의 L4 결과(97.2 대 95.8)와 같은 방향입니다.</li>
+<li>개선안 2 → 3 비교에서 AUC 가 0.4 만 오르는 것은, 검증이 자세를 조금 고치기보다 <strong>틀린 답을 통째로 빼는</strong> 데서 주로 이득을 얻는다는 뜻입니다(1절의 오답 165개 제거).</li>
+<li>군집 먼저는 99% 의 물체에서 개선안 3 과 같은 자세를 냅니다. 속도만 바뀌고 답은 바뀌지 않습니다.</li>
+</ul>
+<h2>3. 논문용 수치 요약 (개선안 3 + 군집 먼저 대 원본)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>표현</th>
+<th>수치</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>재현율 유지</td>
+<td>찾은 비율 92.4 → 80.9% (−11.5%p)</td>
+</tr>
+<tr>
+<td>오답 억제</td>
+<td>오답/장 0.308 → 0.051 (1/6), 정답 비율 93.2 → 98.6%</td>
+</tr>
+<tr>
+<td>같은 물체끼리 자세</td>
+<td>ADD-S AUC 94.6 → 96.7, 오차 중앙값 1.79 → 1.73 mm (3,378개)</td>
+</tr>
+<tr>
+<td>시간</td>
+<td>장당 530 → 240 ms (4090)</td>
+</tr>
+<tr>
+<td>검증 켬/끔 대조</td>
+<td>오답 0.232 → 0.051, 찾은 비율 86.9 → 80.9%</td>
+</tr>
+</tbody>
+</table></div></main></body></html>

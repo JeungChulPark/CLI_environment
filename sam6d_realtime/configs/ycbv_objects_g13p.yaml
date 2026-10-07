@@ -1,0 +1,252 @@
+# ycbv_objects_m1.yaml (method-1 prompts) + gate study: semantic 0.25, HSV 0.06, ownership fallback (det_study/tune_gates.py)
+defaults:
+  weights: /home/jucpark/DeepLearning/CLI_environment/sam6d_realtime/yolov8m-worldv2.pt
+  device: cuda:0
+  top_k: 3
+  score_threshold: 0.02
+  hsv_gate_enabled: true
+  hsv_gate_shadow_mode: false
+  hsv_gate_threshold: 0.06
+  hsv_hue_shift_deg: -6
+  hsv_sat_gain: 1.3
+  hsv_hist_bins:
+  - 16
+  - 8
+  hsv_lowsat_exception: false
+  hsv_hue_correction_ocv: 0
+  training_free_gate_enabled: false
+  training_free_gate_method: phase1c
+  appe_v2_enabled: true
+  appe_v2_blocks:
+  - 2
+  - 9
+  appe_v2_gate: 0.605
+  cross_object_nms_enabled: true
+  cross_object_nms_iou: 0.9
+  yolo_multi_label: true
+  relative_assignment_enabled: true
+  color_tiebreak_template_sim: 0.6
+  imgsz: 640
+  similarity_threshold: 0.25
+  use_mask: true
+  appe_gate: 0.55
+  appe_blocks:
+  - 11
+  nms_rank_blocks:
+  - 2
+  - 9
+  match_topk: 5
+  seg_weights: /home/jucpark/DeepLearning/CLI_environment/sam6d_realtime/mobile_sam.pt
+  stride: 10
+  assignment_fallback: true
+objects:
+- name: ycbv_01
+  yolo_prompt: blue coffee can
+  object_id: 002_master_chef_can
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000001/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000001.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_01_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_01_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_01_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_02
+  yolo_prompt: red box
+  object_id: 003_cracker_box
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000002/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000002.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_02_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_02_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_02_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_03
+  yolo_prompt: yellow box
+  object_id: 004_sugar_box
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000003/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000003.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_03_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_03_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_03_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_04
+  yolo_prompt: red can
+  object_id: 005_tomato_soup_can
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000004/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000004.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_04_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_04_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_04_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_05
+  yolo_prompt: yellow mustard bottle
+  object_id: 006_mustard_bottle
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000005/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000005.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_05_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_05_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_05_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_06
+  yolo_prompt: tin can
+  object_id: 007_tuna_fish_can
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000006/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000006.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_06_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_06_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_06_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_07
+  yolo_prompt: small box
+  object_id: 008_pudding_box
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000007/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000007.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_07_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_07_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_07_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_08
+  yolo_prompt: small red box
+  object_id: 009_gelatin_box
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000008/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000008.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_08_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_08_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_08_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_09
+  yolo_prompt: small tin
+  object_id: 010_potted_meat_can
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000009/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000009.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_09_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_09_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_09_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_10
+  yolo_prompt: banana
+  object_id: 011_banana
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000010/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000010.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_10_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_10_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_10_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_11
+  yolo_prompt: blue plastic pitcher
+  object_id: 019_pitcher_base
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000011/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000011.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_11_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_11_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_11_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_12
+  yolo_prompt: white bottle
+  object_id: 021_bleach_cleanser
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000012/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000012.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_12_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_12_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_12_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_13
+  yolo_prompt: red bowl
+  object_id: 024_bowl
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000013/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000013.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_13_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_13_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_13_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_14
+  yolo_prompt: red mug
+  object_id: 025_mug
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000014/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000014.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_14_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_14_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_14_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_15
+  yolo_prompt: cordless drill
+  object_id: 035_power_drill
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000015/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000015.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_15_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_15_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_15_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_16
+  yolo_prompt: wooden box
+  object_id: 036_wood_block
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000016/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000016.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_16_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_16_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_16_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_17
+  yolo_prompt: scissors with handles
+  object_id: 037_scissors
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000017/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000017.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_17_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_17_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_17_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_18
+  yolo_prompt: marker pen
+  object_id: 040_large_marker
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000018/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000018.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_18_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_18_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_18_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_19
+  yolo_prompt: small clamp
+  object_id: 051_large_clamp
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000019/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000019.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_19_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_19_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_19_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_20
+  yolo_prompt: large black clamp
+  object_id: 052_extra_large_clamp
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000020/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000020.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_20_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_20_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_20_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true
+- name: ycbv_21
+  yolo_prompt: red rectangular block
+  object_id: 061_foam_brick
+  template_dir: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/templates/obj_000021/templates
+  cad_ply: /home/jucpark/DeepLearning/Dataset/bop/ycbv/models/obj_000021.ply
+  cls_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_21_cls.pt
+  appe_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_21_appe.pt
+  hsv_cache: /home/jucpark/DeepLearning/Dataset/bop/ycbv_work/features/ycbv_21_hsv.npz
+  hsv_hue_correction_ocv: 0
+  enabled: true

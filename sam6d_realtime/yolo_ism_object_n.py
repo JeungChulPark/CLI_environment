@@ -579,6 +579,10 @@ def assign_frame_relative(objs, prompt_boxes, bgr, rgb, norm_full,
     cls_all, patch_all = dinov2_blocks_forward(model, crops, device, need)
     masks = yi.segment_boxes(segmentor, bgr, [u["box"] for u in keep], device)
 
+    if objs and bool(objs[0].get("assignment_fallback", False)):
+        return _assign_greedy_fallback(objs, by_name, keep, cls_all, patch_all, masks, bgr,
+                                       pool, tsim, tau, res)
+
     best = {}
     for i, u in enumerate(keep):
         sems = {o["name"]: float(yi.semantic_score(cls_all[i], o["tcls"], o["match_topk"]))
@@ -626,6 +630,71 @@ def assign_frame_relative(objs, prompt_boxes, bgr, rgb, norm_full,
         if hsv:
             r["hsv_score"] = round(hsv[top], 5)
             r["hsv_pass"] = 1
+    return res
+
+
+def _assign_greedy_fallback(objs, by_name, keep, cls_all, patch_all, masks, bgr, pool, tsim, tau, res):
+    """Box ownership with fallback (opt-in: `assignment_fallback: true`; paper ablation 2026-10-05).
+
+    The election above gives each box to its top-semantic object only; if that object
+    fails a gate on the box, or already holds a better box, the box is dropped and an
+    object whose GT box went to a look-alike gets nothing. Here every (box, object) pair
+    whose semantic score clears that object's threshold is a candidate; pairs are taken
+    greedily in descending semantic order (colour tie-break kept: within a box, a
+    template-similar group is reordered by colour), each box and each object used once,
+    and a pair is taken only if it clears all absolute gates (semantic / masked-appe / HSV).
+    A box that fails for its best object, or whose best object is already filled, is
+    offered to the next object; an object that lost its best box tries its next box.
+    """
+    hsv_all, order = [], []
+    for i, u in enumerate(keep):
+        sems = {o["name"]: float(yi.semantic_score(cls_all[i], o["tcls"], o["match_topk"])) for o in objs}
+        mask = masks[i]
+        hsv = ({o["name"]: float(ism_hsv.shadow_score(bgr, u["box"], mask, o.get("_hsv_proto"))) for o in objs}
+               if mask is not None else {})
+        hsv_all.append(hsv)
+        ranked = sorted(sems, key=sems.get, reverse=True)
+        if tau > 0.0 and hsv and ranked:
+            tie = [k for k in ranked if tsim[ranked[0]].get(k, 0.0) >= tau]
+            if len(tie) > 1:
+                tie_sorted = sorted(tie, key=lambda k: hsv[k], reverse=True)
+                ranked = tie_sorted + [k for k in ranked if k not in tie]
+        for rank, n in enumerate(ranked):
+            r = res[n]
+            if sems[n] > r["best_sem"]:
+                r["best_sem"] = sems[n]; r["best_yolo"] = u["conf"]
+            if sems[n] >= by_name[n]["similarity_threshold"]:
+                # priority: semantic score, the tie-broken winner of the box first
+                order.append((sems[n] + (1.0 if rank == 0 else 0.0), i, n))
+            elif not r["accepted"] and r["decision"] == "no-object(no-proposal)":
+                r["decision"] = "no-object(below-sim)"
+    order.sort(key=lambda t: -t[0])
+    used_box, done = set(), set()
+    for _, i, n in order:
+        if i in used_box or n in done:
+            continue
+        o, u, mask, r = by_name[n], keep[i], masks[i], res[n]
+        if o.get("use_mask", True) and mask is None:
+            continue
+        qb = {b: patch_all[b][i].cpu() for b in o["_need_blocks"]}
+        bt = int(torch.argmax(o["tcls"] @ cls_all[i]))
+        m_appe = float(masked_appe_blocks(qb, mask, u["box"], pool, o, bt)) if mask is not None else 0.0
+        if m_appe < _appe_gate_of(o):
+            if not r["accepted"]:
+                r["decision"] = "no-object(below-appe)"
+            continue
+        hsv = hsv_all[i]
+        if bool(o.get("hsv_gate_enabled", False)) and hsv and hsv[n] < float(o.get("hsv_gate_threshold", 0.0)):
+            if not r["accepted"]:
+                r["decision"] = "no-object(below-hsv)"
+            continue
+        used_box.add(i); done.add(n)
+        x1, y1, x2, y2 = u["box"]
+        r.update({"box": list(u["box"]), "mask": mask, "masked_appe": m_appe, "rank_appe": m_appe,
+                  "mask_area": int(mask[y1:y2, x1:x2].sum()) if mask is not None else 0,
+                  "decision": "detected", "accepted": True})
+        if hsv:
+            r["hsv_score"] = round(hsv[n], 5); r["hsv_pass"] = 1
     return res
 
 
