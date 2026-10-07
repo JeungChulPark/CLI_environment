@@ -22,7 +22,7 @@ li{margin:3px 0}
 a{color:var(--acc);word-break:break-all}
 </style></head><body><main><h1 id="ycb-v-900">한장평가 YCB-V 900장</h1>
 <blockquote>
-<p>한 장 평가(YCB-V 900장·36장) — 기준 시스템 비교, 단계별 분해(L0→L4), 4090 확인 실행, 인식 방법 4가지, ViT-S 대 ViT-L. 개별 문서 5개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-07.</p>
+<p>한 장 평가(YCB-V 900장·36장) — 기준 시스템 비교, 단계별 분해(L0→L4), 4090 확인 실행, 인식 방법 4가지, ViT-S 대 ViT-L, 개선안 3·군집 먼저 900장과 같은 물체끼리 ADD-S(16). 개별 문서 6개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-07.</p>
 </blockquote>
 <p><strong>이 묶음의 장</strong></p>
 <ul>
@@ -31,6 +31,7 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>09_4090_확인실행_261006</strong> — 09. RTX 4090 확인 실행 — 노트북에서 못 끝낸 한 장 평가 (2026-10-06)</li>
 <li><strong>11_인식방법_비교표_261007</strong> — 11. 객체 인식 방법 4가지 비교표 (YCB-V, 2026-10-07)</li>
 <li><strong>12_ViT-S_ViT-L_비교표_261007</strong> — 12. 특징 모델 비교 — DINOv2 ViT-S 대 ViT-L, 인식 방법 4가지 (YCB-V, RTX 4090, 2026-10-07)</li>
+<li><strong>16_한장평가_개선안3_군집먼저_900장_261007</strong> — 16. 한 장 평가 900장 — 원본 / 개선안 2 / 개선안 3 / 개선안 3 + 군집 먼저 / 배포, 같은 물체끼리 ADD-S (RTX 4090, 2026-10-07)</li>
 </ul>
 <div class="toc">
 <ul>
@@ -102,6 +103,12 @@ a{color:var(--acc);word-break:break-all}
 <li><a href="#2-ycb-v-900-4123_1">2. 인식까지 — YCB-V 900장, 정답 물체 4,123개 (자세 추정 없음)</a></li>
 <li><a href="#3-ycb-v-36-165-pem_1">3. 자세까지 — YCB-V 36장, 물체 165개 (PEM + 우리 자세 검증)</a></li>
 <li><a href="#4_2">4. 정리</a></li>
+</ul>
+</li>
+<li><a href="#16-900-2-3-3-add-s-rtx-4090-2026-10-07">16. 한 장 평가 900장 — 원본 / 개선안 2 / 개선안 3 / 개선안 3 + 군집 먼저 / 배포, 같은 물체끼리 ADD-S (RTX 4090, 2026-10-07)</a><ul>
+<li><a href="#1-900_1">1. 전체 (900장)</a></li>
+<li><a href="#2_2">2. 같은 물체끼리 자세 정확도 (두 방법이 모두 답한 물체만)</a></li>
+<li><a href="#3-3">3. 논문용 수치 요약 (개선안 3 + 군집 먼저 대 원본)</a></li>
 </ul>
 </li>
 </ul>
@@ -2636,4 +2643,161 @@ $PY eval_live.py --runs '&lt;repo&gt;/objpose/output/ycbv_live_v2_0*[0-9]' --out
 <p>재현: <code>~/Dataset/bop/ycbv_work/run_decision_vitl_4090.sh</code>(1부: 3·4 ViT-L, 기준값 ViT-S·구성 2), <code>_part2.sh</code>(구성 1 ViT-L), <code>_part3.sh</code>(구성 1 ViT-S). 결과 <code>src/ycbv/det_study/out_4090/decision_900_{O,A,B,B1}_{S,L}.json</code>, <code>decision_e2e_4090.json</code>, 로그 <code>ycbv_work/logs/decision_vitl_4090.log</code>. ViT-S 수치는 노트북 07 §3.12 와 1%p 안에서 일치(구성 3: 72.2 대 72.3%, 구성 4: 80.7 대 80.6%).</p>
 </li>
 <li>이 문서는 <code>src/ycbv/det_study/make_vit_table.py</code> 가 결과 json 에서 생성합니다.</li>
-</ol></main></body></html>
+</ol>
+<hr />
+<p><a id="16_한장평가_개선안3_군집먼저_900장_261007"></a></p>
+<h2 id="16-900-2-3-3-add-s-rtx-4090-2026-10-07">16. 한 장 평가 900장 — 원본 / 개선안 2 / 개선안 3 / 개선안 3 + 군집 먼저 / 배포, 같은 물체끼리 ADD-S (RTX 4090, 2026-10-07)</h2>
+<blockquote>
+<p>YCB-V 900장(BOP19 목록, 정답 물체 4,123개). 원본(L0)·개선안 2·배포(L4)는 2026-10-06 4090 사다리 실행(09 문서), 개선안 3 두 가지는 2026-10-07 15:4x GPU1 실행. 코드는 모두 검증 기록 벡터화 뒤의 <code>CLI_env_paper</code>. 채점 <code>evaluate.py</code>(ADD-S &lt; 지름 10%, VOCap 0~10 cm), 같은 물체끼리 비교 <code>ladder/same_object_adds.py</code>. 결과 <code>src/ycbv/out_4090/results_main_4090.json</code>, <code>same_object_adds_4090.json</code>.</p>
+</blockquote>
+<h3 id="1-900_1">1. 전체 (900장)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>장당 시간 (중앙값)</th>
+<th>찾은 비율</th>
+<th>답한 수</th>
+<th>정답 비율</th>
+<th>오답 / 장</th>
+<th>ADD-S AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 SAM-6D (L0: FastSAM-x → ViT-L → 판정 0.2 → PEM 기하 1위)</td>
+<td>530 ms</td>
+<td><strong>92.4%</strong></td>
+<td>4,087</td>
+<td>93.2%</td>
+<td>0.308</td>
+<td><strong>91.9</strong></td>
+</tr>
+<tr>
+<td>개선안 2 (FastSAM-x → ViT-S → 판정 0.5 → PEM, 검증 끔)</td>
+<td>327 ms</td>
+<td>86.9%</td>
+<td>3,790</td>
+<td>94.5%</td>
+<td>0.232</td>
+<td>86.4</td>
+</tr>
+<tr>
+<td><strong>개선안 3</strong> (= 개선안 2 + 자세 검증)</td>
+<td>342 ms</td>
+<td>80.8%</td>
+<td>3,376</td>
+<td><strong>98.7%</strong></td>
+<td><strong>0.049</strong></td>
+<td>79.2</td>
+</tr>
+<tr>
+<td><strong>개선안 3 + 군집 먼저</strong></td>
+<td><strong>240 ms</strong></td>
+<td>80.9%</td>
+<td>3,380</td>
+<td>98.6%</td>
+<td>0.051</td>
+<td>79.3</td>
+</tr>
+<tr>
+<td>우리 기술 배포 (L4)</td>
+<td>513 ms</td>
+<td>60.9%</td>
+<td>2,532</td>
+<td><strong>99.1%</strong></td>
+<td><strong>0.026</strong></td>
+<td>59.7</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>자세 검증의 효과(개선안 2 → 3, 같은 앞단):</strong> 오답 0.232 → 0.049/장(−79%), 정답 비율 94.5 → 98.7%, 찾은 비율 86.9 → 80.8%(−6.1%p). 검증이 버린 414개 답 가운데 165개가 오답, 249개가 맞는 답이었습니다.</li>
+<li><strong>군집 먼저:</strong> 개선안 3 과 찾은 수·오답이 같고(3,334 대 3,332, 46 대 44) 장당 시간은 342 → 240 ms(−30%). 자세 단계 274 → 180 ms.</li>
+<li><strong>원본 대비(개선안 3 + 군집 먼저):</strong> 찾은 비율 −11.5%p, 오답 6분의 1, 정답 비율 +5.4%p, 시간 55%. 전체 ADD-S AUC 는 찾은 비율에 끌려 낮아 보이므로(놓친 물체는 0), 자세 자체의 정확도는 2절처럼 같은 물체끼리 비교해야 합니다.</li>
+</ul>
+<h3 id="2_2">2. 같은 물체끼리 자세 정확도 (두 방법이 모두 답한 물체만)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>비교</th>
+<th>공통 물체 수</th>
+<th>ADD-S AUC (앞 / 뒤)</th>
+<th>자세 오차 중앙값 mm (앞 / 뒤)</th>
+<th>뒤가 더 정확한 비율</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 L0 → <strong>개선안 3</strong></td>
+<td>3,374</td>
+<td>94.6 → <strong>96.8</strong></td>
+<td>1.79 → <strong>1.73</strong></td>
+<td>56.5%</td>
+</tr>
+<tr>
+<td>원본 L0 → 개선안 3 + 군집 먼저</td>
+<td>3,378</td>
+<td>94.6 → 96.7</td>
+<td>1.79 → 1.73</td>
+<td>56.3%</td>
+</tr>
+<tr>
+<td>개선안 2 → 개선안 3 (검증만 켬)</td>
+<td>3,376</td>
+<td>96.4 → 96.8</td>
+<td>1.78 → 1.73</td>
+<td>55.3%</td>
+</tr>
+<tr>
+<td>개선안 3 → 개선안 3 + 군집 먼저</td>
+<td>3,371</td>
+<td>96.8 → 96.8</td>
+<td>1.73 → 1.73</td>
+<td>0.9% (= 거의 같은 자세)</td>
+</tr>
+<tr>
+<td>원본 L0 → 배포 L4</td>
+<td>2,530</td>
+<td>95.4 → 97.2</td>
+<td>1.77 → 1.70</td>
+<td>56.4%</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>같은 물체에서 개선안 3 의 자세가 원본보다 정확합니다(AUC +2.2, 오차 중앙값 −0.06 mm, 56.5% 에서 더 좋음). 검증이 기하 1위 대신 윤곽·무늬·합의를 통과한 가설의 군집 중심을 고르기 때문입니다. 07 §2.3 의 L4 결과(97.2 대 95.8)와 같은 방향입니다.</li>
+<li>개선안 2 → 3 비교에서 AUC 가 0.4 만 오르는 것은, 검증이 자세를 조금 고치기보다 <strong>틀린 답을 통째로 빼는</strong> 데서 주로 이득을 얻는다는 뜻입니다(1절의 오답 165개 제거).</li>
+<li>군집 먼저는 99% 의 물체에서 개선안 3 과 같은 자세를 냅니다. 속도만 바뀌고 답은 바뀌지 않습니다.</li>
+</ul>
+<h3 id="3-3">3. 논문용 수치 요약 (개선안 3 + 군집 먼저 대 원본)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>표현</th>
+<th>수치</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>재현율 유지</td>
+<td>찾은 비율 92.4 → 80.9% (−11.5%p)</td>
+</tr>
+<tr>
+<td>오답 억제</td>
+<td>오답/장 0.308 → 0.051 (1/6), 정답 비율 93.2 → 98.6%</td>
+</tr>
+<tr>
+<td>같은 물체끼리 자세</td>
+<td>ADD-S AUC 94.6 → 96.7, 오차 중앙값 1.79 → 1.73 mm (3,378개)</td>
+</tr>
+<tr>
+<td>시간</td>
+<td>장당 530 → 240 ms (4090)</td>
+</tr>
+<tr>
+<td>검증 켬/끔 대조</td>
+<td>오답 0.232 → 0.051, 찾은 비율 86.9 → 80.9%</td>
+</tr>
+</tbody>
+</table></div></main></body></html>
