@@ -5,7 +5,7 @@ from feature_extraction import ViTEncoder
 from coarse_point_matching import CoarsePointMatching
 from fine_point_matching import FinePointMatching
 from transformer import GeometricStructureEmbedding
-from model_utils import sample_pts_feats, get_chosen_pixel_feats, validate_refined_poses
+from model_utils import sample_pts_feats, get_chosen_pixel_feats, validate_refined_poses, _tick, _prof, PROF_ON
 
 
 class Net(nn.Module):
@@ -21,7 +21,10 @@ class Net(nn.Module):
         self.fine_point_matching = FinePointMatching(cfg.fine_point_matching)
 
     def forward(self, end_points):
+        _t_all = _tick() if PROF_ON else 0.0
+        _t = _t_all
         dense_pm, dense_fm, dense_po, dense_fo, radius = self.feature_extraction(end_points)
+        _t = _prof('pem.feature_extraction', _t)
 
         # 후보 선택 설정. Geometry로 정렬한 300개를 Mask→Texture→수렴으로 줄인다.
         appe_cfg = getattr(self.cfg, 'appe_rerank', None)
@@ -77,6 +80,7 @@ class Net(nn.Module):
         )
         geo_embedding_o = self.geo_embedding(torch.cat([bg_point, sparse_po], dim=1))
 
+        _t = _prof('pem.sampling+geo_embed', _t)
         # coarse_point_matching
         end_points = self.coarse_point_matching(
             sparse_pm, sparse_fm, geo_embedding_m,
@@ -84,6 +88,7 @@ class Net(nn.Module):
             radius, end_points,
         )
 
+        _t = _prof('pem.coarse_matching', _t)
         # fine_point_matching
         end_points = self.fine_point_matching(
             dense_pm, dense_fm, geo_embedding_m, fps_idx_m,
@@ -91,6 +96,7 @@ class Net(nn.Module):
             radius, end_points
         )
 
+        _t = _prof('pem.fine_matching(incl.verify)', _t)
         if (not self.training and appe_cfg and
                 (appe_cfg.get('verify') or {}).get('enabled') and
                 end_points.get('verify') is not None):
@@ -98,5 +104,6 @@ class Net(nn.Module):
                 end_points['pred_R'], end_points['pred_t'],
                 end_points.get('pred_pose_score'), end_points['appe_rerank'],
                 end_points['verify'])
+        _prof('pem.forward', _t_all)
 
         return end_points

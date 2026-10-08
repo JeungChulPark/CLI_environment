@@ -29,6 +29,8 @@ DEFAULT_VERIFY = {
     "cluster_rotation_deg": 20.0,
     "cluster_translation_mm": 25.0,
     "cluster_min_occupancy": 0.5,
+    "cluster_first": False,
+    "cluster_first_fallback": True,  # 군집 먼저에서 합의 부족으로 거절되면 그 물체만 300개 전체 검증으로 되돌림  # 군집 먼저: 300개를 자세로 묶고 군집 대표만 투영·무늬 검사 (2026-10-07 실험)
     "sym_step_deg": 10,
     "publish": False,      # Detection3D.results[1] 로 신뢰도까지 발행할지
     "dump_topk": 0,        # >0 이면 후보 목록을 검출 행에 덤프(보고서용, 판정 무관)

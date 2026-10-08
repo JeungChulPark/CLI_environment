@@ -9,6 +9,53 @@ from torch.nn import functional as F
 
 import numpy as np
 
+# ---- opt-in stage profiler (VERIFY_PROFILE=1): CUDA-synchronised wall time per stage ----
+import os as _os, time as _time, atexit as _atexit, collections as _collections
+PROF_ON = _os.environ.get('VERIFY_PROFILE') == '1'
+PROF = _collections.defaultdict(float); PROF_N = _collections.defaultdict(int)
+
+
+def _tick():
+    if torch.cuda.is_available():
+        torch.cuda.synchronize()
+    return _time.perf_counter()
+
+
+def _prof(key, t0):
+    """Accumulate key += now - t0 and return now (no-op when the profiler is off)."""
+    if not PROF_ON:
+        return t0
+    t1 = _tick(); PROF[key] += t1 - t0; PROF_N[key] += 1
+    return t1
+
+
+def _timed(key):
+    def deco(fn):
+        if not PROF_ON:
+            return fn
+        @functools.wraps(fn)
+        def w(*a, **k):
+            t0 = _tick()
+            try:
+                return fn(*a, **k)
+            finally:
+                _prof(key, t0)
+        return w
+    return deco
+
+
+def prof_report():
+    if not PROF_ON or not PROF:
+        return
+    n_img = PROF_N.get('pem.forward', 0) or 1
+    print('\n[VERIFY_PROFILE] stage totals (s), calls, ms per PEM forward call  (n forward =', n_img, ')', flush=True)
+    for k, v in sorted(PROF.items(), key=lambda kv: -kv[1]):
+        print(f'  {k:28s} {v:8.2f} s  calls {PROF_N[k]:5d}  {1e3 * v / n_img:8.1f} ms/forward', flush=True)
+
+
+if PROF_ON:
+    _atexit.register(prof_report)
+
 from pointnet2_utils import (
     gather_operation,
     furthest_point_sample,
@@ -390,8 +437,66 @@ def _candidate_shape_metrics(pred_rs, pred_ts, model_pts, appe):
     return out
 
 
+def _cluster_first_reps(pred_rs, pred_ts_phys, geo_scores, ver, names):
+    """Cluster-first verification (opt-in `verify.cluster_first`): group ALL finite candidates by
+    pose (same rotation/translation limits and symmetry table as the convergence stage) BEFORE any
+    projection, keep one representative per cluster (best geometry rank), and remember the cluster
+    size as that representative's weight. Only representatives are projected / texture-scored;
+    the convergence stage then weighs each surviving representative by its cluster size.
+    Returns keep [B, Kmax] (padded with the first representative) and weights [B, P] (0 off-rep)."""
+    B, P = geo_scores.shape
+    rot_limit = float(ver.get('cluster_rotation_deg', 20.0))
+    trans_limit_m = float(ver.get('cluster_translation_mm', 25.0)) / 1000.0
+    sym_tab = ver.get('symmetry_axes') or {}
+    sym_step = int(ver.get('sym_step_deg', 10))
+    reps, weights = [], torch.zeros((B, P), dtype=torch.float32, device=geo_scores.device)
+    for b in range(B):
+        R, t = pred_rs[b], pred_ts_phys[b]
+        valid = (torch.isfinite(R).flatten(1).all(1) & torch.isfinite(t).flatten(1).all(1)
+                 & torch.isfinite(geo_scores[b]) & (torch.linalg.det(R) > 0.99))
+        order = torch.argsort(torch.nan_to_num(geo_scores[b], nan=float('-inf')), descending=True, stable=True)
+        order = order[valid[order]]
+        if order.numel() == 0:
+            reps.append([int(torch.argmax(torch.nan_to_num(geo_scores[b], nan=float('-inf'))).item())])
+            continue
+        sym = _sym_group(sym_tab.get(names[b]), sym_step, R.device, R.dtype)
+        adj = ((_pairwise_angle_deg(R, sym) <= rot_limit) & (torch.cdist(t, t) <= trans_limit_m)
+               & valid[None, :]).cpu().numpy()          # one transfer; greedy pass runs on the host
+        assigned = ~valid.cpu().numpy()
+        mine, wts = [], []
+        for c in order.tolist():
+            if assigned[c]:
+                continue
+            members = np.flatnonzero(adj[c] & ~assigned)
+            assigned[members] = True
+            mine.append(c); wts.append(float(members.size))
+        weights[b, torch.as_tensor(mine, device=R.device)] = torch.as_tensor(wts, device=R.device)
+        reps.append(mine)
+    kmax = max(len(r) for r in reps)
+    keep = torch.tensor([r + [r[0]] * (kmax - len(r)) for r in reps], dtype=torch.long, device=geo_scores.device)
+    return keep, weights
+
+
+def _shape_on_subset(pred_rs, pred_ts, keep, appe):
+    """_candidate_shape_metrics on keep [B, K] only; other candidates read as projection-invalid."""
+    B, P = pred_rs.shape[:2]
+    bi = torch.arange(B, device=keep.device)[:, None]
+    sub = _candidate_shape_metrics(pred_rs[bi, keep], pred_ts[bi, keep], appe.get('_projection_model_pts'), appe)
+    if sub is None:
+        return None
+    shape = dict(sub)
+    for key in ('rendered_bbox_area_px', 'size_ratio', 'mask_iou', 'coverage',
+                'rendered_mask_area_px', 'projection_valid'):
+        v = sub[key]
+        full = (torch.zeros((B, P), dtype=torch.bool, device=v.device) if v.dtype == torch.bool
+                else torch.zeros((B, P), dtype=v.dtype, device=v.device))
+        full[bi, keep] = v
+        shape[key] = full
+    return shape
+
+
 def sequential_candidate_select(pred_rs, pred_ts_m, geo_scores, texture_scores,
-                                shape, names, ver, proposal_ids=None):
+                                shape, names, ver, proposal_ids=None, cluster_weights=None):
     """Apply Mask -> Texture -> pose-convergence selection to all geometry candidates.
 
     The return index always identifies an existing proposal. Rejected batches receive the
@@ -450,20 +555,20 @@ def sequential_candidate_select(pred_rs, pred_ts_m, geo_scores, texture_scores,
             accepted = True
         else:
             sym = _sym_group(sym_tab.get(names[b]), sym_step, R.device, R.dtype)
-            angles = _pairwise_angle_deg(R, sym)
-            translations = torch.cdist(t, t)
-            best_key = None
-            best_cluster = None
-            best_center = None
-            for candidate in survivors.tolist():
-                members = survivors[(angles[candidate, survivors] <= rot_limit)
-                                    & (translations[candidate, survivors] <= trans_limit_m)]
-                # Largest neighbourhood first; ties use the better geometry-ranked centre.
-                key = (int(members.numel()), -int(rank_geo[candidate].item()))
-                if best_key is None or key > best_key:
-                    best_key, best_cluster, best_center = key, members, candidate
-            cluster, center = best_cluster, best_center
-            occupancy = float(cluster.numel()) / float(survivors.numel())
+            Rs, ts = R[survivors], t[survivors]
+            near = ((_pairwise_angle_deg(Rs, sym) <= rot_limit)
+                    & (torch.cdist(ts, ts) <= trans_limit_m))          # [S, S] neighbourhoods
+            w = None if cluster_weights is None else cluster_weights[b]
+            size = (near.sum(1).to(torch.float32) if w is None
+                    else (near.to(torch.float32) * w[survivors][None, :]).sum(1))
+            # Largest neighbourhood first; ties use the better geometry-ranked centre.
+            key = size * float(P + 1) - rank_geo[survivors].to(torch.float32)
+            bi_ = int(torch.argmax(key).item())
+            cluster, center = survivors[near[bi_]], int(survivors[bi_].item())
+            if w is None:
+                occupancy = float(cluster.numel()) / float(survivors.numel())
+            else:   # cluster-first: each surviving representative stands for its whole cluster
+                occupancy = float(w[cluster].sum().item()) / max(float(w[survivors].sum().item()), 1e-9)
             accepted = occupancy >= occupancy_min
             if not accepted:
                 reason = 'convergence_insufficient'
@@ -474,33 +579,42 @@ def sequential_candidate_select(pred_rs, pred_ts_m, geo_scores, texture_scores,
         selected_out.append(chosen)
         proposal = (torch.arange(P, device=R.device) if proposal_ids is None
                     else proposal_ids[b])
+        # Per-candidate rows: one device->host transfer per array (the previous per-element
+        # .item() calls were ~2,400 CUDA syncs per object and dominated verification time).
+        rank_l = rank_geo.tolist(); prop_l = proposal.tolist()
+        geo_l = geo_scores[b].tolist(); miou_l = mask_iou.tolist(); tex_l = texture_scores[b].tolist()
+        pv_l = pose_valid.tolist(); prv_l = projection_valid.tolist()
+        mp_l = mask_pass.tolist(); tp_l = texture_pass.tolist()
+        in_cluster = set(cluster.tolist())
+        has_cov = shape is not None and 'coverage' in shape
+        if has_cov:
+            cov_l = shape['coverage'][b].tolist(); sr_l = shape['size_ratio'][b].tolist()
+            rma_l = shape['rendered_mask_area_px'][b].tolist()
         candidates = []
         for original in geo_order.tolist():
             candidate_row = {
-                'rank_geo': int(rank_geo[original].item()),
+                'rank_geo': int(rank_l[original]),
                 'index300': int(original),
-                'proposal6000_index': int(proposal[original].item()),
-                'geometry_score': _rounded_finite(geo_scores[b, original].item(), 8),
-                'mask_iou': (_rounded_finite(mask_iou[original].item(), 6)
-                             if torch.isfinite(mask_iou[original]) else None),
-                'texture_score': (_rounded_finite(texture_scores[b, original].item(), 8)
-                                  if torch.isfinite(texture_scores[b, original]) else None),
-                'pose_valid': bool(pose_valid[original].item()),
-                'projection_valid': bool(projection_valid[original].item()),
-                'mask_pass': bool(mask_pass[original].item()),
-                'texture_pass': bool(texture_pass[original].item()),
-                'cluster_member': bool((cluster == original).any().item()),
+                'proposal6000_index': int(prop_l[original]),
+                'geometry_score': _rounded_finite(geo_l[original], 8),
+                'mask_iou': (_rounded_finite(miou_l[original], 6)
+                             if math.isfinite(miou_l[original]) else None),
+                'texture_score': (_rounded_finite(tex_l[original], 8)
+                                  if math.isfinite(tex_l[original]) else None),
+                'pose_valid': bool(pv_l[original]),
+                'projection_valid': bool(prv_l[original]),
+                'mask_pass': bool(mp_l[original]),
+                'texture_pass': bool(tp_l[original]),
+                'cluster_member': original in in_cluster,
             }
-            if shape is not None and 'coverage' in shape:
+            if has_cov:
                 candidate_row.update({
-                    'coverage': _rounded_finite(shape['coverage'][b, original].item(), 6),
-                    'size_ratio': _rounded_finite(
-                        shape['size_ratio'][b, original].item(), 6),
-                    'rendered_mask_area_px': int(
-                        shape['rendered_mask_area_px'][b, original].item()),
+                    'coverage': _rounded_finite(cov_l[original], 6),
+                    'size_ratio': _rounded_finite(sr_l[original], 6),
+                    'rendered_mask_area_px': int(rma_l[original]),
                 })
             candidates.append(candidate_row)
-        selected_candidate = candidates[int(rank_geo[chosen].item())]
+        selected_candidate = candidates[int(rank_l[chosen])]
         rows.append({
             'selection_method': 'geometry_mask_texture_convergence',
             'accepted': accepted,
@@ -513,6 +627,8 @@ def sequential_candidate_select(pred_rs, pred_ts_m, geo_scores, texture_scores,
             'mask_survivors': int(mask_pass.sum().item()),
             'texture_survivors': int(texture_pass.sum().item()),
             'cluster_size': int(cluster.numel()),
+            'cluster_weight': (None if cluster_weights is None else float(cluster_weights[b][cluster].sum().item())),
+            'cluster_first_reps': (None if cluster_weights is None else int((cluster_weights[b] > 0).sum().item())),
             'cluster_occupancy': round(occupancy, 6),
             'cluster_center_rank_geo': (None if center is None else
                                         int(rank_geo[center].item())),
@@ -886,7 +1002,14 @@ def independent_candidate_verify(pred_rs, pred_ts, geo_scores, appe, info=None):
     # i.e. Mask failures (zeros, not NaN: per-candidate rows convert these to int).
     # The `topk` above does not do this: with verify on, every candidate is measured.
     cand_k = int(ver.get('candidate_topk', 0) or 0) if production_on else 0
-    if 0 < cand_k < P:
+    cluster_first = bool(ver.get('cluster_first', False)) if production_on else False
+    cluster_weights = None
+    if cluster_first:
+        t_phys = pred_ts if radius is None else pred_ts * radius.reshape(-1, 1, 1)
+        keep, cluster_weights = _cluster_first_reps(pred_rs, t_phys, geo_scores, ver,
+                                                    appe.get('names') or [None] * B)
+        shape = _shape_on_subset(pred_rs, pred_ts, keep, appe)
+    elif 0 < cand_k < P:
         _, keep = torch.topk(torch.nan_to_num(geo_scores, nan=float('-inf')), cand_k, dim=1)
         bi = torch.arange(B, device=keep.device)[:, None]
         sub = _candidate_shape_metrics(
@@ -906,6 +1029,7 @@ def independent_candidate_verify(pred_rs, pred_ts, geo_scores, appe, info=None):
         shape = _candidate_shape_metrics(
             pred_rs, pred_ts, appe.get('_projection_model_pts'), appe)
     if production_on:
+        _t_tex = _tick() if PROF_ON else 0.0
         texture_by_original = torch.full_like(geo_scores, float('nan'))
         mask_min = float(ver.get('mask_iou_min', ver.get('iou_min', 0.420998)))
         texture_chunk = max(1, int(ver.get('texture_chunk', 16)))
@@ -938,12 +1062,66 @@ def independent_candidate_verify(pred_rs, pred_ts, geo_scores, appe, info=None):
                     obj, po.unsqueeze(0).expand(obj.size(0), -1, -1)).argmin(2)
                 texture_by_original[b, subset] = torch.einsum(
                     'nd,knd->kn', fm, fo[nearest]).mean(1).to(texture_by_original.dtype)
+        _prof('verify.texture', _t_tex) if PROF_ON else None
         physical_t = pred_ts.clone()
         if radius is not None:
             physical_t = physical_t * radius.reshape(-1, 1, 1)
         selected, rows = sequential_candidate_select(
             pred_rs, physical_t, geo_scores, texture_by_original, shape,
-            appe.get('names') or [None] * B, ver, appe.get('_proposal_ids'))
+            appe.get('names') or [None] * B, ver, appe.get('_proposal_ids'),
+            cluster_weights=cluster_weights)
+        # Cluster-first fallback (verify.cluster_first_fallback, default on): an object whose
+        # representatives were rejected only for insufficient convergence is re-verified the
+        # original way (all candidates projected and texture-scored) — borderline objects pay
+        # the full cost, confident ones keep the cheap path.
+        if cluster_first and bool(ver.get('cluster_first_fallback', True)) and shape is not None:
+            need = [b for b in range(B) if not rows[b]['accepted']
+                    and rows[b]['rejection_reason'] == 'convergence_insufficient']
+            if need:
+                idx = torch.as_tensor(need, dtype=torch.long, device=geo_scores.device)
+                appe_sub = dict(appe)
+                for key in ('shape_mask', 'K', 'crop_bbox_yxyx'):
+                    appe_sub[key] = appe[key][idx]
+                mp = appe.get('_projection_model_pts')
+                shape_full = _candidate_shape_metrics(
+                    pred_rs[idx], pred_ts[idx], None if mp is None else mp[idx], appe_sub)
+                if shape_full is not None:
+                    for key in ('rendered_bbox_area_px', 'size_ratio', 'mask_iou', 'coverage',
+                                'rendered_mask_area_px', 'projection_valid'):
+                        shape[key][idx] = shape_full[key]
+                    for b in need:
+                        R_all, t_all = pred_rs[b], pred_ts[b]
+                        pose_valid = (torch.isfinite(R_all).flatten(1).all(1)
+                                      & torch.isfinite(t_all).flatten(1).all(1)
+                                      & torch.isfinite(geo_scores[b])
+                                      & (torch.linalg.det(R_all) > 0.99))
+                        mask_pass = (pose_valid & shape['projection_valid'][b]
+                                     & torch.isfinite(shape['mask_iou'][b])
+                                     & (shape['mask_iou'][b] >= mask_min))
+                        candidates = torch.where(mask_pass)[0]
+                        texture_by_original[b] = float('nan')
+                        if not candidates.numel():
+                            continue
+                        pm = appe['dense_pm'][b][::stride]
+                        fm = F.normalize(appe['dense_fm'][b][::stride], dim=1)
+                        po = appe['dense_po'][b]
+                        fo = F.normalize(appe['dense_fo'][b], dim=1)
+                        for subset in candidates.split(texture_chunk):
+                            R = R_all[subset]
+                            t = t_all[subset].reshape(-1, 1, 3)
+                            obj = torch.einsum('kji,knj->kni', R, pm.unsqueeze(0) - t)
+                            nearest = torch.cdist(
+                                obj, po.unsqueeze(0).expand(obj.size(0), -1, -1)).argmin(2)
+                            texture_by_original[b, subset] = torch.einsum(
+                                'nd,knd->kn', fm, fo[nearest]).mean(1).to(texture_by_original.dtype)
+                    sel2, rows2 = sequential_candidate_select(
+                        pred_rs, physical_t, geo_scores, texture_by_original, shape,
+                        appe.get('names') or [None] * B, ver, appe.get('_proposal_ids'))
+                    for b in need:
+                        selected[b] = sel2[b]
+                        rows2[b]['selection_method'] += '+cluster_first_fallback'
+                        rows2[b]['cluster_first_reps'] = int((cluster_weights[b] > 0).sum().item())
+                        rows[b] = rows2[b]
         if exhaustive_capture:
             texture_chunk = max(1, int(ver.get('texture_chunk', 16)))
             for b in range(B):
@@ -1793,3 +1971,13 @@ class WeightedProcrustes(nn.Module):
             src_centroid=src_centroid,
             ref_centroid=ref_centroid
         )
+
+
+# ---- profiler hooks: rebind module-level functions so call sites pick up the timed versions ----
+if PROF_ON:
+    _cluster_first_reps = _timed('verify.cluster')(_cluster_first_reps)
+    _shape_on_subset = _timed('verify.shape_reps(project)')(_shape_on_subset)
+    _candidate_shape_metrics = _timed('verify.shape_full(project)')(_candidate_shape_metrics)
+    sequential_candidate_select = _timed('verify.select+rows')(sequential_candidate_select)
+    independent_candidate_verify = _timed('verify.total')(independent_candidate_verify)
+    validate_refined_poses = _timed('pem.validate_refined')(validate_refined_poses)

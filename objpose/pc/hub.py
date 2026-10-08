@@ -320,6 +320,8 @@ class Hub:
             cfg["runtime"]["verify"] = {"enabled": False}
         if self.a.verify_candidates > 0:   # pose verification measures only the K best geometry candidates
             cfg["runtime"].setdefault("verify", {})["candidate_topk"] = self.a.verify_candidates
+        if self.a.verify_cluster_first:    # cluster the 300 candidates first; project one representative per cluster
+            cfg["runtime"].setdefault("verify", {})["cluster_first"] = True
         cfg["anchor"]["enabled"] = False
         cfg_path = self.out / "sam6d_config.yaml"
         cfg_path.write_text(yaml.safe_dump(cfg, allow_unicode=True, sort_keys=False), encoding="utf-8")
@@ -1142,6 +1144,8 @@ def main():
                     help="turn pose verification off (ablation): PEM's geometry-best pose is published as is")
     ap.add_argument("--verify-candidates", type=int, default=0,
                     help="verify.candidate_topk: pose verification checks only the K best of 300 candidates (0 = all)")
+    ap.add_argument("--verify-cluster-first", action="store_true",
+                    help="verify.cluster_first: group the 300 candidates by pose first and verify one representative per cluster (convergence-rejected objects fall back to the full check)")
     ap.add_argument("--no-memory", action="store_true", help="show raw latest estimates instead of the object memory")
     ap.add_argument("--assoc-gate-m", type=float, default=0.15, help="object memory association distance gate")
     # The memory's existence filter penalises a landmark that is in view and not re-detected,
