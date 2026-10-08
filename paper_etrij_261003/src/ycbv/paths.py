@@ -32,7 +32,7 @@ PREDEF = _p("PREDEF_POSES", WORK / "predefined_poses")           # SAM-6D ISM ut
 TEMPLATES = WORK / "templates"            # templates/obj_0000XX/templates/{rgb,mask,xyz}_i
 FEATURES = WORK / "features"              # DINOv2 cls/appe + HSV caches (ours)
 CORE_REPO = WORK / "core_repo"            # stand-in REPO for Sam6DCore: assets/{clip,model_points,pem_templates}
-OURS_CFG = WORK / "ycbv_objects.yaml"     # generated recognizer config
+OURS_CFG = _p("YCBV_OURS_CFG", WORK / "ycbv_objects.yaml")   # generated recognizer config (override: ViT-L study)
 BASE_CFG = SR / "configs/yolo_ism_objects.yaml"
 
 LABEL = os.environ.get("YCBV_RUN_LABEL", "verification run, RTX 3080 Ti Laptop")
@@ -48,7 +48,7 @@ PROMPTS = ["blue coffee can", "red cracker box", "yellow sugar box", "tomato sou
            "small blue can", "banana", "blue plastic pitcher", "white cleanser bottle", "red bowl",
            "red mug", "power drill", "wooden block", "scissors", "marker pen", "black spring clamp",
            "large black clamp", "red brick"]
-CONSENSUS_OCC = 0.3       # verify.cluster_min_occupancy for YCB (paper); deployed default 0.5
+CONSENSUS_OCC = float(os.environ.get("YCBV_CONSENSUS_OCC", 0.3))   # verify.cluster_min_occupancy for YCB (paper); deployed default 0.5; env override for the 2026-10-08 threshold study
 
 
 def obj_name(oid):

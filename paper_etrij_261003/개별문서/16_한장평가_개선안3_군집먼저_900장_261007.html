@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>16. 한 장 평가 900장 — 원본 / 개선안 2 / 개선안 3 / 개선안 3 + 군집 먼저 / 배포, 같은 물체끼리 ADD-S (RTX 4090, 2026-10-07)</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>16_한장평가_개선안3_군집먼저_900장_261007</title><style>
 :root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
 @media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
 *{box-sizing:border-box}
@@ -20,11 +20,11 @@ hr{border:0;border-top:1px solid var(--line);margin:30px 0}
 li{margin:3px 0}
 
 a{color:var(--acc);word-break:break-all}
-</style></head><body><main><h1>16. 한 장 평가 900장 — 원본 / 개선안 2 / 개선안 3 / 개선안 3 + 군집 먼저 / 배포, 같은 물체끼리 ADD-S (RTX 4090, 2026-10-07)</h1>
+</style></head><body><main><h1 id="16-900-2-3-3-add-s-rtx-4090-2026-10-07">16. 한 장 평가 900장 — 원본 / 개선안 2 / 개선안 3 / 개선안 3 + 군집 먼저 / 배포, 같은 물체끼리 ADD-S (RTX 4090, 2026-10-07)</h1>
 <blockquote>
 <p>YCB-V 900장(BOP19 목록, 정답 물체 4,123개). 원본(L0)·개선안 2·배포(L4)는 2026-10-06 4090 사다리 실행(09 문서), 개선안 3 두 가지는 2026-10-07 15:4x GPU1 실행. 코드는 모두 검증 기록 벡터화 뒤의 <code>CLI_env_paper</code>. 채점 <code>evaluate.py</code>(ADD-S &lt; 지름 10%, VOCap 0~10 cm), 같은 물체끼리 비교 <code>ladder/same_object_adds.py</code>. 결과 <code>src/ycbv/out_4090/results_main_4090.json</code>, <code>same_object_adds_4090.json</code>.</p>
 </blockquote>
-<h2>1. 전체 (900장)</h2>
+<h2 id="1-900">1. 전체 (900장)</h2>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -88,9 +88,14 @@ a{color:var(--acc);word-break:break-all}
 <ul>
 <li><strong>자세 검증의 효과(개선안 2 → 3, 같은 앞단):</strong> 오답 0.232 → 0.049/장(−79%), 정답 비율 94.5 → 98.7%, 찾은 비율 86.9 → 80.8%(−6.1%p). 검증이 버린 414개 답 가운데 165개가 오답, 249개가 맞는 답이었습니다.</li>
 <li><strong>군집 먼저:</strong> 개선안 3 과 찾은 수·오답이 같고(3,334 대 3,332, 46 대 44) 장당 시간은 342 → 240 ms(−30%). 자세 단계 274 → 180 ms.</li>
-<li><strong>원본 대비(개선안 3 + 군집 먼저):</strong> 찾은 비율 −11.5%p, 오답 6분의 1, 정답 비율 +5.4%p, 시간 55%. 전체 ADD-S AUC 는 찾은 비율에 끌려 낮아 보이므로(놓친 물체는 0), 자세 자체의 정확도는 2절처럼 같은 물체끼리 비교해야 합니다.</li>
+<li>
+<p><strong>원본 대비(개선안 3 + 군집 먼저):</strong> 찾은 비율 −11.5%p, 오답 6분의 1, 정답 비율 +5.4%p, 시간 55%. 전체 ADD-S AUC 는 찾은 비율에 끌려 낮아 보이므로(놓친 물체는 0), 자세 자체의 정확도는 2절처럼 같은 물체끼리 비교해야 합니다.</p>
+</li>
+<li>
+<p><strong>BOP AR (공식 bop_toolkit, 2026-10-08 채점):</strong> 원본 L0 82.8, 개선안 2 78.1, 개선안 3 74.1, 개선안 3 + 군집 먼저 74.1. 재현율 지표라 찾은 비율과 같이 내려갑니다(17 문서 표 1·2).</p>
+</li>
 </ul>
-<h2>2. 같은 물체끼리 자세 정확도 (두 방법이 모두 답한 물체만)</h2>
+<h2 id="2">2. 같은 물체끼리 자세 정확도 (두 방법이 모두 답한 물체만)</h2>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -144,7 +149,7 @@ a{color:var(--acc);word-break:break-all}
 <li>개선안 2 → 3 비교에서 AUC 가 0.4 만 오르는 것은, 검증이 자세를 조금 고치기보다 <strong>틀린 답을 통째로 빼는</strong> 데서 주로 이득을 얻는다는 뜻입니다(1절의 오답 165개 제거).</li>
 <li>군집 먼저는 99% 의 물체에서 개선안 3 과 같은 자세를 냅니다. 속도만 바뀌고 답은 바뀌지 않습니다.</li>
 </ul>
-<h2>3. 논문용 수치 요약 (개선안 3 + 군집 먼저 대 원본)</h2>
+<h2 id="3-3">3. 논문용 수치 요약 (개선안 3 + 군집 먼저 대 원본)</h2>
 <div class="tw"><table>
 <thead>
 <tr>

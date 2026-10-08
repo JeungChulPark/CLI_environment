@@ -1,0 +1,869 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>17_논문_비교표_설계_개선안3_261008</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1 id="17-sam-6d-3-2026-10-08">17. 논문 비교표 설계 — SAM-6D 원논문의 비교 방식과 개선안 3 이 내세울 것 (2026-10-08)</h1>
+<blockquote>
+<p>개선안 3(원본 앞단 + 자세 검증, + 군집 먼저)을 주 내용으로 논문을 쓸 때의 표 설계입니다. 1절은 SAM-6D 원논문(arXiv 2311.15707v2)이 다른 논문과 어떻게 비교했는지, 2절은 우리가 그 틀을 어디까지 따르고 어디서 갈라서야 하는지, 3절은 실제 수치로 채운 논문용 표 7개입니다. 수치 출처는 16 문서(900장, RTX 4090), 15 문서(실시간 3회 반복), 14 문서 §10~11(논리), 02 문서(공개 수치)이고, BOP AR 은 2026-10-08 공식 bop_toolkit 으로 새로 채점했습니다(<code>src/ycbv/out_4090/bop/eval/</code>).</p>
+</blockquote>
+<h2 id="1-sam-6d">1. SAM-6D 원논문은 어떻게 비교했나</h2>
+<h3 id="11">1.1 평가 틀</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>SAM-6D 가 쓴 방식</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>데이터</td>
+<td>BOP 핵심 7개(LM-O, T-LESS, TUD-L, IC-BIN, ITODD, HB, YCB-V). 표마다 7개 열 + 평균 열</td>
+</tr>
+<tr>
+<td>인식(분할) 지표</td>
+<td>AP — IoU 0.50~0.95 를 0.05 간격으로 평균한 mAP</td>
+</tr>
+<tr>
+<td>자세 지표</td>
+<td>AR — VSD·MSSD·MSPD 세 오차의 재현율 평균(BOP 공식)</td>
+</tr>
+<tr>
+<td>비교 대상</td>
+<td>분할: ZeroPose, CNOS(FastSAM/SAM). 자세: MegaPose, ZeroPose, GigaPose(정제 유무 † 로 표시, 리더보드 값 ∗ 표시)</td>
+</tr>
+<tr>
+<td>조건 통일</td>
+<td>자세 표를 "지도 학습 마스크(MaskRCNN)" 와 "제로샷 마스크" 두 부분으로 나누고, 같은 마스크를 쓴 행끼리 비교</td>
+</tr>
+<tr>
+<td>절제 실험</td>
+<td>점수 항(의미·외형·기하) 넣고 빼기(표 1 안에 포함), 배경 토큰 대 최적 수송(AR 81.4 → 84.5, 4.31 → 1.36 s), 거친+미세 두 단계(77.6 / 40.2 / 84.5), 미세 단계 트랜스포머 종류(81.7 / 78.4 / 84.5)</td>
+</tr>
+<tr>
+<td>시간</td>
+<td>장당 평균 시간을 <strong>단계별</strong>(분할 / 자세 / 전체)로, GPU 명시(RTX 3090): FastSAM 0.45 + 0.98 = 1.43 s, SAM 2.80 + 1.57 = 4.37 s</td>
+</tr>
+<tr>
+<td>논조</td>
+<td>"outperforms existing methods", "without re-training or finetuning", "without the time-intensive render-based refiner" — 더 높은 AR 과 더 적은 비용을 함께 말함</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="12-ycb-v-sam-6d">1.2 YCB-V 에서 SAM-6D 가 보고한 값 (우리 표의 기준점)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>값</th>
+<th>출처</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>분할 AP (FastSAM / SAM)</td>
+<td>62.1 / 60.5</td>
+<td>Table 1</td>
+</tr>
+<tr>
+<td>자세 AR (FastSAM / SAM, 정제 없음)</td>
+<td>83.4 / 84.5</td>
+<td>Table 2</td>
+</tr>
+<tr>
+<td>장당 시간 (FastSAM / SAM, RTX 3090)</td>
+<td>1.43 / 4.37 s</td>
+<td>Table 6</td>
+</tr>
+<tr>
+<td>우리 4090 재실행 원본 L0 (FastSAM-x, ViT-L, 판정 0.2)</td>
+<td>AR <strong>82.8</strong>, 530 ms</td>
+<td><code>out_4090/bop/eval/ladderL0</code></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>재실행 82.8 은 논문 83.4 와 0.6 차이라 "재현됨" 으로 적을 수 있습니다. 02 문서에 적힌 78.7 은 노트북 초기 실행이라 이제 쓰지 않습니다.</li>
+</ul>
+<h3 id="13">1.3 이 틀에서 바로 가져올 것과 못 가져올 것</h3>
+<ul>
+<li><strong>가져올 것:</strong> YCB-V 에서 AR 과 장당 시간을 같은 GPU 에서 보고, 단계별 시간 표, "같은 입력·같은 모델에서 단계만 바꿈" 식의 절제 실험, 정제 유무처럼 <strong>조건 표시(답하지 않음 가능 여부)</strong> 를 열로 두는 방식.</li>
+<li><strong>못 가져올 것:</strong> 7개 데이터셋 전체(우리는 YCB-V 만 실행), 분할 AP(우리는 분할 단계를 바꾸지 않음), 그리고 <strong>"AR 이 더 높다" 는 주장.</strong> 검증은 답을 빼는 단계라 AR 은 반드시 내려갑니다(82.8 → 74.1). 이 표를 주 표로 세우면 심사에서 집니다.</li>
+</ul>
+<h2 id="2">2. 우리가 내세울 것 — 자세 추정 논문이 아니라는 점</h2>
+<h3 id="21">2.1 질문이 다르다</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>SAM-6D 류 (벤치마크 자세 추정)</th>
+<th>우리 (객체 지도용 인식)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>묻는 것</td>
+<td>물체마다 얼마나 정확한 자세를 내나 (AR)</td>
+<td>지도에 틀린 물체를 남기지 않으면서 쓸 만한 재현율과 실시간 처리율을 유지하나</td>
+</tr>
+<tr>
+<td>출력</td>
+<td>물체마다 <strong>반드시</strong> 답 하나 (장면에 없어도 1위를 냄)</td>
+<td>통과 가설이 없으면 <strong>답하지 않음</strong>(abstention)</td>
+</tr>
+<tr>
+<td>오답 비용</td>
+<td>없음 (재현율 지표만)</td>
+<td>큼 — 틀린 항목은 지도에 남아 계획을 망침</td>
+</tr>
+<tr>
+<td>시간</td>
+<td>장당 1.4~4.4 s 도 허용</td>
+<td>영상 처리율(Hz)·지도 올라가는 시간</td>
+</tr>
+<tr>
+<td>평가 단위</td>
+<td>한 장</td>
+<td>한 장 + 영상 끝 지도 상태(맞음/잘못/못 찾음)</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="22">2.2 내세울 점 네 가지 (모두 수치 있음)</h3>
+<ol>
+<li><strong>가설 집합 검증과 기권.</strong> PEM 가설 300개를 기하 1위로 뭉개지 않고 윤곽·무늬·합의로 채택 여부를 정한다. 학습 없음, 가중치 변경 없음, 입력은 원본과 같음(CAD 만). 900장: 오답/장 0.308 → 0.051(1/6), 정답 비율 93.2 → 98.6%.</li>
+<li><strong>같은 물체끼리는 자세가 더 정확하다.</strong> 두 방법이 모두 답한 3,378개에서 ADD-S AUC 94.6 → 96.7, 오차 중앙값 1.79 → 1.73 mm. "답을 빼서 정밀도를 산 것" 이 아니라 "남긴 답도 더 좋다" 는 근거.</li>
+<li><strong>군집 먼저 검증으로 비용을 줄여 실시간에 들어간다.</strong> 답 99% 동일, 장당 342 → 240 ms(원본 530 의 45%), 실시간 처리율 2배(260901 3.63 → 7.54 Hz, YCB-V 1.76 → 3.14 Hz).</li>
+<li><strong>지도 결과가 안정적이다.</strong> 실제 영상 260901 3회 모두 최종 지도 8/0, 원본은 6/3·6/3·8/1.</li>
+</ol>
+<h3 id="23">2.3 미리 인정할 것 (표에 함께 둔다)</h3>
+<ul>
+<li>찾은 비율 92.4 → 80.9%(−11.5%p), BOP AR 82.8 → 74.1. 둘 다 재현율 지표라 기권의 직접 비용이다. 검증이 버린 414개 중 249개는 맞는 답이었다(16 문서).</li>
+<li>YCB-V 실시간에서 원본 대비 잘못 항목 차이는 작다(3회 평균 46.7 → 43.7, 폭 겹침). 오답 억제 근거는 검증 켬/끔 대조(173 → 36~47)와 900장, 실제 영상에서 가져온다.</li>
+<li>속도 이득의 절반은 ViT-L → ViT-S 교체(개선안 2 단계, 181 → 29 ms)에서 온다. 검증 자체는 비용이고, 군집 먼저는 그 비용을 줄인 것이다.</li>
+</ul>
+<h3 id="24">2.4 한 줄 자리 잡기</h3>
+<blockquote>
+<p>"자세 추정기를 바꾸는 논문이 아니다. 자세 추정기(SAM-6D) 위에 <strong>답할지 말지를 결정하는 검증 단계</strong> 를 더해, 재현율 일부를 내주고 객체 지도의 오답을 없애며, 군집 먼저로 그 검증을 실시간 예산 안에 넣는 논문이다."</p>
+</blockquote>
+<h2 id="3">3. 논문용 표 (실제 수치)</h2>
+<p>표 번호는 원고 순서 제안입니다. 모두 RTX 4090, YCB-V BOP19 900장(정답 물체 4,123개), 실시간은 15 문서 3회 반복 값입니다.</p>
+<h3 id="1-bop-sam-6d-ycb-v">표 1. BOP 형식 비교 — SAM-6D 와 같은 지표로 (YCB-V, 제로샷 마스크, 정제 유무로 묶음)</h3>
+<p>SAM-6D 표 2 형식을 따르되 <strong>정제(render-and-compare 자세 정제) 없음 / 있음</strong> 으로 행을 묶고, <strong>"답하지 않음 가능"</strong> 과 <strong>오답/장</strong> 열을 더해 AR 경쟁이 아니라는 점을 표 안에서 보입니다. 공정한 직접 비교 상대는 (a) 묶음입니다. 공개 수치는 02 문서(BOP24 결과, 각 논문 표), 우리 행은 4090 재실행.</p>
+<p><strong>(a) 정제 없음 — 한 번에 낸 자세 (우리와 같은 조건)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>입력</th>
+<th>마스크/후보</th>
+<th>답하지 않음</th>
+<th>YCB-V AR</th>
+<th>장당 시간 · GPU</th>
+<th>오답/장</th>
+<th>출처</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MegaPose 거친 단계</td>
+<td>RGB</td>
+<td>CNOS</td>
+<td>×</td>
+<td>28.1</td>
+<td>—</td>
+<td>—</td>
+<td>S1 Table 2</td>
+</tr>
+<tr>
+<td>ZeroPose</td>
+<td>RGB-D</td>
+<td>자체</td>
+<td>×</td>
+<td>25.7</td>
+<td>—</td>
+<td>—</td>
+<td>S1 Table 2</td>
+</tr>
+<tr>
+<td>GigaPose 거친 단계</td>
+<td>RGB</td>
+<td>CNOS</td>
+<td>×</td>
+<td>27.8</td>
+<td>0.4 s, V100</td>
+<td>—</td>
+<td>S2 Table 1</td>
+</tr>
+<tr>
+<td>FreeZe (정제 없음)</td>
+<td>RGB-D</td>
+<td>CNOS</td>
+<td>×</td>
+<td>78.7</td>
+<td>—</td>
+<td>—</td>
+<td>S5 Table 1</td>
+</tr>
+<tr>
+<td>Co-op 거친 단계</td>
+<td>RGB-D</td>
+<td>CNOS</td>
+<td>×</td>
+<td>85.3</td>
+<td>1.0 s, 3090 Ti</td>
+<td>—</td>
+<td>S6 Table 3</td>
+</tr>
+<tr>
+<td>SAM-6D (FastSAM), 논문값</td>
+<td>RGB-D</td>
+<td>자체 ISM</td>
+<td>×</td>
+<td>83.4</td>
+<td>1.43 s, 3090</td>
+<td>—</td>
+<td>S1 Table 2, 6</td>
+</tr>
+<tr>
+<td><strong>GigaPose 거친 단계, 같은 GPU 재측정</strong> (nv-nguyen/gigapose, CNOS-FastSAM 검출, 정제 없음)</td>
+<td>RGB</td>
+<td>CNOS</td>
+<td>×</td>
+<td><strong>27.9</strong></td>
+<td><strong>0.30 s + CNOS 0.19 s, 4090 (.3)</strong></td>
+<td><strong>3.53</strong></td>
+<td>이 문서</td>
+</tr>
+<tr>
+<td>SAM-6D (SAM), 논문값</td>
+<td>RGB-D</td>
+<td>자체 ISM</td>
+<td>×</td>
+<td>84.5</td>
+<td>4.37 s, 3090</td>
+<td>—</td>
+<td>S1 Table 2, 6</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>(b) 정제 있음 — 참고 (자세를 여러 번 고친 뒤의 값, 시간 대부분이 정제 비용)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>입력</th>
+<th>마스크/후보</th>
+<th>답하지 않음</th>
+<th>YCB-V AR</th>
+<th>장당 시간 · GPU</th>
+<th>오답/장</th>
+<th>출처</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MegaPose + 정제 (Teaser++)</td>
+<td>RGB-D</td>
+<td>CNOS</td>
+<td>×</td>
+<td>76.4</td>
+<td>142 s</td>
+<td>—</td>
+<td>S7 Table 2</td>
+</tr>
+<tr>
+<td>ZeroPose + 정제</td>
+<td>RGB-D</td>
+<td>CNOS</td>
+<td>×</td>
+<td>65.3</td>
+<td>16.2 s</td>
+<td>—</td>
+<td>S7 Table 2</td>
+</tr>
+<tr>
+<td>GigaPose + GenFlow</td>
+<td>RGB-D</td>
+<td>CNOS</td>
+<td>×</td>
+<td>82.5</td>
+<td>11.1 s</td>
+<td>—</td>
+<td>S7 Table 2</td>
+</tr>
+<tr>
+<td>FoundPose + 정제</td>
+<td>RGB</td>
+<td>CNOS</td>
+<td>×</td>
+<td>69.0</td>
+<td>20.5 s, P100</td>
+<td>—</td>
+<td>S3 Table 1</td>
+</tr>
+<tr>
+<td>FreeZe + 정제</td>
+<td>RGB-D</td>
+<td>CNOS</td>
+<td>×</td>
+<td>85.3</td>
+<td>13.5 s</td>
+<td>—</td>
+<td>S5 Table 1</td>
+</tr>
+<tr>
+<td>Co-op 5가설 + 정제</td>
+<td>RGB-D</td>
+<td>CNOS</td>
+<td>×</td>
+<td>88.7</td>
+<td>7.2 s, 3090 Ti</td>
+<td>—</td>
+<td>S6 Table 3</td>
+</tr>
+<tr>
+<td>FoundationPose</td>
+<td>RGB-D</td>
+<td>SAM-6D 마스크</td>
+<td>×</td>
+<td>88.9</td>
+<td>29.3 s</td>
+<td>—</td>
+<td>S7 Table 2</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>(c) 우리 (정제 없음, RGB-D, 자체 ISM, RTX 4090)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>답하지 않음</th>
+<th>YCB-V AR</th>
+<th>장당 시간</th>
+<th>오답/장</th>
+<th>정답 비율</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SAM-6D 원본 L0, 우리 재실행</strong> (FastSAM-x, ViT-L, 판정 0.2)</td>
+<td>×</td>
+<td><strong>82.8</strong></td>
+<td><strong>0.53 s</strong></td>
+<td>0.308</td>
+<td>93.2%</td>
+</tr>
+<tr>
+<td>개선안 2 (ViT-S, 판정 0.5, 검증 끔)</td>
+<td>×</td>
+<td>78.1</td>
+<td>0.33 s</td>
+<td>0.232</td>
+<td>94.5%</td>
+</tr>
+<tr>
+<td><strong>개선안 3 (+ 자세 검증)</strong></td>
+<td><strong>○</strong></td>
+<td>74.1</td>
+<td>0.34 s</td>
+<td><strong>0.049</strong></td>
+<td><strong>98.7%</strong></td>
+</tr>
+<tr>
+<td><strong>개선안 3 + 군집 먼저</strong></td>
+<td><strong>○</strong></td>
+<td>74.1</td>
+<td><strong>0.24 s</strong></td>
+<td>0.051</td>
+<td>98.6%</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>읽는 법: (a) 에서 우리 재실행 82.8 은 SAM-6D 논문값 83.4 와 0.6 차이로 재현됨. 개선안 3 의 74.1 은 기권의 비용이며, 같은 조건(정제 없음, 1초 아래)에서 오답/장 0.05 와 정답 비율 98.6% 를 내는 방법은 우리뿐이다. (b) 의 85~89 는 장당 7~142 초를 쓴 값이라 실시간 지도에는 들어오지 못한다.</li>
+<li><strong>같은 GPU 재측정(GigaPose 거친 단계, 2026-10-08):</strong> 호스트 .3(RTX 4090)에서 공개 코드·체크포인트·사전 렌더 템플릿·BOP 기본 CNOS-FastSAM 검출로 900장을 돌렸다. 공식 BOP AR 27.9(논문값 27.8 재현, VSD 17.4 / MSSD 21.0 / MSPD 45.3). 우리 채점 규약으로는 답 4,123개 중 정답 946개(찾은 비율 22.9%, 정답 비율 22.9%), 오답/장 3.53, ADD-S AUC 51.5. 시간은 GigaPose 단계 중앙값 0.30 s(CSV time 열) + CNOS 검출 0.19 s(검출 파일 보고값, 별도 GPU) ≈ 0.49 s/장, 처리 전체 벽시계 2.77장/s. RGB 전용 거친 단계라 깊이를 쓰는 우리와 조건이 다르고, 정제 없이는 정확도가 낮다는 것이 논문 표 1 과 같다. 결과: <code>out_4090/bop_gigapose/eval/gigapose_ycbv-test/scores_bop19.json</code>, <code>results_gigapose_4090.json</code>, <code>pred_ladder_gigapose.json</code>. 설치·실행 기록은 메모리 <code>gigapose-on-host-3</code> 참고.</li>
+<li>공개 방법들의 오답/장은 보고된 적이 없어 "—" 로 둔다. 모두 물체마다 반드시 답하므로 구조상 장면에 없는 물체도 답에 들어간다.</li>
+<li>시간은 GPU 가 서로 달라 그대로 비교할 수 없다는 각주를 단다(02 문서 1.2). (a) 의 거친 단계 RGB 행(28.1, 25.7, 27.8)은 깊이 없이 낸 값이라 참고로만 둔다.</li>
+<li>(a)·(b) 의 FreeZe 정제 없음 시간, MegaPose·ZeroPose 거친 단계 시간은 논문에 YCB-V 단독 값이 없어 비워 둔다. 투고 전 원문 표와 다시 대조한다.</li>
+</ul>
+<h3 id="2-900">표 2. 주 표 — 정밀도 우선 지표 (900장)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>장당 시간</th>
+<th>찾은 비율</th>
+<th>답한 수</th>
+<th>정답 비율</th>
+<th>오답/장</th>
+<th>ADD-S AUC</th>
+<th>BOP AR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 SAM-6D (L0: FastSAM-x → ViT-L → 판정 0.2 → PEM 기하 1위)</td>
+<td>530 ms</td>
+<td><strong>92.4%</strong></td>
+<td>4,087</td>
+<td>93.2%</td>
+<td>0.308</td>
+<td><strong>91.9</strong></td>
+<td><strong>82.8</strong></td>
+</tr>
+<tr>
+<td>개선안 2 (FastSAM-x → ViT-S → 판정 0.5 → PEM, 검증 끔)</td>
+<td>327 ms</td>
+<td>86.9%</td>
+<td>3,790</td>
+<td>94.5%</td>
+<td>0.232</td>
+<td>86.4</td>
+<td>78.1</td>
+</tr>
+<tr>
+<td>개선안 3 (= 개선안 2 + 자세 검증)</td>
+<td>342 ms</td>
+<td>80.8%</td>
+<td>3,376</td>
+<td><strong>98.7%</strong></td>
+<td><strong>0.049</strong></td>
+<td>79.2</td>
+<td>74.1</td>
+</tr>
+<tr>
+<td><strong>개선안 3 + 군집 먼저</strong></td>
+<td><strong>240 ms</strong></td>
+<td>80.9%</td>
+<td>3,380</td>
+<td>98.6%</td>
+<td>0.051</td>
+<td>79.3</td>
+<td>74.1</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>원본 대비 개선안 3 + 군집 먼저: 오답 1/6, 정답 비율 +5.4%p, 시간 45%, 찾은 비율 −11.5%p.</li>
+<li>ADD-S AUC 와 BOP AR 은 놓친 물체를 0 으로 세는 재현율 지표라 찾은 비율에 끌려 내려간다. 자세 정확도는 표 3 으로 읽는다고 본문에 쓴다.</li>
+</ul>
+<h3 id="3_1">표 3. 같은 물체끼리 자세 정확도 (두 방법이 모두 답한 물체만)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>비교</th>
+<th>공통 물체 수</th>
+<th>ADD-S AUC (앞 → 뒤)</th>
+<th>오차 중앙값 mm (앞 → 뒤)</th>
+<th>뒤가 더 정확한 비율</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 L0 → 개선안 3</td>
+<td>3,374</td>
+<td>94.6 → <strong>96.8</strong></td>
+<td>1.79 → <strong>1.73</strong></td>
+<td>56.5%</td>
+</tr>
+<tr>
+<td>원본 L0 → 개선안 3 + 군집 먼저</td>
+<td>3,378</td>
+<td>94.6 → 96.7</td>
+<td>1.79 → 1.73</td>
+<td>56.3%</td>
+</tr>
+<tr>
+<td>개선안 2 → 개선안 3 (검증만 켬)</td>
+<td>3,376</td>
+<td>96.4 → 96.8</td>
+<td>1.78 → 1.73</td>
+<td>55.3%</td>
+</tr>
+<tr>
+<td>개선안 3 → 개선안 3 + 군집 먼저</td>
+<td>3,371</td>
+<td>96.8 → 96.8</td>
+<td>1.73 → 1.73</td>
+<td>0.9% (거의 같은 자세)</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>검증은 자세를 조금 고치기보다 틀린 답을 통째로 빼서 이득을 얻는다(개선안 2 → 3 에서 AUC +0.4, 오답 165개 제거). 군집 먼저는 답을 바꾸지 않는다.</li>
+</ul>
+<h3 id="4-900">표 4. 검증 단계 분석 — 절제와 탈락 사유 (900장)</h3>
+<p><strong>4a. 켬/끔 절제 (같은 앞단 FastSAM-x → ViT-S → 판정 0.5)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>검증</th>
+<th>군집 먼저</th>
+<th>찾은 비율</th>
+<th>정답 비율</th>
+<th>오답/장</th>
+<th>장당 시간</th>
+<th>자세 단계 시간</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>끔</td>
+<td>—</td>
+<td>86.9%</td>
+<td>94.5%</td>
+<td>0.232</td>
+<td>327 ms</td>
+<td>273 ms</td>
+</tr>
+<tr>
+<td>켬</td>
+<td>끔</td>
+<td>80.8%</td>
+<td>98.7%</td>
+<td>0.049</td>
+<td>342 ms</td>
+<td>274 ms</td>
+</tr>
+<tr>
+<td>켬</td>
+<td>켬</td>
+<td>80.9%</td>
+<td>98.6%</td>
+<td>0.051</td>
+<td>240 ms</td>
+<td>180 ms</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>검증이 버린 답 414개: 오답 165, 맞는 답 249. 군집 먼저: 군집 수 중앙값 68(300개 중), 합의 부족으로 전체 재검증(되돌림)된 채택 72건.</li>
+</ul>
+<p><strong>4b. 탈락 사유 분포 (기권이 어디서 나오나)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>탈락 사유</th>
+<th>개선안 3</th>
+<th>개선안 3 + 군집 먼저</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>합의 부족 (convergence_insufficient)</td>
+<td>214</td>
+<td>203</td>
+</tr>
+<tr>
+<td>무늬 통과 가설 없음 (texture_filter_empty)</td>
+<td>90</td>
+<td>102</td>
+</tr>
+<tr>
+<td>최종 무늬 점수 미달 (final_texture_below_threshold)</td>
+<td>44</td>
+<td>39</td>
+</tr>
+<tr>
+<td>윤곽 통과 가설 없음 (mask_filter_empty)</td>
+<td>42</td>
+<td>46</td>
+</tr>
+<tr>
+<td>최종 윤곽 IoU 미달 (final_mask_below_threshold)</td>
+<td>26</td>
+<td>22</td>
+</tr>
+<tr>
+<td><strong>합계</strong></td>
+<td><strong>416</strong></td>
+<td><strong>412</strong></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>절반이 "가설끼리 합의가 없다" 에서 나온다. 기하 점수 1위가 혼자 튀는 경우를 거르는 것이 검증의 핵심이라는 근거.</li>
+</ul>
+<h3 id="4c-900-2026-10-08">표 4c. 합의 문턱 운영 곡선 — 기권의 비용을 조절하는 손잡이 (900장, 2026-10-08 추가)</h3>
+<p>4b 의 탈락 사유를 답 하나하나 추적해 보니(검증 끔 대비, <code>out_4090/reject_analysis_hybS05_900.json</code>), 버린 414개 가운데 맞는 답이 277개, 오답이 137개였고 맞는 답의 70%(192개)가 <strong>합의 부족</strong> 한 관문에서 나왔습니다. 그 답들의 ADD-S 는 지름의 1.7%(중앙값)로 경계선이 아니라 정확한 자세였습니다. 다른 두 "통과 가설 없음" 관문은 버린 것의 70~80% 가 오답이라 제 역할을 합니다. (16 문서의 "맞는 답 249 / 오답 165" 는 순 변화량이며, 차이 약 27개는 검증이 남긴 답의 자세를 기하 1위에서 군집 중심으로 바꿔 오답을 정답으로 고친 몫입니다.)</p>
+<p>그래서 합의 문턱(<code>verify.cluster_min_occupancy</code>)만 0.30 → 0.20 → 0.15 로 낮춰 900장을 다시 돌렸습니다(개선안 3 + 군집 먼저, 나머지 설정 동일, <code>results_occ_study_4090.json</code>, <code>same_object_occ_study_4090.json</code>).</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>합의 문턱</th>
+<th>찾은 비율</th>
+<th>답한 수</th>
+<th>정답 비율</th>
+<th>오답/장</th>
+<th>ADD-S AUC</th>
+<th>BOP AR</th>
+<th>같은 물체끼리 ADD-S (원본 94.6 →)</th>
+<th>장당 시간</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0.30 (16 문서 기본)</td>
+<td>80.9%</td>
+<td>3,380</td>
+<td>98.6%</td>
+<td>0.051</td>
+<td>79.3</td>
+<td>74.1</td>
+<td>96.7</td>
+<td>240 ms</td>
+</tr>
+<tr>
+<td>0.20</td>
+<td>83.0%</td>
+<td>3,477</td>
+<td>98.4%</td>
+<td>0.060</td>
+<td>81.4</td>
+<td>75.8</td>
+<td>96.5</td>
+<td>232 ms</td>
+</tr>
+<tr>
+<td><strong>0.15</strong></td>
+<td><strong>84.3%</strong></td>
+<td>3,531</td>
+<td>98.4%</td>
+<td>0.063</td>
+<td>82.6</td>
+<td>77.0</td>
+<td>96.5</td>
+<td>232 ms</td>
+</tr>
+<tr>
+<td>(참고) 원본 L0</td>
+<td>92.4%</td>
+<td>4,087</td>
+<td>93.2%</td>
+<td>0.308</td>
+<td>91.9</td>
+<td>82.8</td>
+<td>—</td>
+<td>530 ms</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>0.30 → 0.15: 맞는 답 140개 회복(찾은 비율 +3.4%p, BOP AR +2.9), 오답은 900장에서 11개 증가(0.051 → 0.063/장, 원본의 1/5). 정답 비율 98.4% 이상과 남긴 답의 자세 정확도(96.5)는 유지. 시간은 되돌림 횟수가 줄어 오히려 8 ms 단축.</li>
+<li>기록된 점수로 추정하면 0.15 아래에서는 회복이 거의 없고(0.10 에서 +4개) 오답만 늘 수 있어 더 내리지 않는다.</li>
+<li><strong>논문 쓰임 (2026-10-08 결정: 기본 운영점은 0.30 유지):</strong> 우리 논문의 핵심 지표는 오답/장이므로 0.15 로 내려 정답 비율 3.4%p 를 얻는 대신 오답을 0.051 → 0.063 으로 늘리는 선택은 하지 않는다. 세 점은 "재현율–오답 운영 곡선" 그림 한 장으로 두고 "문턱 하나로 찾는 수와 오답을 맞바꿀 수 있고, 우리는 오답 쪽을 택했다"는 설명 재료로 쓴다. 어느 점에서도 정밀도 98% 이상, 오답/장은 원본의 1/5 이하.</li>
+<li><strong>실험별 합의 문턱 (실행 기록 <code>sam6d_config.yaml</code> 확인):</strong> YCB-V 900장(표 2~5)과 YCB-V 12영상 실시간(표 6)은 0.3, 260901 실제 영상 실시간(표 6)은 배포 기본값 0.5. 본문 실험 설정에 "YCB-V 는 0.3, 실제 영상은 0.5" 로 적는다. 다시 잴 필요는 없다.</li>
+<li>재현 방법: <code>YCBV_CONSENSUS_OCC=0.15 python run_ours.py --mode text --orig-ism 0.5 --orig-desc dinov2_vits14 --orig-seg fastsam_full --verify-cluster-first</code> (<code>src/ycbv/paths.py</code> 의 CONSENSUS_OCC 를 환경 변수로 덮어쓸 수 있게 2026-10-08 수정, 기본값 0.3 유지).</li>
+</ul>
+<h3 id="5-sam-6d-6-900-rtx-4090">표 5. 단계별 처리 시간 — SAM-6D 표 6 형식 (900장 중앙값, RTX 4090)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>후보 영역</th>
+<th>특징</th>
+<th>판정</th>
+<th>자세 추정 + 검증</th>
+<th>전체</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 L0 (FastSAM-x, ViT-L)</td>
+<td>9</td>
+<td>181</td>
+<td>6</td>
+<td>320 (검증 없음)</td>
+<td>530</td>
+</tr>
+<tr>
+<td>개선안 2 (FastSAM-x, ViT-S)</td>
+<td>9</td>
+<td>29</td>
+<td>6</td>
+<td>273 (검증 없음)</td>
+<td>327</td>
+</tr>
+<tr>
+<td>개선안 3</td>
+<td>55 (후보+특징+판정)</td>
+<td></td>
+<td></td>
+<td>274 (PEM ≈ 90 + 검증)</td>
+<td>342</td>
+</tr>
+<tr>
+<td>개선안 3 + 군집 먼저</td>
+<td>55</td>
+<td></td>
+<td></td>
+<td>180</td>
+<td>240</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>비교용 SAM-6D 논문값(RTX 3090, 7개 데이터셋 평균): 분할 0.45 + 자세 0.98 = 1.43 s. 우리 4090 재실행 원본이 0.53 s 인 것은 GPU 차이와 YCB-V 만 잰 차이라고 각주.</li>
+<li>검증 비용 변화(36장 프로파일, E 묶음): 372 → 143(기록 벡터화) → 54 ms(군집 먼저). 벡터화는 구현 수정이라 각주로만.</li>
+</ul>
+<h3 id="6-3-rtx-4090-orb-slam3">표 6. 실시간 객체 지도 — 3회 반복 (RTX 4090 + ORB-SLAM3)</h3>
+<p><strong>6a. 실제 영상 260901_cbnu_bigeightcircle (물체 8개)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>최종 지도 맞음 / 잘못 (3회)</th>
+<th>못 찾은 물체</th>
+<th>점수 끝 / 평균</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 0.5</td>
+<td>3.63 Hz</td>
+<td>6/3, 6/3, 8/1 → 평균 6.7 / 2.3</td>
+<td>공룡 인형·사프란 (2회)</td>
+<td>66.0 / 55.7%</td>
+</tr>
+<tr>
+<td><strong>개선안 3 + 군집 먼저</strong></td>
+<td><strong>7.54 Hz</strong></td>
+<td><strong>8/0, 8/0, 8/0</strong></td>
+<td>–</td>
+<td><strong>100 / 78.9%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>6b. YCB-V 12영상 (물체 55개, 3회 평균)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>처리 프레임</th>
+<th>찾은 객체</th>
+<th>잘못 올라간 항목</th>
+<th>오답률</th>
+<th>점수 끝</th>
+<th>지도 ADD-S</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 0.5</td>
+<td>1.76 Hz</td>
+<td>1,220</td>
+<td>53.7 (53~54)</td>
+<td>46.7 (44~49)</td>
+<td>46.5%</td>
+<td>52.8%</td>
+<td>89.2</td>
+</tr>
+<tr>
+<td>개선안 3 + 군집 먼저</td>
+<td><strong>3.14 Hz</strong></td>
+<td>2,172</td>
+<td><strong>54.0</strong></td>
+<td>43.7 (42~47)</td>
+<td>44.7%</td>
+<td>54.8%</td>
+<td><strong>90.7</strong></td>
+</tr>
+<tr>
+<td>(검증 끔/켬 대조, 1회)</td>
+<td></td>
+<td></td>
+<td>55 → 53</td>
+<td><strong>173 → 36~47</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>6b 의 원본 대비 잘못 항목 차이는 작다고 본문에 적고, 오답 억제 근거는 검증 켬/끔 행(173 → 36~47)으로 든다. 처리율 1.8배, 지도 ADD-S +1.5, 찾은 수 같음은 그대로 쓴다.</li>
+</ul>
+<h3 id="7-900">표 7 (보조). 일반성 — 같은 검증을 다른 앞단에 붙였을 때 (900장)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>앞단</th>
+<th>검증</th>
+<th>찾은 비율</th>
+<th>정답 비율</th>
+<th>오답/장</th>
+<th>BOP AR</th>
+<th>장당 시간</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FastSAM-x 전체 분할 + 원본 판정 (개선안 3)</td>
+<td>켬</td>
+<td>80.8%</td>
+<td>98.7%</td>
+<td>0.049</td>
+<td>74.1</td>
+<td>342 ms</td>
+</tr>
+<tr>
+<td>YOLO-World 문구 상자 + 관문 (배포 L4)</td>
+<td>켬</td>
+<td>60.9%</td>
+<td>99.1%</td>
+<td>0.026</td>
+<td>56.2</td>
+<td>514 ms</td>
+</tr>
+<tr>
+<td>YOLO-World 문구 상자 + 관문 (L3)</td>
+<td>끔</td>
+<td>63.5%</td>
+<td>96.2%</td>
+<td>0.114</td>
+<td>57.9</td>
+<td>217 ms</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>"검증은 앞단에 독립적으로 정밀도를 올린다" 는 보조 주장. L3 의 찾은 비율·정답 비율은 노트북 실행(09 문서 참고 행), BOP AR 과 시간은 4090.</li>
+</ul>
+<h2 id="4">4. 표 배치와 논리 흐름</h2>
+<ol>
+<li>서론 끝에 2.4 의 한 줄. 문제 정의는 "못 찾은 물체(다음 프레임에 기회)보다 틀린 물체(지도에 남음)가 비싸다".</li>
+<li><strong>표 1</strong> 을 먼저 두어 SAM-6D 와 같은 지표로 우리 위치를 숨기지 않고 보인다. 그 다음 "그래서 우리는 다른 질문을 묻는다" 로 <strong>표 2</strong> 로 넘어간다.</li>
+<li><strong>표 3</strong> 으로 "남긴 답은 더 정확하다", <strong>표 4</strong> 로 "어디서 기권이 나오고 비용이 얼마인가", <strong>표 5</strong> 로 "실시간 예산 안에 들어간다".</li>
+<li><strong>표 6</strong> 이 결론 표. 실제 영상 3회 8/0 을 앞에, YCB-V 를 뒤에 두고 YCB-V 의 한계를 같은 문단에 쓴다.</li>
+<li>표현은 14 문서 §11.2 를 따른다. 쓰지 않을 말: "원본을 능가", "더 잘 찾는다", "오답 0"(무조건), "빠르다"(단독).</li>
+</ol>
+<h2 id="5">5. 남은 일</h2>
+<ul>
+<li>개선안 3 + 군집 먼저의 BOP AR 채점(2026-10-08 진행 중, <code>out_4090/bop/eval/ladderhybS05cf_ycbv-test/</code>). 끝나면 표 1·2 의 74.1 를 채운다.</li>
+<li><strong>같은 GPU 재측정(E4):</strong> Co-op(arXiv 2503.17731)와 FreeZe(arXiv 2312.00947)는 2026-10-08 확인 결과 공개 코드가 없다(두 GitHub 저장소 모두 프로젝트 웹페이지 소스뿐). 공개 코드가 있는 GigaPose 거친 단계는 .3(RTX 4090)에서 900장 실행을 마쳐 표 1 (a)에 넣었다(AR 27.9, 0.30 + 0.19 s). 같은 GPU 에서 정제 없는 RGB-D 상대가 더 필요하면 MegaPose 거친 단계(happypose)가 다음 후보다.</li>
+<li>표 7 의 L3 찾은 비율·정답 비율을 4090 에서 다시 채점해 맞춘다(지금은 노트북 값).</li>
+<li>합의 문턱은 0.30 유지로 결정(2026-10-08, 표 4c). 실시간 지도 재측정 없음. 본문 실험 설정에 실험별 문턱(YCB-V 0.3, 실제 영상 0.5)만 적는다.</li>
+<li>최종 수치는 더 큰 GPU(.41 서버 RTX PRO 6000 또는 RTX 5090)에서 3회 반복(03 목차).</li>
+<li>분할 AP(BOP Task 5)는 우리가 분할 단계를 바꾸지 않으므로 싣지 않는다. 심사에서 요구하면 원본 ISM 값(62.1)을 그대로 인용한다.</li>
+</ul></main></body></html>

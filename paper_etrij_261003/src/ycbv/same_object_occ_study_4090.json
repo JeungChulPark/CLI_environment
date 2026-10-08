@@ -1,0 +1,102 @@
+{
+ "per_method": {
+  "L0_원본": {
+   "answered": 4087,
+   "correct": 3810,
+   "adds_auc_all_answered": 92.7,
+   "median_err_mm": 1.85
+  },
+  "개선안3_cf_occ030": {
+   "answered": 3380,
+   "correct": 3334,
+   "adds_auc_all_answered": 96.7,
+   "median_err_mm": 1.73
+  },
+  "개선안3_cf_occ020": {
+   "answered": 3477,
+   "correct": 3423,
+   "adds_auc_all_answered": 96.5,
+   "median_err_mm": 1.73
+  },
+  "개선안3_cf_occ015": {
+   "answered": 3531,
+   "correct": 3474,
+   "adds_auc_all_answered": 96.5,
+   "median_err_mm": 1.73
+  }
+ },
+ "pairs": {
+  "L0_원본 vs 개선안3_cf_occ030": {
+   "common_answered": 3378,
+   "L0_원본": {
+    "adds_auc": 94.6,
+    "median_err_mm": 1.79
+   },
+   "개선안3_cf_occ030": {
+    "adds_auc": 96.7,
+    "median_err_mm": 1.73
+   },
+   "B_better_frac": 0.563
+  },
+  "L0_원본 vs 개선안3_cf_occ020": {
+   "common_answered": 3475,
+   "L0_원본": {
+    "adds_auc": 94.6,
+    "median_err_mm": 1.8
+   },
+   "개선안3_cf_occ020": {
+    "adds_auc": 96.5,
+    "median_err_mm": 1.73
+   },
+   "B_better_frac": 0.562
+  },
+  "L0_원본 vs 개선안3_cf_occ015": {
+   "common_answered": 3529,
+   "L0_원본": {
+    "adds_auc": 94.6,
+    "median_err_mm": 1.8
+   },
+   "개선안3_cf_occ015": {
+    "adds_auc": 96.5,
+    "median_err_mm": 1.73
+   },
+   "B_better_frac": 0.561
+  },
+  "개선안3_cf_occ030 vs 개선안3_cf_occ020": {
+   "common_answered": 3380,
+   "개선안3_cf_occ030": {
+    "adds_auc": 96.7,
+    "median_err_mm": 1.73
+   },
+   "개선안3_cf_occ020": {
+    "adds_auc": 96.7,
+    "median_err_mm": 1.73
+   },
+   "B_better_frac": 0.001
+  },
+  "개선안3_cf_occ030 vs 개선안3_cf_occ015": {
+   "common_answered": 3380,
+   "개선안3_cf_occ030": {
+    "adds_auc": 96.7,
+    "median_err_mm": 1.73
+   },
+   "개선안3_cf_occ015": {
+    "adds_auc": 96.7,
+    "median_err_mm": 1.73
+   },
+   "B_better_frac": 0.001
+  },
+  "개선안3_cf_occ020 vs 개선안3_cf_occ015": {
+   "common_answered": 3475,
+   "개선안3_cf_occ020": {
+    "adds_auc": 96.5,
+    "median_err_mm": 1.73
+   },
+   "개선안3_cf_occ015": {
+    "adds_auc": 96.5,
+    "median_err_mm": 1.73
+   },
+   "B_better_frac": 0.003
+  }
+ }
+}

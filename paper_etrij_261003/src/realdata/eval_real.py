@@ -55,6 +55,10 @@ TT = [10, 30, 60, 120]
 
 
 def reference():
+    # this server has no REF_RUNS outputs: reuse the laptop's reference positions (results_real_laptop.json)
+    lap = Path(__file__).parent / "results_real_laptop.json"
+    if lap.exists() and not all((ROOT / r / "summary.json").exists() for r in REF_RUNS):
+        return {n: np.asarray(p, float) for n, p in json.load(open(lap))["reference"].items()}
     pos = {}
     for r in REF_RUNS:
         for n, o in json.load(open(ROOT / r / "summary.json"))["objects"].items():

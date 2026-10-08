@@ -113,6 +113,8 @@ def main():
     ap.add_argument("--verify-candidates", type=int, default=0,
                     help="pose verification: only the K best geometry candidates are measured (verify.candidate_topk; default all 300)")
     ap.add_argument("--verify-stride", type=int, default=0, help="pose verification: candidate stride (default 1)")
+    ap.add_argument("--no-cluster-first-fallback", action="store_true", help="cluster-first without the full re-verification of convergence-rejected objects")
+    ap.add_argument("--verify-cluster-first", action="store_true", help="pose verification: cluster the 300 candidates first and project only one representative per cluster")
     ap.add_argument("--precision", default="", help="PEM precision (fp32 default | fp16)")
     ap.add_argument("--orig-ism", type=float, default=0.0,
                     help="replace our ISM by the original SAM-6D ISM (FastSAM-x, top-1 per object, ISM score > x); "
@@ -138,6 +140,10 @@ def main():
         VERIFY["enabled"] = False
     if a.verify_candidates:
         VERIFY["candidate_topk"] = a.verify_candidates
+    if a.verify_cluster_first:
+        VERIFY["cluster_first"] = True
+    if a.no_cluster_first_fallback:
+        VERIFY["cluster_first_fallback"] = False
     if a.verify_topk or a.verify_stride:
         CORE_KW["appe_rerank"] = {"topk": a.verify_topk or 300, "stride": a.verify_stride or 1}
     if a.precision:
@@ -357,7 +363,9 @@ def main():
                           "score": r["score"], "time_ms": round(tot, 2), "bbox": r.get("bbox"),
                           "ism": r.get("ism"), "mask_iou": r.get("mask_iou"),
                           "texture_score": r.get("texture_score"),
-                          "cluster_occupancy": r.get("cluster_occupancy")})
+                          "cluster_occupancy": r.get("cluster_occupancy"),
+                          "verify_method": (r.get("verify") or {}).get("selection_method"),
+                          "cluster_first_reps": (r.get("verify") or {}).get("cluster_first_reps")})
         rej = [{k: v for k, v in x.items() if k in ("object", "rejection_reason", "mask_iou",
                                                       "texture_score", "cluster_occupancy")}
                for x in core.last_frame_diag.get("rejections", [])]
