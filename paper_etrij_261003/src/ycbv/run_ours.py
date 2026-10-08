@@ -40,7 +40,8 @@ import torch
 import data as D
 import paths as P
 
-VERIFY = {"enabled": True, "mask_iou_min": 0.420998, "texture_min_score": 0.449562,
+VERIFY = {"enabled": True, "mask_iou_min": float(os.environ.get("YCBV_MASK_IOU_MIN", 0.420998)),   # env overrides: gate sweep 2026-10-08
+          "texture_min_score": float(os.environ.get("YCBV_TEXTURE_MIN", 0.449562)),
           "cluster_rotation_deg": 20, "cluster_translation_mm": 25,
           "cluster_min_occupancy": P.CONSENSUS_OCC}
 

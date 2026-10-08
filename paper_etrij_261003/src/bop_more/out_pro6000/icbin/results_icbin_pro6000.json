@@ -1,0 +1,157 @@
+{
+ "label": "icbin run, RTX PRO 6000 Blackwell (GPU1), 2026-10-08",
+ "protocol": "Per method (prediction JSON from run_orig.py / run_ours.py):\n  correct      ADD-S < 10 % of the object diameter (models_eval/models_info.json),\n               ADD-S over the models_eval vertices\n  Found        visible GT targets with a correct answer / visible GT targets\n               (visible = visib_fract > 0; all 4123 BOP19 targets are)\n  Answers correct   correct answers / all answers\n  Wrong / image     wrong answers / images\n  ADD-S AUC    area under the accuracy-threshold curve, 0-10 cm (PoseCNN VOCap), pooled over\n               all GT targets (missing answer = infinite error); per-object mean also reported\n  BOP AR       official bop_toolkit scripts/eval_bop19_pose.py (VSD, MSSD, MSPD) on BOP CSV\n  Time         median per-image time of the timed region\nBOP CSV files and bop_toolkit output go to OUT/bop; summary -> results.json.",
+ "evaluated": "2026-10-08 16:34:31",
+ "methods": {
+  "ladder_L0": {
+   "images": 150,
+   "visible_gt_targets": 200,
+   "answers": 200,
+   "correct_answers": 195,
+   "found_pct": 97.5,
+   "answers_correct_pct": 97.5,
+   "wrong_per_image": 0.033,
+   "adds_auc": 96.1,
+   "adds_auc_mean_over_objects": 96.1,
+   "time_ms": {
+    "median": 397.7,
+    "p90": 474.2,
+    "mean": 401.5,
+    "n": 150
+   },
+   "per_object": {
+    "icbin_01": {
+     "targets": 100,
+     "found": 100,
+     "found_pct": 100.0,
+     "answers": 100,
+     "correct": 100,
+     "adds_auc": 97.6
+    },
+    "icbin_02": {
+     "targets": 100,
+     "found": 95,
+     "found_pct": 95.0,
+     "answers": 100,
+     "correct": 95,
+     "adds_auc": 94.6
+    }
+   },
+   "title": "ladder_L0",
+   "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+   "run_label": "icbin run, RTX PRO 6000 Blackwell (GPU1), 2026-10-08",
+   "prediction_file": "/home/jucpark/Dataset/bop/bop_more_out/icbin/pred_ladder_L0.json",
+   "stage_ms": {
+    "proposals": {
+     "median": 9.2,
+     "p90": 10.0,
+     "mean": 9.6,
+     "n": 150
+    },
+    "descriptors": {
+     "median": 296.6,
+     "p90": 359.9,
+     "mean": 304.5,
+     "n": 150
+    },
+    "matching": {
+     "median": 6.5,
+     "p90": 15.6,
+     "mean": 8.6,
+     "n": 150
+    },
+    "pem": {
+     "median": 61.9,
+     "p90": 119.2,
+     "mean": 78.7,
+     "n": 150
+    }
+   },
+   "bop_ar": {
+    "bop19_average_recall": 9.7,
+    "bop19_average_recall_mspd": 9.9,
+    "bop19_average_recall_mssd": 10.1,
+    "bop19_average_recall_vsd": 9.1,
+    "raw": {
+     "bop19_average_recall": 0.09682157521463232,
+     "bop19_average_recall_mspd": 0.09888017917133259,
+     "bop19_average_recall_mssd": 0.1009518477043673,
+     "bop19_average_recall_vsd": 0.0906326987681971,
+     "bop19_average_time_per_image": 0.4015124
+    }
+   }
+  },
+  "ladder_hybS05cf": {
+   "images": 150,
+   "visible_gt_targets": 200,
+   "answers": 162,
+   "correct_answers": 162,
+   "found_pct": 81.0,
+   "answers_correct_pct": 100.0,
+   "wrong_per_image": 0.0,
+   "adds_auc": 78.6,
+   "adds_auc_mean_over_objects": 78.6,
+   "time_ms": {
+    "median": 111.8,
+    "p90": 140.8,
+    "mean": 117.1,
+    "n": 150
+   },
+   "per_object": {
+    "icbin_01": {
+     "targets": 100,
+     "found": 94,
+     "found_pct": 94.0,
+     "answers": 94,
+     "correct": 94,
+     "adds_auc": 91.6
+    },
+    "icbin_02": {
+     "targets": 100,
+     "found": 68,
+     "found_pct": 68.0,
+     "answers": 68,
+     "correct": 68,
+     "adds_auc": 65.6
+    }
+   },
+   "title": "ladder_hybS05cf",
+   "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+   "run_label": "icbin run, RTX PRO 6000 Blackwell (GPU1), 2026-10-08",
+   "prediction_file": "/home/jucpark/Dataset/bop/bop_more_out/icbin/pred_ladder_hybS05cf.json",
+   "stage_ms": {
+    "yolo": {
+     "median": 0.0,
+     "p90": 0.0,
+     "mean": 0.0,
+     "n": 150
+    },
+    "ism": {
+     "median": 60.0,
+     "p90": 73.0,
+     "mean": 62.6,
+     "n": 150
+    },
+    "pem": {
+     "median": 48.0,
+     "p90": 74.1,
+     "mean": 54.3,
+     "n": 150
+    }
+   },
+   "bop_ar": {
+    "bop19_average_recall": 8.1,
+    "bop19_average_recall_mspd": 8.3,
+    "bop19_average_recall_mssd": 8.4,
+    "bop19_average_recall_vsd": 7.6,
+    "raw": {
+     "bop19_average_recall": 0.08112355356476296,
+     "bop19_average_recall_mspd": 0.08303471444568869,
+     "bop19_average_recall_mssd": 0.08449048152295632,
+     "bop19_average_recall_vsd": 0.0758454647256439,
+     "bop19_average_time_per_image": 0.11716164285714285
+    }
+   }
+  }
+ }
+}

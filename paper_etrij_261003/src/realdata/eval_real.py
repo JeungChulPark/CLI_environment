@@ -49,6 +49,8 @@ REF_BY_SESSION = {
     "260910_object": ["ref_260910_object_ours"],
 }
 REF_RUNS = REF_BY_SESSION.get(SESSION, REF_RUNS)
+if os.environ.get("EVAL_REAL_REFS"):      # holiday repeats (2026-10-08): reference runs made on this machine
+    REF_RUNS = os.environ["EVAL_REAL_REFS"].split(",")
 OBJS = ["saffron", "Febreze_high", "Dinosaur", "Bear", "milk", "choco_hazelnut_high", "Mugcup_high", "Sikhye_high"]
 RADIUS = 0.20
 TT = [10, 30, 60, 120]

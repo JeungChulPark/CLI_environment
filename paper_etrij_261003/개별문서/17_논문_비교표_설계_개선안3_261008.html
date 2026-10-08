@@ -349,6 +349,16 @@ a{color:var(--acc);word-break:break-all}
 <td>—</td>
 <td>S7 Table 2</td>
 </tr>
+<tr>
+<td><strong>FoundationPose, 같은 GPU 재측정 (정제 5회)</strong></td>
+<td>RGB-D</td>
+<td>CNOS-FastSAM</td>
+<td>×</td>
+<td><strong>86.2</strong> (VSD 83.5 / MSSD 90.0 / MSPD 85.2)</td>
+<td><strong>3.82 s</strong> + CNOS 0.19 s, 4090 (.3)</td>
+<td><strong>0.21</strong> (찾은 93.1%, 정답 95.3%)</td>
+<td>18 문서 D 절</td>
+</tr>
 </tbody>
 </table></div>
 <p><strong>(c) 우리 (정제 없음, RGB-D, 자체 ISM, RTX 4090)</strong></p>
@@ -401,6 +411,7 @@ a{color:var(--acc);word-break:break-all}
 <ul>
 <li>읽는 법: (a) 에서 우리 재실행 82.8 은 SAM-6D 논문값 83.4 와 0.6 차이로 재현됨. 개선안 3 의 74.1 은 기권의 비용이며, 같은 조건(정제 없음, 1초 아래)에서 오답/장 0.05 와 정답 비율 98.6% 를 내는 방법은 우리뿐이다. (b) 의 85~89 는 장당 7~142 초를 쓴 값이라 실시간 지도에는 들어오지 못한다.</li>
 <li><strong>같은 GPU 재측정(GigaPose 거친 단계, 2026-10-08):</strong> 호스트 .3(RTX 4090)에서 공개 코드·체크포인트·사전 렌더 템플릿·BOP 기본 CNOS-FastSAM 검출로 900장을 돌렸다. 공식 BOP AR 27.9(논문값 27.8 재현, VSD 17.4 / MSSD 21.0 / MSPD 45.3). 우리 채점 규약으로는 답 4,123개 중 정답 946개(찾은 비율 22.9%, 정답 비율 22.9%), 오답/장 3.53, ADD-S AUC 51.5. 시간은 GigaPose 단계 중앙값 0.30 s(CSV time 열) + CNOS 검출 0.19 s(검출 파일 보고값, 별도 GPU) ≈ 0.49 s/장, 처리 전체 벽시계 2.77장/s. RGB 전용 거친 단계라 깊이를 쓰는 우리와 조건이 다르고, 정제 없이는 정확도가 낮다는 것이 논문 표 1 과 같다. 결과: <code>out_4090/bop_gigapose/eval/gigapose_ycbv-test/scores_bop19.json</code>, <code>results_gigapose_4090.json</code>, <code>pred_ladder_gigapose.json</code>. 설치·실행 기록은 메모리 <code>gigapose-on-host-3</code> 참고.</li>
+<li><strong>같은 GPU 재측정(FoundationPose, 2026-10-08, 18 문서 D 절):</strong> 정제까지 하는 공개 코드 방법을 같은 4090 에서 돌리면 AR 86.2 로 가장 높지만 오답/장 0.21(우리의 4배), 장당 3.82 s(우리의 16배). 같은 GPU 세 방법(GigaPose 0.30 s, 원본 0.53 s, FoundationPose 3.82 s)과 우리 0.24 s 로 시간 열이 공정해졌다.</li>
 <li>공개 방법들의 오답/장은 보고된 적이 없어 "—" 로 둔다. 모두 물체마다 반드시 답하므로 구조상 장면에 없는 물체도 답에 들어간다.</li>
 <li>시간은 GPU 가 서로 달라 그대로 비교할 수 없다는 각주를 단다(02 문서 1.2). (a) 의 거친 단계 RGB 행(28.1, 25.7, 27.8)은 깊이 없이 낸 값이라 참고로만 둔다.</li>
 <li>(a)·(b) 의 FreeZe 정제 없음 시간, MegaPose·ZeroPose 거친 단계 시간은 논문에 YCB-V 단독 값이 없어 비워 둔다. 투고 전 원문 표와 다시 대조한다.</li>
@@ -672,7 +683,12 @@ a{color:var(--acc);word-break:break-all}
 <li>기록된 점수로 추정하면 0.15 아래에서는 회복이 거의 없고(0.10 에서 +4개) 오답만 늘 수 있어 더 내리지 않는다.</li>
 <li><strong>논문 쓰임 (2026-10-08 결정: 기본 운영점은 0.30 유지):</strong> 우리 논문의 핵심 지표는 오답/장이므로 0.15 로 내려 정답 비율 3.4%p 를 얻는 대신 오답을 0.051 → 0.063 으로 늘리는 선택은 하지 않는다. 세 점은 "재현율–오답 운영 곡선" 그림 한 장으로 두고 "문턱 하나로 찾는 수와 오답을 맞바꿀 수 있고, 우리는 오답 쪽을 택했다"는 설명 재료로 쓴다. 어느 점에서도 정밀도 98% 이상, 오답/장은 원본의 1/5 이하.</li>
 <li><strong>실험별 합의 문턱 (실행 기록 <code>sam6d_config.yaml</code> 확인):</strong> YCB-V 900장(표 2~5)과 YCB-V 12영상 실시간(표 6)은 0.3, 260901 실제 영상 실시간(표 6)은 배포 기본값 0.5. 본문 실험 설정에 "YCB-V 는 0.3, 실제 영상은 0.5" 로 적는다. 다시 잴 필요는 없다.</li>
-<li>재현 방법: <code>YCBV_CONSENSUS_OCC=0.15 python run_ours.py --mode text --orig-ism 0.5 --orig-desc dinov2_vits14 --orig-seg fastsam_full --verify-cluster-first</code> (<code>src/ycbv/paths.py</code> 의 CONSENSUS_OCC 를 환경 변수로 덮어쓸 수 있게 2026-10-08 수정, 기본값 0.3 유지).</li>
+<li>
+<p>재현 방법: <code>YCBV_CONSENSUS_OCC=0.15 python run_ours.py --mode text --orig-ism 0.5 --orig-desc dinov2_vits14 --orig-seg fastsam_full --verify-cluster-first</code> (<code>src/ycbv/paths.py</code> 의 CONSENSUS_OCC 를 환경 변수로 덮어쓸 수 있게 2026-10-08 수정, 기본값 0.3 유지).</p>
+</li>
+<li>
+<p><strong>윤곽·질감 문턱 곡선(2026-10-08, 18 문서 B 절):</strong> 나머지 두 관문도 4점씩 흔든 결과 정답 비율 98.4~99.0%, 오답/장 0.034~0.063 으로 어느 설정에서도 원본과 멀다. 질감 문턱이 가장 민감(0.42 → 0.50: 찾은 비율 81.3 → 76.6%, 오답 55 → 31개). 세 곡선을 한 그림으로.</p>
+</li>
 </ul>
 <h3 id="5-sam-6d-6-900-rtx-4090">표 5. 단계별 처리 시간 — SAM-6D 표 6 형식 (900장 중앙값, RTX 4090)</h3>
 <div class="tw"><table>
@@ -724,6 +740,7 @@ a{color:var(--acc);word-break:break-all}
 <ul>
 <li>비교용 SAM-6D 논문값(RTX 3090, 7개 데이터셋 평균): 분할 0.45 + 자세 0.98 = 1.43 s. 우리 4090 재실행 원본이 0.53 s 인 것은 GPU 차이와 YCB-V 만 잰 차이라고 각주.</li>
 <li>검증 비용 변화(36장 프로파일, E 묶음): 372 → 143(기록 벡터화) → 54 ms(군집 먼저). 벡터화는 구현 수정이라 각주로만.</li>
+<li><strong>다른 GPU(RTX PRO 6000, 18 문서 E 절):</strong> 원본 495 ms, 개선안 3 + 군집 먼저 185 ms 로 속도 비율 2.7배(4090 2.2배). 더 큰 GPU 에서 우리 쪽 이득이 더 크다(PEM·ISM 이 줄고 원본의 ViT-L 특징 단계는 그대로).</li>
 </ul>
 <h3 id="6-3-rtx-4090-orb-slam3">표 6. 실시간 객체 지도 — 3회 반복 (RTX 4090 + ORB-SLAM3)</h3>
 <p><strong>6a. 실제 영상 260901_cbnu_bigeightcircle (물체 8개)</strong></p>
@@ -839,16 +856,17 @@ a{color:var(--acc);word-break:break-all}
 <tr>
 <td>YOLO-World 문구 상자 + 관문 (L3)</td>
 <td>끔</td>
-<td>63.5%</td>
-<td>96.2%</td>
-<td>0.114</td>
+<td>63.2%</td>
+<td>96.1%</td>
+<td>0.118</td>
 <td>57.9</td>
-<td>217 ms</td>
+<td>184 ms</td>
 </tr>
 </tbody>
 </table></div>
 <ul>
-<li>"검증은 앞단에 독립적으로 정밀도를 올린다" 는 보조 주장. L3 의 찾은 비율·정답 비율은 노트북 실행(09 문서 참고 행), BOP AR 과 시간은 4090.</li>
+<li>"검증은 앞단에 독립적으로 정밀도를 올린다" 는 보조 주장. L3 행은 2026-10-08 4090 재채점(18 문서 B 절, <code>out_gate/results_ladder_rescore.json</code>).</li>
+<li><strong>데이터셋 일반성(18 문서 C 절, RTX PRO 6000):</strong> 같은 비교를 LM-O·TUD-L·IC-BIN 에서 했을 때 개선안 3 + 군집 먼저의 정답 비율 97.9 / 99.2 / 100% (원본 77.2 / 85.8 / 97.5%), 오답/장 0.07 / 0.005 / 0.000 (원본 1.53 / 0.14 / 0.033), 찾은 비율 45.3 / 61.3 / 81.0% (원본 71.9 / 84.5 / 97.5%). 정밀도는 어디서나 유지되고, 찾은 비율은 무늬 없는 물체에서 질감 관문 때문에 더 잃는다. 표 7 을 "데이터셋 4개" 표로 넓힐 재료.</li>
 </ul>
 <h2 id="4">4. 표 배치와 논리 흐름</h2>
 <ol>

@@ -1,0 +1,240 @@
+{
+ "label": "FoundationPose model-based, RTX 4090 (.3), 2026-10-08",
+ "protocol": "Per method (prediction JSON from run_orig.py / run_ours.py):\n  correct      ADD-S < 10 % of the object diameter (models_eval/models_info.json),\n               ADD-S over the models_eval vertices\n  Found        visible GT targets with a correct answer / visible GT targets\n               (visible = visib_fract > 0; all 4123 BOP19 targets are)\n  Answers correct   correct answers / all answers\n  Wrong / image     wrong answers / images\n  ADD-S AUC    area under the accuracy-threshold curve, 0-10 cm (PoseCNN VOCap), pooled over\n               all GT targets (missing answer = infinite error); per-object mean also reported\n  BOP AR       official bop_toolkit scripts/eval_bop19_pose.py (VSD, MSSD, MSPD) on BOP CSV\n  Time         median per-image time of the timed region\nBOP CSV files and bop_toolkit output go to OUT/bop; summary -> results.json.",
+ "evaluated": "2026-10-08 16:43:19",
+ "methods": {
+  "ladder_foundationpose": {
+   "images": 900,
+   "visible_gt_targets": 4123,
+   "answers": 4027,
+   "correct_answers": 3838,
+   "found_pct": 93.1,
+   "answers_correct_pct": 95.3,
+   "wrong_per_image": 0.21,
+   "adds_auc": 91.4,
+   "adds_auc_mean_over_objects": 90.2,
+   "time_ms": {
+    "median": 3822.0255,
+    "p90": 4598.847,
+    "mean": 3435.5509422222226,
+    "n": 900,
+    "note": "CSV time column = sum of GPU-synchronised est.register() wall times of the image's target objects; excludes CNOS detection (~0.19 s), image loading and per-object mesh preparation"
+   },
+   "per_object": {
+    "002_master_chef_can": {
+     "targets": 300,
+     "found": 300,
+     "found_pct": 100.0,
+     "answers": 300,
+     "correct": 300,
+     "adds_auc": 97.5
+    },
+    "003_cracker_box": {
+     "targets": 225,
+     "found": 224,
+     "found_pct": 99.6,
+     "answers": 225,
+     "correct": 224,
+     "adds_auc": 97.7
+    },
+    "004_sugar_box": {
+     "targets": 375,
+     "found": 358,
+     "found_pct": 95.5,
+     "answers": 362,
+     "correct": 358,
+     "adds_auc": 93.6
+    },
+    "005_tomato_soup_can": {
+     "targets": 448,
+     "found": 424,
+     "found_pct": 94.6,
+     "answers": 424,
+     "correct": 424,
+     "adds_auc": 92.8
+    },
+    "006_mustard_bottle": {
+     "targets": 150,
+     "found": 148,
+     "found_pct": 98.7,
+     "answers": 148,
+     "correct": 148,
+     "adds_auc": 96.9
+    },
+    "007_tuna_fish_can": {
+     "targets": 300,
+     "found": 299,
+     "found_pct": 99.7,
+     "answers": 299,
+     "correct": 299,
+     "adds_auc": 97.8
+    },
+    "008_pudding_box": {
+     "targets": 75,
+     "found": 52,
+     "found_pct": 69.3,
+     "answers": 75,
+     "correct": 52,
+     "adds_auc": 68.3
+    },
+    "009_gelatin_box": {
+     "targets": 75,
+     "found": 75,
+     "found_pct": 100.0,
+     "answers": 75,
+     "correct": 75,
+     "adds_auc": 98.4
+    },
+    "010_potted_meat_can": {
+     "targets": 225,
+     "found": 203,
+     "found_pct": 90.2,
+     "answers": 221,
+     "correct": 203,
+     "adds_auc": 91.4
+    },
+    "011_banana": {
+     "targets": 150,
+     "found": 150,
+     "found_pct": 100.0,
+     "answers": 150,
+     "correct": 150,
+     "adds_auc": 98.0
+    },
+    "019_pitcher_base": {
+     "targets": 225,
+     "found": 225,
+     "found_pct": 100.0,
+     "answers": 225,
+     "correct": 225,
+     "adds_auc": 98.3
+    },
+    "021_bleach_cleanser": {
+     "targets": 300,
+     "found": 256,
+     "found_pct": 85.3,
+     "answers": 262,
+     "correct": 256,
+     "adds_auc": 83.5
+    },
+    "024_bowl": {
+     "targets": 150,
+     "found": 148,
+     "found_pct": 98.7,
+     "answers": 148,
+     "correct": 148,
+     "adds_auc": 96.2
+    },
+    "025_mug": {
+     "targets": 150,
+     "found": 150,
+     "found_pct": 100.0,
+     "answers": 150,
+     "correct": 150,
+     "adds_auc": 97.8
+    },
+    "035_power_drill": {
+     "targets": 300,
+     "found": 297,
+     "found_pct": 99.0,
+     "answers": 300,
+     "correct": 297,
+     "adds_auc": 97.0
+    },
+    "036_wood_block": {
+     "targets": 75,
+     "found": 75,
+     "found_pct": 100.0,
+     "answers": 75,
+     "correct": 75,
+     "adds_auc": 97.1
+    },
+    "037_scissors": {
+     "targets": 75,
+     "found": 69,
+     "found_pct": 92.0,
+     "answers": 75,
+     "correct": 69,
+     "adds_auc": 89.3
+    },
+    "040_large_marker": {
+     "targets": 150,
+     "found": 150,
+     "found_pct": 100.0,
+     "answers": 150,
+     "correct": 150,
+     "adds_auc": 98.2
+    },
+    "051_large_clamp": {
+     "targets": 150,
+     "found": 109,
+     "found_pct": 72.7,
+     "answers": 148,
+     "correct": 109,
+     "adds_auc": 71.2
+    },
+    "052_extra_large_clamp": {
+     "targets": 150,
+     "found": 51,
+     "found_pct": 34.0,
+     "answers": 140,
+     "correct": 51,
+     "adds_auc": 34.7
+    },
+    "061_foam_brick": {
+     "targets": 75,
+     "found": 75,
+     "found_pct": 100.0,
+     "answers": 75,
+     "correct": 75,
+     "adds_auc": 98.4
+    }
+   },
+   "title": "ladder_foundationpose",
+   "gpu": "NVIDIA GeForce RTX 4090",
+   "run_label": "FoundationPose model-based (CNOS-FastSAM masks, hypotheses+refiner x5+scorer), RTX 4090 host .3, 2026-10-08",
+   "prediction_file": "/home/jucpark/DeepLearning/server/CLI_environment/paper_etrij_261003/src/ycbv/out_4090/pred_ladder_foundationpose.json",
+   "stage_ms": null,
+   "bop_ar": {
+    "bop19_average_recall": 86.2,
+    "bop19_average_recall_mspd": 85.2,
+    "bop19_average_recall_mssd": 90.0,
+    "bop19_average_recall_vsd": 83.5,
+    "raw": {
+     "bop19_average_recall": 0.8622418950602313,
+     "bop19_average_recall_mspd": 0.8520979869027407,
+     "bop19_average_recall_mssd": 0.8999272374484597,
+     "bop19_average_recall_vsd": 0.8347004608294931,
+     "bop19_average_time_per_image": 3.435550942222222
+    },
+    "note": "official bop_toolkit cea62d6 scripts/eval_bop19_pose.py --renderer_type=vispy, run on host .3 (this PC's GPU driver was wedged)"
+   },
+   "timing": {
+    "method": "FoundationPose model-based register (hypotheses + refiner x5 + scorer), CNOS-FastSAM masks",
+    "gpu": "NVIDIA GeForce RTX 4090",
+    "torch": "2.4.1+cu124",
+    "zfar_m": 1.5,
+    "refiner_iterations": 5,
+    "note": "time = est.register() wall time, torch.cuda.synchronize() before/after; excludes CNOS detection (~0.19 s/img), image/mask loading and the one-off per-object mesh preparation; first call (JIT warm-up) not timed. per image time = sum over its target objects.",
+    "images": 900,
+    "image_object_results": 4027,
+    "targets_without_mask": 96,
+    "degenerate_masks": 3,
+    "per_image_s": {
+     "median": 3.8220253920007963,
+     "mean": 3.4355509312959556,
+     "p90": 4.598846659064293,
+     "max": 4.6324638680089265
+    },
+    "per_object_s": {
+     "median": 0.7673545200086664,
+     "mean": 0.7678162001903055,
+     "p90": 0.7759490418015048,
+     "max": 0.8001869660220109
+    },
+    "cnos_detection_s_per_image": 0.19,
+    "note2": "CSV time excludes CNOS detection (~0.19 s/img on this GPU, from the BOP default detection file)"
+   }
+  }
+ }
+}

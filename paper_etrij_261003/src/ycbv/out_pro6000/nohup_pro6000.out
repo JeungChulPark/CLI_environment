@@ -1,0 +1,7 @@
+[15:32:31] start orig (run_orig.py, 900)
+[15:40:48] done orig rc=0
+[15:40:48] start ours (hybS05_cf, 900)
+[15:44:08] done ours rc=0
+[15:44:08] evaluate
+[15:44:28] eval ok
+[15:44:28] ALL DONE

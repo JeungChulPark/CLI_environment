@@ -1,0 +1,253 @@
+{
+ "label": "lmo run, RTX PRO 6000 Blackwell (GPU1), 2026-10-08",
+ "protocol": "Per method (prediction JSON from run_orig.py / run_ours.py):\n  correct      ADD-S < 10 % of the object diameter (models_eval/models_info.json),\n               ADD-S over the models_eval vertices\n  Found        visible GT targets with a correct answer / visible GT targets\n               (visible = visib_fract > 0; all 4123 BOP19 targets are)\n  Answers correct   correct answers / all answers\n  Wrong / image     wrong answers / images\n  ADD-S AUC    area under the accuracy-threshold curve, 0-10 cm (PoseCNN VOCap), pooled over\n               all GT targets (missing answer = infinite error); per-object mean also reported\n  BOP AR       official bop_toolkit scripts/eval_bop19_pose.py (VSD, MSSD, MSPD) on BOP CSV\n  Time         median per-image time of the timed region\nBOP CSV files and bop_toolkit output go to OUT/bop; summary -> results.json.",
+ "evaluated": "2026-10-08 16:23:36",
+ "methods": {
+  "ladder_L0": {
+   "images": 200,
+   "visible_gt_targets": 1445,
+   "answers": 1345,
+   "correct_answers": 1039,
+   "found_pct": 71.9,
+   "answers_correct_pct": 77.2,
+   "wrong_per_image": 1.53,
+   "adds_auc": 70.9,
+   "adds_auc_mean_over_objects": 70.8,
+   "time_ms": {
+    "median": 893.7,
+    "p90": 1045.8,
+    "mean": 891.5,
+    "n": 200
+   },
+   "per_object": {
+    "lmo_01": {
+     "targets": 175,
+     "found": 105,
+     "found_pct": 60.0,
+     "answers": 151,
+     "correct": 105,
+     "adds_auc": 59.3
+    },
+    "lmo_05": {
+     "targets": 199,
+     "found": 174,
+     "found_pct": 87.4,
+     "answers": 187,
+     "correct": 174,
+     "adds_auc": 85.3
+    },
+    "lmo_06": {
+     "targets": 171,
+     "found": 103,
+     "found_pct": 60.2,
+     "answers": 120,
+     "correct": 103,
+     "adds_auc": 61.5
+    },
+    "lmo_08": {
+     "targets": 200,
+     "found": 170,
+     "found_pct": 85.0,
+     "answers": 199,
+     "correct": 170,
+     "adds_auc": 85.4
+    },
+    "lmo_09": {
+     "targets": 180,
+     "found": 156,
+     "found_pct": 86.7,
+     "answers": 175,
+     "correct": 156,
+     "adds_auc": 85.7
+    },
+    "lmo_10": {
+     "targets": 180,
+     "found": 128,
+     "found_pct": 71.1,
+     "answers": 175,
+     "correct": 128,
+     "adds_auc": 68.7
+    },
+    "lmo_11": {
+     "targets": 140,
+     "found": 95,
+     "found_pct": 67.9,
+     "answers": 140,
+     "correct": 95,
+     "adds_auc": 67.1
+    },
+    "lmo_12": {
+     "targets": 200,
+     "found": 108,
+     "found_pct": 54.0,
+     "answers": 198,
+     "correct": 108,
+     "adds_auc": 53.2
+    }
+   },
+   "title": "ladder_L0",
+   "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+   "run_label": "lmo run, RTX PRO 6000 Blackwell (GPU1), 2026-10-08",
+   "prediction_file": "/home/jucpark/Dataset/bop/bop_more_out/lmo/pred_ladder_L0.json",
+   "stage_ms": {
+    "proposals": {
+     "median": 10.1,
+     "p90": 16.0,
+     "mean": 12.0,
+     "n": 200
+    },
+    "descriptors": {
+     "median": 430.2,
+     "p90": 485.6,
+     "mean": 424.1,
+     "n": 200
+    },
+    "matching": {
+     "median": 10.5,
+     "p90": 22.6,
+     "mean": 13.1,
+     "n": 200
+    },
+    "pem": {
+     "median": 433.6,
+     "p90": 552.5,
+     "mean": 442.3,
+     "n": 200
+    }
+   },
+   "bop_ar": {
+    "bop19_average_recall": 58.3,
+    "bop19_average_recall_mspd": 64.2,
+    "bop19_average_recall_mssd": 61.7,
+    "bop19_average_recall_vsd": 48.9,
+    "raw": {
+     "bop19_average_recall": 0.5828627450980391,
+     "bop19_average_recall_mspd": 0.6418685121107266,
+     "bop19_average_recall_mssd": 0.6172318339100347,
+     "bop19_average_recall_vsd": 0.4894878892733564,
+     "bop19_average_time_per_image": 0.8915310500000001
+    }
+   }
+  },
+  "ladder_hybS05cf": {
+   "images": 200,
+   "visible_gt_targets": 1445,
+   "answers": 668,
+   "correct_answers": 654,
+   "found_pct": 45.3,
+   "answers_correct_pct": 97.9,
+   "wrong_per_image": 0.07,
+   "adds_auc": 43.7,
+   "adds_auc_mean_over_objects": 43.4,
+   "time_ms": {
+    "median": 267.3,
+    "p90": 318.7,
+    "mean": 268.9,
+    "n": 200
+   },
+   "per_object": {
+    "lmo_01": {
+     "targets": 175,
+     "found": 58,
+     "found_pct": 33.1,
+     "answers": 59,
+     "correct": 58,
+     "adds_auc": 32.0
+    },
+    "lmo_05": {
+     "targets": 199,
+     "found": 125,
+     "found_pct": 62.8,
+     "answers": 125,
+     "correct": 125,
+     "adds_auc": 60.5
+    },
+    "lmo_06": {
+     "targets": 171,
+     "found": 49,
+     "found_pct": 28.7,
+     "answers": 49,
+     "correct": 49,
+     "adds_auc": 27.5
+    },
+    "lmo_08": {
+     "targets": 200,
+     "found": 99,
+     "found_pct": 49.5,
+     "answers": 104,
+     "correct": 99,
+     "adds_auc": 48.9
+    },
+    "lmo_09": {
+     "targets": 180,
+     "found": 129,
+     "found_pct": 71.7,
+     "answers": 129,
+     "correct": 129,
+     "adds_auc": 69.1
+    },
+    "lmo_10": {
+     "targets": 180,
+     "found": 55,
+     "found_pct": 30.6,
+     "answers": 55,
+     "correct": 55,
+     "adds_auc": 29.2
+    },
+    "lmo_11": {
+     "targets": 140,
+     "found": 63,
+     "found_pct": 45.0,
+     "answers": 63,
+     "correct": 63,
+     "adds_auc": 43.3
+    },
+    "lmo_12": {
+     "targets": 200,
+     "found": 76,
+     "found_pct": 38.0,
+     "answers": 84,
+     "correct": 76,
+     "adds_auc": 37.0
+    }
+   },
+   "title": "ladder_hybS05cf",
+   "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+   "run_label": "lmo run, RTX PRO 6000 Blackwell (GPU1), 2026-10-08",
+   "prediction_file": "/home/jucpark/Dataset/bop/bop_more_out/lmo/pred_ladder_hybS05cf.json",
+   "stage_ms": {
+    "yolo": {
+     "median": 0.0,
+     "p90": 0.0,
+     "mean": 0.0,
+     "n": 200
+    },
+    "ism": {
+     "median": 87.0,
+     "p90": 100.0,
+     "mean": 87.8,
+     "n": 200
+    },
+    "pem": {
+     "median": 180.0,
+     "p90": 222.0,
+     "mean": 180.9,
+     "n": 200
+    }
+   },
+   "bop_ar": {
+    "bop19_average_recall": 38.2,
+    "bop19_average_recall_mspd": 41.9,
+    "bop19_average_recall_mssd": 40.6,
+    "bop19_average_recall_vsd": 32.1,
+    "raw": {
+     "bop19_average_recall": 0.38200692041522494,
+     "bop19_average_recall_mspd": 0.4193771626297578,
+     "bop19_average_recall_mssd": 0.40608996539792386,
+     "bop19_average_recall_vsd": 0.3205536332179931,
+     "bop19_average_time_per_image": 0.2691003535353535
+    }
+   }
+  }
+ }
+}
