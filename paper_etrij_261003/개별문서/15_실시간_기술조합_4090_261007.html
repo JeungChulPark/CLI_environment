@@ -1,0 +1,731 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>15. 실시간 기술 조합 비교 — 4090, 여섯 구성 + 검증 코드 수정·군집 먼저 (2026-10-07)</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1>15. 실시간 기술 조합 비교 — 4090, 여섯 구성 + 검증 코드 수정·군집 먼저 (2026-10-07)</h1>
+<blockquote>
+<p>2026-10-07 이 PC(RTX 4090 GPU0, 로컬 ORB-SLAM3 특징점 2000, 코드 <code>CLI_env_paper</code>)에서 영상을 1배속으로 재생해 지도를 만든 결과입니다. 각 1회 측정. 구성 정의는 E 묶음(14 문서) 0-1절, 지표 정의는 13 문서 0절과 같습니다. 체인 스크립트 <code>~/Dataset/bop/ycbv_work/run_combo_4090.sh</code>(1~3부), <code>run_combo_part4.sh</code>(4부), 결과 <code>src/realdata/results_4090/results_real5_4090.json</code>·<code>results_real5_part4_4090.json</code>, <code>src/ycbv_live/results_4090/</code>.</p>
+</blockquote>
+<h2>1. 여섯 구성</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>구성</th>
+<th>결과 태그 (실제 영상 / YCB-V)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>원본 0.5 (FastSAM-x → ViT-L → 원본 판정 0.5 → PEM 기하 1위)</td>
+<td>origL05 / orig_th05</td>
+</tr>
+<tr>
+<td>2</td>
+<td>FastSAM-x → ViT-S → 원본 판정 0.5 → PEM, 자세 검증 끔 (개선안 2)</td>
+<td>origS05 / origS_th05</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2 + 자세 검증 켬 (개선안 3)</td>
+<td>hybS05</td>
+</tr>
+<tr>
+<td>4</td>
+<td>우리 기술 배포 (문구 상자 → ViT-S → 배포 관문 + 독점 배정 → PEM → 검증 켬)</td>
+<td>ours</td>
+</tr>
+<tr>
+<td>5</td>
+<td>개선안 1 (문구 상자 → ViT-S → 완화 관문 + 배정 대안 → PEM → 검증 켬; YCB 는 새 문구 ①)</td>
+<td>g13 / g13p</td>
+</tr>
+<tr>
+<td>6</td>
+<td>배포 관문 + 독점 배정, 자세 검증 끔 (L3)</td>
+<td>ours_nover</td>
+</tr>
+</tbody>
+</table></div>
+<h2>2. 260901_cbnu_bigeightcircle (314초, 선반 두 개, 물체 8개) — 여섯 구성</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>지도 올라간 시간 (중앙값)</th>
+<th>최종 지도 맞음 / 잘못 (8개)</th>
+<th>못 찾은 물체</th>
+<th>점수 (영상 끝 / 평균)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>원본 0.5</td>
+<td>3.62 Hz</td>
+<td>67.2초</td>
+<td>6 / 3</td>
+<td>공룡 인형, 사프란</td>
+<td>54.5 / 57.9%</td>
+</tr>
+<tr>
+<td>2</td>
+<td>FastSAM → ViT-S → 0.5, 검증 끔</td>
+<td>6.89 Hz</td>
+<td>49.7초</td>
+<td>5 / 4</td>
+<td>공룡 인형, 초코, 우유</td>
+<td>41.7 / 28.7%</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2 + 검증 켬 (개선안 3)</td>
+<td>6.17 Hz</td>
+<td>69.2초</td>
+<td>7 / 1</td>
+<td>공룡 인형</td>
+<td>77.8 / <strong>78.6%</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td>우리 배포, 검증 켬</td>
+<td>6.00 Hz</td>
+<td>68.2초</td>
+<td>7 / 1</td>
+<td>우유</td>
+<td>77.8 / 71.1%</td>
+</tr>
+<tr>
+<td>5</td>
+<td>개선안 1, 검증 켬</td>
+<td>4.77 Hz</td>
+<td>68.4초</td>
+<td><strong>8 / 0</strong></td>
+<td>없음</td>
+<td><strong>100</strong> / 77.0%</td>
+</tr>
+<tr>
+<td>6</td>
+<td>배포 관문, 검증 끔 (L3)</td>
+<td><strong>7.15 Hz</strong></td>
+<td><strong>28.2초</strong></td>
+<td>5 / 4</td>
+<td>공룡 인형, 우유, 사프란</td>
+<td>41.7 / 51.7%</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>검증을 끈 2·6 은 가장 빠르고 지도에 가장 일찍 올리지만 최종 지도 오답이 4개씩입니다(영상 끝 화면 기준 잘못 15·9). 검증을 켠 짝(3·4)은 찾은 수가 비슷하거나 많으면서 오답 1개입니다.</li>
+<li>구성 4 의 1차 실행은 ORB-SLAM3 가 잘못된 루프를 닫아 보정 3.6 m 가 들어가 폐기하고 2차 실행을 썼습니다(루프 보정 16 cm).</li>
+</ul>
+<h2>3. YCB-V 12영상 (48~59, 20,738프레임, 장면 물체 55개, 21 물체 모두 질의) — 여섯 구성</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>찾은 객체 (55)</th>
+<th>잘못 올라간 항목</th>
+<th>오답률</th>
+<th>점수 (영상 끝)</th>
+<th>ADD-S AUC</th>
+<th>프레임당 잘못된 상자</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>원본 0.5</td>
+<td>1.77 Hz</td>
+<td><strong>54</strong></td>
+<td>49</td>
+<td>47.6%</td>
+<td>51.9%</td>
+<td>88.9</td>
+<td>3.17</td>
+</tr>
+<tr>
+<td>2</td>
+<td>FastSAM → ViT-S → 0.5, 검증 끔</td>
+<td>2.08 Hz</td>
+<td><strong>55</strong></td>
+<td>173</td>
+<td>75.9%</td>
+<td>24.1%</td>
+<td>86.2</td>
+<td>10.76</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2 + 검증 켬 (개선안 3) ※</td>
+<td>2.28 Hz</td>
+<td>53</td>
+<td>36</td>
+<td>40.4%</td>
+<td>58.2%</td>
+<td><strong>92.9</strong></td>
+<td>2.43</td>
+</tr>
+<tr>
+<td>4</td>
+<td>우리 배포, 검증 켬</td>
+<td>1.49 Hz</td>
+<td>41</td>
+<td><strong>14</strong></td>
+<td><strong>25.5%</strong></td>
+<td>59.4%</td>
+<td>70.6</td>
+<td><strong>1.17</strong></td>
+</tr>
+<tr>
+<td>5</td>
+<td>개선안 1, 검증 켬</td>
+<td>0.77 Hz</td>
+<td>50</td>
+<td>25</td>
+<td>33.3%</td>
+<td><strong>62.5%</strong></td>
+<td>89.7</td>
+<td>1.65</td>
+</tr>
+<tr>
+<td>6</td>
+<td>배포 관문, 검증 끔 (L3)</td>
+<td><strong>3.43 Hz</strong></td>
+<td>41</td>
+<td>62</td>
+<td>60.2%</td>
+<td>35.0%</td>
+<td>68.0</td>
+<td>4.27</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>※ 구성 3 은 13:40 이후에 돌아 4절의 검증 코드 수정(기록 벡터화)이 적용된 유일한 구성입니다. 결과 경로는 같고 속도만 덕을 봤습니다. 4·5 는 4부에서 고친 코드로 다시 잽니다.</li>
+<li>같은 앞단에서 검증을 끄면 잘못 올라간 항목이 2 → 3 에서 173 → 36, 6 → 4 에서 62 → 14 로 4~5배 차이, 찾은 수는 거의 같습니다(55 → 53, 41 → 41).</li>
+<li>검증 켬 구성은 모두 원본 0.5 보다 점수가 높습니다(51.9 대 58~63%). 개선안 3 이 찾은 수·오답·자세 정확도(ADD-S 92.9)·속도의 균형이 가장 좋고, 개선안 1 은 점수 1위지만 가장 느립니다.</li>
+<li>노트북(08 문서)보다 모든 구성의 잘못 올라간 항목이 늘었습니다. GPU 가 빨라 인식 횟수가 3배가 되어 틀린 답이 지도에 올라갈 기회도 늘었기 때문이며, 실시간 점수는 같은 PC 안에서만 비교합니다.</li>
+</ul>
+<h2>4. 검증 코드 수정과 군집 먼저 — 260901 재측정 (4부, 14:49~15:32)</h2>
+<p>자세 검증 프로파일(E 묶음 참조)에서 검증 시간의 64% 가 후보 300개의 진단 기록을 파이썬에서 만드는 비용임을 확인하고 두 가지를 고쳤습니다.</p>
+<ul>
+<li><strong>고친 코드:</strong> 기록 생성을 배열별 1회 전송으로 벡터화, 군집·합의 루프 벡터화. 출력은 동일(36장 채점 바이트 동일). 검증 372 → 143 ms(36장, GPU1).</li>
+<li><strong>군집 먼저(cluster_first):</strong> 300개 가설을 회전 20°·이동 25 mm 로 먼저 묶어 군집 대표만 투영·무늬 검사, 합의는 군집 크기 가중. 합의 부족으로 거절된 물체만 300개 전체 검증으로 되돌림(fallback). 검증 143 → 54 ms, 36장 놓침 0.</li>
+</ul>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>지도 올라간 시간</th>
+<th>최종 지도 맞음 / 잘못 (8개)</th>
+<th>못 찾은 물체</th>
+<th>점수 (끝 / 평균)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 0.5</td>
+<td>3.62 Hz</td>
+<td>67.2초</td>
+<td>6 / 3</td>
+<td>공룡 인형, 사프란</td>
+<td>54.5 / 57.9%</td>
+</tr>
+<tr>
+<td>개선안 1, 수정 전</td>
+<td>4.77 Hz</td>
+<td>68.4초</td>
+<td><strong>8 / 0</strong></td>
+<td>–</td>
+<td><strong>100</strong> / 77.0%</td>
+</tr>
+<tr>
+<td>개선안 1, 고친 코드</td>
+<td>5.42 Hz</td>
+<td><strong>50.7초</strong></td>
+<td>7 / 1</td>
+<td>우유</td>
+<td>77.8 / 74.5%</td>
+</tr>
+<tr>
+<td>개선안 1 + 군집 먼저</td>
+<td>5.80 Hz</td>
+<td><strong>49.4초</strong></td>
+<td>7 / 1</td>
+<td>우유</td>
+<td>77.8 / <strong>82.5%</strong></td>
+</tr>
+<tr>
+<td>개선안 3, 수정 전</td>
+<td>6.17 Hz</td>
+<td>69.2초</td>
+<td>7 / 1</td>
+<td>공룡 인형</td>
+<td>77.8 / 78.6%</td>
+</tr>
+<tr>
+<td>개선안 3 + 군집 먼저</td>
+<td><strong>7.49 Hz</strong></td>
+<td>68.2초</td>
+<td><strong>8 / 0</strong></td>
+<td>–</td>
+<td><strong>100</strong> / 79.3%</td>
+</tr>
+<tr>
+<td>배포, 수정 전</td>
+<td>6.00 Hz</td>
+<td>68.2초</td>
+<td>7 / 1</td>
+<td>우유</td>
+<td>77.8 / 71.1%</td>
+</tr>
+<tr>
+<td>배포 + 군집 먼저</td>
+<td>6.91 Hz</td>
+<td>67.5초</td>
+<td>7 / 1</td>
+<td>우유</td>
+<td>77.8 / 79.8%</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>읽는 법</strong></p>
+<ul>
+<li><strong>속도:</strong> 고친 코드만으로 개선안 1 이 4.77 → 5.42 Hz(+14%), 군집 먼저까지 켜면 5.80 Hz(+22%). 개선안 3 은 6.17 → 7.49 Hz(+21%), 배포는 6.00 → 6.91 Hz(+15%). 검증 켬 구성 모두 원본 0.5(3.62 Hz)의 1.5~2배입니다. 처리 프레임은 개선안 1 기준 1,506 → 1,705 → 1,824.</li>
+<li><strong>지도에 올라간 시간</strong>은 로봇이 선반 앞을 지나는 시점(48~90초)이 정하므로 구성 간 차이가 작습니다. 개선안 1 이 68 → 50초로 당겨진 것은 선반 1 물체 네 개를 더 이른 프레임에서 잡은 결과입니다.</li>
+<li><strong>정확도는 7/1 과 8/0 사이의 실행 간 흔들림 안에 있습니다.</strong> 같은 개선안 1 이 수정 전 8/0 → 고친 코드 7/1(우유), 개선안 3 은 거꾸로 7/1 → 8/0 이 되었습니다. 검증 코드의 프레임별 출력은 동일함을 36장에서 확인했으므로, 이 차이는 처리 속도가 바뀌어 처리되는 프레임이 달라진 데서 오는 물체 1개의 흔들림입니다. 우유·공룡 인형은 어제부터 실행마다 엇갈리던 물체입니다. 1회 결과로 "군집 먼저가 정확도를 올렸다"고 쓰면 안 되고, 5부 반복 측정(2·3회차) 뒤에 "속도 +21%, 정확도 동일 범위"로 씁니다.</li>
+<li><strong>오답:</strong> 검증 켬 구성은 모두 1개 이하(원본 3). 군집 먼저가 오답을 늘리지 않았습니다.</li>
+<li><strong>평균 점수</strong>는 군집 먼저에서 세 구성 모두 올랐습니다(74.5 → 82.5, 78.6 → 79.3, 71.1 → 79.8%). 빨라져 지도가 더 일찍 채워지는 효과입니다.</li>
+</ul>
+<h2>4-2. 검증 코드 수정과 군집 먼저 — YCB-V 12영상 재측정 (4부 후반, 15:32~16:56)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>처리 프레임</th>
+<th>지도 올라간 시간</th>
+<th>찾은 객체 (55)</th>
+<th>잘못 올라간 항목</th>
+<th>오답률</th>
+<th>점수 (영상 끝)</th>
+<th>ADD-S AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>원본 0.5</td>
+<td>1.77 Hz</td>
+<td>1,225</td>
+<td>3.4초</td>
+<td><strong>54</strong></td>
+<td>49</td>
+<td>47.6%</td>
+<td>51.9%</td>
+<td>88.9</td>
+</tr>
+<tr>
+<td>3</td>
+<td>개선안 3 (고친 코드)</td>
+<td>2.28 Hz</td>
+<td>1,574</td>
+<td>3.4초</td>
+<td>53</td>
+<td><strong>36</strong></td>
+<td><strong>40.4%</strong></td>
+<td><strong>58.2%</strong></td>
+<td><strong>92.9</strong></td>
+</tr>
+<tr>
+<td>3</td>
+<td>개선안 3 + 군집 먼저</td>
+<td><strong>3.12 Hz</strong></td>
+<td>2,159</td>
+<td>2.8초</td>
+<td><strong>54</strong></td>
+<td>42</td>
+<td>43.8%</td>
+<td>55.7%</td>
+<td>90.5</td>
+</tr>
+<tr>
+<td>4</td>
+<td>배포, 수정 전</td>
+<td>1.49 Hz</td>
+<td>1,029</td>
+<td>2.6초</td>
+<td>41</td>
+<td>14</td>
+<td>25.5%</td>
+<td>59.4%</td>
+<td>70.6</td>
+</tr>
+<tr>
+<td>4</td>
+<td>배포, 고친 코드</td>
+<td>2.23 Hz</td>
+<td>1,540</td>
+<td>1.8초</td>
+<td>42</td>
+<td>14</td>
+<td>25.0%</td>
+<td>60.9%</td>
+<td>70.7</td>
+</tr>
+<tr>
+<td>5</td>
+<td>개선안 1, 수정 전</td>
+<td>0.77 Hz</td>
+<td>530</td>
+<td>4.4초</td>
+<td>50</td>
+<td>25</td>
+<td>33.3%</td>
+<td>62.5%</td>
+<td>89.7</td>
+</tr>
+<tr>
+<td>5</td>
+<td>개선안 1, 고친 코드</td>
+<td>1.20 Hz</td>
+<td>829</td>
+<td>2.6초</td>
+<td>49</td>
+<td>31</td>
+<td>38.8%</td>
+<td>57.0%</td>
+<td>87.0</td>
+</tr>
+<tr>
+<td>5</td>
+<td>개선안 1 + 군집 먼저</td>
+<td>1.70 Hz</td>
+<td>1,172</td>
+<td>2.2초</td>
+<td>50</td>
+<td>34</td>
+<td>40.5%</td>
+<td>56.2%</td>
+<td>88.3</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>읽는 법</strong></p>
+<ul>
+<li><strong>속도:</strong> 고친 코드만으로 개선안 1 이 0.77 → 1.20 Hz(+56%), 배포가 1.49 → 2.23 Hz(+50%). 군집 먼저까지 켜면 개선안 1 1.70 Hz(수정 전의 2.2배), 개선안 3 2.28 → 3.12 Hz(+37%). YCB-V 는 매 프레임 물체 3~6개가 보여 검증이 늘 돌기 때문에 검증 비용 절감이 그대로 처리율로 나옵니다. 개선안 3 + 군집 먼저는 원본 0.5(1.77 Hz)의 1.8배입니다.</li>
+<li><strong>찾은 객체는 그대로입니다</strong>(53 → 54, 41 → 42, 50 → 49 → 50). 검증 코드의 프레임별 출력이 같다는 36장·900장 확인과 일치합니다.</li>
+<li><strong>잘못 올라간 항목은 처리 프레임 수와 함께 조금 늘었습니다</strong>(개선안 3: 36 → 42, 개선안 1: 25 → 31 → 34). 2절·13 문서에서 본 "인식 횟수가 늘면 틀린 답이 지도에 올라갈 기회도 는다"는 효과이며, 배포 설정은 14 → 14 로 변화가 없습니다. 프레임당 오답 비율은 거의 같습니다. 따라서 점수(영상 끝)가 2~6%p 내려간 것은 정확도 저하가 아니라 처리량 증가의 부작용이고, 지도 쪽에서 같은 물체의 중복·재등록을 억제하면 사라질 수 있는 항목입니다.</li>
+<li><strong>개선안 3 + 군집 먼저 대 원본 0.5:</strong> 찾은 수 같음(54 대 54), 잘못 42 대 49, 지도 ADD-S 90.5 대 88.9, 처리율 3.12 대 1.77 Hz. 원본보다 모든 축에서 같거나 낫습니다.</li>
+<li>5부 반복 측정(원본 0.5, 개선안 3 + 군집 먼저 각 2회 추가)이 끝나면 1회 수치의 흔들림 폭을 함께 적습니다.</li>
+</ul>
+<h2>4-3. 반복 측정 3회 — 260901, 원본 0.5 대 개선안 3 + 군집 먼저 (5부, 16:56~17:40)</h2>
+<p>같은 영상을 같은 설정으로 세 번 돌렸습니다(1회차는 2·4절의 값).</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>회차</th>
+<th>인식 빈도</th>
+<th>지도 올라간 시간</th>
+<th>최종 지도 맞음 / 잘못</th>
+<th>못 찾은 물체</th>
+<th>점수 (끝 / 평균)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 0.5</td>
+<td>1</td>
+<td>3.62 Hz</td>
+<td>67.2초</td>
+<td>6 / 3</td>
+<td>공룡 인형, 사프란</td>
+<td>54.5 / 57.9%</td>
+</tr>
+<tr>
+<td></td>
+<td>2</td>
+<td>3.64 Hz</td>
+<td>67.5초</td>
+<td>6 / 3</td>
+<td>공룡 인형, 사프란</td>
+<td>54.5 / 52.8%</td>
+</tr>
+<tr>
+<td></td>
+<td>3</td>
+<td>3.64 Hz</td>
+<td>50.1초</td>
+<td>8 / 1</td>
+<td>–</td>
+<td>88.9 / 56.4%</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>평균</strong></td>
+<td><strong>3.63 Hz</strong></td>
+<td></td>
+<td><strong>6.7 / 2.3</strong> (6~8 / 1~3)</td>
+<td></td>
+<td><strong>66.0 / 55.7%</strong></td>
+</tr>
+<tr>
+<td>개선안 3 + 군집 먼저</td>
+<td>1</td>
+<td>7.49 Hz</td>
+<td>68.2초</td>
+<td>8 / 0</td>
+<td>–</td>
+<td>100 / 79.3%</td>
+</tr>
+<tr>
+<td></td>
+<td>2</td>
+<td>7.61 Hz</td>
+<td>68.3초</td>
+<td>8 / 0</td>
+<td>–</td>
+<td>100 / 78.7%</td>
+</tr>
+<tr>
+<td></td>
+<td>3</td>
+<td>7.53 Hz</td>
+<td>68.7초</td>
+<td>8 / 0</td>
+<td>–</td>
+<td>100 / 78.6%</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>평균</strong></td>
+<td><strong>7.54 Hz</strong></td>
+<td></td>
+<td><strong>8.0 / 0.0</strong> (8~8 / 0~0)</td>
+<td></td>
+<td><strong>100 / 78.9%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>개선안 3 + 군집 먼저는 세 번 모두 8 / 0 입니다.</strong> 인식 빈도 7.49~7.61 Hz, 평균 점수 78.6~79.3% 로 실행 간 차이가 1% 안입니다. 4절에서 "1개 차이는 흔들림"이라고 적은 것과 달리, 이 구성은 세 번 모두 같은 결과를 냈습니다.</li>
+<li><strong>원본 0.5 는 실행마다 다릅니다.</strong> 두 번은 6 / 3(공룡 인형·사프란을 틀린 위치에 올림), 한 번은 8 / 1. 끝 점수 54.5~88.9% 로 폭이 큽니다. 기하 1위를 그대로 믿는 구조라 어느 프레임이 처리되느냐에 따라 틀린 자세가 먼저 올라가기도 하고 아니기도 합니다.</li>
+<li>세 번 평균으로 말하면: 처리율 2.1배(3.63 → 7.54 Hz), 최종 지도 오답 2.3 → 0, 못 찾은 물체 1.3 → 0, 평균 점수 55.7 → 78.9%.</li>
+<li>3회차 개선안 3 실행은 SLAM 루프 보정이 53 cm 로 다른 회차(27~29 cm)보다 컸지만 결과는 같았습니다.</li>
+</ul>
+<h2>4-4. 반복 측정 3회 — YCB-V 12영상, 원본 0.5 대 개선안 3 + 군집 먼저 (5부 후반, 17:40~19:13)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>회차</th>
+<th>인식 빈도</th>
+<th>처리 프레임</th>
+<th>지도 올라간 시간</th>
+<th>찾은 객체 (55)</th>
+<th>잘못 올라간 항목</th>
+<th>오답률</th>
+<th>점수 (영상 끝)</th>
+<th>ADD-S AUC</th>
+<th>프레임당 잘못된 상자</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 0.5</td>
+<td>1</td>
+<td>1.77 Hz</td>
+<td>1,225</td>
+<td>3.4초</td>
+<td>54</td>
+<td>49</td>
+<td>47.6%</td>
+<td>51.9%</td>
+<td>88.9</td>
+<td>3.17</td>
+</tr>
+<tr>
+<td></td>
+<td>2</td>
+<td>1.75 Hz</td>
+<td>1,213</td>
+<td>3.8초</td>
+<td>53</td>
+<td>44</td>
+<td>45.4%</td>
+<td>53.5%</td>
+<td>91.0</td>
+<td>2.99</td>
+</tr>
+<tr>
+<td></td>
+<td>3</td>
+<td>1.77 Hz</td>
+<td>1,223</td>
+<td>3.4초</td>
+<td>54</td>
+<td>47</td>
+<td>46.5%</td>
+<td>52.9%</td>
+<td>87.6</td>
+<td>2.86</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>평균</strong></td>
+<td><strong>1.76 Hz</strong></td>
+<td>1,220</td>
+<td>3.5초</td>
+<td><strong>53.7</strong> (53~54)</td>
+<td><strong>46.7</strong> (44~49)</td>
+<td><strong>46.5%</strong></td>
+<td><strong>52.8%</strong></td>
+<td><strong>89.2</strong></td>
+<td><strong>3.01</strong></td>
+</tr>
+<tr>
+<td>개선안 3 + 군집 먼저</td>
+<td>1</td>
+<td>3.12 Hz</td>
+<td>2,159</td>
+<td>2.8초</td>
+<td>54</td>
+<td>42</td>
+<td>43.8%</td>
+<td>55.7%</td>
+<td>90.5</td>
+<td>2.98</td>
+</tr>
+<tr>
+<td></td>
+<td>2</td>
+<td>3.15 Hz</td>
+<td>2,180</td>
+<td>2.8초</td>
+<td>54</td>
+<td>47</td>
+<td>46.5%</td>
+<td>52.9%</td>
+<td>90.6</td>
+<td>3.02</td>
+</tr>
+<tr>
+<td></td>
+<td>3</td>
+<td>3.15 Hz</td>
+<td>2,176</td>
+<td>2.6초</td>
+<td>54</td>
+<td>42</td>
+<td>43.8%</td>
+<td>55.7%</td>
+<td>91.0</td>
+<td>2.63</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>평균</strong></td>
+<td><strong>3.14 Hz</strong></td>
+<td>2,172</td>
+<td>2.7초</td>
+<td><strong>54.0</strong> (54~54)</td>
+<td><strong>43.7</strong> (42~47)</td>
+<td><strong>44.7%</strong></td>
+<td><strong>54.8%</strong></td>
+<td><strong>90.7</strong></td>
+<td><strong>2.88</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>읽는 법 — YCB-V 에서는 원본과의 오답 차이가 작습니다.</strong></p>
+<ul>
+<li>세 번 평균으로 개선안 3 + 군집 먼저는 원본 0.5 보다 처리율 1.8배(1.76 → 3.14 Hz), 지도 올라간 시간 3.5 → 2.7초, 찾은 객체 같음(53.7 → 54.0), 지도 ADD-S +1.5, 점수 +2.0%p 입니다. <strong>잘못 올라간 항목은 46.7 → 43.7 로 3개 차이이며, 두 구성의 실행 간 폭(44~49, 42~47)이 겹칩니다.</strong> 4-2절의 1회 수치(49 → 36)는 유리한 쪽 끝이었습니다.</li>
+<li>이유는 두 가지입니다. (1) 개선안 3 은 인식 단계가 원본 판정 0.5 그대로이고, YCB-V 의 "장면에 없는 물체" 오답은 검증을 통과하는 그럴듯한 자세로 올라오므로 검증이 다 거르지 못합니다. (2) 군집 먼저로 처리 프레임이 78% 늘어(1,220 → 2,172) 틀린 답이 올라갈 기회도 늘었습니다. 프레임당 잘못된 상자는 3.01 → 2.88 로 조금 낮습니다.</li>
+<li>반면 <strong>같은 앞단에서 검증만 끈 개선안 2(173)와 비교하면 4분의 1</strong>이고, 실제 영상(4-3절)에서는 세 번 모두 8/0 대 원본 6.7/2.3 입니다. 논문에서 YCB-V 실시간은 "찾은 수·속도·자세 정확도는 좋아지고 오답은 원본과 비슷한 수준(3회 평균 46.7 → 43.7)"으로 적고, 오답 억제의 근거는 검증 켬/끔 대조(173 → 36~47)와 실제 영상·900장(0.308 → 0.051)에서 가져오는 것이 정확합니다.</li>
+<li>실행 간 흔들림: 원본은 잘못 44~49, 개선안은 42~47. 1회 비교로 3~5개 차이를 말하면 안 되는 폭입니다.</li>
+</ul>
+<h2>5. 남은 측정</h2>
+<ul>
+<li>모두 완료(2026-10-07 19:13). 최종 수치는 RTX 5090 에서 다시 잴 예정(03 목차).</li>
+</ul>
+<h2>6. 서버·클라이언트 분리 재실행 (2026-10-08) — 자세한 내용은 18 문서</h2>
+<p>같은 여섯 구성을 <strong>인식 서버 10.254.176.41</strong>(RTX PRO 6000, hub.py = SAM-6D+융합)과 <strong>SLAM 클라이언트 10.254.176.192</strong>(이 PC, ORB-SLAM3 f2000, ssh 역터널로 포즈 전송)로 나눠 재실행했습니다(각 1회). 결과 <code>results_real5_lan41.json</code>, <code>results_*_lan41.json</code>.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>260901 최종 지도 (이 문서 → 분리)</th>
+<th>YCB-V 등록 / 오답 지도 객체</th>
+<th>YCB-V 인식 Hz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 원본 0.5</td>
+<td>6/3/2 → 7/2/1</td>
+<td>55/55 → 55/55 · 38 → 44</td>
+<td>1.77 → 2.18</td>
+</tr>
+<tr>
+<td>2 개선안 2</td>
+<td>5/4/3 → 4/5/4</td>
+<td>55/55 → 55/55 · 120 → 131</td>
+<td>2.08 → 2.80</td>
+</tr>
+<tr>
+<td>3 개선안 3</td>
+<td>7/1/1 → 8/0/0</td>
+<td>55/55 → 55/55 · 42 → 47</td>
+<td>2.28 → 3.34</td>
+</tr>
+<tr>
+<td>4 배포</td>
+<td>7/1/1 → 8/0/0</td>
+<td>44/55 → 45/55 · 17 → 22</td>
+<td>1.49 → 4.54</td>
+</tr>
+<tr>
+<td>5 개선안 1</td>
+<td>8/0/0 → 7/1/1</td>
+<td>55/55 → 55/55 · 38 → 62</td>
+<td>0.77 → 2.95</td>
+</tr>
+<tr>
+<td>6 배포 검증 끔</td>
+<td>5/4/3 → 7/2/1</td>
+<td>47/55 → 47/55 · 70 → 74</td>
+<td>3.43 → 6.78</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>구성 간 순위·경향이 그대로 재현됐고, <strong>SLAM 을 네트워크로 분리한 데 따른 열화는 관찰되지 않았습니다</strong>(루프 보정 6.6~20.2 cm 로 동일 수준).</li>
+<li>인식 Hz 는 GPU 교체 효과로 1.2~3.8배 상승(PEM·검증 비중이 큰 구성일수록 큼). 처리 프레임이 늘면서 YCB-V 오답 지도 객체가 소폭 늘었지만 프레임당 오답 상자는 비슷하며, 4-3·4-4절의 실행 간 폭과 겹칩니다.</li>
+</ul></main></body></html>

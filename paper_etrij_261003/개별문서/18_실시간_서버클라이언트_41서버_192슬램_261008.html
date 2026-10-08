@@ -1,0 +1,215 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>18. 실시간 기술 조합 — 서버·클라이언트 분리 재실행: .41 인식 서버 + .192 SLAM (2026-10-08)</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1>18. 실시간 기술 조합 — 서버·클라이언트 분리 재실행: .41 인식 서버 + .192 SLAM (2026-10-08)</h1>
+<blockquote>
+<p>15 문서(4090 로컬, 2026-10-07)의 실시간 비교 실험을 <strong>두 대로 나눠</strong> 그대로 재실행한 결과입니다.
+<strong>서버 10.254.176.41</strong> (RTX PRO 6000 Blackwell ×4, GPU0 단독): <code>hub.py</code> — SAM 카메라 세션 재생 + SAM-6D 인식 + SLAM 포즈 융합 + 객체 지도.
+<strong>클라이언트 10.254.176.192</strong> (구 4090 워크스테이션, ssh 별칭 <code>slam192</code>): ORB-SLAM3 f2000(<code>~/objpose/run_slam.sh</code>) — 같은 장면의 SLAM 세션을 1배속 재생, 포즈를 TCP로 전송.
+연결은 hub 가 <code>ssh -R 17001</code> 역터널로 원격 SLAM 을 직접 띄우는 방식(기존 Mac 런처 경로 재사용, 코드 수정 없음). 코드 <code>CLI_env_paper</code>(검증 기록 벡터화 뒤 판), 각 1회 측정.
+체인 스크립트: <code>.41:~/Dataset/bop/ycbv_work/run_combo_lan41.sh</code>(실제 영상), <code>run_combo_lan41_ycbv.sh</code> + <code>src/ycbv_live/run_live_lan41.sh</code>(YCB-V). 채점 결과: <code>src/realdata/results_real5_lan41.json</code>, <code>src/ycbv_live/results_*_lan41.json</code>.</p>
+</blockquote>
+<h2>0. 구성 (15 문서 §1 과 동일한 여섯 가지)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>이름</th>
+<th>조합</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>원본 0.5</td>
+<td>원본 SAM-6D: FastSAM-x → DINOv2 ViT-L → 판정 0.5 → PEM 기하 1위</td>
+</tr>
+<tr>
+<td>2</td>
+<td>개선안 2 계열</td>
+<td>FastSAM-x → ViT-S → 0.5 → PEM, 자세 검증 끔</td>
+</tr>
+<tr>
+<td>3</td>
+<td>개선안 3 계열</td>
+<td>= 2 + 자세 검증 켬</td>
+</tr>
+<tr>
+<td>4</td>
+<td>배포</td>
+<td>우리 기술(YOLO-World 관문·독점 배정), 검증 켬</td>
+</tr>
+<tr>
+<td>5</td>
+<td>개선안 1</td>
+<td>g13: 문구 상자→관문(새 기준)+배정 대안, 검증 켬 (YCB-V 는 g13p)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>배포 검증 끔</td>
+<td>배포 관문+독점 배정, 검증 끔</td>
+</tr>
+</tbody>
+</table></div>
+<h2>1. 실제 영상 260901_cbnu_bigeightcircle (8객체, 5분 14초)</h2>
+<p>최종 지도 <strong>맞음/틀림/놓침</strong> 과 평균 점수. 괄호 없는 쪽이 4090 로컬(15 문서), 굵은 쪽이 이번 분리 실행.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>최종 지도 4090 → 분리</th>
+<th>평균점수 %</th>
+<th>지도 중앙시간 s</th>
+<th>인식 Hz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 원본 0.5</td>
+<td>6/3/2 → <strong>7/2/1</strong></td>
+<td>57.9 → 60.0</td>
+<td>67.2 → 67.2</td>
+<td>3.62 → 3.66</td>
+</tr>
+<tr>
+<td>2 개선안 2</td>
+<td>5/4/3 → 4/5/4</td>
+<td>28.7 → 32.6</td>
+<td>49.7 → 49.9</td>
+<td>6.89 → 7.64</td>
+</tr>
+<tr>
+<td>3 개선안 3</td>
+<td>7/1/1 → <strong>8/0/0</strong></td>
+<td>78.6 → 78.8</td>
+<td>69.2 → 68.3</td>
+<td>6.17 → <strong>7.98</strong></td>
+</tr>
+<tr>
+<td>4 배포</td>
+<td>7/1/1 → <strong>8/0/0</strong></td>
+<td>71.1 → <strong>82.5</strong></td>
+<td>68.2 → <strong>49.4</strong></td>
+<td>6.00 → <strong>8.22</strong></td>
+</tr>
+<tr>
+<td>5 개선안 1</td>
+<td>8/0/0 → 7/1/1</td>
+<td>77.0 → 79.9</td>
+<td>68.4 → <strong>49.4</strong></td>
+<td>4.77 → 7.84</td>
+</tr>
+<tr>
+<td>6 배포 검증 끔</td>
+<td>5/4/3 → 7/2/1</td>
+<td>51.7 → 50.8</td>
+<td>28.2 → 28.1</td>
+<td>7.15 → 8.44</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>루프 보정은 6.6~20.2 cm 로 로컬 실행과 같은 수준. 구성 간 ±1 객체 차이는 1회 측정 변동 범위입니다.</li>
+<li>인식이 빨라진 덕(배포 6.0→8.2 Hz)에 개선안 3 과 배포가 이번엔 8객체 전부 맞혔습니다.</li>
+</ul>
+<h2>2. YCB-V 12영상 × 6구성 (GT 55객체)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>등록</th>
+<th>끝까지 찾음 %</th>
+<th>오답 지도 객체</th>
+<th>ADD-S AUC</th>
+<th>위치오차 중앙 mm</th>
+<th>인식 Hz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 원본 0.5</td>
+<td>55/55 → 55/55</td>
+<td>98.2 → 98.2</td>
+<td>38 → 44</td>
+<td>88.9 → 86.7</td>
+<td>8.2 → 8.8</td>
+<td>1.77 → 2.18</td>
+</tr>
+<tr>
+<td>2 개선안 2</td>
+<td>55/55 → 55/55</td>
+<td>100 → 100</td>
+<td>120 → 131</td>
+<td>86.2 → 85.8</td>
+<td>8.0 → 8.8</td>
+<td>2.08 → 2.80</td>
+</tr>
+<tr>
+<td>3 개선안 3</td>
+<td>55/55 → 55/55</td>
+<td>98.2 → <strong>100</strong></td>
+<td>42 → 47</td>
+<td>92.9 → 89.2</td>
+<td>7.4 → 8.0</td>
+<td>2.28 → 3.34</td>
+</tr>
+<tr>
+<td>4 배포</td>
+<td>44/55 → 45/55</td>
+<td>74.5 → 76.4</td>
+<td><strong>17 → 22</strong></td>
+<td>70.6 → 72.1</td>
+<td>7.0 → 7.9</td>
+<td>1.49 → <strong>4.54</strong></td>
+</tr>
+<tr>
+<td>5 개선안 1 (g13p)</td>
+<td>55/55 → 55/55</td>
+<td>94.5 → 98.2</td>
+<td>38 → 62</td>
+<td>89.7 → 90.1</td>
+<td>8.2 → 7.9</td>
+<td>0.77 → <strong>2.95</strong></td>
+</tr>
+<tr>
+<td>6 배포 검증 끔</td>
+<td>47/55 → 47/55</td>
+<td>80.0 → 80.0</td>
+<td>70 → 74</td>
+<td>68.0 → 69.0</td>
+<td>9.0 → 9.9</td>
+<td>3.43 → 6.78</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>경향 재현</strong>: 검증을 끄면 오답 폭증(개선안 2: 131개), 개선안 3·개선안 1 이 정확도-오답 균형 최상, 배포는 등록을 아끼는 대신 오답 최소(22개). 서버·클라이언트 분리(네트워크 SLAM)로 인한 열화는 관찰되지 않았습니다.</li>
+<li><strong>인식 속도</strong>: PEM·검증 비중이 큰 구성일수록 상승 폭이 큼 — 배포 3.0배, 개선안 1 은 3.8배. 처리 프레임이 2~4배 늘면서 틀린 등록 기회도 늘어 오답 지도 객체 수가 소폭 증가했는데(g13p 38→62), 장당 오답 상자 수는 비슷합니다.</li>
+</ul>
+<h2>3. 이식하면서 확인된 것 (다음에 다른 머신으로 옮길 때)</h2>
+<ol>
+<li><strong>HSV 템플릿 캐시는 머신-로컬</strong>: <code>sam6d_realtime/outputs/.../template_features/*_hsv.npz</code>. 새 머신에서는 <code>tools/build_hsv_template_cache.py --force</code> 로 재생성해야 합니다.</li>
+<li><strong><code>assets/model_points/ycbv_*.npy</code> 는 심볼릭 링크</strong>: 실체는 <code>~/Dataset/bop/ycbv_work/core_repo/assets/</code> 에 있습니다. 코드만 복사하면 링크가 깨져 YCB-V 구성이 전부 "자산이 없다" 로 죽습니다(이번에 g13p 두 장면이 이걸로 재실행됨).</li>
+<li><strong>채점에는 <code>ycbv/models_eval</code> 필요</strong>: <code>eval_live.py</code> 가 <code>models_eval/models_info.json</code> 을 읽습니다. <code>models/</code> 만으로는 안 됩니다.</li>
+<li><strong>뷰어 포트 충돌</strong>: .41 의 8765 를 다른 서비스가 쓰고 있어 이번 실험은 8766 을 썼습니다.</li>
+<li>역터널 방식이라 서버 쪽 방화벽 개방이 필요 없고, ORB vocab 로딩(.192, 첫 회 약 3분)은 파일 캐시가 데워지면 수 초로 줄었습니다.</li>
+</ol></main></body></html>

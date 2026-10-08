@@ -1,0 +1,1493 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>A 논문 기획 투고처 비교대상 목차</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1 id="_1">논문 기획 투고처 비교대상 목차</h1>
+<blockquote>
+<p>논문 기획 — 투고처 검토, 추가 실험 계획, 비교 대상 논문, 목차, 재시작 메모. 개별 문서 5개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-08.</p>
+</blockquote>
+<p><strong>이 묶음의 장</strong></p>
+<ul>
+<li><strong>00_투고처_검토</strong> — 객체 위치 추정 논문 — 투고처 검토와 작성 방향</li>
+<li><strong>01_추가실험_계획</strong> — 논문을 위한 추가 실험 계획</li>
+<li><strong>02_비교대상_논문</strong> — 비교 대상 논문과 비교 수치 (논문 실험용 · 특허 비교용)</li>
+<li><strong>03_목차_v0.2</strong> — 논문 목차 (v0.2)</li>
+<li><strong>08_재시작_메모</strong> — 08. 재시작 메모 (2026-10-06 새벽, 사용자 요청으로 중단)</li>
+</ul>
+<div class="toc">
+<ul>
+<li><a href="#_1">논문 기획 투고처 비교대상 목차</a><ul>
+<li><a href="#_2">객체 위치 추정 논문 — 투고처 검토와 작성 방향</a><ul>
+<li><a href="#0">0. 먼저 할 일: 특허 출원을 논문 공개보다 앞에 둔다</a></li>
+<li><a href="#1-etri-journal">1. ETRI Journal에 맞는가</a></li>
+<li><a href="#2">2. 투고할 수 있는 학회·학회지</a><ul>
+<li><a href="#_3">국제 학회</a></li>
+<li><a href="#_4">국제 저널</a></li>
+<li><a href="#_5">국내 학회·학회지</a></li>
+<li><a href="#_6">권장 일정 (예시)</a></li>
+</ul>
+</li>
+<li><a href="#3">3. 이 기술로 논문을 쓸 때의 강점과 보완점</a><ul>
+<li><a href="#_7">강점</a></li>
+<li><a href="#_8">심사에서 지적받기 쉬운 점과 대응</a></li>
+<li><a href="#_9">원고를 쓰는 방향</a></li>
+</ul>
+</li>
+<li><a href="#4">4. 초안 상태와 남은 확인 사항</a></li>
+<li><a href="#5-etri-journal-2026-10-03">5. ETRI Journal 형식 원고 (2026-10-03 추가)</a></li>
+<li><a href="#6-2026-10-03">6. 추가 자료 (2026-10-03)</a></li>
+<li><a href="#7-v02-2026-10-04">7. 원고 v0.2 (2026-10-04, 구성도 기준 재작성)</a></li>
+</ul>
+</li>
+<li><a href="#_10">논문을 위한 추가 실험 계획</a><ul>
+<li><a href="#1">1. 지금 실험이 증명하는 것과 빈 곳</a></li>
+<li><a href="#2_1">2. 필요한 실험 (우선순위 순)</a><ul>
+<li><a href="#p1">꼭 필요 (P1): 심사 통과에 직접 영향</a></li>
+<li><a href="#p2">있으면 좋음 (P2): 범용성과 견고성</a></li>
+<li><a href="#p3">한계를 줄이는 실험 (P3): 후속 논문으로 미뤄도 됨</a></li>
+</ul>
+</li>
+<li><a href="#3_1">3. 권장 순서</a></li>
+</ul>
+</li>
+<li><a href="#_11">비교 대상 논문과 비교 수치 (논문 실험용 · 특허 비교용)</a><ul>
+<li><a href="#1_1">1. 논문 실험에서 비교할 대상</a><ul>
+<li><a href="#11">1.1 실험별로 무엇과 비교하나</a></li>
+<li><a href="#12-ycb-v-6d-bop-task-4-ar-rgb-d">1.2 YCB-V 미학습 객체 6D 자세 (BOP Task 4, AR, RGB-D)</a></li>
+<li><a href="#13-ycb-v-bop-task-56">1.3 YCB-V 미학습 객체 검출·분할 (BOP Task 5/6)과 검출기 속도</a></li>
+<li><a href="#14-slam-ycb-v">1.4 객체 SLAM · 객체 지도 (YCB-V 등)</a></li>
+<li><a href="#15">1.5 비동기 · 지연 처리</a></li>
+</ul>
+</li>
+<li><a href="#2_2">2. 특허 작성 시 비교할 논문·특허</a></li>
+<li><a href="#3_2">3. 이번 조사에서 확인하지 못한 것</a></li>
+</ul>
+</li>
+<li><a href="#v02">논문 목차 (v0.2)</a><ul>
+<li><a href="#7">그림 (7개)</a></li>
+<li><a href="#5">표 (5개)</a></li>
+</ul>
+</li>
+<li><a href="#08-2026-10-06">08. 재시작 메모 (2026-10-06 새벽, 사용자 요청으로 중단)</a><ul>
+<li><a href="#_12">중단 시점의 상태</a></li>
+<li><a href="#_13">진행 기록</a></li>
+<li><a href="#_14">남은 일 (다시 시작할 때 순서)</a></li>
+<li><a href="#_15">실행 결과 위치</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<hr />
+<p><a id="00_투고처_검토"></a></p>
+<h2 id="_2">객체 위치 추정 논문 — 투고처 검토와 작성 방향</h2>
+<p>작성일 2026-10-03 · 원고: <a href="manuscript_en.md">manuscript_en.md</a> (영문 초안 v0.1, ETRI Journal 형식 기준)</p>
+<p>학회·저널 정보는 2026-10-03에 웹에서 확인했다. 공식 페이지에 접근하지 못한 항목은 다른 사이트의 집계에서 가져왔으며 <strong>[제3자]</strong>로 표시했다. 확인하지 못한 항목은 <strong>미확인</strong>으로 적었다. 투고 직전에 공식 사이트에서 다시 확인해야 한다.</p>
+<hr />
+<h3 id="0">0. 먼저 할 일: 특허 출원을 논문 공개보다 앞에 둔다</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>국가</th>
+<th>자기 공개 후 구제</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>한국</td>
+<td>공지예외주장, 12개월 (특허법 30조)</td>
+</tr>
+<tr>
+<td>미국</td>
+<td>1년 유예 (35 U.S.C. 102(b)(1))</td>
+</tr>
+<tr>
+<td>유럽(EPO)</td>
+<td>일반 유예 없음. 공인 박람회나 남용인 경우만 예외 (EPC 55조)</td>
+</tr>
+<tr>
+<td>중국</td>
+<td>6개월. 지정 학술회의·박람회 등만 해당하고 일반 논문은 대상이 아님 (전리법 24조)</td>
+</tr>
+</tbody>
+</table></div>
+<p>논문 투고, arXiv 게시, 학회 발표 가운데 어느 것이든 하기 <strong>전에</strong> 한국 출원(v1.4 명세서)을 마쳐야 한다. 그래야 해외 출원 가능성이 남는다. ETRI Journal은 이중 익명 심사지만, 심사 중인 원고도 공개로 볼 위험이 있으니 투고 전에 출원하는 것이 안전하다.</p>
+<hr />
+<h3 id="1-etri-journal">1. ETRI Journal에 맞는가</h3>
+<p><strong>결론: 맞다.</strong> 본문 하나(시스템과 촬영 시각 키프레임 고정)로 정리하면 정규 논문(Regular Paper)으로 낼 수 있다. 비용이 없고 마감도 없어 일정 부담이 가장 적다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+<th>이 연구에 주는 의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>범위</td>
+<td>정보·통신·전자 전반. 컴퓨팅, 멀티미디어, 네트워크, AI 등</td>
+<td>비전·로봇 전문지는 아니다. 다만 "두 장치로 나눈 실시간 인식 시스템과 장치 사이 시각·지연 처리"는 ICT 시스템 논문으로 범위 안에 든다</td>
+</tr>
+<tr>
+<td>색인·IF</td>
+<td>SCIE·Scopus·KCI, IF 1.6 (2024 JCR, Q3) [제3자]</td>
+<td>실적으로는 SCIE 1편. 로봇 분야 노출도는 RA-L이나 IROS보다 낮다</td>
+</tr>
+<tr>
+<td>비용</td>
+<td>투고·게재료 없음, 골드 오픈 액세스</td>
+<td>부담 없음</td>
+</tr>
+<tr>
+<td>심사</td>
+<td>이중 익명, 평균 약 4.4개월, 채택률 약 50% [제3자]</td>
+<td>원고에서 저자·기관·장소 이름을 빼야 한다 (초안에 반영함)</td>
+</tr>
+<tr>
+<td>분량·형식</td>
+<td>2단 8–10쪽, ETRIJ Word/LaTeX 템플릿, 초록 1,200자 이내, 키워드 5개 이내, IEEE식 참고문헌, 그림 300 dpi 이상</td>
+<td>초안은 약 12쪽이라 2쪽 정도 줄여야 한다. 초록(1,036자)과 키워드(5개)는 맞췄다</td>
+</tr>
+<tr>
+<td>학회 발표본</td>
+<td>투고 때 밝혀야 함</td>
+<td>학회에 먼저 내면 확장판(새 내용 30% 안팎)으로 내는 것이 보통이다</td>
+</tr>
+<tr>
+<td>특별호</td>
+<td>2026–27년 로봇·비전·디지털 트윈 특별호는 <strong>미확인</strong></td>
+<td>정규 투고로 진행</td>
+</tr>
+<tr>
+<td>ETRI 소속 저자 우대</td>
+<td><strong>미확인</strong></td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>ETRI Journal에 내기 전에 고려할 점</strong></p>
+<ul>
+<li>심사위원이 반드시 비전·로봇 전문가라는 보장이 없다. 그래서 도입부에서 "왜 두 장치로 나누는가, 그러면 무엇이 깨지는가(다섯 가지 문제)"를 그림 하나로 먼저 보여 주는 구성이 효과적이다. 초안의 그림 5가 그 역할을 한다.</li>
+<li>노출도를 우선한다면 IROS 2027이나 RA-L에 먼저 내고, 인식부 실험과 LiDAR 실시예를 더한 확장판을 ETRI Journal에 내는 두 단계 방식도 가능하다.</li>
+</ul>
+<hr />
+<h3 id="2">2. 투고할 수 있는 학회·학회지</h3>
+<p>맞는 정도는 이 연구의 성격(시스템, 객체 지도, 실시간, 실제 주행)을 기준으로 매겼다.</p>
+<h4 id="_3">국제 학회</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>학회</th>
+<th>다음 마감</th>
+<th>분량</th>
+<th>맞는 정도</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IROS 2027</strong> (피렌체, 2027-09)</td>
+<td>2027-03-01 무렵 (공식 CFP 미확인)</td>
+<td>6+2쪽</td>
+<td>◎</td>
+<td>로봇 인지 시스템 논문의 대표 학회. RA-L 동시 투고 옵션이 있다</td>
+</tr>
+<tr>
+<td><strong>RSS 2027</strong> (아테네, 2027-07)</td>
+<td>확장 초록 <strong>2026-12-04</strong></td>
+<td>미확인</td>
+<td>○</td>
+<td>심사가 엄격하다. 촬영 시각 고정을 원리로 정리한 짧은 논문에 맞다</td>
+</tr>
+<tr>
+<td>CVPR 2027 (시애틀)</td>
+<td><strong>2026-11-16</strong></td>
+<td>예년 8쪽</td>
+<td>△</td>
+<td>시스템 중심이라 맞지 않는다. 인식부만 따로 쓰면 워크숍(BOP 등)이 낫다</td>
+</tr>
+<tr>
+<td>ICCV 2027 (홍콩)</td>
+<td>2027-03 예상</td>
+<td>—</td>
+<td>△</td>
+<td>같은 이유</td>
+</tr>
+<tr>
+<td>CoRL 2027</td>
+<td>2027-05 예상</td>
+<td>—</td>
+<td>△</td>
+<td>학습 중심 학회</td>
+</tr>
+<tr>
+<td>ICRA 2027 (서울)</td>
+<td>2026-09-16 <strong>마감됨</strong></td>
+<td>—</td>
+<td>—</td>
+<td>ICRA 2028은 2027년 9월 예상</td>
+</tr>
+<tr>
+<td>WACV 2027, 3DV 2027, ACCV 2026, SII 2027</td>
+<td><strong>마감됨</strong></td>
+<td>—</td>
+<td>—</td>
+<td>다음 회차를 기다려야 한다</td>
+</tr>
+<tr>
+<td>ICCAS 2027, UR 2027</td>
+<td>미확인</td>
+<td>—</td>
+<td>○</td>
+<td>국내 개최가 잦은 제어·로봇 학회. 빠른 발표용</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="_4">국제 저널</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>저널</th>
+<th>색인·IF (2024)</th>
+<th>비용</th>
+<th>맞는 정도</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IEEE RA-L</strong></td>
+<td>SCIE, 5.3 [제3자]</td>
+<td>6+2쪽, 초과 쪽당 $175. 오픈 액세스는 선택($2,800)</td>
+<td>◎ 로봇 시스템 논문의 1순위. 상시 투고하거나 IROS 옵션 사용</td>
+</tr>
+<tr>
+<td>Robotics and Autonomous Systems</td>
+<td>SCIE, 5.2 [제3자]</td>
+<td>하이브리드, 미확인</td>
+<td>◎ 긴 시스템 논문에 맞다</td>
+</tr>
+<tr>
+<td>Intelligent Service Robotics</td>
+<td>SCIE, 4.3 [제3자]</td>
+<td>미확인</td>
+<td>○ 서비스 로봇 응용</td>
+</tr>
+<tr>
+<td>IEEE Access</td>
+<td>SCIE, 3.6 [제3자]</td>
+<td>APC $2,160</td>
+<td>○ 심사가 빠르고 분량 제한이 없다</td>
+</tr>
+<tr>
+<td>Sensors (MDPI)</td>
+<td>SCIE, 3.5 [제3자]</td>
+<td>약 CHF 2,100</td>
+<td>○ 센서 동기화·외부 파라미터 내용에 맞다</td>
+</tr>
+<tr>
+<td>IJCAS</td>
+<td>SCIE, 2.9 [제3자]</td>
+<td>미확인</td>
+<td>○ 국내 학회(ICROS) 발행</td>
+</tr>
+<tr>
+<td><strong>ETRI Journal</strong></td>
+<td>SCIE, 1.6 [제3자]</td>
+<td>무료</td>
+<td>○ 1절 참고</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="_5">국내 학회·학회지</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>이름</th>
+<th>다음 마감</th>
+<th>맞는 정도</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IPIU 2027</strong> (제주, 2027-02-17~19)</td>
+<td><strong>2026-12-18</strong></td>
+<td>◎</td>
+<td>영상처리 학회. 인식부(문구 후보 + 순차 관문) 단독 발표에 맞다</td>
+</tr>
+<tr>
+<td>한국로봇종합학술대회 KRoC 2027</td>
+<td>미확인 (2월 개최, 12월 마감 추정)</td>
+<td>◎</td>
+<td>시스템 전체 발표</td>
+</tr>
+<tr>
+<td>ICROS 2027</td>
+<td>2027-05 예상</td>
+<td>○</td>
+<td></td>
+</tr>
+<tr>
+<td>KCCV 2027</td>
+<td>미확인</td>
+<td>△</td>
+<td>최상위 학회 발표 논문을 소개하는 행사</td>
+</tr>
+<tr>
+<td>전자공학회 하계 / KCC 2027</td>
+<td>미확인 (6월 개최)</td>
+<td>○</td>
+<td></td>
+</tr>
+<tr>
+<td>로봇학회논문지(JKROS), 제어·로봇·시스템학회 논문지</td>
+<td>KCI</td>
+<td>○</td>
+<td>한국어 논문. 국문 확장판에 맞다</td>
+</tr>
+<tr>
+<td>전자공학회논문지, 방송·미디어공학회논문지</td>
+<td>KCI</td>
+<td>○</td>
+<td>지연 보상 표시·XR 쪽을 강조하면 맞다</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="_6">권장 일정 (예시)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>시점</th>
+<th>할 일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-10~11</td>
+<td>특허 출원. 출원 후 공개 범위를 정한다</td>
+</tr>
+<tr>
+<td>2026-12-18</td>
+<td>IPIU 2027: 인식부 단독 (국문, 짧은 논문)</td>
+</tr>
+<tr>
+<td>2027-03 초</td>
+<td>IROS 2027 (또는 RA-L + IROS): 촬영 시각 키프레임 고정과 객체 지도</td>
+</tr>
+<tr>
+<td>IROS 결과 뒤, 또는 바로</td>
+<td>ETRI Journal: 시스템 전체 확장판 (LiDAR 실시예, 인식부, 표시부 포함)</td>
+</tr>
+</tbody>
+</table></div>
+<p>ETRI Journal을 첫 투고처로 하려면 IROS를 건너뛰고 지금 초안을 다듬어 바로 내면 된다. 학회와 저널에 같은 내용을 중복해 내지 않도록 범위를 나눠야 한다.</p>
+<hr />
+<h3 id="3">3. 이 기술로 논문을 쓸 때의 강점과 보완점</h3>
+<h4 id="_7">강점</h4>
+<ol>
+<li><strong>문제 정의가 분명하다.</strong> "SLAM과 인식을 나누면 실시간성은 지켜지지만 시계, 좌표계, 연산 지연, 통신 지연, 사후 보정이라는 다섯 가지 불일치가 생긴다"는 틀이 있고, 구성 요소마다 대응하는 문제가 정해져 있다. 심사위원이 따라가기 쉬운 구조다.</li>
+<li><strong>핵심 주장을 직접 증명하는 비교 실험이 있다.</strong> 같은 인식 결과 8,964건을 등록 방식 (a)~(d)로 다시 계산했다. 시각(도착→촬영), 저장 좌표(지도→키프레임), 키프레임 선택(도착 시각→촬영 시각)의 효과가 하나씩 분리된다(9.67 → 3.08 → 1.59 → 1.51 cm, 보정이 끼어든 경우 30.8 → 5.4 → 1.5%). 시스템 논문에서 흔치 않게 깔끔한 증거다.</li>
+<li><strong>실제 데이터의 규모가 크다.</strong> 실시간 실행 기록 113회, 같은 설정 반복 40회, 공개 데이터셋 두 개(YCB-V, YCB-M), 실제 주행 네 종류가 있어 수치를 통계로 제시할 수 있다.</li>
+<li><strong>범용성을 보여 준다.</strong> 영상 SLAM(ORB-SLAM3)과 LiDAR SLAM(HDL-Graph-SLAM) 두 방식에 같은 방법을 적용했다. SLAM의 추정은 바꾸지 않고 키프레임 정보만 내보낸다.</li>
+<li><strong>결과를 바꾸지 않는 SLAM 가속(24.7 → 15.4 ms, 정확도 동일)</strong>과 메타데이터 시각 문제(연관 타임스탬프가 −2.1~+3.8초 어긋남) 같은 실무 발견이 있다. 재현하려는 연구자에게 도움이 되는 내용이다.</li>
+<li><strong>한계를 수치로 밝힐 수 있다.</strong> 가려진 물체(46% 대 3%)와 잘못된 루프 보정(40회 중 2회)을 숨기지 않고 적으면 심사에서 신뢰를 얻는다.</li>
+</ol>
+<h4 id="_8">심사에서 지적받기 쉬운 점과 대응</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>예상 지적</th>
+<th>대응</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>각 요소(보간, 키프레임 상대 저장, 존재확률)는 이미 알려졌다. 새로운 점이 무엇인가</td>
+<td>새로운 점을 "늦게 도착한 결과를 <strong>촬영 시각의</strong> 키프레임에 붙이는 것"으로 좁혀 말한다. (c)와 (d)의 차이(보정이 끼어든 130건)를 주 결과로 내세운다</td>
+</tr>
+<tr>
+<td>실제 주행에 정답 자세가 없다</td>
+<td>지금은 일관성 지표와 SLAM으로 만든 의사 정답을 쓴다. 저장소의 <code>apriltag_gt</code>로 물체 몇 개에 AprilTag 정답을 붙인 주행을 1~2회 추가하면 크게 보강된다</td>
+</tr>
+<tr>
+<td>YCB에서 찾은 비율이 원본보다 낮다(90.2 → 63.2%)</td>
+<td>논문의 주제를 인식기가 아니라 객체 지도로 두고, 인식기는 "틀린 답이 적고 빠른 것"이 목적이라고 밝힌다. GT 상자 조건(80.9%)으로 문구 검출의 영향을 분리해 보인다</td>
+</tr>
+<tr>
+<td>녹화 재생이지 실제 로봇 실시간이 아니다</td>
+<td>두 장치가 각자 센서 기록을 1배속으로 재생하며 실시간으로 처리했음을 정확히 쓴다. 가능하면 카트에서 바로 실행한 주행을 1회 추가한다</td>
+</tr>
+<tr>
+<td>지연이 얼마일 때 효과가 있는가</td>
+<td>기존 재생 도구(<code>objpose/pc/anchor_ablation.py</code>)로 인식 지연을 0~10초로 인위적으로 바꿔 (a)~(d)의 흩어짐을 그래프로 그린다. 새 주행 없이 할 수 있고 설득력이 크다</td>
+</tr>
+<tr>
+<td>다른 객체 지도 시스템과 비교가 없다</td>
+<td>Fusion++ 같은 시스템은 실행 조건이 달라 직접 비교가 어렵다. 같은 추정기를 쓰는 기준선(지도 없이, tf2식 보간)과의 비교로 대신하고 관련 연구 표로 차이를 정리한다</td>
+</tr>
+<tr>
+<td>실험마다 GPU가 다르다</td>
+<td>한 장 비교는 RTX 5090(발표자료 기준), 실시간 실행은 이 PC(RTX 3080 Ti Laptop)로 보인다. 실험별 장치를 정확히 확인해 표로 적는다</td>
+</tr>
+<tr>
+<td>코드·데이터 공개 여부</td>
+<td>특허 출원 뒤 공개 범위를 정한다. 일부라도 공개하면 채택에 유리하다</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="_9">원고를 쓰는 방향</h4>
+<ul>
+<li><strong>이야기는 하나로 정한다.</strong> 이 초안은 "촬영 시각 키프레임 고정 + 이를 받쳐 주는 시스템"을 줄기로 삼았다. 인식부의 자세한 실험(물체별 표, 문구 선택)은 별도 논문(IPIU나 국내 학회지)으로 나누는 것이 분량과 집중도 면에서 낫다.</li>
+<li><strong>ETRI Journal 분량(8–10쪽)에 맞추려면</strong> 4.1절 세부 수치, 표 4, 6.3절 일부를 줄이고 보충 자료로 옮긴다.</li>
+<li><strong>이름 규칙:</strong> 주행은 조건 이름(어두운 실내 8자, 91초 실내, 밝은 실내 홀 8자, 큰 8자)으로 부르고, 장소와 기관 이름은 쓰지 않는다. 실외 주행은 없다.</li>
+</ul>
+<hr />
+<h3 id="4">4. 초안 상태와 남은 확인 사항</h3>
+<p><strong>만든 파일</strong> (<code>paper_etrij_261003/</code> (저장소 최상위))</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>파일</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>manuscript_en.md</code></td>
+<td>영문 원고 초안. 초록, 8개 절, 표 4개, 그림 8개, 참고문헌 25개</td>
+</tr>
+<tr>
+<td><code>images/fig_system.png</code></td>
+<td>그림 1: 두 장치 시스템 구성 (원본 <code>src/fig_system.html</code>)</td>
+</tr>
+<tr>
+<td><code>images/fig_hardware.jpg</code></td>
+<td>그림 2: 카트 사진 (IMG_3942)</td>
+</tr>
+<tr>
+<td><code>images/fig_slam_timing.png</code></td>
+<td>그림 3: SLAM 처리 시간</td>
+</tr>
+<tr>
+<td><code>images/fig_pipeline.png</code></td>
+<td>그림 4: SAM-6D 대비 인식부 변경 (원본 <code>src/fig_pipeline.html</code>)</td>
+</tr>
+<tr>
+<td><code>images/fig_anchoring_timeline.png</code></td>
+<td>그림 5: 촬영 시각 키프레임 고정 시간축</td>
+</tr>
+<tr>
+<td><code>images/fig_gate_ablation.png</code></td>
+<td>그림 6: 관문별 F1·오검출</td>
+</tr>
+<tr>
+<td><code>images/fig_registration_ablation.png</code></td>
+<td>그림 7: 등록 방식 (a)~(d)</td>
+</tr>
+<tr>
+<td><code>images/fig_display_match.png</code></td>
+<td>그림 8: 화면 일치율</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>투고 전에 확인할 것</strong></p>
+<ol>
+<li>실험별 연산 장치: 한 장 비교의 RTX 5090은 발표자료에만 적혀 있고, 실시간 실행 기록은 이 PC(RTX 3080 Ti Laptop, i9-12900HK)에서 나왔다. SLAM 장치는 Apple M4 Pro MacBook Pro다.</li>
+<li>참고문헌 25개를 서지 원문과 대조한다. 특히 저자 목록과 권·쪽수.</li>
+<li>수치의 출처는 모두 특허 명세서 v1.4와 발표자료 0.06v다. 그 가운데 루프 전후 5.4 → 0.8 cm(어두운 실내 8자 주행)과 91초 주행의 지도 보정 96회는 실행 기록에서 다시 계산해 두면 좋다.</li>
+<li>ETRI Journal 템플릿(Word/LaTeX)으로 옮기고, 그림 안 글꼴을 Times New Roman 6–8 pt로 맞춘다. 지금 그림은 DejaVu Sans다.</li>
+<li>2쪽 정도 줄인다.</li>
+</ol>
+<hr />
+<h3 id="5-etri-journal-2026-10-03">5. ETRI Journal 형식 원고 (2026-10-03 추가)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>파일</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>etrij/ETRIJ_manuscript_v0.1.docx</code> (+ <code>.pdf</code>)</td>
+<td>투고용 본문. A4, 2단, Times New Roman, <strong>9쪽</strong> (규정 8–10쪽). 저자 정보 없음 (이중 익명 심사)</td>
+</tr>
+<tr>
+<td><code>etrij/ETRIJ_title_page_v0.1.docx</code></td>
+<td>따로 내는 표지: 제목, 저자, 소속, 교신저자, 연구비, 사사, 이해충돌, 저자 약력 자리</td>
+</tr>
+<tr>
+<td><code>src/build_docx.py</code></td>
+<td>위 두 파일을 만드는 스크립트. 내용을 고칠 때는 이 파일을 고친 뒤 다시 실행한다</td>
+</tr>
+</tbody>
+</table></div>
+<p>반영한 규정은 공식 저자 지침과 저자 체크리스트에서 확인했다.</p>
+<ul>
+<li>본문 파일 순서: 제목·초록·키워드 → 본문 → 참고문헌. 저자를 알 수 있는 정보는 넣지 않는다.</li>
+<li>초록: 1,038자로 1,200자 이내이고, 지침에 따라 현재 시제로 썼다.</li>
+<li>키워드: 지침은 "최소 5개", 체크리스트는 "최대 5개"라서 정확히 5개로 맞췄다.</li>
+<li>참고문헌: 인용 순서대로 번호를 매기고, 지침의 예시 형식(저자, <em>제목</em>, 학술지 권 (연도), no. 호, 쪽)을 따랐다.</li>
+<li>그림: 300 dpi, 그림 안 글꼴은 Times 계열 6–8 pt로 다시 그렸다.</li>
+<li>그림·표 표기: 그림은 "FIGURE n"과 "TABLE n"으로 붙였다. 본문에서는 "Fig. n"으로 부르되 문장 첫머리에서는 "Figure n"으로 쓴다.</li>
+<li>철자: 미국식으로 바꿨다 (color, labeled 등).</li>
+</ul>
+<p><strong>한계와 남은 일</strong></p>
+<ul>
+<li>공식 Word 템플릿 파일은 Wiley 사이트가 접근을 막아(403) 받지 못했다. 지침에 맞춰 같은 형태로 만든 것이다. 투고 전에 공식 템플릿을 받아 내용을 옮기면 된다. 템플릿 링크는 저자 지침 1장의 "Download ETRIJ Manuscript Template"에 있다.</li>
+<li>수식 (1)–(4)는 일반 텍스트로 넣었다. 지침은 MathType이나 Word 수식 편집기를 권장하므로 템플릿으로 옮길 때 바꿔야 한다.</li>
+<li><code>[verify]</code> 표시: 실험별 GPU (5절).</li>
+<li><code>manuscript_en.md</code>는 초안 v0.1이다. 투고 기준 원고는 docx이며 docx 쪽이 더 줄어 있다.</li>
+</ul>
+<h3 id="6-2026-10-03">6. 추가 자료 (2026-10-03)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>파일</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ko/논문_국문_v0.1.docx</code> (+ <code>.pdf</code>)</td>
+<td>국문 원고, 10쪽. 국문·영문 초록 함께. 그림 안 글자는 영문 그림을 그대로 쓰고 캡션만 국문 (<code>src/build_docx_ko.py</code>로 생성)</td>
+</tr>
+<tr>
+<td><code>images/fig_main_real.png</code></td>
+<td>그림 1 (현재 원고에 들어간 그림). 사용자가 준 초안 <code>SLAM과 6D 인식 통합 파이프라인.png</code>의 틀·글꼴을 그대로 두고, 이미지만 실제 녹화·실행 기록으로 바꿨다(<code>src/compose_main.py</code>). 넣은 영상은 <code>src/real_tiles.py</code>, <code>src/render_map3d.py</code>로 만든다. 모두 큰 8자 주행 corr04 실행에서 나왔다: SLAM 카메라 프레임, 인식 카메라 RGB·depth, 검증된 6D 자세, 표시 화면, 최종 자세로 쌓은 3D 점군, (d) 지도 비교. 틀린 문구도 고쳤다: 식 ①에 X 추가, 키프레임 목록 시점, LiDAR 10 Hz, depth 표기, 시간축. 키프레임 그래프 도식은 초안 그대로다</td>
+</tr>
+<tr>
+<td><code>01_추가실험_계획.md</code></td>
+<td>논문에 필요한 추가 실험 (우선순위별)</td>
+</tr>
+<tr>
+<td><code>02_비교대상_논문.md</code></td>
+<td>논문 실험의 비교 대상과 공개 수치, 특허 비교 논문 목록</td>
+</tr>
+</tbody>
+</table></div>
+<p>그림 1의 (b)·(c)는 실제 실행 기록(큰 8자 주행, ORB-SLAM3 특징점 4000개, 반복 실행 corr04, 키프레임 최대 보정 305 cm)을 <code>objpose/pc/anchor_ablation.py</code>로 다시 계산한 결과다. 같은 119건을 지도 좌표에 저장하면 68건이 최종 위치에서 10 cm 넘게 떨어지고, 촬영 시각 키프레임에 고정하면 6건이다. 이를 위해 <code>anchor_ablation.py</code>가 방식별 위치와 최종 키프레임 위치도 반환하도록 고쳤다. 기존 출력은 그대로다. 그림 1에 합치면서 기존 시간축 그림(<code>fig_anchoring_timeline.png</code>)은 빠졌다. 영문 원고는 8쪽, 국문 원고는 10쪽이다.</p>
+<h3 id="7-v02-2026-10-04">7. 원고 v0.2 (2026-10-04, 구성도 기준 재작성)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>파일</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>etrij/ETRIJ_manuscript_v0.2.docx</code> (+pdf)</td>
+<td>영문, 7쪽. <code>src/build_v02.py</code></td>
+</tr>
+<tr>
+<td><code>ko/논문_국문_v0.2.docx</code> (+pdf)</td>
+<td>국문, 9쪽. <code>src/build_v02_ko.py</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>그림 1 = <code>images/fig3_real_v2.png</code>. 절 구성이 구성도를 따른다: 3 개요 → 4 비동기 인식과 촬영 시각 등록(4.1 센서·시간, 4.2 SLAM 흐름, 4.3 6D 추정, 4.4 비동기 시간, 4.5 촬영 시각 등록) → 5 키프레임 고정 객체 지도(5.1 상태 지도 𝒪ᵢ, 5.2 루프 클로저 갱신) → 7 결과(고정 효과가 맨 앞). 새로 넣은 실측: 사무실 8자 주행(260915) 수치와 1808번 프레임의 단계별 결과. v0.1은 그대로 둠.</p>
+<p>그림 1 교체(2026-10-04): v0.2 원고의 그림 1은 <code>images/fig_v3_times.png</code>(원본 <code>src/fig_v3.html</code>의 Times 판, <code>src/fig_v3_times.html</code>)이다. 초안 이미지 위에 합성하지 않고 HTML/SVG로 처음부터 그려 생성형 AI 이미지가 들어가지 않는다. 산세리프 판은 <code>images/fig_v3.png</code>.</p>
+<hr />
+<p><a id="01_추가실험_계획"></a></p>
+<h2 id="_10">논문을 위한 추가 실험 계획</h2>
+<p>작성일 2026-10-03. 지금 있는 실험(원고 6절)으로 무엇이 증명되었고 무엇이 비어 있는지 나눈 뒤, 비어 있는 부분을 채울 실험을 우선순위대로 정리했다.</p>
+<h3 id="1">1. 지금 실험이 증명하는 것과 빈 곳</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>주장</th>
+<th>지금 근거</th>
+<th>빈 곳 (심사에서 물을 것)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>촬영 시각 키프레임 고정이 지도 보정을 흡수한다</td>
+<td>실행 기록 61회 재생, 등록 방식 (a)~(d) 비교 (8,964건, 보정이 끼어든 130건)</td>
+<td>① 정답 좌표 대비 <strong>절대 오차</strong>가 없다 (지금은 같은 물체 관측의 일관성만 있다) ② 지연 길이에 따라 효과가 어떻게 변하는지 곡선이 없다 ③ LiDAR SLAM에서 같은 비교가 없다</td>
+</tr>
+<tr>
+<td>두 장치로 나눠야 SLAM이 실시간을 지킨다</td>
+<td>같은 장치에 부하가 걸리면 자세 전달 지연이 0.04 → 2.5초 (한 번 측정)</td>
+<td>한 장치에서 SLAM과 인식을 함께 돌린 기준 실험이 체계적이지 않다 (프레임 누락, 궤적 오차, 객체 지도 오차)</td>
+</tr>
+<tr>
+<td>시간 정렬과 외부 파라미터가 정확하다</td>
+<td>정지 물체 흩어짐 5.6 → 1.5 cm, 잔차 0.41 cm</td>
+<td>시각 오차(τ)를 일부러 틀렸을 때 얼마나 나빠지는지 민감도가 없다</td>
+</tr>
+<tr>
+<td>인식기가 빠르고 틀린 답이 적다</td>
+<td>한 장 비교 (YCB-V, YCB-M, 실내), 관문 효과 실험</td>
+<td>다른 제로샷 방법(FoundPose, GigaPose, FoundationPose 등)과 같은 조건에서 비교하지 않았다. GPU가 실험마다 다르다</td>
+</tr>
+<tr>
+<td>객체 기억과 재연결</td>
+<td>실내 2회 72/74, YCB-M 101건</td>
+<td>같은 종류 물체가 여러 개인 장면이 없다. 물체를 옮기는 장면이 없다</td>
+</tr>
+<tr>
+<td>지연 보상 표시</td>
+<td>YCB-V·YCB-M 화면 일치율</td>
+<td>실제 주행에서는 정답이 없어 화면 일치율을 재지 못했다</td>
+</tr>
+<tr>
+<td>실시간 동작</td>
+<td>녹화를 두 장치에서 1배속으로 재생</td>
+<td>카트에서 카메라를 직접 받아 실행한 기록이 없다</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="2_1">2. 필요한 실험 (우선순위 순)</h3>
+<h4 id="p1">꼭 필요 (P1): 심사 통과에 직접 영향</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>실험</th>
+<th>방법</th>
+<th>얻는 수치</th>
+<th>새 녹화</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E1</td>
+<td><strong>정답이 있는 실내 주행</strong></td>
+<td><code>apriltag_gt/GT_APRILTAG_GUIDE.md</code>대로 태그 8~20개와 물체 8종의 위치를 측량한다. 물체 바닥에도 태그를 붙여 물체 정답을 만든다. 같은 경로를 2~3회 주행한다</td>
+<td>물체 위치 절대 오차(중앙값, 90%), 카메라 궤적 앵커 오차, 등록 방식 (a)~(d)의 <strong>절대 오차</strong></td>
+<td>필요 (2~3회)</td>
+</tr>
+<tr>
+<td>E2</td>
+<td><strong>지연 길이 실험</strong></td>
+<td><code>objpose/pc/anchor_ablation.py</code> 재생에서 인식 결과 도착 시각을 인위적으로 0, 0.5, 1, 2, 4, 8초 늦추고 (a)~(d)를 다시 계산한다</td>
+<td>지연-오차 곡선 4개. "지연이 길수록 (d)만 버틴다"를 그래프로 보인다</td>
+<td>불필요</td>
+</tr>
+<tr>
+<td>E3</td>
+<td><strong>한 장치 대 두 장치</strong></td>
+<td>같은 녹화를 ① 한 장치에서 SLAM과 SAM-6D를 함께 실행, ② 두 장치로 나눠 실행한다</td>
+<td>SLAM 처리 프레임 비율, 추적 실패 횟수, 루프 보정 크기, 객체 흩어짐, 중복 수</td>
+<td>불필요</td>
+</tr>
+<tr>
+<td>E4</td>
+<td><strong>같은 GPU에서 제로샷 방법 비교</strong></td>
+<td>YCB-V BOP 평가 목록에서 SAM-6D, 제안 방법, 그리고 공개 코드가 있는 1~2개(FoundPose 또는 GigaPose, CNOS+SAM-6D PEM)를 같은 GPU로 실행한다</td>
+<td>BOP AR, 장당 처리 시간 (논문 보고값과 같은 조건 비교)</td>
+<td>불필요</td>
+</tr>
+<tr>
+<td>E5</td>
+<td><strong>반복 통계</strong></td>
+<td>주요 수치(표 2, 표 3, 화면 일치율)를 실행별로 나눠 평균 ± 표준편차 또는 95% 신뢰구간을 낸다</td>
+<td>오차 막대, 유의성</td>
+<td>불필요 (기존 113회 기록)</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="p2">있으면 좋음 (P2): 범용성과 견고성</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>실험</th>
+<th>방법</th>
+<th>얻는 수치</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E6</td>
+<td>LiDAR SLAM 등록 방식 비교</td>
+<td>HDL-Graph-SLAM 실행 기록으로 (a)~(d)를 다시 계산한다</td>
+<td>표 2의 LiDAR 판. "SLAM 방식과 무관"을 보인다</td>
+</tr>
+<tr>
+<td>E7</td>
+<td>네트워크 지연·손실 주입</td>
+<td>Linux <code>tc netem</code>으로 지연 50~500 ms, 지터, 손실 1~5%를 넣는다</td>
+<td>대기 목록 등록률, 적응형 표시 지연, 자세 없는 표시 프레임 비율</td>
+</tr>
+<tr>
+<td>E8</td>
+<td>시각 오차 민감도</td>
+<td>τ를 ±10, 20, 50, 100 ms만큼 일부러 틀리게 넣는다</td>
+<td>흩어짐-τ 곡선. 메타데이터 시각과 오프셋 추정이 왜 필요한지 보인다</td>
+</tr>
+<tr>
+<td>E9</td>
+<td>카트 실시간 실행</td>
+<td>녹화 재생 대신 카메라를 직접 받아 1~2회 실행한다</td>
+<td>"재생이 아닌 실제 실시간"이라는 근거, 장치 자원 사용량</td>
+</tr>
+<tr>
+<td>E10</td>
+<td>처리 시간 분해</td>
+<td>모듈별 시간(후보, 관문, PEM, 검증, 등록, 표시)과 GPU·CPU 사용량을 잰다</td>
+<td>처리 시간 표, 병목 설명</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="p3">한계를 줄이는 실험 (P3): 후속 논문으로 미뤄도 됨</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>실험</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E11</td>
+<td>같은 종류 물체 여러 개</td>
+<td>같은 물체 2~3개를 배치해 연결 성능을 본다 (지금은 미평가로 적혀 있다)</td>
+</tr>
+<tr>
+<td>E12</td>
+<td>물체 이동·제거</td>
+<td>주행 중 물체를 치우거나 옮겨 삭제·재등록 동작을 정량화한다</td>
+</tr>
+<tr>
+<td>E13</td>
+<td>가림 정도별</td>
+<td>가림 30~50% 구간이 약점(3%)이므로 개선안과 함께 실험한다</td>
+</tr>
+<tr>
+<td>E14</td>
+<td>잘못된 루프 보정 검출</td>
+<td>40회 중 2회 망가진 지도를 자동으로 판정하는 방법(LiDAR 궤적과 비교 등)</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="3_1">3. 권장 순서</h3>
+<ol>
+<li><strong>새 녹화 없이 할 수 있는 실험을 먼저 한다.</strong> E2(지연 곡선), E5(통계), E3(한 장치 대 두 장치), E6(LiDAR 판)은 기존 기록과 도구로 할 수 있고, 원고의 약점을 가장 많이 메운다.</li>
+<li><strong>E4(같은 GPU 비교)</strong>는 공개 코드를 설치해야 하지만 새 녹화가 필요 없다.</li>
+<li><strong>E1(AprilTag 정답 주행)</strong>은 준비(인쇄·측량)가 필요하다. 논문의 신뢰도를 가장 크게 올리므로 IROS 마감(2027년 3월) 전에 끝내는 것을 목표로 한다.</li>
+<li>E7~E10은 E1 녹화 때 함께 기록한다.</li>
+</ol>
+<p><strong>주의:</strong> E3의 "한 장치" 실행은 논문의 비교 기준(baseline)으로만 쓴다. 특허 문서에는 넣지 않는다 (특허는 두 장치 분리를 전제로 한다).</p>
+<hr />
+<p><a id="02_비교대상_논문"></a></p>
+<h2 id="_11">비교 대상 논문과 비교 수치 (논문 실험용 · 특허 비교용)</h2>
+<p>작성일 2026-10-03. 수치는 각 논문의 arXiv 본문 표와 BOP 리더보드(오늘 조회)에서만 가져왔다. 확인하지 못한 값은 <strong>미확인</strong>으로 적었다. 투고 전에 원문 표와 한 번 더 대조해야 한다. 특허 쪽 비교 대상은 발표자료 0.06v의 종래 기술(7–12쪽), 추가 선행기술(61쪽), 관련 연구(64–65쪽)에서 가져왔다.</p>
+<p><strong>출처 키</strong> (<code>ax:</code> = <code>https://arxiv.org/abs/</code>)</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>키</th>
+<th>논문</th>
+<th>키</th>
+<th>논문</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1</td>
+<td>SAM-6D ax:2311.15707</td>
+<td>S10</td>
+<td>CNOS ax:2307.11067</td>
+</tr>
+<tr>
+<td>S2</td>
+<td>GigaPose ax:2311.14155</td>
+<td>S11</td>
+<td>NIDS-Net ax:2405.17859</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>FoundPose ax:2311.18809</td>
+<td>S12</td>
+<td>MUSE ax:2510.17866</td>
+</tr>
+<tr>
+<td>S4</td>
+<td>FoundationPose ax:2312.08344</td>
+<td>S13</td>
+<td>CLON ax:2609.04784</td>
+</tr>
+<tr>
+<td>S5</td>
+<td>FreeZe ax:2312.00947</td>
+<td>S14</td>
+<td>YOLO-World ax:2401.17270</td>
+</tr>
+<tr>
+<td>S6</td>
+<td>Co-op ax:2503.17731</td>
+<td>S15</td>
+<td>YOLOE ax:2503.07465</td>
+</tr>
+<tr>
+<td>S7</td>
+<td>BOP 2024 결과 ax:2504.02812</td>
+<td>S16</td>
+<td>Grounding DINO ax:2303.05499</td>
+</tr>
+<tr>
+<td>S8</td>
+<td>BOP 2023 결과 ax:2403.09799</td>
+<td>S17</td>
+<td>Grounded-SAM ax:2401.14159</td>
+</tr>
+<tr>
+<td>S9</td>
+<td>BOP 리더보드 YCB-V https://bop.felk.cvut.cz/leaderboards/pose-estimation-unseen-bop23/ycb-v/</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h3 id="1_1">1. 논문 실험에서 비교할 대상</h3>
+<h4 id="11">1.1 실험별로 무엇과 비교하나</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>원고의 실험</th>
+<th>비교 대상</th>
+<th>비교 방식</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6.1 인식 (YCB-V BOP AR, 처리 시간)</td>
+<td>SAM-6D, GenFlow, MegaPose, ZeroPose, GigaPose, FoundPose, FreeZe, Co-op, FoundationPose</td>
+<td>논문 보고값을 표로 인용. 처리 시간은 <strong>같은 GPU에서 다시 측정</strong>해야 공정하다</td>
+</tr>
+<tr>
+<td>6.1 후보 생성·검출 (AP, 시간)</td>
+<td>CNOS, SAM-6D ISM, NIDS-Net, MUSE, CLON, YOLO-World, YOLOE</td>
+<td>논문 보고값 인용 + 우리 후보 생성 시간</td>
+</tr>
+<tr>
+<td>6.2 촬영 시각 키프레임 고정</td>
+<td>도착 시각 등록, tf2식 보간(지도 고정), 도착 시각 키프레임</td>
+<td><strong>이미 원고에 있음</strong> (방식 (a)~(c)). 같은 기능을 가진 공개 시스템이 없어 이 방식이 사실상 유일한 직접 비교다</td>
+</tr>
+<tr>
+<td>6.3 객체 지도 정확도</td>
+<td>CosyPose(다중 뷰), Merrill 외(객체 SLAM), PoseRBPF, FoundationPose 추적 모드</td>
+<td>우리 결과를 YCB-V ADD-S AUC로 다시 계산하면 수치 비교가 가능하다</td>
+</tr>
+<tr>
+<td>6.3 재연결·시간 일관성</td>
+<td>Zorina 외 (RA-L 2025)</td>
+<td>YCB-V 동영상 기준 recall / precision으로 다시 계산하면 비교 가능</td>
+</tr>
+<tr>
+<td>6.4 지연 보상 표시</td>
+<td>MaskFusion, Liu 외 (MobiCom19), Zorina 외</td>
+<td>정성 비교 (지표가 다름)</td>
+</tr>
+<tr>
+<td>시스템 전체</td>
+<td>Fusion++, MaskFusion, VOOM, QuadricSLAM, CubeSLAM, POCD, Khronos, Hydra, Lost &amp; Found, DSP-SLAM++</td>
+<td>관련 연구 표로 정성 비교</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="12-ycb-v-6d-bop-task-4-ar-rgb-d">1.2 YCB-V 미학습 객체 6D 자세 (BOP Task 4, AR, RGB-D)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>검출</th>
+<th>YCB-V AR</th>
+<th>7개 데이터 평균</th>
+<th>장당 시간 · GPU</th>
+<th>출처</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SAM-6D (SAM)</td>
+<td>자체 ISM</td>
+<td>84.5</td>
+<td>70.4</td>
+<td>4.37 s, RTX 3090</td>
+<td>S1 Table 2, 6</td>
+</tr>
+<tr>
+<td>SAM-6D (FastSAM)</td>
+<td>자체 ISM</td>
+<td>83.4</td>
+<td>66.2</td>
+<td>1.43 s, RTX 3090</td>
+<td>S1 Table 2, 6</td>
+</tr>
+<tr>
+<td><em>우리 재실행 SAM-6D (FastSAM)</em></td>
+<td>자체</td>
+<td><em>78.7</em></td>
+<td>—</td>
+<td><em>1613 ms</em></td>
+<td>원고 표 1</td>
+</tr>
+<tr>
+<td><em>제안 (텍스트 / 정답 상자)</em></td>
+<td>—</td>
+<td><em>57.8 / 74.5</em></td>
+<td>—</td>
+<td><em>433 / 528 ms</em></td>
+<td>원고 표 1</td>
+</tr>
+<tr>
+<td>MegaPose + Teaser++</td>
+<td>CNOS-FastSAM</td>
+<td>76.4</td>
+<td>62.8</td>
+<td>142.0 s</td>
+<td>S7 Table 2</td>
+</tr>
+<tr>
+<td>ZeroPose</td>
+<td>CNOS-FastSAM</td>
+<td>65.3</td>
+<td>57.0</td>
+<td>16.2 s</td>
+<td>S7 Table 2</td>
+</tr>
+<tr>
+<td>GenFlow (16가설)</td>
+<td>CNOS-FastSAM</td>
+<td>83.3</td>
+<td>67.4</td>
+<td>34.6 s</td>
+<td>S8 Table 3</td>
+</tr>
+<tr>
+<td>GigaPose 거친 단계 (RGB)</td>
+<td>CNOS</td>
+<td>27.8</td>
+<td>26.8</td>
+<td>0.4 s, V100</td>
+<td>S2 Table 1</td>
+</tr>
+<tr>
+<td>GigaPose + GenFlow</td>
+<td>CNOS</td>
+<td>82.5</td>
+<td>68.6</td>
+<td>11.1 s</td>
+<td>S7 Table 2</td>
+</tr>
+<tr>
+<td>FoundPose + 정제 (RGB)</td>
+<td>CNOS</td>
+<td>69.0</td>
+<td>59.6</td>
+<td>20.5 s, P100</td>
+<td>S3 Table 1</td>
+</tr>
+<tr>
+<td>FreeZe (정제 없음 / 있음)</td>
+<td>CNOS</td>
+<td>78.7 / 85.3</td>
+<td>64.0 / 69.3</td>
+<td>정제 13.5 s</td>
+<td>S5 Table 1</td>
+</tr>
+<tr>
+<td>Co-op 거친 단계 / 5가설</td>
+<td>CNOS</td>
+<td>85.3 / 88.7</td>
+<td>72.1 / 75.2</td>
+<td>1.0 / 7.2 s, RTX 3090 Ti</td>
+<td>S6 Table 3</td>
+</tr>
+<tr>
+<td>FoundationPose</td>
+<td>SAM-6D 마스크</td>
+<td>88.9</td>
+<td>73.4</td>
+<td>29.3 s</td>
+<td>S7 Table 2</td>
+</tr>
+<tr>
+<td>FreeZeV2.2 (리더보드 1위, 2025-05)</td>
+<td>—</td>
+<td>91.8</td>
+<td>—</td>
+<td>24.3 s</td>
+<td>S9</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>원고에 반영할 점</strong></p>
+<ul>
+<li><strong>재실행 차이:</strong> 우리가 다시 돌린 SAM-6D(78.7)는 논문 값(83.4)보다 4.7 낮다. 원인(평가 프레임 수, 버전, 설정)을 확인해 원고에 적어야 한다. 그대로 두면 심사위원이 비교 전체를 의심할 수 있다.</li>
+<li><strong>우리 방법의 위치:</strong> 정확도 순위로는 경쟁이 되지 않는다. 대신 "1초 이하에서 틀린 답이 가장 적은 방법"으로 위치를 잡는 것이 맞다. 리더보드 상위권은 장당 7~35초가 걸린다. 표에 처리 시간과 틀린 답 비율을 함께 두면 이 점이 드러난다.</li>
+<li><strong>처리 시간 비교:</strong> 장당 시간은 GPU가 서로 달라 그대로 비교할 수 없다. 같은 GPU에서 SAM-6D, Co-op 거친 단계, GigaPose를 다시 재야 한다 (계획서 E4).</li>
+</ul>
+<h4 id="13-ycb-v-bop-task-56">1.3 YCB-V 미학습 객체 검출·분할 (BOP Task 5/6)과 검출기 속도</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>검출 AP</th>
+<th>분할 AP</th>
+<th>시간 · GPU</th>
+<th>출처</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CNOS (FastSAM)</td>
+<td>56.8</td>
+<td>59.9</td>
+<td>0.22 s, V100</td>
+<td>S1, S8</td>
+</tr>
+<tr>
+<td>CNOS (SAM)</td>
+<td>49.0</td>
+<td>59.5</td>
+<td>1.85 s, V100</td>
+<td>S1, S8</td>
+</tr>
+<tr>
+<td>SAM-6D ISM (FastSAM)</td>
+<td>58.9</td>
+<td>62.1</td>
+<td>0.45 s, RTX 3090</td>
+<td>S1 Table 1, 10</td>
+</tr>
+<tr>
+<td>NIDS-Net</td>
+<td>62.4</td>
+<td>미확인</td>
+<td>0.48 s, A5000</td>
+<td>S7, S11</td>
+</tr>
+<tr>
+<td>MUSE</td>
+<td>67.4</td>
+<td>69.0</td>
+<td>0.51 s, RTX 4090</td>
+<td>S7, S12</td>
+</tr>
+<tr>
+<td>CLON</td>
+<td>66.9</td>
+<td>69.2</td>
+<td>미확인</td>
+<td>S13 Table 1</td>
+</tr>
+<tr>
+<td>YOLO-World-L</td>
+<td>LVIS AP 35.0</td>
+<td>—</td>
+<td>52 FPS, V100</td>
+<td>S14 Table 2</td>
+</tr>
+<tr>
+<td>YOLOE-v8-L</td>
+<td>LVIS AP 35.9</td>
+<td>—</td>
+<td>102.5 FPS, T4</td>
+<td>S15 Table 1</td>
+</tr>
+<tr>
+<td>Grounding DINO-T</td>
+<td>LVIS AP 27.4</td>
+<td>—</td>
+<td>1.5 FPS, V100</td>
+<td>S14</td>
+</tr>
+</tbody>
+</table></div>
+<p>우리 후보 생성은 장당 38 ms(특징 추출 기준)다. 검출 AP는 아직 재지 않았다. BOP Task 5 형식으로 다시 계산하면 이 표에 넣을 수 있다.</p>
+<h4 id="14-slam-ycb-v">1.4 객체 SLAM · 객체 지도 (YCB-V 등)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>시스템</th>
+<th>데이터 · 지표</th>
+<th>수치</th>
+<th>속도</th>
+<th>출처</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CosyPose 다중 뷰 (ECCV20)</td>
+<td>YCB-V ADD-S AUC</td>
+<td>1뷰 89.8, 5뷰 93.4</td>
+<td>미확인</td>
+<td>ax:2008.08465 Table 2a</td>
+</tr>
+<tr>
+<td>Merrill 외 (CVPR22)</td>
+<td>YCB-V ADD-S AUC / ADD(-S)</td>
+<td>90.3 / 84.7</td>
+<td>11 Hz / 2 Hz</td>
+<td>ax:2205.01823 Table 1</td>
+</tr>
+<tr>
+<td>PoseRBPF (RSS19)</td>
+<td>YCB-V ADD-S (RGB-D)</td>
+<td>93.3</td>
+<td>20.3 fps</td>
+<td>ax:1905.09304</td>
+</tr>
+<tr>
+<td>FoundationPose 추적</td>
+<td>YCB-V ADD-S AUC</td>
+<td>97.9</td>
+<td>약 32 Hz</td>
+<td>S4 Table 5</td>
+</tr>
+<tr>
+<td>Zorina 외 (RA-L 2025)</td>
+<td>YCB-V 동영상 recall / precision</td>
+<td>0.82 / 0.77</td>
+<td>인식 5 Hz</td>
+<td>ax:2605.02708 Table II (arXiv 번호와 게재 연도 확인 필요)</td>
+</tr>
+<tr>
+<td>Fusion++ (3DV18)</td>
+<td>TUM ATE</td>
+<td>0.049 m</td>
+<td>4–8 Hz</td>
+<td>ax:1808.08378</td>
+</tr>
+<tr>
+<td>VOOM (ICRA24)</td>
+<td>TUM ATE</td>
+<td>0.0080 m</td>
+<td>미확인</td>
+<td>ax:2402.13609</td>
+</tr>
+<tr>
+<td>Lost &amp; Found (RA-L25)</td>
+<td>자체 데이터 위치 / 회전 RMSE</td>
+<td>6.02 cm / 7.79°</td>
+<td>지연 1.15 s</td>
+<td>ax:2411.19162</td>
+</tr>
+<tr>
+<td>DSP-SLAM++ (arXiv 2026-06)</td>
+<td>실외</td>
+<td>객체 처리 지연 최대 70% 감소</td>
+<td>25 Hz</td>
+<td>ax:2606.25953</td>
+</tr>
+</tbody>
+</table></div>
+<p>우리 YCB-V 실시간 결과(위치 오차 중앙값 5.2 mm, 90% 9.5 mm)를 ADD-S AUC로 다시 계산하면 CosyPose·Merrill·PoseRBPF와 같은 표에 넣을 수 있다. 다만 그 방법들은 물체마다 학습했거나 프레임마다 추적한다. 조건 차이(제로샷, 지연, 지도 보정)를 표에 함께 적어야 한다.</p>
+<h4 id="15">1.5 비동기 · 지연 처리</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>대상</th>
+<th>보고 내용</th>
+<th>출처</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MaskFusion (ISMAR18)</td>
+<td>분할 5 Hz, SLAM 30 Hz 초과. 프레임 큐 12장, 약 400 ms 지연. 한 장치 GPU 2장</td>
+<td>ax:1804.09194 Sec.5, 6.3</td>
+</tr>
+<tr>
+<td>Liu 외 (MobiCom19)</td>
+<td>엣지 검출. 정확도 +20.2~34.8%, 오검출 −27.0~38.2%. 단말 2D 박스를 움직임 벡터로 보정</td>
+<td>MobiCom19 논문 Sec.1</td>
+</tr>
+<tr>
+<td>Zorina 외</td>
+<td>인식 5 Hz, 외삽 1 kHz (지도 없음)</td>
+<td>위 표</td>
+</tr>
+<tr>
+<td>ROS tf2</td>
+<td>시각을 지정한 변환 조회, 기본 캐시 10 s</td>
+<td>ros2/geometry2</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h3 id="2_2">2. 특허 작성 시 비교할 논문·특허</h3>
+<p>발표자료 61쪽의 목록에 이번 조사 결과를 더했다. <strong>새로 확인된 항목에 표시</strong>를 했다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>대상</th>
+<th>겹치는 부분</th>
+<th>본 발명과 다른 점 (사실 기준)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SAM-6D (CVPR24)</td>
+<td>제로샷 6D 추정 전체 구조 (ISM, PEM)</td>
+<td>화면 전체 분할, 점수 가중 합과 1등 출력, '없음' 출력 없음, 지도 없음</td>
+</tr>
+<tr>
+<td>CNOS, FoundPose, GigaPose, FreeZeV2</td>
+<td>템플릿 기반 제로샷 인식</td>
+<td>한 장 단위 카메라 기준 결과, 순차 관문·색 관문·배타 배정 없음</td>
+</tr>
+<tr>
+<td><strong>CLON (arXiv 2609.04784, 2026-09-04)</strong> 새로 확인</td>
+<td><strong>색 서술을 넣은 텍스트 프롬프트로 후보 수를 67.3개에서 13.6개로 줄임</strong> → 본 발명의 텍스트 프롬프트 후보 생성과 가장 가깝다</td>
+<td>순차 관문, 색조·채도 분포 관문, '없음' 출력은 기술되지 않음. <strong>출원 전에 공개된 자료이므로 선행기술로 다루어야 한다</strong></td>
+</tr>
+<tr>
+<td>NIDS-Net, MUSE, Grounded-SAM</td>
+<td>문구 검출 후 템플릿 비교</td>
+<td>순차 관문·색 분포 관문·배타 판정 없음</td>
+</tr>
+<tr>
+<td>SLAM++, CubeSLAM, QuadricSLAM, VOOM</td>
+<td>객체를 지도에 둠</td>
+<td>객체로 카메라 위치를 보정, 물체별 검출기·형상 필요, 지연 처리 없음</td>
+</tr>
+<tr>
+<td>Fusion++</td>
+<td>존재확률(Beta 분포), 기댓값 0.1 미만 삭제</td>
+<td>미검출 판정이 거리 조건이 아닌 투영 크기(50² 픽셀) 기준. 중복 처리는 향후 과제로 남김. 한 시스템 4–8 Hz</td>
+</tr>
+<tr>
+<td>POCD, Khronos, Hydra</td>
+<td>변화하는 객체 지도, 베이즈 갱신</td>
+<td>제로샷 CAD 6D 아님, 촬영 시각 키프레임 고정 없음</td>
+</tr>
+<tr>
+<td>Merrill 외 (CVPR22)</td>
+<td>대칭 고려 객체 SLAM, YCB-V 6D</td>
+<td>카이제곱 이상치 게이트만 사용, 물체별 키포인트 학습</td>
+</tr>
+<tr>
+<td><strong>DSP-SLAM++ (arXiv 2606.25953, 2026-06-24)</strong> 새로 확인</td>
+<td><strong>비동기 객체 처리: 작업을 넣을 때 그 시점 자세를 묶고, 작업 큐와 결과 큐를 둠</strong></td>
+<td>한 장치, 키프레임 목록 재전송 없음, 실외. <strong>출원 전 공개 자료이므로 촬영 시각 고정 부분과 꼼꼼히 비교해야 한다</strong></td>
+</tr>
+<tr>
+<td>MaskFusion (ISMAR18)</td>
+<td>인식 비동기 실행</td>
+<td>한 장치·한 카메라, 프레임 큐로 SLAM 자체를 늦춤, 루프 보정 반영 없음</td>
+</tr>
+<tr>
+<td>Liu 외 (MobiCom19)</td>
+<td>두 장치(단말·엣지), 늦은 결과의 화면 보정</td>
+<td>2D 박스, 지도·키프레임 없음</td>
+</tr>
+<tr>
+<td>Zorina 외 (RA-L 2025)</td>
+<td>인식(5 Hz)과 출력(1 kHz) 주기 분리</td>
+<td>지도 없음, 한 물체 자세 궤적</td>
+</tr>
+<tr>
+<td>Lost &amp; Found (RA-L25)</td>
+<td>객체 추적, 1.15 s 지연 명시</td>
+<td>지연을 보상하지 않음, 지도 없음</td>
+</tr>
+<tr>
+<td>Magic Leap US 11,206,507 B2</td>
+<td>원점→키프레임→장치 변환을 연결</td>
+<td>사용자가 놓은 가상 객체 대상, 인식 결과의 촬영 시각 선택 없음</td>
+</tr>
+<tr>
+<td><strong>Rivian US 12,313,726 B2</strong> 새로 확인</td>
+<td>늦게 도착한 측정을 시간순으로 넣고 상태를 다시 전파</td>
+<td>차량 상태 추정. 객체를 키프레임에 고정하지 않음. 변리사 확인 필요</td>
+</tr>
+<tr>
+<td>ROS tf2</td>
+<td>시각 지정 변환 조회, 변환이 올 때까지 대기</td>
+<td>저장한 결과를 지도 보정 뒤에 다시 계산하지 않음</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>특허 쪽에서 할 일</strong></p>
+<ol>
+<li><strong>CLON과 DSP-SLAM++를 변리사에게 추가로 전달한다.</strong> 둘 다 2026년에 공개되어 출원보다 앞선다.</li>
+<li>CLON: 텍스트 프롬프트 후보 생성과 겹친다.</li>
+<li>DSP-SLAM++: 비동기 객체 처리와 시점 자세 묶기가 겹친다.</li>
+<li><strong>차이를 명세서에 분명히 적는다.</strong> 본 발명이 두 문헌과 다른 점은 다음과 같다.</li>
+<li>촬영 시각의 기준 키프레임과 함께 키프레임 목록을 다시 보낸다.</li>
+<li>다른 장치에서 SLAM 자세가 늦게 올 때 기다렸다가 등록한다.</li>
+<li>색조·채도 분포 관문과 '없음' 출력을 갖춘 순차 관문을 쓴다.</li>
+<li><strong>Rivian 특허는 변리사가 관련성을 판단한다.</strong> 늦게 온 측정을 시간순으로 다시 넣는 일반 기술이다.</li>
+</ol>
+<hr />
+<h3 id="3_2">3. 이번 조사에서 확인하지 못한 것</h3>
+<ul>
+<li>SLAM++, POCD·Khronos·Hydra의 정확도 수치</li>
+<li>GenFlow 원 논문의 자체 표 (위 수치는 BOP 결과 논문에서 가져옴)</li>
+<li>Grounded-SAM 속도, CLON 측정 GPU</li>
+<li>FRTPose-WAPR 처리 시간 단위 (232.4 s인지 ms인지)</li>
+<li>YCB-M에서 BOP AR을 보고한 기준선 (찾지 못함. 비교하려면 직접 실행해야 한다)</li>
+</ul>
+<hr />
+<p><a id="03_목차_v0.2"></a></p>
+<h2 id="v02">논문 목차 (v0.2)</h2>
+<p>제목: <strong>키프레임 고정 객체 지도: 비동기 SLAM에서 늦게 도착하는 제로샷 6D 자세 추정 결과의 등록</strong>
+(Keyframe-Anchored Object Maps: Registering Late Zero-Shot 6D Pose Estimates in Asynchronous SLAM)</p>
+<p>원고: <code>etrij/ETRIJ_manuscript_v0.2.docx</code> (영문, 7쪽) · <code>ko/논문_국문_v0.2.docx</code> (국문, 9쪽). 두 원고의 목차는 같다.</p>
+<hr />
+<p><strong>요약 / 주제어</strong>, Abstract / Keywords</p>
+<ol>
+<li><strong>서론</strong></li>
+<li><strong>관련 연구</strong>: 제로샷 6D 자세 추정, 객체 SLAM과 객체 지도, 비동기 인식</li>
+<li><strong>방법 개요</strong>: 그림 1 구성도</li>
+<li><strong>비동기 인식과 촬영 시각 등록</strong> (구성도 A)</li>
+<li>4.1 센서 플랫폼과 시간 기준 (구성도 1번)</li>
+<li>4.2 SLAM 자세·키프레임 흐름 (SLAM 칸)</li>
+<li>4.3 검증을 갖춘 제로샷 6D 추정 (2번)</li>
+<li>4.4 비동기 시간 관계 (3번)</li>
+<li>4.5 촬영 시각 등록 (4번)</li>
+<li><strong>키프레임 고정 공간 객체 지도</strong> (구성도 B)</li>
+<li>5.1 키프레임 고정 객체 상태 지도 (5번)</li>
+<li>5.2 루프 클로저 갱신 (6번)</li>
+<li><strong>실험 환경</strong>: 실험 데이터 표, 지표</li>
+<li><strong>실험 결과</strong></li>
+<li>7.1 촬영 시각 등록과 키프레임 고정</li>
+<li>7.2 루프 클로저 갱신과 지속적 기억</li>
+<li>7.3 인식</li>
+<li>7.4 실시간 동작과 표시</li>
+<li>7.5 한계</li>
+<li><strong>고찰</strong>: 어느 시각, 어느 좌표계, 어느 키프레임</li>
+<li><strong>결론</strong></li>
+</ol>
+<p><strong>참고문헌</strong> (25편)</p>
+<hr />
+<h3 id="7">그림 (7개)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>번호</th>
+<th>내용</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>그림 1</td>
+<td>전체 구성도</td>
+<td><code>images/fig_v3_times.png</code></td>
+</tr>
+<tr>
+<td>그림 2</td>
+<td>데이터 수집 카트</td>
+<td><code>images/fig_hardware.jpg</code></td>
+</tr>
+<tr>
+<td>그림 3</td>
+<td>SLAM 처리 시간</td>
+<td><code>images/fig_slam_timing.png</code></td>
+</tr>
+<tr>
+<td>그림 4</td>
+<td>SAM-6D 대비 인식부 변경</td>
+<td><code>images/fig_pipeline.png</code></td>
+</tr>
+<tr>
+<td>그림 5</td>
+<td>등록 방식 (a)~(d) 비교</td>
+<td><code>images/fig_registration_ablation.png</code></td>
+</tr>
+<tr>
+<td>그림 6</td>
+<td>관문별 효과</td>
+<td><code>images/fig_gate_ablation.png</code></td>
+</tr>
+<tr>
+<td>그림 7</td>
+<td>화면 일치율</td>
+<td><code>images/fig_display_match.png</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="5">표 (5개)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>번호</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>표 1</td>
+<td>실험 데이터</td>
+</tr>
+<tr>
+<td>표 2</td>
+<td>등록 방식별 흩어짐</td>
+</tr>
+<tr>
+<td>표 3</td>
+<td>실내 주행 재연결</td>
+</tr>
+<tr>
+<td>표 4</td>
+<td>한 장씩 넣은 인식 비교</td>
+</tr>
+<tr>
+<td>표 5</td>
+<td>YCB-Video 최종 객체 지도</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<p><a id="08_재시작_메모"></a></p>
+<h2 id="08-2026-10-06">08. 재시작 메모 (2026-10-06 새벽, 사용자 요청으로 중단)</h2>
+<h3 id="_12">중단 시점의 상태</h3>
+<ul>
+<li>모든 실행을 멈췄습니다. GPU는 비어 있습니다.</li>
+<li>끝난 결과는 <code>07_전체_비교표.md</code>(3.2절 YCB 36장, 3절 YCB 실시간, 3.3절 실제 데이터)에 있습니다.</li>
+</ul>
+<h3 id="_13">진행 기록</h3>
+<ul>
+<li>2026-10-06 06시: 실제 데이터 6개 설정 완료. 결과는 <code>07_전체_비교표.md</code> 3.3절에 있습니다.</li>
+<li>hybrid 실패 원인(불러오는 순서) 수정</li>
+<li>Mac은 실행 중 2시간 caffeinate로 잠자기 방지</li>
+</ul>
+<h3 id="_14">남은 일 (다시 시작할 때 순서)</h3>
+<ol>
+<li>~~실제 데이터의 "원본 판정 + 우리 자세 검증"이 지도를 비우는 원인 찾기~~ (완료: 불러오는 순서 문제)</li>
+<li>증상: 모든 후보가 <code>candidate_verification_failed</code>, 일부는 PEM 입력 깊이 부족(<code>no valid PEM instances</code>)입니다.</li>
+<li>확인 스크립트: <code>src/realdata/debug_hybrid.py hybrid</code> (실제 프레임 한 장으로 재현)</li>
+<li>코드: <code>src/realdata/live_cores.py</code> (hybrid 모드)</li>
+<li>~~Mac 연결 복구 후 실제 데이터 남은 실행~~ (완료). 참고:: <code>src/realdata/run_real.sh</code> 안의 hybL05, hybS05(수정 후 재실행), hybS06</li>
+<li>Mac IP가 바뀌었을 수 있습니다(192.168.219.111 응답 없음).</li>
+<li><strong>자세 검증 경량화 실험</strong> (시작 전에 중단): <code>src/ycbv/det_study/run_verify_cost.sh</code></li>
+<li>검증 후보 100/50/30/10, 간격 3/10, fp16/bf16, 조합. 대기 조건 줄(<code>until grep ... real.log</code>)은 지우고 실행합니다.</li>
+<li>경량화 결과가 좋으면 우리 개선안을 그 설정으로 YCB와 실제 데이터 실시간 재측정</li>
+<li>최종 수치는 RTX 5090에서 장면별 3회 반복</li>
+</ol>
+<h3 id="_15">실행 결과 위치</h3>
+<ul>
+<li>YCB 36장: <code>src/ycbv/out/quick/</code> (요약 <code>ladder/quick_combo.py</code>)</li>
+<li>YCB 실시간: <code>objpose/output/ycbv_live_*</code>, 채점 <code>src/ycbv_live/results_*.json</code>, <code>results_penalized.json</code></li>
+<li>실제 데이터: <code>objpose/output/real_260901_*</code>, 채점 <code>src/realdata/results_real.json</code></li>
+</ul></main></body></html>

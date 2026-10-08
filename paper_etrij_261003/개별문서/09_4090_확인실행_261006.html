@@ -1,0 +1,232 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>09. RTX 4090 확인 실행 — 노트북에서 못 끝낸 한 장 평가 (2026-10-06)</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1>09. RTX 4090 확인 실행 — 노트북에서 못 끝낸 한 장 평가 (2026-10-06)</h1>
+<blockquote>
+<p><strong>확인용 실행 (RTX 4090 ×4 서버, GPU0 단독).</strong> <code>src/ycbv</code> 의 같은 스크립트·같은 프로토콜(BOP19 목록 900장, 대상 4,123개, ADD-S &lt; 지름 10%)로 돌렸습니다. 출력은 <code>src/ycbv/out_4090/</code>, 채점은 <code>src/ycbv/results_4090.json</code> 으로 노트북 결과(<code>out/</code>, <code>results.json</code>)와 분리했습니다. 실행 환경은 <code>~/Dataset/bop/ycbv_work/env.sh</code>, 체인 스크립트 <code>run_paper_4090.sh</code>, 로그 <code>logs/</code>.
+템플릿은 논문 스크립트 <code>render_templates_bproc.py</code> 로 새로 렌더했고(21 물체, 31분), 인식기 코드는 이 서버의 <code>old/CLI_environment/sam6d_realtime</code>(2026-08-24 판)입니다. 개선안 옵션(배정 대안, 크기 관문, 검증 후보 수)은 노트북 인식기에만 있어 여기서는 돌릴 수 없었습니다(4절).</p>
+</blockquote>
+<h2>1. 한 장 평가 900장 — 이번에 채운 것</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>GPU</th>
+<th>처리 시간(중앙값)</th>
+<th>찾은 비율</th>
+<th>정답 비율</th>
+<th>오답/장</th>
+<th>ADD-S AUC</th>
+<th>답한 수</th>
+<th>BOP AR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>L2 문구 상자 + MobileSAM + ViT-S + 원본 판정</strong></td>
+<td>4090</td>
+<td><strong>283 ms</strong></td>
+<td><strong>80.6%</strong></td>
+<td>94.2%</td>
+<td>0.226</td>
+<td>79.9</td>
+<td>3525</td>
+<td><strong>73.0</strong> (72.2/75.4/71.5)</td>
+</tr>
+<tr>
+<td>L4 우리 기술 (배포)</td>
+<td>4090</td>
+<td>514 ms</td>
+<td>60.9%</td>
+<td>99.1%</td>
+<td>0.026</td>
+<td>59.7</td>
+<td>2532</td>
+<td>56.2 (56.1/57.7/54.9)</td>
+</tr>
+<tr>
+<td>(참고) L4 우리 기술, 노트북 07 표</td>
+<td>3080 Ti</td>
+<td>1235 ms</td>
+<td>61.4%</td>
+<td>99.0%</td>
+<td>0.028</td>
+<td>60.3</td>
+<td>2556</td>
+<td>56.2 (56.4/57.5/54.8)</td>
+</tr>
+<tr>
+<td>(참고) L1 FastSAM + ViT-S + 원본 판정, 노트북 07 표</td>
+<td>3080 Ti</td>
+<td>825 ms</td>
+<td>90.6%</td>
+<td>91.3%</td>
+<td>0.398</td>
+<td>90.6</td>
+<td>82.3</td>
+<td></td>
+</tr>
+<tr>
+<td>(참고) L3 우리 ISM, 검증 끔, 노트북 07 표</td>
+<td>3080 Ti</td>
+<td>318 ms</td>
+<td>63.5%</td>
+<td>96.2%</td>
+<td>0.114</td>
+<td>62.9</td>
+<td>57.8</td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<p>처리 시간 내역 (중앙값, ms, 4090):</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>후보 생성</th>
+<th>특징 / ISM</th>
+<th>판정</th>
+<th>PEM</th>
+<th>합계</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L2</td>
+<td>22 (문구 상자 + MobileSAM)</td>
+<td>7</td>
+<td>4</td>
+<td>250</td>
+<td>283</td>
+</tr>
+<tr>
+<td>L4 우리 기술</td>
+<td>6 (문구 상자)</td>
+<td>119 (관문 포함 ISM 전체)</td>
+<td>–</td>
+<td>385 (자세 검증 포함)</td>
+<td>514</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>해석</strong></p>
+<ol>
+<li><strong>L2 900장이 처음으로 끝났습니다.</strong> 노트북에서는 후보가 1개뿐인 장에서 원본 특징 추출기가 차원을 줄여 멈췄는데(<code>avg_pool2d IndexError</code>), 코드에 들어 있던 "후보 1개면 복제" 우회로 900장이 오류 없이 돌았습니다. 36장 결과(78.2%, 0.222)와 900장(80.6%, 0.226)이 잘 맞습니다.</li>
+<li><strong>L1 → L2 → L3 손실이 900장에서도 확인됩니다.</strong> 후보를 FastSAM 전체 분할에서 문구 상자로 바꾸면 90.6 → 80.6%(−10%p), 판정을 원본에서 우리 관문 + 독점 배정으로 바꾸면 80.6 → 63.5%(−17%p)입니다. 36장 추정(−15%p, −18%p)과 같은 그림입니다. 오답은 0.398 → 0.226 → 0.114 로 단계마다 절반쯤 줍니다.</li>
+<li><strong>L2 는 "빠르면서 많이 찾기" 후보입니다.</strong> 4090 에서 283 ms 로 우리 기술의 55% 시간에 찾은 비율이 20%p 높습니다. 대신 오답이 9배(0.226 대 0.026)입니다. 여기에 우리 자세 검증을 붙인 구성(원본 판정 + 우리 검증)은 36장에서만 확인했습니다(07 표 3.2절, ViT-S 0.5 + 검증 82.4%, 0.056).</li>
+<li><strong>우리 기술은 GPU·템플릿을 바꿔도 같은 수치가 나옵니다.</strong> 4090 에서 60.9 / 99.1 / 0.026 / BOP AR 56.2, 노트북에서 61.4 / 99.0 / 0.028 / BOP AR 56.2. 템플릿을 새로 렌더하고 인식기 사본이 달라도 0.5%p 안에서 재현됩니다. 처리 시간은 4090 이 2.4배 빠릅니다(514 대 1235 ms).</li>
+</ol>
+<h2>1-1. 사다리 전체 (L0~L5, B안, A안) 900장</h2>
+<p>같은 날 15:49 에 사다리 전체를 4090 에서 끝냈습니다. 표와 해석은 <code>06_단계별_분해실험.md</code> 8절에 있습니다(노트북 결과와 나란히 비교).</p>
+<h2>2. 같은 날 다른 도구로 한 설정 탐색 (참고)</h2>
+<p><code>CLI_environment/sam6d_realtime/_ycbv_eval_2026_10_06</code> 에서 배포 설정의 ISM 옵션을 바꿔 가며 900장을 돌렸습니다. 채점 도구와 설정(수렴 비율 0.5, 템플릿 1/지름 스케일)이 <code>src/ycbv</code> 와 달라 <strong>절대값은 이 문서의 표와 섞지 않습니다.</strong> 자세한 표와 용어 대응은 그 폴더의 <code>runs/SUMMARY_261006.md</code> 에 있습니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성 (배포 설정 기준)</th>
+<th>처리 시간(평균)</th>
+<th>찾은 비율</th>
+<th>정답 비율</th>
+<th>오답/장</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>배포 설정</td>
+<td>624 ms</td>
+<td>42.2%</td>
+<td>85.1%</td>
+<td>0.338</td>
+</tr>
+<tr>
+<td>색상 동률 판정 끔</td>
+<td>644 ms</td>
+<td>62.5%</td>
+<td>93.7%</td>
+<td>0.193</td>
+</tr>
+<tr>
+<td>색상 동률 판정 끔 + 색상 관문 끔</td>
+<td>672 ms</td>
+<td><strong>66.3%</strong></td>
+<td><strong>93.8%</strong></td>
+<td>0.201</td>
+</tr>
+<tr>
+<td>색상 동률 판정 끔 + PEM 관측 점 1024</td>
+<td><strong>582 ms</strong></td>
+<td>62.2%</td>
+<td>93.5%</td>
+<td>0.198</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>색상 동률 판정</strong>(<code>color_tiebreak_template_sim</code>, 배포값 0.60)은 의미 점수가 비슷한 두 물체를 색으로 가르는 판정으로, 인형 3종을 위해 넣은 옵션입니다. 07 표의 관문 실험(의미·외형·색상 기준값, 배정 대안)에는 들어 있지 않습니다. YCB-V 에서는 이 판정이 찾은 비율을 20%p 깎고 다른 물체로 답하는 오답을 늘립니다(mustard_bottle 158건 → 0건). 단 sugar_box 는 반대로 58 → 35% 로 나빠져, 상자류에는 남기는 물체별 설정이 후보입니다.</li>
+<li><strong>PEM 관측 점 2048 → 1024</strong> 는 정확도 손실 없이 PEM 시간 12% 절감입니다. 검증 후보 50개(07 표 3.4절, −28%)와 결합할 수 있습니다.</li>
+<li>다음 확인: 이 두 옵션을 <code>src/ycbv</code> 프로토콜(<code>run_ours.py</code>)에서도 재는 것. 현재 <code>run_ours.py</code> 에는 색상 동률 판정·관측 점 수를 바꾸는 인자가 없어 추가가 필요합니다.</li>
+</ul>
+<h2>3. 사용한 경로</h2>
+<ul>
+<li>환경: <code>~/Dataset/bop/ycbv_work/env.sh</code> (OBJPOSE_REPO=old/CLI_environment, SAM6D_ORIG, YCBV_DIR=~/Dataset/bop/ycbv, DINOV2_VITL_DIR=ViT-S 체크포인트 폴더, CUDA_VISIBLE_DEVICES=0)</li>
+<li>자산: <code>~/Dataset/bop/ycbv_work/{templates,features,core_repo,ycbv_objects.yaml,predefined_poses}</code> (<code>build_assets.py</code>, 1분)</li>
+<li>실행: <code>ladder/run_ladder.py --level L2</code> 5.0분, <code>run_ours.py --mode text</code> 8.2분</li>
+<li>채점: <code>evaluate.py --skip_bop --methods ladder_L2,ours_text --results results_4090.json</code>; BOP AR 은 <code>bop_venv</code> + <code>bop_toolkit</code>(이 서버에 새로 설치) 으로 <code>evaluate.py --methods ladder_L2,ours_text</code> 재실행, 출력 <code>out_4090/bop/</code></li>
+</ul>
+<h2>4. 이 서버에서 못 한 것과 이유</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>실험 (07·08 문서의 남은 일)</th>
+<th>이유</th>
+<th>필요한 것</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>우리 개선안(G123 + ① 문구) 900장</td>
+<td><code>assignment_fallback</code>(배정 대안), <code>size_gate_max</code>(크기 관문)가 노트북 <code>sam6d_realtime</code> 에만 있음</td>
+<td>노트북의 <code>yolo_ism_object_n.py</code>, <code>realtime/sam6d_core.py</code> 수정분 복사</td>
+</tr>
+<tr>
+<td>검증 후보 50개 900장</td>
+<td><code>verify.candidate_topk</code> 와 반정밀도 검증 fp32 수정이 노트북 <code>Pose_Estimation_Model/utils/model_utils.py</code> 에만 있음</td>
+<td>같은 파일 복사</td>
+</tr>
+<tr>
+<td>L0 원본 SAM-6D, L1 ViT-S 900장 재실행</td>
+<td>DINOv2 ViT-L 과 FastSAM-x 가중치가 이 서버에 없음(Google Drive 차단)</td>
+<td>가중치 파일 반입</td>
+</tr>
+<tr>
+<td>YCB 실시간(원본 판정 + ViT-S 0.6·0.7, 개선안, 후보 50개), 실제 데이터 실시간</td>
+<td>Mac(ORB-SLAM3) 두 장치 구성이 필요</td>
+<td>Mac 연결</td>
+</tr>
+<tr>
+<td>RTX 5090 3회 반복</td>
+<td>다른 장비</td>
+<td>–</td>
+</tr>
+</tbody>
+</table></div></main></body></html>
