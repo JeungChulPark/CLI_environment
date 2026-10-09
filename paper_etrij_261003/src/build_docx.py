@@ -37,7 +37,9 @@ def set_cols(section, n, space_cm=0.6):
     sectPr.append(cols)
 
 def runs(p, text, size=None, color=None):
-    tok = re.split(r'(\*\*.+?\*\*|\*[^*]+?\*|_\{[^}]*\}|\^\{[^}]*\})', text)
+    # sub/superscripts may nest one level (T_{K_{i}←O_{i}}); the inner braces are flattened into the outer run
+    tok = re.split(r'(\*\*.+?\*\*|\*[^*]+?\*|_\{(?:[^{}]|\{[^{}]*\})*\}|\^\{(?:[^{}]|\{[^{}]*\})*\})', text)
+    flat = lambda x: re.sub(r'[_^]\{([^{}]*)\}', r'\1', x)
     for t in tok:
         if not t:
             continue
@@ -46,9 +48,9 @@ def runs(p, text, size=None, color=None):
         elif t.startswith('*'):
             r = p.add_run(t[1:-1]); r.italic = True
         elif t.startswith('_{'):
-            r = p.add_run(t[2:-1]); r.font.subscript = True
+            r = p.add_run(flat(t[2:-1])); r.font.subscript = True
         elif t.startswith('^{'):
-            r = p.add_run(t[2:-1]); r.font.superscript = True
+            r = p.add_run(flat(t[2:-1])); r.font.superscript = True
         else:
             r = p.add_run(t)
         if size: r.font.size = Pt(size)

@@ -213,22 +213,52 @@ def build(path):
     w.P("Each object in the map (Fig. 1, panel 5) is a record")
     w.EQ("𝒪_{i} = { ID_{i}, K_{i}, T_{K_{i}←O_{i}}, p_{i}, C_{i} }", 3)
     w.P("with identifier ID_{i}, anchor keyframe K_{i}, relative pose T_{K_{i}←O_{i}}, existence probability p_{i}, and "
-        "class C_{i}, plus its observation history. Its pose in the map frame is never stored; it is computed when needed as")
+        "class C_{i}, plus its observation count n_{i} and history. Its pose in the map frame is never stored; it is "
+        "computed when needed as")
     w.EQ("T_{W←O_{i}} = T_{W←K_{i}} · T_{K_{i}←O_{i}}", 4)
-    w.P("A new observation is associated with an object of the same class within 0.15 m, nearest first and one-to-one per "
-        "frame. Rotation is excluded from association because zero-shot estimators often return poses flipped by 180° for "
-        "box-like objects. Position is the running mean of observations and orientation the mode of observations within "
-        "30°. The existence probability drives the states tentative (p = 0.7 at creation, hidden), active (≥ 2 "
-        "observations and p > 0.6), lost (p < 0.3), remembered (p < 0.05 with ≥ 5 observations), and deleted. A miss lowers "
-        "p by Bayes' rule only if the object projects into the view *and* lies within the recognizer's detection range; "
-        "lost and remembered objects stay association candidates, so a returning object regains its identifier. Of two "
-        "same-class objects, one with five times fewer observations is hidden as a duplicate. On the office run, the map "
-        "ends with eight active objects (14–29 observations each) and two hidden tentative ones.")
+    w.P("**Existence probability.** Let p_{i,k} be the probability that object i exists after recognition frame k and "
+        "ℓ_{i,k} = ln(p_{i,k} / (1 − p_{i,k})) its log-odds. A miss is evidence only if the object could have been "
+        "detected. With the object center at (x, y, z) in the recognition camera at capture time and (u, v) its projection, "
+        "the detection probability of frame k is")
+    w.EQ("P_{D,k} = P_{D} · 𝟙[0 < z ≤ z_{max}] · 𝟙[(u, v) ∈ Ω]", 5)
+    w.P("where P_{D} is the per-frame detection rate of a visible object, z_{max} = 1.5 m the detection range of the "
+        "recognizer, and Ω the image without a 5% margin. If the object exists, it is detected with probability P_{D,k}; "
+        "if it does not, an associated detection has relative likelihood c. Bayes' rule then gives, for a detected and for "
+        "a missed object,")
+    w.EQ("p′ = p P_{D} / ( p P_{D} + (1 − p) c )", 6)
+    w.EQ("p′ = p (1 − P_{D,k}) / ( 1 − p P_{D,k} )", 7)
+    w.P("Since 1 − p′ = (1 − p) / (1 − p P_{D,k}) in (7), both updates multiply the odds, and in log-odds they add:")
+    w.EQ("ℓ′ = ℓ + ln(P_{D} / c)   (detected)", 8)
+    w.EQ("ℓ′ = ℓ + ln(1 − P_{D,k})   (missed)", 9)
+    w.P("with ℓ ≤ ln 99. With P_{D} = 0.08 and c = 0.01 [verify for the runs of Section 7.2], a detection adds 2.079 and "
+        "a visible miss subtracts 0.083. Out of view or range P_{D,k} = 0 and ℓ does not change, so an object that is not "
+        "seen is never forgotten. If an object is detected in a share q of the frames in which it is visible, its expected "
+        "log-odds does not decrease when q ≥ q*, with")
+    w.EQ("q* = −ln(1 − P_{D}) / ln[P_{D} / (c(1 − P_{D}))]", 10)
+    w.P("which is 3.86% for these values, below the per-frame detection rates we measure [verify].")
+    w.P("**States.** The state s_{i} ∈ {tentative T, active A, lost L, remembered M, deleted D} changes when p_{i} crosses "
+        "fixed thresholds, after association and update in every frame. An unassociated observation creates an object "
+        "with s = T, p = 0.7 (ℓ = 0.847), and n = 1. Then T → A if n ≥ 2 and p > 0.6; A → L if p < 0.3; L → M if p < 0.05 "
+        "and n ≥ 5, after which misses are ignored; L → D if p < 0.05 and n < 5; T → D if p < 0.05 or 100 frames after "
+        "creation; and L or M → A on redetection. By (8) and (9), consecutive visible misses delete a tentative object after 46 "
+        "frames, make a just-promoted active object (p = 0.949) lost after 46 and a saturated one (p = 0.99) after 66, and "
+        "retire a lost object after 26; three detections restore the cap. A second detection promotes a tentative object "
+        "if at most 30 visible misses lie between the two.")
+    w.P("**Association, fusion, and display.** An observation z of class C_{i} is associated with object i if")
+    w.EQ("‖ t_{W←O_{i}} − t_{z} ‖ ≤ g · m(s_{i})", 11)
+    w.P("with g = 0.15 m, m(T) = 3, and m = 1 otherwise; pairs are assigned greedily one-to-one in order of distance. "
+        "Rotation is excluded because zero-shot estimators often return poses flipped by 180° for box-like objects. "
+        "Position is the running mean t_{n} = t_{n−1} + (t_{z} − t_{n−1}) / n, and orientation the mode of observations "
+        "within 30° (at most eight modes, symmetric objects aligned first). Lost and remembered objects stay association "
+        "candidates, so a returning object regains its identifier. An object is displayed only if s_{i} ∈ {A, L, M} and")
+    w.EQ("ρ · n_{i} ≥ max_{j ∈ 𝒮_{i}} n_{j}", 12)
+    w.P("where 𝒮_{i} is the set of objects of class C_{i} in states A, L, or M and ρ = 5. This rule hides a high-confidence misreading next to the true object while keeping two real objects of one class. "
+        "On the office run, the map ends with eight active objects (14–29 observations each) and two hidden tentative ones.")
 
     w.H2('5.2', 'Loop-closure-aware update')
     w.P("When SLAM corrects its keyframes (Fig. 1, panel 6), the next keyframe list carries the corrected poses "
         "T′_{W←K_{i}}, and every object is updated by")
-    w.EQ("T′_{W←O_{i}} = T′_{W←K_{i}} · T_{K_{i}←O_{i}}", 5)
+    w.EQ("T′_{W←O_{i}} = T′_{W←K_{i}} · T_{K_{i}←O_{i}}", 13)
     w.P("Only keyframe poses change; T_{K_{i}←O_{i}} is never modified, so all objects anchored to a keyframe move with it. "
         "An object whose keyframe was culled is re-anchored to the nearest live keyframe of the previous list, and the map can "
         "be rebuilt from the observation history whenever keyframe poses change (75 ms for 308 frames). For display, all map "
