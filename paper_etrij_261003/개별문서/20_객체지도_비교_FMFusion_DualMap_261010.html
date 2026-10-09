@@ -1,0 +1,303 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>20. 공간 객체 상태 지도 비교 — 제안 방법 대 FM-Fusion 대 DualMap (YCB-V, 2026-10-09 ~ 10-10)</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1>20. 공간 객체 상태 지도 비교 — 제안 방법 대 FM-Fusion 대 DualMap (YCB-V, 2026-10-09 ~ 10-10)</h1>
+<blockquote>
+<p>2026-10-09 에 요청한 "최종 객체 지도의 정확도 비교" 실험의 2단계 결과입니다. 최종 지도에 대상 물체가 맞게 올라갔는지(물체 단위 F1)와, 지도 좌표계에 등록된 3D 점군이 정답과 얼마나 일치하는지(3D IoU, 표면 거리)를 비교합니다. 장비는 노트북 RTX 3080 Ti Laptop 이고 확인용입니다. 최종 수치는 RTX 5090 에서 다시 냅니다. 코드·정답·채점 규칙은 <code>src/objmap/</code>(README.md)에 있습니다.</p>
+</blockquote>
+<h2>1. 실험 구성</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>데이터</td>
+<td>YCB-V 시험 영상 12개(48~59, 21k 프레임), 물체 55개</td>
+</tr>
+<tr>
+<td>카메라 궤적</td>
+<td>세 방법 모두 같은 다시 맞춘 정답 궤적(<code>gt/ycbv/&lt;scene&gt;/poses_tum.txt</code>)을 씀. SLAM 오차를 빼고 지도 생성만 비교</td>
+</tr>
+<tr>
+<td>정답 지도</td>
+<td><code>gt/ycbv_vis</code>: 정답 자세의 CAD 표면 중 실제로 보인 부분만(표면의 42~98%). 융합형 지도가 보지 못한 면 때문에 손해 보지 않게 함</td>
+</tr>
+<tr>
+<td>짝짓기</td>
+<td>같은 종류끼리 3D IoU(1 cm 복셀)로 헝가리안 배정, IoU ≥ 0.25 면 TP. 보조로 중심 거리 5 cm 기준</td>
+</tr>
+<tr>
+<td>지표</td>
+<td>물체 단위 TP/FP/FN, 정밀도 P, 재현율 R, <strong>F1</strong>. TP 에서 <strong>mIoU</strong>, <strong>SD</strong>(양방향 최근접 표면 거리 평균, mm). 보조로 프레임 단위 F1</td>
+</tr>
+<tr>
+<td><code>--clean</code></td>
+<td>예측 물체마다 가장 큰 연결 덩어리만 남김(모든 방법에 똑같이 적용). raw 와 함께 보고</td>
+</tr>
+<tr>
+<td>자체 시험</td>
+<td>정답 복사 F1 1.000, 정답 자세 CAD 전체 mIoU 0.738(상한), 관측 깊이 융합 <code>--clean</code> mIoU 0.555(융합형 상한). 일부러 바꾼 지도의 개수가 예상과 일치 → SELFTEST PASS</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>비교 방법</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>출처</th>
+<th>인식</th>
+<th>지도</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>제안</strong></td>
+<td>이 논문</td>
+<td>개선안 3 + 군집 먼저(FastSAM-x → ViT-S → 판정 0.5 → PEM 300가설 → 자세 검증)</td>
+<td>키프레임 고정 객체 상태 지도(존재확률, 상태 전이, 중복 억제)</td>
+</tr>
+<tr>
+<td>FM-Fusion</td>
+<td>RA-L 2024, HKUST</td>
+<td>RAM → GroundingDINO → SAM, 확률적 라벨 융합</td>
+<td>물체별 복셀 지도 + TSDF</td>
+</tr>
+<tr>
+<td>DualMap</td>
+<td>RA-L 2025 (arXiv 2506.01950)</td>
+<td>YOLOv8l-World + MobileSAM(+FastSAM-s), MobileCLIP 특징</td>
+<td>구체 지도(물체별 점군) + 추상 지도</td>
+</tr>
+</tbody>
+</table></div>
+<p>제안 방법은 CAD 를 놓는 방식이라 두 형태로 보고합니다.</p>
+<ul>
+<li><strong>ours_cad:</strong> 추정 자세에 CAD 를 놓은 지도.</li>
+<li><strong>ours_obs:</strong> 관측 점군을 지도 물체에 붙인 지도. 두 기존 방법과 같은 형태입니다.</li>
+</ul>
+<h2>2. 결과 (물체 55개, 보인 표면 정답, IoU ≥ 0.25)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>TP</th>
+<th>FP</th>
+<th>FN</th>
+<th>P</th>
+<th>R</th>
+<th><strong>F1</strong></th>
+<th>mIoU</th>
+<th>SD (mm)</th>
+<th>프레임 F1</th>
+<th>F1 (중심 5 cm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>제안 ours_cad</strong></td>
+<td><strong>54</strong></td>
+<td>26</td>
+<td><strong>1</strong></td>
+<td>0.675</td>
+<td><strong>0.982</strong></td>
+<td><strong>0.800</strong></td>
+<td><strong>0.629</strong></td>
+<td>4.3</td>
+<td>0.799</td>
+<td>0.800</td>
+</tr>
+<tr>
+<td><strong>제안 ours_obs <code>--clean</code></strong></td>
+<td>53</td>
+<td><strong>24</strong></td>
+<td>2</td>
+<td><strong>0.688</strong></td>
+<td>0.964</td>
+<td><strong>0.803</strong></td>
+<td>0.487</td>
+<td><strong>3.5</strong></td>
+<td><strong>0.802</strong></td>
+<td>0.803</td>
+</tr>
+<tr>
+<td>제안 ours_obs raw</td>
+<td>45</td>
+<td>32</td>
+<td>10</td>
+<td>0.584</td>
+<td>0.818</td>
+<td>0.682</td>
+<td>0.401</td>
+<td>10.5</td>
+<td>0.694</td>
+<td></td>
+</tr>
+<tr>
+<td>FM-Fusion (raw = <code>--clean</code>)</td>
+<td>28</td>
+<td>106</td>
+<td>27</td>
+<td>0.209</td>
+<td>0.509</td>
+<td>0.296</td>
+<td>0.368</td>
+<td>6.5 / 6.1</td>
+<td>0.380</td>
+<td>0.307</td>
+</tr>
+<tr>
+<td>DualMap, 공개 설정</td>
+<td>5</td>
+<td>50</td>
+<td>50</td>
+<td>0.091</td>
+<td>0.091</td>
+<td>0.091</td>
+<td>0.388</td>
+<td>5.3</td>
+<td>0.104</td>
+<td>0.255</td>
+</tr>
+<tr>
+<td>DualMap, <code>--clean</code></td>
+<td>6</td>
+<td>49</td>
+<td>49</td>
+<td>0.109</td>
+<td>0.109</td>
+<td>0.109</td>
+<td>0.385</td>
+<td>6.0</td>
+<td>0.124</td>
+<td></td>
+</tr>
+<tr>
+<td>DualMap, BGR 입력 수정</td>
+<td>10</td>
+<td>54</td>
+<td>45</td>
+<td>0.156</td>
+<td>0.182</td>
+<td>0.168</td>
+<td>0.372</td>
+<td>6.1</td>
+<td>0.180</td>
+<td>0.370</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>읽는 법</strong></p>
+<ul>
+<li><strong>F1 은 제안 0.80, FM-Fusion 0.30, DualMap 0.09~0.17 입니다.</strong> 같은 점군 형태끼리 비교해도(ours_obs <code>--clean</code> 대 두 방법) 제안이 F1·mIoU·SD 모두 앞섭니다.</li>
+<li>짝짓기를 중심 거리 5 cm 로 느슨하게 해도 순위는 같습니다(0.80 / 0.31 / 0.26~0.37).</li>
+<li><strong>점군 일치도:</strong> ours_cad 의 mIoU 0.629 는 정답 자세 CAD 상한(0.738)의 85% 입니다. ours_obs <code>--clean</code> 의 0.487 은 융합형 상한(0.555)의 88% 입니다. 기존 두 방법은 맞게 찾은 물체에서도 mIoU 0.37~0.39 입니다.</li>
+<li>ours_obs raw 는 마스크 가장자리 배경 깊이가 붙어 SD 10.5 mm 입니다. <code>--clean</code> 으로 바깥 덩어리를 떼면 3.5 mm 입니다. 기존 방법은 <code>--clean</code> 의 효과가 거의 없습니다.</li>
+</ul>
+<h2>3. 틀린 원인 (<code>src/objmap/fn_fp_breakdown.py</code>)</h2>
+<p>FN 은 정답 물체를 짝짓지 못한 경우입니다. 다음 기준으로 나눴습니다.</p>
+<ul>
+<li><strong>같은 종류 근처(위치):</strong> 20 cm 안에 같은 종류의 예측이 있지만 짝지어지지 않음.</li>
+<li><strong>라벨 오류:</strong> 5 cm 안에 다른 종류의 예측이 있음.</li>
+<li><strong>놓침:</strong> 둘 다 아님.</li>
+</ul>
+<p>FP 는 짝이 없는 예측입니다. 다음 기준으로 나눴습니다.</p>
+<ul>
+<li><strong>배경:</strong> 20 cm 안에 정답 물체가 없음.</li>
+<li><strong>라벨 오류:</strong> 5 cm 안에 다른 종류의 정답 물체가 있음.</li>
+<li><strong>중복/어긋남:</strong> 그 밖.</li>
+</ul>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>FN: 라벨 오류 / 위치 / 놓침</th>
+<th>FP: 배경 / 라벨 오류 / 중복·어긋남</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>제안 ours_cad</td>
+<td>1 / 0 / 0</td>
+<td>6 / 14 / 6</td>
+</tr>
+<tr>
+<td>제안 ours_obs <code>--clean</code></td>
+<td>1 / 1 / 0</td>
+<td>4 / 11 / 9</td>
+</tr>
+<tr>
+<td>FM-Fusion</td>
+<td>20 / 2 / 5</td>
+<td><strong>73</strong> / 21 / 12</td>
+</tr>
+<tr>
+<td>DualMap, 공개 설정</td>
+<td>20 / 11 / <strong>19</strong></td>
+<td>11 / 27 / 12</td>
+</tr>
+<tr>
+<td>DualMap, BGR 수정</td>
+<td>15 / 13 / 17</td>
+<td>15 / 21 / 18</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>FM-Fusion:</strong> 물체가 있는 자리에 인스턴스는 생기지만 이름이 틀립니다(FN 의 74%). 예를 들어 참치캔을 potted meat 캔으로, 커피캔을 다른 캔으로 붙입니다. FP 의 69% 는 책상 위 다른 물건·화이트보드 같은 배경에 YCB 라벨이 붙은 것입니다. 열린 어휘 검출기가 서로 비슷한 YCB 물체를 구분하지 못하는 것이 원인입니다.</li>
+<li><strong>DualMap:</strong> 놓침이 가장 많고(19), 같은 종류 예측이 근처에 있어도 짝지어지지 않는 경우가 11~13 입니다. 물체 점군이 다른 물체·배경과 섞이거나 쪼개진 것으로 보입니다. 라벨 오류도 FM-Fusion 수준(15~20)입니다.</li>
+<li><strong>제안:</strong> FN 은 1~2개뿐입니다(장면 48 의 물체 20). FP 24~26 개는 대부분 그 장면에 없는 종류(7 pudding box, 8 gelatin box, 17 scissors, 21 foam brick)의 답이 다른 물체 자리에 올라간 것입니다(라벨 오류 11~14). 15 문서 §4-4 의 "YCB-V 에서는 없는 물체에 대한 그럴듯한 답이 검증을 통과한다"와 같은 현상이며, 원고 7.5절 한계에 적혀 있습니다.</li>
+</ul>
+<h2>4. 기존 방법을 원 설정과 다르게 돌린 부분 (논문에 밝혀야 함)</h2>
+<p><strong>FM-Fusion</strong> (<code>~/DeepLearning/baselines/FM-Fusion</code>, 스크립트 <code>fmfusion_prep.py</code>, <code>fmfusion_detect.py</code>, <code>fmfusion_export.py</code>)</p>
+<ol>
+<li>라벨: RAM 태그 대신 21개 고정 프롬프트를 쓰고, 닫힌 클래스를 YCB 21종으로 바꿨습니다. 라벨 융합 혼동 행렬은 단위행렬로 두었습니다. 이 프롬프트에 대한 혼동 통계가 없기 때문입니다.</li>
+<li>크기: voxel 0.02 → 0.01, sdf_trunc 0.04 → 0.02, shape_min_points 500 → 50 으로 바꿨습니다. 기본값으로는 YCB 물체가 모두 걸러져 지워집니다. <strong>민감도는 아직 보지 않았습니다</strong>(논문 값 0.015 등).</li>
+<li>입력: 같은 정답 궤적, YCB-V 의 K, 깊이 배율 10000.</li>
+<li>속도(3080): 검출은 검출한 프레임당 약 1.2초, 지도 생성은 CPU 로 장면당 19~109초입니다. 5090 에서 돌리려면 GroundingDINO CUDA 연산을 CUDA 12.8 이상으로 다시 빌드해야 합니다.</li>
+</ol>
+<p><strong>DualMap</strong> (<code>~/DeepLearning/baselines/DualMap</code>, 스크립트 <code>dualmap_prep.py</code>, <code>dualmap_run.sh</code>, <code>dualmap_export.py</code>)</p>
+<ol>
+<li>클래스 목록: 21개 YCB 프롬프트 + <code>unknown</code>(공개 목록과 같은 형식). rerun 시각화는 껐습니다. 나머지는 저장소 기본값입니다.</li>
+<li>입력: Replica 형식으로 변환했습니다(PNG → JPEG q95, 깊이 배율 10000, 같은 정답 궤적).</li>
+<li><strong>BGR 판:</strong> DualMap 은 RGB 배열을 넘기는데, ultralytics(YOLO-World, MobileSAM, FastSAM)는 배열을 BGR 로 읽습니다. <code>DUALMAP_ULTRALYTICS_BGR=1</code> 로 색 순서를 바로잡은 판을 따로 돌렸고, F1 이 0.091 에서 0.168 로 올랐습니다. 공개 코드 그대로인 판과 고친 판 중 무엇을 표에 넣을지 정해야 합니다. 공정성 면에서는 고친 판을 주 행으로 두고 각주에 공개 판을 적는 것을 권합니다.</li>
+<li>지도에 <code>unknown</code> 으로 남은 물체는 채점 전에 뺍니다(장면 59: 12개 중 YCB 4개).</li>
+</ol>
+<p><strong>제안 방법</strong> (<code>run_ours.py</code>, <code>gt_pose_stream.py</code>)</p>
+<ul>
+<li>실제 허브를 재생하되 ORB-SLAM3 대신 정답 궤적을 흘려 넣었고, 외부 파라미터는 단위 행렬입니다.</li>
+<li>설정은 <code>OBJPOSE_LIVE_MODE=hybrid</code>, <code>--cluster-occupancy 0.3</code>, <code>--verify-cluster-first</code> 입니다.</li>
+<li>ours_obs 점군은 실행 뒤 같은 종류의 가장 가까운 지도 물체(0.15 m 안)에 붙였습니다(검출 2,841 개 중 2,811 개).</li>
+<li>처리 속도는 0.42~1.86 Hz 였는데, 다른 프로세스와 GPU 를 같이 쓴 시간이 있어 믿을 수 없습니다.</li>
+</ul>
+<h2>5. 남은 일</h2>
+<ol>
+<li>DualMap 주 행으로 공개 판과 BGR 수정 판 중 어느 쪽을 쓸지 결정.</li>
+<li>FM-Fusion 크기 설정 민감도(voxel 0.015 등) 확인.</li>
+<li>3단계: ObChange-Kitchen 정답 생성과 6회 방문 연속 지도 실험(지도의 변화 반영 비교).</li>
+<li>RTX 5090 에서 최종 실행(FM-Fusion 은 GroundingDINO 를 다시 빌드해야 함). 처리 속도도 그때 같은 GPU 로 잽니다.</li>
+<li>원고 반영: 7장에 "객체 지도 비교" 절과 표 추가(이 문서 2절 표, 4절 각주).</li>
+</ol></main></body></html>

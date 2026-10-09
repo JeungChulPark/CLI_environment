@@ -51,8 +51,13 @@ a{color:var(--acc);word-break:break-all}
 </tr>
 <tr>
 <td>YCB-V 12영상 3회 반복 (원본 0.5 / 개선안 3 + 군집 먼저), 3080</td>
-<td><strong>진행 중</strong> (약 10:30 종료 예상)</td>
+<td><strong>중단</strong> (07:22, 4절)</td>
 <td><code>src/ycbv_live/results_3080/</code></td>
+</tr>
+<tr>
+<td>공간 객체 상태 지도 비교 (제안 / FM-Fusion / DualMap)</td>
+<td>2단계 완료</td>
+<td>20 문서</td>
 </tr>
 <tr>
 <td>260901 실제 영상 3회 반복, 3080</td>
@@ -213,7 +218,10 @@ a{color:var(--acc);word-break:break-all}
 <li>q* 3.86% 와 비교할 "측정 검출률 6~20%"의 출처를 다시 확인해야 합니다.</li>
 <li><code>objpose/README.md</code> 의 "치운 물체가 lost 되기까지 약 14 → 27프레임"은 위 계산(46~66프레임)과 다르므로 인용하지 않았습니다.</li>
 </ul>
-<h2>4. RTX 3080 반복 측정 (진행 중)</h2>
+<h2>4. RTX 3080 반복 측정 (중단)</h2>
+<blockquote>
+<p>07:22 중단. 4090 에서 이미 끝난 측정(15 §4-4)의 반복이라 새 정보가 없었습니다. "3080 으로 측정"은 10-09 에 시작한 공간 객체 상태 지도 비교 실험을 뜻했으며, 그 결과는 20 문서에 있습니다. 원본 0.5 1회차만 끝났습니다(인식 0.56 Hz, 처리 388 프레임, 등록 55/55, 잘못 올라간 항목 35, 지도 ADD-S 87.8).</p>
+</blockquote>
 <ul>
 <li>스크립트는 <code>src/ycbv_live/run_repeat_3080.sh</code> 입니다. 15 §4-4 와 같은 규약이고, 3회 × 2구성 × 12영상입니다.</li>
 <li>원본 0.5: <code>orig_live_core.py</code>, 판정 0.5, ViT-L. 태그 <code>l3080_orig05_r&lt;k&gt;</code>.</li>
@@ -247,7 +255,7 @@ a{color:var(--acc);word-break:break-all}
 </table></div>
 <h2>6. 남은 일</h2>
 <ol>
-<li>3080 측정 결과 정리 (4절).</li>
+<li>공간 객체 상태 지도 비교의 남은 일(20 문서 5절).</li>
 <li><code>template/</code> 복구: T7 디스크(<code>sudo mount -t drvfs D: /mnt/d</code>)에서 복사한 뒤 260901 3080 반복 측정.</li>
 <li>원고 [verify] 항목: 녹화 실행의 GPU, 7.2절 존재확률 값, 측정 검출률.</li>
 <li>개선안 3 인식기 구조 그림 (v0.2 그림 4 자리).</li>
