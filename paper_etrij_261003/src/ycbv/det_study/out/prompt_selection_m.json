@@ -1,0 +1,477 @@
+{
+ "002_master_chef_can": {
+  "paper": [
+   "blue coffee can",
+   99.5
+  ],
+  "best": [
+   "blue coffee can",
+   99.5
+  ],
+  "ensemble": [
+   "metal can with blue label",
+   "blue coffee can",
+   "coffee can"
+  ],
+  "all": {
+   "blue coffee can": 99.5,
+   "coffee can": 87.0,
+   "blue can": 86.5,
+   "metal can with blue label": 100.0,
+   "tin can": 81.5,
+   "blue cylinder": 36.0
+  }
+ },
+ "003_cracker_box": {
+  "paper": [
+   "red cracker box",
+   75.3
+  ],
+  "best": [
+   "red box",
+   96.0
+  ],
+  "ensemble": [
+   "red box",
+   "red cardboard box",
+   "cheez-it box"
+  ],
+  "all": {
+   "red cracker box": 75.3,
+   "cracker box": 83.3,
+   "red box": 96.0,
+   "cheez-it box": 89.3,
+   "red cardboard box": 92.0,
+   "snack box": 85.3
+  }
+ },
+ "004_sugar_box": {
+  "paper": [
+   "yellow sugar box",
+   56.8
+  ],
+  "best": [
+   "yellow box",
+   100.0
+  ],
+  "ensemble": [
+   "yellow box",
+   "yellow and white box",
+   "white box"
+  ],
+  "all": {
+   "yellow sugar box": 56.8,
+   "sugar box": 47.6,
+   "yellow box": 100.0,
+   "domino sugar box": 41.6,
+   "yellow and white box": 100.0,
+   "white box": 86.0
+  }
+ },
+ "005_tomato_soup_can": {
+  "paper": [
+   "tomato soup can",
+   51.3
+  ],
+  "best": [
+   "red can",
+   89.5
+  ],
+  "ensemble": [
+   "red can",
+   "soup can",
+   "small can"
+  ],
+  "all": {
+   "tomato soup can": 51.3,
+   "soup can": 87.0,
+   "red and white can": 0.7,
+   "campbell soup can": 56.0,
+   "small can": 83.0,
+   "red can": 89.5
+  }
+ },
+ "006_mustard_bottle": {
+  "paper": [
+   "yellow mustard bottle",
+   100.0
+  ],
+  "best": [
+   "yellow mustard bottle",
+   100.0
+  ],
+  "ensemble": [
+   "yellow mustard bottle",
+   "yellow bottle",
+   "yellow plastic bottle"
+  ],
+  "all": {
+   "yellow mustard bottle": 100.0,
+   "mustard bottle": 98.8,
+   "yellow bottle": 100.0,
+   "yellow plastic bottle": 100.0,
+   "condiment bottle": 98.8,
+   "mustard": 0.0
+  }
+ },
+ "007_tuna_fish_can": {
+  "paper": [
+   "small tuna can",
+   66.1
+  ],
+  "best": [
+   "tin can",
+   88.2
+  ],
+  "ensemble": [
+   "tin can",
+   "tuna can",
+   "small tuna can"
+  ],
+  "all": {
+   "small tuna can": 66.1,
+   "tuna can": 68.3,
+   "small flat can": 0.0,
+   "short metal can": 8.1,
+   "tin can": 88.2,
+   "can": 0.0
+  }
+ },
+ "008_pudding_box": {
+  "paper": [
+   "small brown box",
+   54.0
+  ],
+  "best": [
+   "small box",
+   96.0
+  ],
+  "ensemble": [
+   "small box",
+   "small brown box",
+   "brown box"
+  ],
+  "all": {
+   "small brown box": 54.0,
+   "pudding box": 0.0,
+   "brown box": 38.0,
+   "chocolate pudding box": 0.0,
+   "jell-o box": 0.0,
+   "small box": 96.0
+  }
+ },
+ "009_gelatin_box": {
+  "paper": [
+   "small red box",
+   100.0
+  ],
+  "best": [
+   "small red box",
+   100.0
+  ],
+  "ensemble": [
+   "small red box",
+   "red box",
+   "small box"
+  ],
+  "all": {
+   "small red box": 100.0,
+   "gelatin box": 0.0,
+   "red box": 96.0,
+   "jell-o box": 0.0,
+   "strawberry jello box": 0.0,
+   "small box": 90.0
+  }
+ },
+ "010_potted_meat_can": {
+  "paper": [
+   "small blue can",
+   55.9
+  ],
+  "best": [
+   "small tin",
+   85.0
+  ],
+  "ensemble": [
+   "small tin",
+   "rectangular can",
+   "small blue can"
+  ],
+  "all": {
+   "small blue can": 55.9,
+   "spam can": 0.0,
+   "potted meat can": 2.4,
+   "blue can": 55.9,
+   "rectangular can": 74.0,
+   "small tin": 85.0
+  }
+ },
+ "011_banana": {
+  "paper": [
+   "banana",
+   100.0
+  ],
+  "best": [
+   "banana",
+   100.0
+  ],
+  "ensemble": [
+   "banana",
+   "yellow banana",
+   "fruit"
+  ],
+  "all": {
+   "banana": 100.0,
+   "yellow banana": 100.0,
+   "fruit": 83.0
+  }
+ },
+ "019_pitcher_base": {
+  "paper": [
+   "blue plastic pitcher",
+   100.0
+  ],
+  "best": [
+   "blue plastic pitcher",
+   100.0
+  ],
+  "ensemble": [
+   "blue plastic pitcher",
+   "blue jug",
+   "jug"
+  ],
+  "all": {
+   "blue plastic pitcher": 100.0,
+   "pitcher": 51.5,
+   "blue jug": 100.0,
+   "blue pitcher": 52.9,
+   "water jug": 77.2,
+   "jug": 100.0
+  }
+ },
+ "021_bleach_cleanser": {
+  "paper": [
+   "white cleanser bottle",
+   91.5
+  ],
+  "best": [
+   "white bottle",
+   98.5
+  ],
+  "ensemble": [
+   "white bottle",
+   "white plastic bottle",
+   "bleach bottle"
+  ],
+  "all": {
+   "white cleanser bottle": 91.5,
+   "cleanser bottle": 83.0,
+   "bleach bottle": 94.0,
+   "white bottle": 98.5,
+   "white plastic bottle": 96.0,
+   "detergent bottle": 78.5
+  }
+ },
+ "024_bowl": {
+  "paper": [
+   "red bowl",
+   100.0
+  ],
+  "best": [
+   "red bowl",
+   100.0
+  ],
+  "ensemble": [
+   "red bowl",
+   "red plastic bowl",
+   "plastic bowl"
+  ],
+  "all": {
+   "red bowl": 100.0,
+   "bowl": 92.2,
+   "red plastic bowl": 100.0,
+   "dish": 20.8,
+   "plastic bowl": 100.0
+  }
+ },
+ "025_mug": {
+  "paper": [
+   "red mug",
+   100.0
+  ],
+  "best": [
+   "red mug",
+   100.0
+  ],
+  "ensemble": [
+   "red mug",
+   "mug",
+   "cup"
+  ],
+  "all": {
+   "red mug": 100.0,
+   "mug": 100.0,
+   "cup": 100.0,
+   "red cup": 100.0,
+   "coffee mug": 100.0
+  }
+ },
+ "035_power_drill": {
+  "paper": [
+   "power drill",
+   47.0
+  ],
+  "best": [
+   "cordless drill",
+   61.0
+  ],
+  "ensemble": [
+   "cordless drill",
+   "electric drill",
+   "power drill"
+  ],
+  "all": {
+   "power drill": 47.0,
+   "drill": 3.0,
+   "cordless drill": 61.0,
+   "red power tool": 41.0,
+   "electric drill": 50.5
+  }
+ },
+ "036_wood_block": {
+  "paper": [
+   "wooden block",
+   92.0
+  ],
+  "best": [
+   "wooden box",
+   100.0
+  ],
+  "ensemble": [
+   "wooden box",
+   "wooden block",
+   "wood block"
+  ],
+  "all": {
+   "wooden block": 92.0,
+   "wood block": 4.0,
+   "block of wood": 0.0,
+   "wooden box": 100.0,
+   "brown block": 0.0,
+   "plank": 0.0
+  }
+ },
+ "037_scissors": {
+  "paper": [
+   "scissors",
+   30.0
+  ],
+  "best": [
+   "scissors with handles",
+   32.0
+  ],
+  "ensemble": [
+   "scissors with handles",
+   "scissors",
+   "pair of scissors"
+  ],
+  "all": {
+   "scissors": 30.0,
+   "pair of scissors": 30.0,
+   "orange scissors": 30.0,
+   "scissors with handles": 32.0
+  }
+ },
+ "040_large_marker": {
+  "paper": [
+   "marker pen",
+   100.0
+  ],
+  "best": [
+   "marker pen",
+   100.0
+  ],
+  "ensemble": [
+   "marker pen",
+   "black marker",
+   "felt tip marker"
+  ],
+  "all": {
+   "marker pen": 100.0,
+   "marker": 99.0,
+   "black marker": 100.0,
+   "pen": 99.0,
+   "felt tip marker": 100.0,
+   "dry erase marker": 98.0
+  }
+ },
+ "051_large_clamp": {
+  "paper": [
+   "black spring clamp",
+   0.0
+  ],
+  "best": [
+   "small clamp",
+   8.0
+  ],
+  "ensemble": [
+   "small clamp",
+   "black spring clamp",
+   "clamp"
+  ],
+  "all": {
+   "black spring clamp": 0.0,
+   "clamp": 0.0,
+   "spring clamp": 0.0,
+   "black clamp": 0.0,
+   "plastic clamp": 0.0,
+   "small clamp": 8.0
+  }
+ },
+ "052_extra_large_clamp": {
+  "paper": [
+   "large black clamp",
+   56.0
+  ],
+  "best": [
+   "large black clamp",
+   56.0
+  ],
+  "ensemble": [
+   "large black clamp",
+   "big clamp",
+   "large clamp"
+  ],
+  "all": {
+   "large black clamp": 56.0,
+   "clamp": 0.0,
+   "large clamp": 21.0,
+   "black clamp": 2.0,
+   "spring clamp": 1.0,
+   "big clamp": 27.0
+  }
+ },
+ "061_foam_brick": {
+  "paper": [
+   "red brick",
+   0.0
+  ],
+  "best": [
+   "red rectangular block",
+   96.0
+  ],
+  "ensemble": [
+   "red rectangular block",
+   "red block",
+   "red foam block"
+  ],
+  "all": {
+   "red brick": 0.0,
+   "foam brick": 16.0,
+   "red foam block": 34.0,
+   "red block": 38.0,
+   "red sponge": 0.0,
+   "red rectangular block": 96.0
+  }
+ }
+}

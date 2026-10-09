@@ -1,0 +1,129 @@
+{
+ "L1": {
+  "images": 36,
+  "targets": 165,
+  "answers": 164,
+  "correct": 154,
+  "found_pct": 93.3,
+  "wrong_per_image": 0.278,
+  "time_median_ms": 798.0,
+  "stage_median_ms": {
+   "proposals": 31.0,
+   "descriptors": 97.0,
+   "matching": 21.0,
+   "pem": 637.0
+  }
+ },
+ "L4": {
+  "images": 36,
+  "targets": 165,
+  "answers": 97,
+  "correct": 96,
+  "found_pct": 58.2,
+  "wrong_per_image": 0.028,
+  "time_median_ms": 1211.0,
+  "stage_median_ms": {
+   "yolo": 13.0,
+   "ism": 78.0,
+   "pem": 1128.0
+  }
+ },
+ "L5": {
+  "images": 36,
+  "targets": 165,
+  "answers": 112,
+  "correct": 110,
+  "found_pct": 66.7,
+  "wrong_per_image": 0.056,
+  "time_median_ms": 1260.0,
+  "stage_median_ms": {
+   "yolo": 13.0,
+   "ism": 90.0,
+   "pem": 1127.0
+  }
+ },
+ "A": {
+  "images": 36,
+  "targets": 165,
+  "answers": 105,
+  "correct": 101,
+  "found_pct": 61.2,
+  "wrong_per_image": 0.111,
+  "time_median_ms": 1607.0,
+  "stage_median_ms": {
+   "yolo": 30.0,
+   "ism": 239.0,
+   "pem": 1346.0
+  }
+ },
+ "G1": {
+  "images": 36,
+  "targets": 165,
+  "answers": 112,
+  "correct": 109,
+  "found_pct": 66.1,
+  "wrong_per_image": 0.083,
+  "time_median_ms": 1443.0,
+  "stage_median_ms": {
+   "yolo": 13.0,
+   "ism": 78.0,
+   "pem": 1352.0
+  }
+ },
+ "G2": {
+  "images": 36,
+  "targets": 165,
+  "answers": 96,
+  "correct": 95,
+  "found_pct": 57.6,
+  "wrong_per_image": 0.028,
+  "time_median_ms": 1187.0,
+  "stage_median_ms": {
+   "yolo": 12.0,
+   "ism": 77.0,
+   "pem": 1102.0
+  }
+ },
+ "G3": {
+  "images": 36,
+  "targets": 165,
+  "answers": 102,
+  "correct": 100,
+  "found_pct": 60.6,
+  "wrong_per_image": 0.056,
+  "time_median_ms": 1341.0,
+  "stage_median_ms": {
+   "yolo": 13.0,
+   "ism": 80.0,
+   "pem": 1243.0
+  }
+ },
+ "G123": {
+  "images": 36,
+  "targets": 165,
+  "answers": 119,
+  "correct": 117,
+  "found_pct": 70.9,
+  "wrong_per_image": 0.056,
+  "time_median_ms": 1606.0,
+  "stage_median_ms": {
+   "yolo": 13.0,
+   "ism": 76.0,
+   "pem": 1511.0
+  }
+ },
+ "G123p": {
+  "images": 36,
+  "targets": 165,
+  "answers": 128,
+  "correct": 126,
+  "found_pct": 76.4,
+  "wrong_per_image": 0.056,
+  "time_median_ms": 1620.0,
+  "stage_median_ms": {
+   "yolo": 13.0,
+   "ism": 84.0,
+   "pem": 1514.0
+  }
+ }
+}

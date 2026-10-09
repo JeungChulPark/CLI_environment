@@ -1,0 +1,104 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box}
+body{margin:0;width:1000px;background:#fff;font-family:"Times New Roman","Liberation Serif",serif;color:#111;font-size:13.5px;line-height:1.25;padding:6px}
+img{display:block;object-fit:contain}
+.row{display:flex;gap:8px;margin-bottom:8px;align-items:stretch}
+.p{border:2px solid;border-radius:8px;overflow:hidden;background:#fff}
+.ph{color:#fff;font-weight:700;font-size:14.5px;padding:3px 8px}
+.in{padding:5px 7px}
+.m{border:1.3px solid;border-radius:5px;padding:2px 6px;margin-bottom:4px;background:#fff}
+.m > b{display:block;font-size:13.5px}
+.res{background:#fff3e6;border-radius:4px;padding:2px 6px;margin-top:4px;font-size:13px}
+.blue{border-color:#1F5FA8}.blue .ph{background:#1F5FA8}.blue .m{border-color:#1F5FA8}
+.green{border-color:#2E7D4F}.green .ph{background:#2E7D4F}.green .m{border-color:#2E7D4F}
+.org{border-color:#C8662A}.org .ph{background:#C8662A}
+.pur{border-color:#6B4FA0}.pur .ph{background:#6B4FA0}
+.navy{border-color:#18334B}.navy .ph{background:#18334B}
+.gray{border-color:#7a7a7a}.gray .ph{background:#595959}
+.sub{font-weight:700;color:#8A4410;margin-bottom:2px}
+ul{margin:2px 0 0;padding-left:15px} li{margin:1px 0}
+.cap{font-size:12px;color:#444;text-align:center;margin-top:2px}
+.k{border:2.2px solid #eb6834 !important;background:#fff4ee !important}
+.arr{display:flex;align-items:center;font-size:20px;font-weight:700;color:#555}
+</style></head><body>
+
+<div class="row">
+ <div class="p blue" style="width:300px"><div class="ph">Device 1 · SLAM computer</div><div class="in">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px"><div><b>ORB-SLAM3 or HDL-Graph-SLAM</b><br>all input frames tracked</div><img src="ov/traj.png" style="width:66px;height:40px"></div>
+  <div class="m"><b>Real-time tracking</b>2000 features; result-preserving speed-up; over-period frames 170 → 0</div>
+  <div class="m k"><b>Pose + reference keyframe</b>every frame: capture time, pose (or "no pose"), reference keyframe id and pose</div>
+  <div class="m k"><b>Keyframe-list re-send</b>every 1 s, after each map change, again +0.5 s and +3 s</div>
+  <div style="background:#6e6e6e;color:#fff;border-radius:5px;padding:3px 6px;text-align:center;margin-top:4px"><b>Wired LAN · asynchronous</b><br>poses, keyframes and results arrive late and out of order</div>
+ </div></div>
+ <div class="p gray" style="width:178px"><div class="ph">Mobile platform</div><div class="in" style="display:flex;flex-direction:column;align-items:center">
+  <img src="ov/robot.png" style="width:120px;height:206px">
+  <div style="font-size:12.5px;margin-top:3px;text-align:center"><b style="color:#1F5FA8">SLAM RGB-D</b> + LiDAR → Device 1<br><b style="color:#2E7D4F">Recognition RGB-D</b> → Device 2<br>hardware-synchronized exposure</div>
+ </div></div>
+ <div class="p green" style="flex:1"><div class="ph">Device 2 · zero-shot multi-object 6D pose estimation</div><div class="in" style="display:flex;gap:7px">
+  <div style="width:228px">
+   <div class="m"><b>① Text-prompt proposals</b>YOLO-World → MobileSAM</div>
+   <div class="m"><b>② Sequential gates</b>semantic → appearance → color → exclusive</div>
+   <div class="m"><b>③ 6D pose (SAM-6D PEM)</b>coarse 6000 → 300, fine</div>
+   <div class="m"><b>④ Pose verification</b>silhouette IoU, feature agreement, consensus</div>
+  </div>
+  <div style="flex:1">
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+    <div><img src="ov/rgb.png" style="width:100%;height:62px"><div class="cap">RGB</div></div><div><img src="ov/depth.png" style="width:100%;height:62px"><div class="cap">depth</div></div>
+    <div><img src="ov/seg.png" style="width:100%;height:62px"><div class="cap">verified masks</div></div><div><img src="ov/pose.png" style="width:100%;height:62px"><div class="cap">6D poses</div></div>
+   </div>
+   <div style="margin-top:4px;font-size:13px">Output: 6D pose per object + capture time<br>3–5 images/s; arrives 0.7–6.6 s after capture</div>
+  </div>
+ </div></div>
+</div>
+
+<div class="row">
+ <div class="p org" style="width:100%"><div class="ph">Device 2 · spatial object state map</div><div class="in" style="display:flex;gap:8px">
+  <div style="width:420px" class="m k">
+   <div class="sub">(a) Capture-time keyframe anchoring</div>
+   <div style="font-size:13px;margin-bottom:3px;white-space:nowrap">store T<sub>K←O</sub> = T<sub>M←K</sub>(t)<sup>−1</sup>T<sub>M←S</sub>(t) X T<sub>R←O</sub>; use T′<sub>M←K</sub>T<sub>K←O</sub></div>
+   <div style="display:flex;align-items:center;gap:4px">
+    <img src="ov/kfgraph.png" style="width:96px;height:70px"><img src="ov/mug.png" style="width:40px;height:34px"><span style="font-size:17px">→</span>
+    <img src="ov/pc_before.png" style="width:78px;height:70px"><span style="font-size:17px">→</span><img src="ov/pc_after.png" style="width:82px;height:70px">
+   </div>
+   <div style="font-size:12px;color:#444">object stored at the keyframe of its <b>capture</b> time; follows loop closure (before → after)</div>
+   <ul><li>pose interpolated at capture time; waits if the pose has not arrived (≤ 20 s)</li><li>culled keyframe → re-anchored to nearest keyframe</li></ul>
+   <div class="res">&gt; 10 cm when the map changed in flight: <b>30.8% → 1.5%</b></div>
+  </div>
+  <div style="width:250px" class="m">
+   <div class="sub">(b) Association and update</div>
+   <ul><li>same class within 0.15 m; <b>rotation excluded</b> (180° flips)</li><li>position: running mean</li><li>orientation: majority vote within 30°</li></ul>
+   <div class="res">off &gt; 20° / 50 mm: <b>23.9% → 9.3%</b></div>
+  </div>
+  <div style="flex:1" class="m">
+   <div class="sub">(c) Existence probability</div>
+   <svg width="300" height="78" viewBox="0 0 300 78" style="display:block;font-family:'Times New Roman','Liberation Serif',serif">
+    <defs><marker id="a" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7Z" fill="#8A4410"/></marker></defs>
+    <g font-size="12.5" text-anchor="middle" font-weight="700">
+     <rect x="1" y="28" width="58" height="22" rx="5" fill="#fff" stroke="#888"/><text x="30" y="43">tentative</text>
+     <rect x="70" y="28" width="52" height="22" rx="5" fill="#fff3e6" stroke="#C8662A" stroke-width="2"/><text x="96" y="43">active</text>
+     <rect x="133" y="28" width="46" height="22" rx="5" fill="#fff" stroke="#888"/><text x="156" y="43">lost</text>
+     <rect x="190" y="28" width="78" height="22" rx="5" fill="#eef2f8" stroke="#1F5FA8"/><text x="229" y="43">remembered</text>
+    </g>
+    <g stroke="#8A4410" stroke-width="1.4" fill="none"><line x1="59" y1="39" x2="68" y2="39" marker-end="url(#a)"/><line x1="122" y1="39" x2="131" y2="39" marker-end="url(#a)"/><line x1="179" y1="39" x2="188" y2="39" marker-end="url(#a)"/><path d="M229,28 Q229,8 160,8 Q96,8 96,26" marker-end="url(#a)"/></g>
+    <text x="160" y="20" font-size="11.5" text-anchor="middle" fill="#8A4410">re-detected → same id</text>
+    <text x="135" y="70" font-size="11.5" text-anchor="middle" fill="#555">misses counted only in view and within range</text>
+   </svg>
+   <ul><li>duplicate suppression (observation ratio ≥ 5)</li><li>removed objects deleted by depth check</li></ul>
+   <div class="res">re-associated: <b>72/74</b> (34 without map)</div>
+  </div>
+ </div></div>
+</div>
+
+<div class="row" style="margin-bottom:0">
+ <div class="p pur" style="width:470px"><div class="ph">Device 2 · latency-compensated display (15 Hz)</div><div class="in" style="display:flex;gap:7px">
+  <img src="ov/ycbv_pair.jpg" style="width:250px;height:124px">
+  <div><ul style="padding-left:14px"><li>buffered image at display time</li><li>all map objects projected with the display-time SLAM pose</li><li>display rate independent of recognition (3–5 Hz)</li></ul>
+  <div class="res" style="background:#ece6f6">on-screen match (SAM-6D results): <b>43.3% → 85.7%</b></div>
+  <div style="font-size:11.5px;color:#444;margin-top:2px">YCB-Video; green: ground truth, orange/blue: SAM-6D / ours</div></div>
+ </div></div>
+ <div class="p navy" style="flex:1"><div class="ph">Output · object map (bright indoor hall, 151 s run)</div><div class="in" style="display:flex;gap:8px;align-items:center">
+  <img src="ov/map_top.png" style="width:230px;height:150px">
+  <div style="font-size:13px"><ul style="padding-left:14px"><li>gray: camera path; dots: object positions (8 confirmed objects; objects on the same shelf overlap in this top view)</li><li>objects keep their ids across loop closures and long absences</li><li>same-class duplicates after the run: 0 (17 without map)</li></ul></div>
+ </div></div>
+</div>
+</body></html>

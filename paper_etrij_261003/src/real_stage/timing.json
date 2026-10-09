@@ -1,0 +1,21 @@
+{
+ "gpu": "NVIDIA GeForce RTX 3080 Ti Laptop GPU",
+ "reps": 10,
+ "statistic": "median",
+ "production_Sam6DCore.process_ms": {
+  "yolo": 13.5,
+  "ism": 84.0,
+  "pem": 1613.5,
+  "total": 1715.0
+ },
+ "stage_breakdown_ms": {
+  "yolo_world": 20.7,
+  "dinov2_batched_forward": 19.2,
+  "mobilesam": 45.7,
+  "gates(semantic+appearance+hsv+assignment, replay)": 21.1,
+  "pem(batch of 4 objects)": 1613.5
+ },
+ "n_yolo_unique_boxes": 7,
+ "n_accepted": 4,
+ "note": "production ms 'ism' = DINOv2 + MobileSAM + gates + cross-object NMS; 'pem' = PEM for all accepted objects in one batch (coarse 6000->300, verification, fine)."
+}

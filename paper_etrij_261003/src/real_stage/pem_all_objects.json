@@ -1,0 +1,371 @@
+{
+ "rows": [
+  {
+   "object": "Dinosaur",
+   "score": 0.85645,
+   "R": [
+    [
+     -0.721483,
+     -0.678165,
+     -0.139831
+    ],
+    [
+     -0.263637,
+     0.45577,
+     -0.850157
+    ],
+    [
+     0.640279,
+     -0.57651,
+     -0.507621
+    ]
+   ],
+   "t_mm": [
+    -783.8677,
+    -399.2389,
+    1940.3696
+   ],
+   "bbox": [
+    152,
+    147,
+    186,
+    179
+   ],
+   "rank_geo": 0,
+   "mask_iou": 0.831479,
+   "texture_score": 0.45173353,
+   "cluster_occupancy": 0.745455,
+   "ism": {
+    "best_yolo": 0.07529,
+    "best_sem": 0.41779,
+    "masked_appe": 0.69902,
+    "rank_appe": 0.69902,
+    "hsv_score": 0.26455,
+    "decision": "detected"
+   }
+  },
+  {
+   "object": "Febreze_high",
+   "score": 0.99951,
+   "R": [
+    [
+     0.292317,
+     0.956321,
+     0.000902
+    ],
+    [
+     0.263686,
+     -0.079694,
+     -0.96131
+    ],
+    [
+     -0.919249,
+     0.281245,
+     -0.275465
+    ]
+   ],
+   "t_mm": [
+    -2.6771,
+    41.7403,
+    447.2904
+   ],
+   "bbox": [
+    290,
+    189,
+    348,
+    368
+   ],
+   "rank_geo": 0,
+   "mask_iou": 0.875891,
+   "texture_score": 0.55537462,
+   "cluster_occupancy": 0.79668,
+   "ism": {
+    "best_yolo": 0.7786,
+    "best_sem": 0.62809,
+    "masked_appe": 0.73222,
+    "rank_appe": 0.73222,
+    "hsv_score": 0.45381,
+    "decision": "detected"
+   }
+  },
+  {
+   "object": "milk",
+   "score": 1.0,
+   "R": [
+    [
+     -0.987404,
+     0.155356,
+     0.029978
+    ],
+    [
+     0.019473,
+     0.307352,
+     -0.951397
+    ],
+    [
+     -0.157018,
+     -0.938829,
+     -0.306506
+    ]
+   ],
+   "t_mm": [
+    343.3629,
+    9.2489,
+    887.814
+   ],
+   "bbox": [
+    449,
+    145,
+    508,
+    254
+   ],
+   "rank_geo": 0,
+   "mask_iou": 0.866414,
+   "texture_score": 0.67650056,
+   "cluster_occupancy": 0.612,
+   "ism": {
+    "best_yolo": 0.20225,
+    "best_sem": 0.63761,
+    "masked_appe": 0.79304,
+    "rank_appe": 0.79304,
+    "hsv_score": 0.53801,
+    "decision": "detected"
+   }
+  },
+  {
+   "object": "saffron",
+   "score": 0.95361,
+   "R": [
+    [
+     0.988724,
+     -0.139374,
+     0.054757
+    ],
+    [
+     0.020804,
+     -0.234273,
+     -0.971949
+    ],
+    [
+     0.148292,
+     0.962129,
+     -0.228731
+    ]
+   ],
+   "t_mm": [
+    -748.4554,
+    -291.6545,
+    1304.1794
+   ],
+   "bbox": [
+    70,
+    108,
+    130,
+    203
+   ],
+   "rank_geo": 0,
+   "mask_iou": 0.893264,
+   "texture_score": 0.5176065,
+   "cluster_occupancy": 0.804545,
+   "ism": {
+    "best_yolo": 0.69007,
+    "best_sem": 0.71507,
+    "masked_appe": 0.76653,
+    "rank_appe": 0.76653,
+    "hsv_score": 0.67941,
+    "decision": "detected"
+   }
+  }
+ ],
+ "verify": {
+  "Dinosaur": {
+   "mask_survivors": 281,
+   "texture_survivors": 55,
+   "cluster_size": 41,
+   "cluster_occupancy": 0.745455,
+   "mask_iou": 0.899409,
+   "texture_score": 0.46480274,
+   "accepted": true,
+   "rejection_reason": null
+  },
+  "Febreze_high": {
+   "mask_survivors": 246,
+   "texture_survivors": 241,
+   "cluster_size": 192,
+   "cluster_occupancy": 0.79668,
+   "mask_iou": 0.903105,
+   "texture_score": 0.53223383,
+   "accepted": true,
+   "rejection_reason": null
+  },
+  "milk": {
+   "mask_survivors": 267,
+   "texture_survivors": 250,
+   "cluster_size": 153,
+   "cluster_occupancy": 0.612,
+   "mask_iou": 0.867944,
+   "texture_score": 0.6705389,
+   "accepted": true,
+   "rejection_reason": null
+  },
+  "saffron": {
+   "mask_survivors": 272,
+   "texture_survivors": 220,
+   "cluster_size": 177,
+   "cluster_occupancy": 0.804545,
+   "mask_iou": 0.886198,
+   "texture_score": 0.51299238,
+   "accepted": true,
+   "rejection_reason": null
+  }
+ },
+ "rejections": [],
+ "pem_input": [
+  {
+   "object": "Dinosaur",
+   "bbox": [
+    152,
+    147,
+    186,
+    179
+   ],
+   "mask_px": 727,
+   "valid_depth_px": 648,
+   "radius_inliers": 607,
+   "input_rejection": null,
+   "used_by_pem": true
+  },
+  {
+   "object": "Febreze_high",
+   "bbox": [
+    290,
+    189,
+    348,
+    368
+   ],
+   "mask_px": 7279,
+   "valid_depth_px": 4968,
+   "radius_inliers": 4596,
+   "input_rejection": null,
+   "used_by_pem": true
+  },
+  {
+   "object": "milk",
+   "bbox": [
+    449,
+    145,
+    508,
+    254
+   ],
+   "mask_px": 4773,
+   "valid_depth_px": 4530,
+   "radius_inliers": 4530,
+   "input_rejection": null,
+   "used_by_pem": true
+  },
+  {
+   "object": "saffron",
+   "bbox": [
+    70,
+    108,
+    130,
+    203
+   ],
+   "mask_px": 4186,
+   "valid_depth_px": 3971,
+   "radius_inliers": 3970,
+   "input_rejection": null,
+   "used_by_pem": true
+  }
+ ],
+ "model_points_vs_cad_extents_json_mm": {
+  "Dinosaur": {
+   "model_points_min": [
+    -70.72,
+    -78.81,
+    -81.33
+   ],
+   "model_points_max": [
+    70.45,
+    79.01,
+    80.86
+   ],
+   "cad_extents_min": [
+    -56.69,
+    -63.23,
+    -65.08
+   ],
+   "cad_extents_max": [
+    56.55,
+    63.38,
+    64.92
+   ]
+  },
+  "Febreze_high": {
+   "model_points_min": [
+    -48.37,
+    -29.82,
+    -97.56
+   ],
+   "model_points_max": [
+    51.65,
+    29.8,
+    100.38
+   ],
+   "cad_extents_min": [
+    -48.39,
+    -29.82,
+    -97.63
+   ],
+   "cad_extents_max": [
+    51.75,
+    29.82,
+    100.4
+   ]
+  },
+  "milk": {
+   "model_points_min": [
+    -37.87,
+    -37.87,
+    0.65
+   ],
+   "model_points_max": [
+    37.87,
+    37.87,
+    230.65
+   ],
+   "cad_extents_min": [
+    -36.88,
+    -36.88,
+    0.82
+   ],
+   "cad_extents_max": [
+    36.88,
+    36.88,
+    195.82
+   ]
+  },
+  "saffron": {
+   "model_points_min": [
+    -88.58,
+    -55.39,
+    -150.12
+   ],
+   "model_points_max": [
+    88.28,
+    55.73,
+    149.88
+   ],
+   "cad_extents_min": [
+    -88.59,
+    -55.44,
+    -150.12
+   ],
+   "cad_extents_max": [
+    88.3,
+    55.77,
+    149.88
+   ]
+  }
+ }
+}
