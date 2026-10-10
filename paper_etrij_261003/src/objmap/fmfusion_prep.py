@@ -27,7 +27,7 @@ from pathlib import Path
 
 import numpy as np
 
-from common import PROMPTS, YCB_NAMES, YCBV, seq_cameras, seq_name
+from common import YCBV, classes, seq_cameras, seq_name
 
 FMF_ROOT = Path(os.environ.get("FMFUSION_ROOT", Path.home() / "DeepLearning/baselines/FM-Fusion"))
 FMF_DATA = Path(os.environ.get("FMFUSION_DATA", Path.home() / "DeepLearning/Dataset/bop/ycbv_work/fmfusion"))
@@ -42,14 +42,20 @@ CHANGES = {
 
 
 def config_path(dataset):
-    """One FM-Fusion config per camera: YCB-V, or ObChange (both ObChange sequence kinds share it)."""
-    return FMF_DATA / ("config_ycbv.yaml" if dataset == "ycbv" else "config_obchange.yaml")
+    """One FM-Fusion config per camera: YCB-V, ObChange (both ObChange sequence kinds share it), or a real
+    recording (one per scene: the recordings have their own K)."""
+    return FMF_DATA / {"ycbv": "config_ycbv.yaml", "real": "config_real.yaml"}.get(dataset, "config_obchange.yaml")
 
 
-def write_config(K, dataset="ycbv", depth_scale_mm=0.1):
+def likelihood_path(dataset):
+    return FMF_DATA / ("likelihood_real.txt" if dataset == "real" else "likelihood_ycbv.txt")
+
+
+def write_config(K, dataset="ycbv", depth_scale_mm=0.1, path=None):
+    prompts, names = classes(dataset)
     vals = dict(CHANGES, camera_fx=K[0], camera_fy=K[4], camera_cx=K[2], camera_cy=K[5],
                 depth_scale=f"{1000.0 / depth_scale_mm:.1f}",
-                bayesian_semantic_likelihood=f'"{FMF_DATA / "likelihood_ycbv.txt"}"')
+                bayesian_semantic_likelihood=f'"{likelihood_path(dataset)}"')
     out = []
     for line in open(FMF_ROOT / "config/scannet.yaml"):
         key = line.split(":")[0].strip()
@@ -58,11 +64,11 @@ def write_config(K, dataset="ycbv", depth_scale_mm=0.1):
             comment = f"  # {dataset} (was" + line.split(":", 1)[1].split("#")[0].rstrip() + ")"
             line = f"{indent}{key}: {vals[key]}{comment}\n"
         out.append(line)
-    config_path(dataset).write_text("".join(out))
-    with open(FMF_DATA / "likelihood_ycbv.txt", "w") as f:
+    Path(path or config_path(dataset)).write_text("".join(out))
+    with open(likelihood_path(dataset), "w") as f:
         f.write("# openset_names closet_names likelihood_matrix\n")
-        f.write(",".join(PROMPTS) + "\n" + ",".join(YCB_NAMES) + "\n")
-        for row in np.eye(len(PROMPTS)):
+        f.write(",".join(prompts) + "\n" + ",".join(names) + "\n")
+        for row in np.eye(len(prompts)):
             f.write(",".join(f"{x:.6f}" for x in row) + "\n")
 
 
@@ -76,12 +82,14 @@ def prep_scene(scene, dataset="ycbv"):
     for sub in ("color", "depth", "pose"):
         (d / sub).mkdir(parents=True, exist_ok=True)
     pred = d / "prediction_no_augment"
-    if dataset == "ycbv" or d.parent / shared.parent.name == d:
+    if dataset in ("ycbv", "real") or d.parent / shared.parent.name == d:
         pred.mkdir(exist_ok=True)
     elif not pred.exists():
         shared.mkdir(parents=True, exist_ok=True)
         pred.symlink_to(shared)
     src = SEQ / f"{scene:06d}" if dataset == "ycbv" else Path(cams["seq_dir"])
+    if dataset == "real":   # one config per recording, next to the scan
+        write_config(cams["K"], dataset, cams["depth_scale_mm"], d / "config.yaml")
     for fr in cams["frames"]:
         i = fr["id"]
         name = f"frame-{i:06d}"
@@ -104,8 +112,9 @@ def main():
         K, n, dmm = prep_scene(s, a.dataset)
         Ks.add(tuple(K))
         print(f"{seq_name(a.dataset, s)}: {n} frames")
-    assert len(Ks) == 1, "scenes with different K need separate configs"
-    write_config(list(Ks.pop()), a.dataset, dmm)
+    if a.dataset != "real":
+        assert len(Ks) == 1, "scenes with different K need separate configs"
+        write_config(list(Ks.pop()), a.dataset, dmm)
     if a.dataset == "ycbv":
         (FMF_DATA / "splits").mkdir(exist_ok=True)
         (FMF_DATA / "splits/val.txt").write_text("".join(f"{s:06d}\n" for s in a.scenes))

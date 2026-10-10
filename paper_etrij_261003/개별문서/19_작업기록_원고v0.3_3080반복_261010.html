@@ -282,6 +282,11 @@ a{color:var(--acc);word-break:break-all}
 <td>22 문서</td>
 </tr>
 <tr>
+<td>공간 객체 상태 지도 비교 4단계 — 실 데이터 녹화 5개 (세 방법, 같은 Mac ORB-SLAM3 궤적)</td>
+<td>완료</td>
+<td>23 문서</td>
+</tr>
+<tr>
 <td><code>sam6d_realtime/template/</code> 복구</td>
 <td>완료 — T7 <code>D:\old\CLI_environment\sam6d_realtime\template</code> 에서 robocopy (2 GB)</td>
 <td>1절</td>
@@ -293,4 +298,5 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>FM-Fusion 수정:</strong> 지도 생성 프로그램의 "4,000프레임 초과 시 종료" 상한을 20,000 으로 올려 다시 빌드(<code>IntegrateInstanceMap.cpp</code>, 원본 <code>.orig_4000cap</code>).</li>
 <li><strong>실수 기록:</strong> 대기 조건의 문자열 오류로 기존 방법 실행이 42분 늦게 시작했고, <code>pgrep -f</code> 패턴이 제 셸 명령과 겹쳐 셸이 두 번 종료됐습니다(다시 실행해 확인).</li>
 <li><strong>260901:</strong> 개선안 3 의 2회차는 ORB-SLAM3 의 3.10 m 잘못된 루프 보정으로 버리고 다시 돌렸습니다.</li>
+<li><strong>실 데이터 비교(저녁):</strong> 녹화 2~5 는 Mac 과 함께 제안 방법을 새로 실시간 실행해 궤적을 얻었고(4회, 각 8/0·7/1), 녹화 1 은 22 문서의 2b회차 궤적을 썼습니다. 처음 만든 궤적은 지워진 키프레임을 기준으로 한 자세에 보정을 안 줬는데(녹화 1 의 26%, 근처 보정량 최대 11 cm), 기준 방법 실행 전에 가장 가까운 보정을 쓰도록 고쳐 다시 만들었습니다. 결과(40개 합계): 제안 39/1, FM-Fusion 33/174, DualMap 14/12 · 19/18.</li>
 </ul></main></body></html>

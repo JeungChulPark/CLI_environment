@@ -20,12 +20,16 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from common import PROMPTS, seq_cameras
+from common import classes, seq_cameras
 
 ROOT = Path(os.environ.get("DUALMAP_DATA", Path.home() / "DeepLearning/Dataset/bop/ycbv_work/dualmap"))
 
 
-PREFIX = {"ycbv": "ycbv", "obchange_kitchen": "obkv", "obchange_kitchen_all": "obka"}
+PREFIX = {"ycbv": "ycbv", "obchange_kitchen": "obkv", "obchange_kitchen_all": "obka", "real": "real"}
+
+
+def prompts_path(dataset):
+    return ROOT / ("real_prompts.txt" if dataset == "real" else "ycbv_prompts.txt")
 
 
 def scene_id(s, dataset="ycbv"):
@@ -45,7 +49,7 @@ def prep_scene(s, dataset="ycbv"):
             f = fr["id"]
             jpg = res / f"frame{k:06d}.jpg"
             if not jpg.exists():
-                if dataset == "ycbv":
+                if dataset in ("ycbv", "real"):
                     Image.open(seq / "rgb" / f"{f:06d}.png").convert("RGB").save(jpg, quality=95)
                 else:
                     c = cache / f"{f:06d}.jpg"
@@ -78,7 +82,7 @@ def main():
     ap.add_argument("--dataset", default="ycbv", help="see common.seq_cameras")
     a = ap.parse_args()
     ROOT.mkdir(parents=True, exist_ok=True)
-    (ROOT / "ycbv_prompts.txt").write_text("\n".join(PROMPTS + ["unknown"]) + "\n")
+    prompts_path(a.dataset).write_text("\n".join(list(classes(a.dataset)[0]) + ["unknown"]) + "\n")
     for s in a.scenes:
         print(s, prep_scene(s, a.dataset), "frames ->", ROOT / "Replica" / scene_id(s, a.dataset))
 

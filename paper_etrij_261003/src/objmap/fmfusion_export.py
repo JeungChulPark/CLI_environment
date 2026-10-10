@@ -43,7 +43,9 @@ def read_ply_xyz(path):
 
 
 def run(scene, dataset="ycbv"):
-    cmd = [str(EXE), "--config", str(config_path(dataset)),
+    scan = FMF_DATA / "scans" / seq_name(dataset, scene)
+    cfg = scan / "config.yaml" if dataset == "real" else config_path(dataset)
+    cmd = [str(EXE), "--config", str(cfg),
            "--root", str(FMF_DATA / "scans" / seq_name(dataset, scene)), "--output", str(RAW),
            "--prediction", "prediction_no_augment", "--frame_gap", "2", "--max_frames", "20000", "--verbose", "2"]
     t0 = time.time()

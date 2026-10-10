@@ -16,7 +16,7 @@ from pathlib import Path
 
 import numpy as np
 
-from common import OUT, YCB_NAMES, save_map
+from common import OUT, classes, save_map
 
 DM = Path(os.environ.get("DUALMAP_REPO", Path.home() / "DeepLearning/baselines/DualMap"))
 sys.path.insert(0, str(DM))
@@ -29,18 +29,19 @@ def main():
     ap.add_argument("--method", default="dualmap")
     ap.add_argument("--dataset", default="ycbv")
     a = ap.parse_args()
+    names = classes(a.dataset)[1]
     objs = []
     for f in sorted(glob.glob(f"{a.map}/*.pkl")):
         with open(f, "rb") as fh:
             o = pickle.load(fh)
         P = np.asarray(o.pcd.points)
         cid = o.class_id
-        label = YCB_NAMES[cid] if cid is not None and 0 <= cid < len(YCB_NAMES) else "unknown"
+        label = names[cid] if cid is not None and 0 <= cid < len(names) else "unknown"
         objs.append({"label": label, "points": P, "class_id": cid})
     out = OUT / a.method / a.dataset / f"{a.scene:06d}"
     save_map(out, objs, {"dataset": a.dataset, "scene": a.scene, "kind": a.method, "source": str(a.map)})
     named = sorted(o["label"] for o in objs if o["label"] != "unknown")
-    print(f"{a.scene:06d}: {len(objs)} objects ({len(named)} YCB, {len(objs) - len(named)} unknown) -> {out}")
+    print(f"{a.scene:06d}: {len(objs)} objects ({len(named)} named, {len(objs) - len(named)} unknown) -> {out}")
     print("   ", named)
 
 

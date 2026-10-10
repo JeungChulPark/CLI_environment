@@ -1,4 +1,5 @@
-"""FM-Fusion front end on YCB-V: GroundingDINO + SAM with the 21 fixed prompts.
+"""FM-Fusion front end on YCB-V: GroundingDINO + SAM with the 21 fixed prompts (real recordings: the 8
+prompts of common.REAL_PROMPTS).
 
 Follows run_ram_ground_sam.py of FM-Fusion's Grounded-SAM fork (github.com/glennliu/
 Grounded-Segment-Anything): GroundingDINO Swin-T OGC, box threshold 0.35, text threshold
@@ -35,12 +36,10 @@ from GroundingDINO.groundingdino.models import build_model  # noqa: E402
 from GroundingDINO.groundingdino.util.slconfig import SLConfig  # noqa: E402
 from GroundingDINO.groundingdino.util.utils import clean_state_dict, get_grouped_tokens  # noqa: E402
 from segment_anything import SamPredictor, build_sam  # noqa: E402
-from ycbv.paths import PROMPTS  # noqa: E402
-from common import seq_name  # noqa: E402
+from common import classes, seq_name  # noqa: E402
 
 FMF_DATA = Path(os.environ.get("FMFUSION_DATA", Path.home() / "DeepLearning/Dataset/bop/ycbv_work/fmfusion"))
 BOX_THR, TEXT_THR, NMS_IOU = 0.35, 0.25, 0.3
-CAPTION = ". ".join(PROMPTS) + "."
 DEVICE = "cuda"
 
 
@@ -90,8 +89,8 @@ def grounding(model, image, caption):
     return boxes, torch.Tensor(scores), maps
 
 
-def save(out_dir, name, boxes, maps, masks):
-    tags = ". ".join(PROMPTS)   # RAM-style tag string: no trailing '.', FM-Fusion splits on it
+def save(out_dir, name, boxes, maps, masks, prompts):
+    tags = ". ".join(prompts)   # RAM-style tag string: no trailing '.', FM-Fusion splits on it
     data = {"raw_tags": tags, "tags": tags, "mask": [{"value": 0, "label": "background"}]}
     for v, (m, b) in enumerate(zip(maps, boxes), 1):
         data["mask"].append({"value": v, "labels": m, "box": b.numpy().tolist()})
@@ -107,6 +106,8 @@ def run_scene(scene, dino, sam, gap, dataset="ycbv"):
     out = d / "prediction_no_augment"
     out.mkdir(exist_ok=True)   # an existing link (ObChange scans share one folder) is kept
     frames = sorted((d / "color").glob("frame-*.png"))
+    prompts = classes(dataset)[0]
+    caption = ". ".join(prompts) + "."
     times, n_det = [], 0
     for p in frames:
         name = p.stem
@@ -114,7 +115,7 @@ def run_scene(scene, dino, sam, gap, dataset="ycbv"):
             continue
         t0 = time.time()
         pil, image = load_image(p)
-        boxes, scores, maps = grounding(dino, image, CAPTION)
+        boxes, scores, maps = grounding(dino, image, caption)
         if boxes.size(0) == 0:
             times.append(time.time() - t0)
             continue
@@ -128,7 +129,7 @@ def run_scene(scene, dino, sam, gap, dataset="ycbv"):
         sam.set_image(rgb)
         tb = sam.transform.apply_boxes_torch(boxes, rgb.shape[:2]).to(DEVICE)
         masks, _, _ = sam.predict_torch(point_coords=None, point_labels=None, boxes=tb, multimask_output=False)
-        save(out, name, boxes, maps, masks)
+        save(out, name, boxes, maps, masks, prompts)
         times.append(time.time() - t0)
         n_det += len(maps)
     return len(times), n_det, float(np.mean(times)) if times else 0.0

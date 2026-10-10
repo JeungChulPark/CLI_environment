@@ -148,10 +148,34 @@ def load_map(map_dir, cad_if_no_points=True):
 # obchange_kitchen_all  visits 1..k in a row (the map at the end of k)  gt/obchange_kitchen/seq/all/ (visits <= k)
 # The ObChange sequences keep the global frame ids of the continuous sequence, so per-frame work
 # (detections) is shared between them.
+# real               real recording k of REAL_SESSIONS                 gt/real/<k:06d>/ (real_prep.py: frames + the
+#                                                                      corrected trajectory of a live run of ours)
+REAL_SESSIONS = {   # scene: (recording, live run of ours on this laptop whose ORB-SLAM3 trajectory all methods use)
+    1: ("260901_cbnu_bigeightcircle", "real5_260901_l3080_hyb3cf_r2b"),
+    2: ("260826_etri_eightcircle_dark", "real_260826_etri_eightcircle_dark_l3080_hyb3cf"),
+    3: ("260901_cbnu_eightcircle", "real_260901_cbnu_eightcircle_l3080_hyb3cf"),
+    4: ("260910_object", "real_260910_object_l3080_hyb3cf"),
+    5: ("260915_eightcircle", "real_260915_eightcircle_l3080_hyb3cf"),
+}
+# the 8 objects on the shelves of every real recording (realdata/eval_real.py OBJS) and the text prompts the
+# open-vocabulary detectors of the baselines get for them
+REAL_NAMES = ["saffron", "Febreze_high", "Dinosaur", "Bear", "milk", "choco_hazelnut_high", "Mugcup_high", "Sikhye_high"]
+# (looked at on 260901: Saffron is a 3 L fabric-softener jug, Dinosaur a green plush toy, choco_hazelnut a snack box)
+REAL_PROMPTS = ["yellow detergent bottle", "blue spray bottle", "green stuffed toy", "brown teddy bear",
+                "milk carton", "brown snack box", "pink mug", "gold drink can"]
+
+
+def classes(dataset):
+    """(prompts, names) of the target objects of a dataset; prompts[i] detects names[i]."""
+    if dataset == "real":
+        return REAL_PROMPTS, REAL_NAMES
+    return PROMPTS, YCB_NAMES
+
+
 def seq_cameras(dataset, scene):
     """cameras.json of a sequence: {K, width, height, depth_scale_mm, seq_dir, frames}."""
-    if dataset == "ycbv":
-        return json.load(open(GT_DIR / "ycbv" / f"{scene:06d}" / "cameras.json"))
+    if dataset in ("ycbv", "real"):
+        return json.load(open(GT_DIR / dataset / f"{scene:06d}" / "cameras.json"))
     cams = json.load(open(GT_DIR / "obchange_kitchen" / "seq" / "all" / "cameras.json"))
     if dataset == "obchange_kitchen":
         keep = lambda v: v == scene
