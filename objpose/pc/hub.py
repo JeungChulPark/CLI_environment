@@ -1062,6 +1062,12 @@ class Hub:
             self.memory.update()
             s["memory_landmarks"] = [{**{k: v for k, v in l.items() if k != "T_w_obj"}, "T_w_obj": mat16(l["T_w_obj"])}
                                      for l in self.memory.landmarks()]
+            if self.a.memory_snapshots:      # the memory as it stood at given capture times (visit ends)
+                s["memory_snapshots"] = [
+                    {"t_ns": int(t), "landmarks": [{**{k: v for k, v in l.items() if k != "T_w_obj"},
+                                                    "T_w_obj": mat16(l["T_w_obj"])}
+                                                   for l in self.memory.landmarks_at(int(t))]}
+                    for t in self.a.memory_snapshots.split(",")]
         s["slam_end"] = self.slam_end
         (self.out / "summary.json").write_text(json.dumps(s, indent=1, default=str))
         for f in self.logs.values():
@@ -1146,6 +1152,9 @@ def main():
                     help="verify.candidate_topk: pose verification checks only the K best of 300 candidates (0 = all)")
     ap.add_argument("--verify-cluster-first", action="store_true",
                     help="verify.cluster_first: group the 300 candidates by pose first and verify one representative per cluster (convergence-rejected objects fall back to the full check)")
+    ap.add_argument("--memory-snapshots", default="",
+                    help="comma-separated capture times (ns): summary.json also holds the object memory as it "
+                         "stood after the frames up to each time (e.g. the end of each visit of a revisit dataset)")
     ap.add_argument("--no-memory", action="store_true", help="show raw latest estimates instead of the object memory")
     ap.add_argument("--assoc-gate-m", type=float, default=0.15, help="object memory association distance gate")
     # The memory's existence filter penalises a landmark that is in view and not re-detected,

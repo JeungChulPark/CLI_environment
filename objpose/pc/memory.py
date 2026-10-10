@@ -153,10 +153,20 @@ class ObjectMemory:
             self.last_rebuild_ms = (time.perf_counter() - t0) * 1e3
 
     # ── output ───────────────────────────────────────────────────────────────
-    def landmarks(self):
+    def landmarks_at(self, t_ns: int):
+        """The landmarks as they stood once every frame captured at or before t_ns was fed:
+        replays that prefix on a private memory (same keyframe poses as now)."""
+        with self._lock:
+            frames = [f for f in self.frames if f.t_ns <= t_ns]
+        mem = self._new()
+        for i, f in enumerate(frames):
+            self._step(mem, f, i)
+        return self.landmarks(mem)
+
+    def landmarks(self, mem=None):
         with self._lock:
             out = []
-            for lm in self._mem.store.all_landmarks():
+            for lm in (mem or self._mem).store.all_landmarks():
                 out.append({
                     "object_id": lm.object_id, "name": lm.object_name,
                     "status": getattr(lm.status, "value", str(lm.status)),

@@ -20,19 +20,24 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from common import GT_DIR, PROMPTS
+from common import PROMPTS, seq_cameras
 
 ROOT = Path(os.environ.get("DUALMAP_DATA", Path.home() / "DeepLearning/Dataset/bop/ycbv_work/dualmap"))
 
 
-def scene_id(s):
-    return f"ycbv{s:06d}"   # the Replica loader strips '_' from scene ids
+PREFIX = {"ycbv": "ycbv", "obchange_kitchen": "obkv", "obchange_kitchen_all": "obka"}
 
 
-def prep_scene(s):
-    cams = json.load(open(GT_DIR / "ycbv" / f"{s:06d}" / "cameras.json"))
+def scene_id(s, dataset="ycbv"):
+    return f"{PREFIX[dataset]}{s:06d}"   # the Replica loader strips '_' from scene ids
+
+
+def prep_scene(s, dataset="ycbv"):
+    """ObChange sequences share one JPEG per global frame id (ROOT/jpg_cache) through symlinks."""
+    cams = seq_cameras(dataset, s)
     seq = Path(cams["seq_dir"])
-    out = ROOT / "Replica" / scene_id(s)
+    out = ROOT / "Replica" / scene_id(s, dataset)
+    cache = ROOT / "jpg_cache"
     res = out / "results"
     res.mkdir(parents=True, exist_ok=True)
     with open(out / "traj.txt", "w") as fh:
@@ -40,7 +45,14 @@ def prep_scene(s):
             f = fr["id"]
             jpg = res / f"frame{k:06d}.jpg"
             if not jpg.exists():
-                Image.open(seq / "rgb" / f"{f:06d}.png").convert("RGB").save(jpg, quality=95)
+                if dataset == "ycbv":
+                    Image.open(seq / "rgb" / f"{f:06d}.png").convert("RGB").save(jpg, quality=95)
+                else:
+                    c = cache / f"{f:06d}.jpg"
+                    if not c.exists():
+                        cache.mkdir(parents=True, exist_ok=True)
+                        Image.open(seq / "rgb" / f"{f:06d}.png").convert("RGB").save(c, quality=95)
+                    jpg.symlink_to(c)
             dep = res / f"depth{k:06d}.png"
             if not dep.exists():
                 dep.symlink_to(seq / "depth" / f"{f:06d}.png")
@@ -49,7 +61,7 @@ def prep_scene(s):
 
     K = cams["K"]
     (ROOT / "configs").mkdir(parents=True, exist_ok=True)
-    (ROOT / "configs" / f"{scene_id(s)}.yaml").write_text(
+    (ROOT / "configs" / f"{scene_id(s, dataset)}.yaml").write_text(
         "dataset_name: 'replica'\n"
         "camera_params:\n"
         f"  image_height: {cams['height']}\n"
@@ -63,11 +75,12 @@ def prep_scene(s):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--scenes", type=int, nargs="*", default=list(range(48, 60)))
+    ap.add_argument("--dataset", default="ycbv", help="see common.seq_cameras")
     a = ap.parse_args()
     ROOT.mkdir(parents=True, exist_ok=True)
     (ROOT / "ycbv_prompts.txt").write_text("\n".join(PROMPTS + ["unknown"]) + "\n")
     for s in a.scenes:
-        print(s, prep_scene(s), "frames ->", ROOT / "Replica" / scene_id(s))
+        print(s, prep_scene(s, a.dataset), "frames ->", ROOT / "Replica" / scene_id(s, a.dataset))
 
 
 if __name__ == "__main__":

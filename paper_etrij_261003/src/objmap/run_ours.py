@@ -30,7 +30,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from common import GT_DIR, OUT, YCBV, save_map, transform
+from common import OUT, save_map, seq_cameras, seq_name, transform
+import seq_bags
 
 HERE = Path(__file__).resolve().parent
 CODE = Path(os.environ.get("OBJPOSE_CODE", HERE.parents[2]))
@@ -46,22 +47,37 @@ RECOG_ENV = {"OBJPOSE_LIVE_MODE": "hybrid", "OBJPOSE_ORIG_DESC": "dinov2_vits14"
              "FASTSAM_X": str(Path.home() / "DeepLearning/Dataset/bop/ycbv_work/FastSAM-x.pt")}
 
 
-def run_scene(s, http_port, slam_port):
-    sc = f"{s:06d}"
+def snapshot_times(dataset, s):
+    """Capture time of the last frame of every visit (continuous ObChange run), on the replay clock."""
+    if dataset != "obchange_kitchen_all":
+        return []
+    fr = sorted(seq_cameras(dataset, s)["frames"], key=lambda f: f["id"])
+    last = {}
+    for n, f in enumerate(fr):
+        last[f["visit"]] = n
+    return [(v, T0 + int(round(n * 1e9 / 30))) for v, n in sorted(last.items())]
+
+
+def run_scene(s, http_port, slam_port, dataset="ycbv"):
+    sc = seq_name(dataset, s)
     out = RUNS / sc
     out.mkdir(parents=True, exist_ok=True)
+    bags = BAGS / f"ycbv_{s:06d}" if dataset == "ycbv" else seq_bags.write(dataset, s)
     env = {**os.environ, **RECOG_ENV}
     hub_cmd = [PY, "-u", str(CODE / "objpose/pc/hub.py"), "--slam", "orbslam3",
                "--extrinsic", str(CODE / "objpose/rt/ycbv/X_identity.json"),
-               "--sam-session", str(BAGS / f"ycbv_{sc}/SAM"), "--slam-session", str(BAGS / f"ycbv_{sc}/SLAM"),
+               "--sam-session", str(bags / "SAM"), "--slam-session", str(bags / "SLAM"),
                "--out", str(out), "--no-mac", "--ism-config", str(ISM), "--cluster-occupancy", "0.3",
                "--start-s", "0.0", "--tail-s", "4", "--recognizer", str(CODE / "paper_etrij_261003/src/realdata/live_cores.py"),
                "--verify-cluster-first", "--exit-when-done",
                "--http-port", str(http_port), "--slam-port", str(slam_port)]
+    snaps = snapshot_times(dataset, s)
+    if snaps:
+        hub_cmd += ["--memory-snapshots", ",".join(str(t) for _, t in snaps)]
     t = time.time()
     with open(RUNS / f"{sc}.log", "w") as lf:
         hub = subprocess.Popen(hub_cmd, stdout=lf, stderr=subprocess.STDOUT, env=env, start_new_session=True)
-        gt = subprocess.Popen([PY, "-u", str(HERE / "gt_pose_stream.py"), "--scene", str(s),
+        gt = subprocess.Popen([PY, "-u", str(HERE / "gt_pose_stream.py"), "--scene", str(s), "--dataset", dataset,
                                "--connect", f"127.0.0.1:{slam_port}"], stdout=lf, stderr=subprocess.STDOUT)
         try:
             hub.wait(timeout=3600)
@@ -94,18 +110,28 @@ def ism_mask(det, hw):
     return full
 
 
-def export_scene(s, step_px=2):
-    sc = f"{s:06d}"
-    run = RUNS / sc
+def export_scene(s, step_px=2, dataset="ycbv"):
+    """One run -> the two common-format maps. A continuous ObChange run (obchange_kitchen_all, scene = last
+    visit) is exported once per visit snapshot, to out/<form>/obchange_kitchen_all/<visit>."""
+    run = RUNS / seq_name(dataset, s)
     summ = json.load(open(run / "summary.json"))
-    lms = [l for l in summ.get("memory_landmarks", []) if l["status"] in SHOWN and not l["dup_suppressed"]]
-    cams = json.load(open(GT_DIR / "ycbv" / sc / "cameras.json"))
+    if dataset == "obchange_kitchen_all":
+        snaps = dict((t, v) for v, t in snapshot_times(dataset, s))
+        return [export_landmarks(run, summ, sn["landmarks"], dataset, snaps[int(sn["t_ns"])], s, step_px, sn["t_ns"])
+                for sn in summ["memory_snapshots"] if snaps[int(sn["t_ns"])] >= 2]
+    return export_landmarks(run, summ, summ.get("memory_landmarks", []), dataset, s, s, step_px)
+
+
+def export_landmarks(run, summ, landmarks, dataset, out_scene, run_scene_, step_px, until_ns=None):
+    lms = [l for l in landmarks if l["status"] in SHOWN and not l["dup_suppressed"]]
+    cams = seq_cameras(dataset, run_scene_)
     frames = sorted(cams["frames"], key=lambda f: f["id"])
     K = np.array(cams["K"]).reshape(3, 3)
-    seq = YCBV / "full" / "test" / sc
+    seq = Path(cams["seq_dir"])
+    sc = f"{out_scene:06d}"
 
     T_w = {l["object_id"]: np.array(l["T_w_obj"]).reshape(4, 4) for l in lms}
-    save_map(OUT / "ours_cad" / "ycbv" / sc,
+    save_map(OUT / "ours_cad" / dataset / sc,
              [{"label": l["name"], "T_w_o": T_w[l["object_id"]], "n_obs": l["n_obs"], "score": l["score"]}
               for l in lms], {"method": "ours", "form": "cad", "run": str(run)})
 
@@ -116,6 +142,8 @@ def export_scene(s, step_px=2):
         if not d.get("verify", {}).get("accepted", True) or "shape_mask" not in d.get("verify", {}):
             continue
         n_det += 1
+        if until_ns is not None and int(d["stamp_ns"]) > int(until_ns):
+            continue
         n = int(round((int(d["stamp_ns"]) - T0) * 30 / 1e9))
         if not 0 <= n < len(frames):
             continue
@@ -137,12 +165,12 @@ def export_scene(s, step_px=2):
         P = np.stack([(u - K[0, 2]) * z / K[0, 0], (v - K[1, 2]) * z / K[1, 1], z], 1)
         pts[oid].append(transform(T_wc, P))
         n_used += 1
-    save_map(OUT / "ours_obs" / "ycbv" / sc,
+    save_map(OUT / "ours_obs" / dataset / sc,
              [{"label": l["name"], "points": np.concatenate(pts[l["object_id"]]) if pts[l["object_id"]] else np.zeros((0, 3)),
                "n_obs": l["n_obs"]} for l in lms if pts[l["object_id"]]],
              {"method": "ours", "form": "observed", "run": str(run)})
     fr = [json.loads(x) for x in open(run / "sam6d_frames.jsonl")]
-    stat = {"scene": s, "landmarks": len(lms), "accepted_dets": n_det, "dets_assigned": n_used,
+    stat = {"dataset": dataset, "scene": out_scene, "landmarks": len(lms), "accepted_dets": n_det, "dets_assigned": n_used,
             "processed_frames": len(fr), "video_frames": len(frames),
             "sam6d_hz": summ.get("sam6d_frames", len(fr)) / max(summ.get("duration_s") or len(frames) / 30, 1e-9)}
     print(json.dumps(stat), flush=True)
@@ -153,16 +181,17 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd", choices=["run", "export"])
     ap.add_argument("--scenes", type=int, nargs="*", default=list(range(48, 60)))
+    ap.add_argument("--dataset", default="ycbv", help="ycbv | obchange_kitchen | obchange_kitchen_all (see common.seq_cameras)")
     ap.add_argument("--http-port", type=int, default=8775)
     ap.add_argument("--slam-port", type=int, default=17011)
     a = ap.parse_args()
     if a.cmd == "run":
         for s in a.scenes:
-            run_scene(s, a.http_port, a.slam_port)
+            run_scene(s, a.http_port, a.slam_port, a.dataset)
             time.sleep(5)     # let the ports and the shared-memory channel go
     else:
-        stats = [export_scene(s) for s in a.scenes]
-        json.dump(stats, open(OUT / "ours_runs" / "export_stats.json", "w"), indent=1)
+        stats = [export_scene(s, dataset=a.dataset) for s in a.scenes]
+        json.dump(stats, open(OUT / "ours_runs" / f"export_stats_{a.dataset}.json", "w"), indent=1)
 
 
 if __name__ == "__main__":

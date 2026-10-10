@@ -19,7 +19,7 @@ import json
 import socket
 import time
 
-from common import GT_DIR
+from common import seq_cameras
 
 T0 = 1_700_000_000_000_000_000      # make_bags.py
 
@@ -28,9 +28,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--scene", type=int, required=True)
     ap.add_argument("--connect", default="127.0.0.1:17001")
-    ap.add_argument("--gt", default="ycbv")
+    ap.add_argument("--dataset", default="ycbv", help="see common.seq_cameras")
     a = ap.parse_args()
-    cams = json.load(open(GT_DIR / a.gt / f"{a.scene:06d}" / "cameras.json"))
+    cams = seq_cameras(a.dataset, a.scene)
     frames = sorted(cams["frames"], key=lambda f: f["id"])
     stamps = [T0 + int(round(n * 1e9 / 30)) for n in range(len(frames))]
 
@@ -45,7 +45,7 @@ def main():
         raise SystemExit("hub not reachable")
     sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
     send = lambda o: sock.sendall((json.dumps(o) + "\n").encode())
-    send({"type": "hello", "source": "gt_poses", "features": None, "session": f"ycbv {a.scene:06d} GT",
+    send({"type": "hello", "source": "gt_poses", "features": None, "session": f"{a.dataset} {a.scene:06d} GT",
           "first_ns": stamps[0], "last_ns": stamps[-1], "n_frames": len(frames),
           "time_source": "frame", "time_domain": "make_bags synthetic 30 fps", "kf_updates": False})
     buf = b""

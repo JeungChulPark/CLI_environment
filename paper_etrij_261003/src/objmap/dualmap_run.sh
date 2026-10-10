@@ -11,6 +11,8 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 DM=${DUALMAP_REPO:-$HOME/DeepLearning/baselines/DualMap}
 DATA=${DUALMAP_DATA:-$HOME/DeepLearning/Dataset/bop/ycbv_work/dualmap}
 METHOD=${DUALMAP_METHOD:-dualmap}
+DATASET=${DUALMAP_DATASET:-ycbv}      # ycbv | obchange_kitchen | obchange_kitchen_all (see common.seq_cameras)
+case $DATASET in ycbv) PFX=ycbv;; obchange_kitchen) PFX=obkv;; obchange_kitchen_all) PFX=obka;; esac
 RUNS=${DUALMAP_RUNS:-$DM/output/ycbv_runs_$METHOD}
 LOCK=${GPU_LOCK:-}
 [ "$METHOD" = dualmap_bgr ] && export DUALMAP_ULTRALYTICS_BGR=1
@@ -19,12 +21,12 @@ source ~/anaconda3/etc/profile.d/conda.sh
 conda activate dualmap
 cd "$DM"
 for s in "$@"; do
-  sid=$(printf "ycbv%06d" "$s")
+  sid=$(printf "${PFX}%06d" "$s")
   echo "== $METHOD $sid $(date +%T)"
   ${LOCK:+flock $LOCK} timeout 1500 python -m applications.runner_dataset \
     dataset_name=ycbv scene_id=$sid dataset_path=$DATA/Replica \
     dataset_conf_path=$DATA/configs/$sid.yaml output_path=$RUNS/$sid \
     yolo.given_classes_path=$DATA/ycbv_prompts.txt use_rerun=False \
     > "$RUNS/$sid.log" 2>&1 || { echo "FAILED, see $RUNS/$sid.log"; tail -20 "$RUNS/$sid.log"; continue; }
-  python "$HERE/dualmap_export.py" --scene "$s" --method "$METHOD" --map "$RUNS/$sid/ycbv_$sid/map"
+  python "$HERE/dualmap_export.py" --scene "$s" --method "$METHOD" --dataset "$DATASET" --map "$RUNS/$sid/ycbv_$sid/map"
 done

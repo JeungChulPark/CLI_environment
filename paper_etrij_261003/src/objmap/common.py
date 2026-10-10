@@ -139,3 +139,30 @@ def load_map(map_dir, cad_if_no_points=True):
             o["T_w_o"] = np.array(r["T_w_o"])
         objs.append(o)
     return m, objs
+
+
+# ── sequences other than the YCB-V test videos ──────────────────────────────
+# dataset            scene k means                                     cameras.json
+# ycbv               YCB-V test video k                                gt/ycbv/<k:06d>/
+# obchange_kitchen   ObChange-Kitchen visit k alone                    gt/obchange_kitchen/seq/all/ (frames of visit k)
+# obchange_kitchen_all  visits 1..k in a row (the map at the end of k)  gt/obchange_kitchen/seq/all/ (visits <= k)
+# The ObChange sequences keep the global frame ids of the continuous sequence, so per-frame work
+# (detections) is shared between them.
+def seq_cameras(dataset, scene):
+    """cameras.json of a sequence: {K, width, height, depth_scale_mm, seq_dir, frames}."""
+    if dataset == "ycbv":
+        return json.load(open(GT_DIR / "ycbv" / f"{scene:06d}" / "cameras.json"))
+    cams = json.load(open(GT_DIR / "obchange_kitchen" / "seq" / "all" / "cameras.json"))
+    if dataset == "obchange_kitchen":
+        keep = lambda v: v == scene
+    elif dataset == "obchange_kitchen_all":
+        keep = lambda v: v <= scene
+    else:
+        raise ValueError(dataset)
+    cams["frames"] = [f for f in cams["frames"] if keep(f["visit"])]
+    return cams
+
+
+def seq_name(dataset, scene):
+    """Folder name of a sequence in the baselines' work dirs (YCB-V keeps its old names)."""
+    return f"{scene:06d}" if dataset == "ycbv" else f"{dataset}_{scene:06d}"

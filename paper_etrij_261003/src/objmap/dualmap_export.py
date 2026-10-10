@@ -27,6 +27,7 @@ def main():
     ap.add_argument("--scene", type=int, required=True)
     ap.add_argument("--map", required=True)
     ap.add_argument("--method", default="dualmap")
+    ap.add_argument("--dataset", default="ycbv")
     a = ap.parse_args()
     objs = []
     for f in sorted(glob.glob(f"{a.map}/*.pkl")):
@@ -36,8 +37,8 @@ def main():
         cid = o.class_id
         label = YCB_NAMES[cid] if cid is not None and 0 <= cid < len(YCB_NAMES) else "unknown"
         objs.append({"label": label, "points": P, "class_id": cid})
-    out = OUT / a.method / "ycbv" / f"{a.scene:06d}"
-    save_map(out, objs, {"dataset": "ycbv", "scene": a.scene, "kind": a.method, "source": str(a.map)})
+    out = OUT / a.method / a.dataset / f"{a.scene:06d}"
+    save_map(out, objs, {"dataset": a.dataset, "scene": a.scene, "kind": a.method, "source": str(a.map)})
     named = sorted(o["label"] for o in objs if o["label"] != "unknown")
     print(f"{a.scene:06d}: {len(objs)} objects ({len(named)} YCB, {len(objs) - len(named)} unknown) -> {out}")
     print("   ", named)

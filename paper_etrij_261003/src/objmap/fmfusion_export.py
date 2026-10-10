@@ -14,8 +14,8 @@ import time
 
 import numpy as np
 
-from common import OUT, save_map
-from fmfusion_prep import FMF_DATA, FMF_ROOT
+from common import OUT, save_map, seq_name
+from fmfusion_prep import FMF_DATA, FMF_ROOT, config_path
 
 EXE = FMF_ROOT / "build/src/IntegrateInstanceMap"
 RAW = FMF_DATA / "output"
@@ -42,18 +42,18 @@ def read_ply_xyz(path):
         return np.stack([v["x"], v["y"], v["z"]], 1).astype(np.float64)
 
 
-def run(scene):
-    cmd = [str(EXE), "--config", str(FMF_DATA / "config_ycbv.yaml"),
-           "--root", str(FMF_DATA / "scans" / f"{scene:06d}"), "--output", str(RAW),
-           "--prediction", "prediction_no_augment", "--frame_gap", "2", "--max_frames", "8000", "--verbose", "2"]
+def run(scene, dataset="ycbv"):
+    cmd = [str(EXE), "--config", str(config_path(dataset)),
+           "--root", str(FMF_DATA / "scans" / seq_name(dataset, scene)), "--output", str(RAW),
+           "--prediction", "prediction_no_augment", "--frame_gap", "2", "--max_frames", "20000", "--verbose", "2"]
     t0 = time.time()
-    log = open(RAW / f"{scene:06d}.log", "w")
+    log = open(RAW / f"{seq_name(dataset, scene)}.log", "w")
     subprocess.run(cmd, stdout=log, stderr=subprocess.STDOUT, check=True)
     return time.time() - t0
 
 
-def export(scene):
-    d = RAW / f"{scene:06d}"
+def export(scene, dataset="ycbv"):
+    d = RAW / seq_name(dataset, scene)
     objs = []
     for line in open(d / "instance_info.txt"):
         if line.startswith("#") or not line.strip():
@@ -62,8 +62,8 @@ def export(scene):
         label, score = f[1].rsplit("(", 1)
         objs.append({"label": label, "points": read_ply_xyz(d / f"{f[0]}.ply"),
                      "score": float(score.rstrip(")")), "n_obs": int(f[2])})
-    save_map(OUT / "fmfusion" / "ycbv" / f"{scene:06d}", objs,
-             {"method": "FM-Fusion", "dataset": "ycbv", "scene": scene})
+    save_map(OUT / "fmfusion" / dataset / f"{scene:06d}", objs,
+             {"method": "FM-Fusion", "dataset": dataset, "scene": scene})
     return len(objs)
 
 
@@ -71,17 +71,19 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--scenes", type=int, nargs="*", default=list(range(48, 60)))
     ap.add_argument("--skip-run", action="store_true")
+    ap.add_argument("--dataset", default="ycbv", help="see common.seq_cameras")
     a = ap.parse_args()
     RAW.mkdir(parents=True, exist_ok=True)
     log = RAW / "map_times.json"
     rec = json.load(open(log)) if log.exists() else {}
     for s in a.scenes:
         if not a.skip_run:
-            t = run(s)
-            rec[f"{s:06d}"] = {"seconds": t}
+            t = run(s, a.dataset)
+            rec[seq_name(a.dataset, s)] = {"seconds": t}
             json.dump(rec, open(log, "w"), indent=1)
-        n = export(s)
-        print(f"{s:06d}: {n} instances" + ("" if a.skip_run else f", mapping {rec[f'{s:06d}']['seconds']:.1f} s"))
+        n = export(s, a.dataset)
+        k = seq_name(a.dataset, s)
+        print(f"{k}: {n} instances" + ("" if a.skip_run else f", mapping {rec[k]['seconds']:.1f} s"))
 
 
 if __name__ == "__main__":

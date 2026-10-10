@@ -131,6 +131,21 @@ def prep(objs, do_clean=False):
     return out
 
 
+def drop_dont_care(preds, gm, gdir, near=0.02, share=0.5):
+    """Leave out predictions lying on GT objects that are not scored (map.json `excluded`, e.g. ObChange's
+    skillet and plate, which have no YCB-V CAD): a prediction with at least `share` of its points within
+    `near` m of such an object counts neither as TP nor as FP. The same rule for every method."""
+    ex = [np.load(gdir / e["points"]) for e in gm.get("excluded", []) if e.get("points")]
+    if not ex:
+        return preds, []
+    tree = cKDTree(np.concatenate(ex).astype(np.float64))
+    keep, dropped = [], []
+    for o in preds:
+        on = (tree.query(o["points"], distance_upper_bound=near)[0] < near).mean()
+        (dropped if on >= share else keep).append(o)
+    return keep, [o["oid"] for o in dropped]
+
+
 def prf(tp, fp, fn):
     p = tp / (tp + fp) if tp + fp else 0.0
     r = tp / (tp + fn) if tp + fn else 0.0
@@ -148,11 +163,11 @@ def in_view(center, T_wc, K, w, h):
 
 def evaluate_scene(pred_dir, scene, how="iou", thr=0.25, vox=0.01, vis=0.1, gt="ycbv_vis", do_clean=False):
     gdir = GT_DIR / gt / f"{scene:06d}"
-    _, gt = load_map(gdir)
+    gm, gt = load_map(gdir)
     gts = prep(gt)
     _, pr = load_map(pred_dir)
     n_raw = len(pr)
-    preds = prep(pr, do_clean)
+    preds, dont_care = drop_dont_care(prep(pr, do_clean), gm, gdir)
     pairs = match(preds, gts, how, thr, vox)
 
     per_obj = []
@@ -167,6 +182,7 @@ def evaluate_scene(pred_dir, scene, how="iou", thr=0.25, vox=0.01, vis=0.1, gt="
     paired_p = {i for i, _, _ in pairs}
     paired_g = {gts[j]["oid"] for _, j, _ in pairs}
     res = {"scene": scene, "n_pred_raw": n_raw, "n_pred_target": len(preds), "n_gt": len(gts),
+           "dont_care_labels": sorted(dont_care),
            "tp": tp, "fp": fp, "fn": fn, "precision": p, "recall": r, "f1": f1,
            "fp_labels": sorted(preds[k]["oid"] for k in range(len(preds)) if k not in paired_p),
            "fn_labels": sorted(g["oid"] for g in gts if g["oid"] not in paired_g),

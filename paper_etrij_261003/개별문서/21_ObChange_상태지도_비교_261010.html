@@ -1,0 +1,324 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>21. 공간 객체 상태 지도 비교 3단계 — ObChange-Kitchen 재방문 (제안 대 FM-Fusion 대 DualMap, 2026-10-10)</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1>21. 공간 객체 상태 지도 비교 3단계 — ObChange-Kitchen 재방문 (제안 대 FM-Fusion 대 DualMap, 2026-10-10)</h1>
+<blockquote>
+<p>20 문서(2단계, YCB-V 정적 장면)에 이어, 같은 부엌을 6번 방문하며 YCB 물체 배치가 바뀌는 ObChange-Kitchen 으로 세 방법의 객체 지도를 비교했습니다. 장비는 노트북 RTX 3080 Ti Laptop 이고 확인용입니다(최종 수치는 RTX 5090). 코드는 <code>src/objmap/</code>(obchange_gt.py, obchange_prep.py, seq_bags.py, obchange_score.py, run_obchange.sh, run_obchange_baselines.sh), 결과는 <code>src/objmap/out/obchange_scores.json</code> 입니다.</p>
+</blockquote>
+<h2>0. 요약</h2>
+<ul>
+<li><strong>방문별 지도(방문 하나만 보고 만든 지도), 중심 거리 5 cm 기준:</strong> 제안 F1 <strong>0.58~0.67</strong>, FM-Fusion 0.25, DualMap 0.18(공개 설정) / 0.35(BGR 수정). 정밀도도 제안이 가장 높습니다(0.46~0.54 대 0.16~0.31).</li>
+<li><strong>IoU 0.25 기준으로는 모두 낮습니다</strong>(제안 0.24~0.27, 나머지 0.00~0.06). 이 데이터는 로봇 머리 카메라가 0.6~1.4 m 떨어져 찍고, 카메라 궤적과 정답 점군 사이에 프레임마다 흔들림이 있어 작은 물체(캔, 머그)의 3D IoU 가 0.25 를 넘기 어렵습니다. 물체 자리는 맞게 찾았는지(중심 거리)로 읽는 것이 맞습니다.</li>
+<li><strong>연속 지도(방문 1→6 을 이어 지도 하나 유지):</strong> 세 방법 모두 <strong>치운 물체를 거의 지우지 못했습니다.</strong> 직전 방문 지도에 있던 물체 중 치운 것이 다음 방문 끝 지도에 그대로 남은 비율은 제안 10/11, FM-Fusion 9/10, DualMap 5/5·6/6 입니다. 새로 놓은 물체를 올린 비율은 제안이 가장 높습니다(15/21 대 9/21, 5~8/21).</li>
+<li><strong>제안 방법이 치운 물체를 못 지운 이유:</strong> 존재확률은 "보이는데 못 찾은 인식 프레임"마다 조금씩 내려가는데(원고 식 9, P_D = 0.08), 확정 물체가 놓침이 되려면 연속 46~66번이 필요합니다. 3080 에서 인식은 약 1.9 Hz 라 50초 방문 하나에 인식 프레임이 74~121장뿐이고, 그중 치운 자리가 화면에 든 프레임은 일부입니다. 남은 물체는 모두 "확정" 상태였고 카메라는 0.5~1.4 m 안(검출 거리 조건 1.5 m 안)이었습니다. 짧은 재방문에서는 변화를 늦게 반영하는 설정입니다.</li>
+</ul>
+<h2>1. 데이터와 정답</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>데이터</td>
+<td>ObChange (Langer, Patten, Vincze, Frontiers in Robotics and AI 2022; TU Wien, CC BY 4.0) 중 Kitchen 만 (6.5 GB). 다른 방과 다른 TU Wien 데이터는 쓰지 않음</td>
+</tr>
+<tr>
+<td>기록</td>
+<td>방문 6회, 각 rosbag 약 50초, HSR 로봇 머리 RGB-D(Xtion, 640×480, fx 538), 방문 1 은 물체 없음</td>
+</tr>
+<tr>
+<td>정답</td>
+<td>방문 2~6 의 YCB 물체 30개 중 YCB-V CAD 모델이 있는 <strong>25개</strong>(4+4+4+5+8). 프라이팬·접시 5개는 CAD 모델이 없어 제외</td>
+</tr>
+<tr>
+<td>정답 점군</td>
+<td>데이터셋의 점 단위 정답(재구성 점군에서 그 물체의 점들, 보인 표면만)</td>
+</tr>
+<tr>
+<td>정답 6D 자세</td>
+<td>데이터셋의 대략 자세는 원점이 물체 바닥이라 BOP CAD 모델과 45~147 mm 어긋남 → CAD 모델을 정답 점군에 ICP 로 다시 맞춤(잔차 중앙값 1.1~1.5 mm)</td>
+</tr>
+<tr>
+<td>카메라 궤적</td>
+<td>rosbag <code>/tf</code> 의 <code>map → … → head_rgbd_sensor_rgb_frame</code> 을 컬러 영상 시각으로 보간. 깊이를 지도 좌표에 올리면 정답 점군과 방향별 평균 0~6 mm 차이(같은 좌표계), 프레임별 흔들림 3~39 mm</td>
+</tr>
+<tr>
+<td>채점 제외</td>
+<td>프라이팬·접시 정답 점군에서 2 cm 안에 점의 절반 이상이 있는 예측은 TP·FP 어느 쪽으로도 세지 않음(세 방법 동일, 사용자 결정)</td>
+</tr>
+</tbody>
+</table></div>
+<h2>2. 실행 구성</h2>
+<p>세 방법 모두 같은 영상, 같은 카메라 궤적, 같은 YCB 21종 문구를 씁니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>지도 방식</th>
+<th>뜻</th>
+<th>제안</th>
+<th>FM-Fusion</th>
+<th>DualMap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>방문별</td>
+<td>방문 k 만 보고 만든 지도 (k = 2~6)</td>
+<td>실시간 재생 5회</td>
+<td>5회</td>
+<td>5회 × 2판</td>
+</tr>
+<tr>
+<td>연속</td>
+<td>방문 1~k 를 이어 본 지도, 방문 k 끝 상태</td>
+<td>방문 1~6 실시간 재생 1회 + 방문 끝마다 메모리 스냅숏(허브 <code>--memory-snapshots</code>)</td>
+<td>방문 1~k 누적 입력 5회</td>
+<td>방문 1~k 누적 입력 5회 × 2판</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>제안:</strong> 개선안 3 + 군집 먼저(합의 0.3), 존재확률 P_D 0.08 · c 0.01 · 검출 거리 1.5 m, 정답 궤적을 SLAM 대신 흘려 넣음. 인식 1.5~2.4 Hz(방문당 인식 프레임 74~121장). 형태는 CAD 모델을 놓은 지도(ours_cad)와 관측 점군 지도(ours_obs) 둘.</li>
+<li><strong>FM-Fusion:</strong> 검출(GroundingDINO + SAM)을 전체 8,974프레임 중 10프레임마다 한 번 실행(898장, 2D 상자 3,995개, 장당 2.1초), 지도 생성은 입력마다 따로.</li>
+<li><strong>DualMap:</strong> 저장소 기본 설정(구체 지도만). 공개 코드 그대로인 판과 BGR 입력 수정 판.</li>
+</ul>
+<h2>3. 결과</h2>
+<h3>3.1 방문별 지도 (방문 2~6 합계, 정답 25개)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>짝짓기</th>
+<th>TP</th>
+<th>FP</th>
+<th>FN</th>
+<th>P</th>
+<th>R</th>
+<th><strong>F1</strong></th>
+<th>mIoU</th>
+<th>SD (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>제안 ours_obs</strong> (<code>--clean</code>)</td>
+<td>중심 5 cm</td>
+<td>22</td>
+<td>19</td>
+<td>3</td>
+<td><strong>0.537</strong></td>
+<td><strong>0.880</strong></td>
+<td><strong>0.667</strong></td>
+<td>0.248</td>
+<td>8.3</td>
+</tr>
+<tr>
+<td><strong>제안 ours_cad</strong></td>
+<td>중심 5 cm</td>
+<td>19</td>
+<td>22</td>
+<td>6</td>
+<td>0.463</td>
+<td>0.760</td>
+<td>0.576</td>
+<td>0.231</td>
+<td>11.4</td>
+</tr>
+<tr>
+<td>FM-Fusion (<code>--clean</code>)</td>
+<td>중심 5 cm</td>
+<td>13</td>
+<td>67</td>
+<td>12</td>
+<td>0.163</td>
+<td>0.520</td>
+<td>0.248</td>
+<td>0.160</td>
+<td>11.9</td>
+</tr>
+<tr>
+<td>DualMap BGR 수정 (<code>--clean</code>)</td>
+<td>중심 5 cm</td>
+<td>10</td>
+<td>22</td>
+<td>15</td>
+<td>0.312</td>
+<td>0.400</td>
+<td>0.351</td>
+<td>0.088</td>
+<td>15.3</td>
+</tr>
+<tr>
+<td>DualMap 공개 (<code>--clean</code>)</td>
+<td>중심 5 cm</td>
+<td>5</td>
+<td>27</td>
+<td>20</td>
+<td>0.156</td>
+<td>0.200</td>
+<td>0.175</td>
+<td>0.082</td>
+<td>14.2</td>
+</tr>
+<tr>
+<td>제안 ours_cad</td>
+<td>IoU 0.25</td>
+<td>9</td>
+<td>32</td>
+<td>16</td>
+<td>0.220</td>
+<td>0.360</td>
+<td>0.273</td>
+<td>0.327</td>
+<td>8.8</td>
+</tr>
+<tr>
+<td>제안 ours_obs</td>
+<td>IoU 0.25</td>
+<td>8</td>
+<td>33</td>
+<td>17</td>
+<td>0.195</td>
+<td>0.320</td>
+<td>0.242</td>
+<td>0.371</td>
+<td>4.0</td>
+</tr>
+<tr>
+<td>FM-Fusion</td>
+<td>IoU 0.25</td>
+<td>3</td>
+<td>77</td>
+<td>22</td>
+<td>0.037</td>
+<td>0.120</td>
+<td>0.057</td>
+<td>0.352</td>
+<td>6.3</td>
+</tr>
+<tr>
+<td>DualMap 두 판</td>
+<td>IoU 0.25</td>
+<td>0</td>
+<td>32</td>
+<td>25</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>–</td>
+<td>–</td>
+</tr>
+</tbody>
+</table></div>
+<p>방문별 (TP / FP / FN, 중심 5 cm): 제안 ours_obs 3/5/1, 4/5/0, 4/3/0, 5/4/0, 6/2/2 · FM-Fusion 2/15/2, 3/14/1, 2/10/2, 3/13/2, 3/15/5 · DualMap BGR 1/4/3, 1/4/3, 2/5/2, 4/3/1, 2/6/6.</p>
+<h3>3.2 연속 지도 (방문 k 끝 지도, 중심 5 cm)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>TP</th>
+<th>FP</th>
+<th>FN</th>
+<th><strong>F1</strong></th>
+<th>치운 물체: 남음 / 직전 지도에 있었음 / 전체</th>
+<th>새 물체: 찾음 / 전체</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>제안 ours_obs</td>
+<td>18</td>
+<td>61</td>
+<td>7</td>
+<td><strong>0.346</strong></td>
+<td>10 / 11 / 17</td>
+<td><strong>15 / 21</strong></td>
+</tr>
+<tr>
+<td>제안 ours_cad</td>
+<td>18</td>
+<td>63</td>
+<td>7</td>
+<td>0.340</td>
+<td>10 / 11 / 17</td>
+<td>15 / 21</td>
+</tr>
+<tr>
+<td>FM-Fusion</td>
+<td>11</td>
+<td>100</td>
+<td>14</td>
+<td>0.162</td>
+<td>9 / 10 / 17</td>
+<td>9 / 21</td>
+</tr>
+<tr>
+<td>DualMap BGR 수정</td>
+<td>9</td>
+<td>61</td>
+<td>16</td>
+<td>0.189</td>
+<td>6 / 6 / 17</td>
+<td>8 / 21</td>
+</tr>
+<tr>
+<td>DualMap 공개</td>
+<td>6</td>
+<td>62</td>
+<td>19</td>
+<td>0.129</td>
+<td>5 / 5 / 17</td>
+<td>5 / 21</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>연속 지도의 F1 이 방문별보다 낮은 것은 이전 방문의 물체가 남아 FP 로 쌓이기 때문입니다(제안 FP 19 → 61).</li>
+<li><strong>치운 물체:</strong> 이전 방문(k−1)에 있었고 이번 방문(k)에는 같은 종류가 10 cm 안에 없는 물체(17개). "직전 지도에 있었음"은 방문 k−1 끝 지도에 같은 종류의 예측이 5 cm 안에 있던 것, "남음"은 방문 k 끝 지도에도 그대로 있는 것입니다. 지도에 올리지 못한 물체는 남을 수도 없으므로 "남음 / 직전 지도에 있었음"으로 읽습니다.</li>
+<li><strong>새 물체:</strong> 방문 k 에 있고 방문 k−1 에는 같은 자리에 없던 물체(21개) 중 방문 k 끝 지도에서 맞게 짝지어진 것.</li>
+</ul>
+<h2>4. 해석</h2>
+<ol>
+<li><strong>물체를 맞게 찾는 능력(방문별, 중심 5 cm):</strong> 제안이 재현율(0.76~0.88)과 정밀도(0.46~0.54) 모두 가장 높습니다. FM-Fusion 은 FP 가 많고(67, 대부분 배경과 이름 오류), DualMap 은 놓침이 많습니다. YCB-V(20 문서)와 같은 경향입니다.</li>
+<li><strong>3D 일치도:</strong> 이 데이터에서는 정답 점군 자체가 로봇 위치 추정과 ElasticFusion 재구성에서 나와 카메라 궤적과 프레임마다 cm 단위로 흔들립니다. 그래서 IoU 0.25 짝짓기는 세 방법 모두 거의 실패하고, mIoU·SD 도 YCB-V 보다 나쁩니다. 3D 일치도 비교는 YCB-V(20 문서) 결과를 주로 쓰는 것이 맞습니다.</li>
+<li><strong>상태 지도(치운 물체 반영):</strong> 이 실험의 핵심 질문인데, <strong>세 방법 모두 방문 한 번 안에 치운 물체를 지우지 못했습니다.</strong></li>
+<li>DualMap 기본 설정(구체 지도만)은 안정된 물체를 지우지 않는 구조라 예상대로입니다. FM-Fusion 은 상태 개념이 없습니다.</li>
+<li>제안 방법은 보이는데 못 찾으면 존재확률이 내려가는 구조지만, 지금 값(P_D 0.08, 유지 조건 q* 3.86%)은 "시야를 벗어난 물체를 잊지 않는 것"에 맞춰져 있어, 1.9 Hz 인식으로 50초 방문 안에 66번 연속 미검출을 채우지 못했습니다.</li>
+<li>새 물체를 올리는 쪽(15/21)은 제안이 가장 낫습니다. 후보 → 확정에 두 번의 검출만 필요하기 때문입니다.</li>
+<li><strong>논문에서의 쓰임:</strong> 방문별 중심 거리 결과(F1 0.67 대 0.25 / 0.35)는 2단계와 같은 주장을 다른 데이터로 뒷받침합니다. 연속 지도의 "치운 물체 반영"은 지금 설정으로는 우위를 주장할 수 없으므로, 아래 6절의 확인 없이 쓰지 않습니다.</li>
+</ol>
+<h2>5. 원 설정과 다르게 돌린 부분 (논문 각주용)</h2>
+<ul>
+<li><strong>공통:</strong> 같은 정답 카메라 궤적(데이터셋 <code>/tf</code>), YCB 21종 고정 문구, 프라이팬·접시 자리 예측 채점 제외.</li>
+<li><strong>FM-Fusion:</strong> 20 문서 4절의 변경(고정 문구, YCB 21종 클래스, 단위 우도 행렬, voxel 1 cm · sdf_trunc 2 cm · 최소 점 50)에 더해, <strong>지도 생성 프로그램의 "4,000프레임 초과 시 종료" 상한을 20,000 으로 올려 다시 빌드</strong>했습니다(<code>IntegrateInstanceMap.cpp</code> 71행, 원본은 <code>.orig_4000cap</code> 으로 보관). 방문 1~3 이상 누적 입력(4,484~8,974장)을 처리하기 위한 입력 크기 제한 변경이며 알고리즘은 같습니다. 깊이 배율 1000(mm).</li>
+<li><strong>DualMap:</strong> 20 문서 4절과 같음(클래스 목록 21종 + unknown, rerun 끔, 공개 판 / BGR 수정 판). 구체 지도만 쓰는 저장소 기본값(<code>run_local_mapping_only: True</code>)이라 추상 지도의 변화 반영은 동작하지 않았습니다.</li>
+<li><strong>제안:</strong> 정답 궤적을 SLAM 대신 흘려 넣음(키프레임 없음, 단위 외부 파라미터). 연속 지도는 방문 1~6 을 한 번 재생하고 방문 끝 시각마다 메모리 상태를 저장.</li>
+</ul>
+<h2>6. 남은 확인</h2>
+<ol>
+<li><strong>제안 방법 존재확률 민감도:</strong> 메모리는 기록된 인식 결과를 재생해 지도를 만드는 구조라, GPU 없이 P_D·c 만 바꿔 같은 입력으로 연속 지도를 다시 만들 수 있습니다. 9월 19일 전 값(0.15 / 0.03)이나 더 큰 P_D 에서 치운 물체가 지워지는지, 대신 시야 밖 물체를 잘못 지우지 않는지 확인.</li>
+<li><strong>DualMap 전체 설정(추상 지도 포함)</strong> 으로 연속 지도를 다시 돌려 변화 반영이 동작하는지 확인.</li>
+<li>RTX 5090 에서 최종 실행(인식 빈도가 오르면 방문당 인식 프레임이 늘어 제안 방법의 변화 반영도 달라질 수 있음).</li>
+</ol></main></body></html>

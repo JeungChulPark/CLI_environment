@@ -36,6 +36,7 @@ from GroundingDINO.groundingdino.util.slconfig import SLConfig  # noqa: E402
 from GroundingDINO.groundingdino.util.utils import clean_state_dict, get_grouped_tokens  # noqa: E402
 from segment_anything import SamPredictor, build_sam  # noqa: E402
 from ycbv.paths import PROMPTS  # noqa: E402
+from common import seq_name  # noqa: E402
 
 FMF_DATA = Path(os.environ.get("FMFUSION_DATA", Path.home() / "DeepLearning/Dataset/bop/ycbv_work/fmfusion"))
 BOX_THR, TEXT_THR, NMS_IOU = 0.35, 0.25, 0.3
@@ -101,10 +102,10 @@ def save(out_dir, name, boxes, maps, masks):
     cv2.imwrite(str(out_dir / f"{name}_mask.png"), img)
 
 
-def run_scene(scene, dino, sam, gap):
-    d = FMF_DATA / "scans" / f"{scene:06d}"
+def run_scene(scene, dino, sam, gap, dataset="ycbv"):
+    d = FMF_DATA / "scans" / seq_name(dataset, scene)
     out = d / "prediction_no_augment"
-    out.mkdir(exist_ok=True)
+    out.mkdir(exist_ok=True)   # an existing link (ObChange scans share one folder) is kept
     frames = sorted((d / "color").glob("frame-*.png"))
     times, n_det = [], 0
     for p in frames:
@@ -137,16 +138,17 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--scenes", type=int, nargs="*", default=list(range(48, 60)))
     ap.add_argument("--frame-gap", type=int, default=10)
+    ap.add_argument("--dataset", default="ycbv", help="see common.seq_cameras")
     a = ap.parse_args()
     dino = load_dino()
     sam = SamPredictor(build_sam(checkpoint=str(WEIGHTS / "sam_vit_h_4b8939.pth")).to(DEVICE))
     log = FMF_DATA / "detect_times.json"
     rec = json.load(open(log)) if log.exists() else {}
     for s in a.scenes:
-        n, nd, t = run_scene(s, dino, sam, a.frame_gap)
-        print(f"{s:06d}: {n} frames detected, {nd} boxes, {1000 * t:.0f} ms/frame", flush=True)
+        n, nd, t = run_scene(s, dino, sam, a.frame_gap, a.dataset)
+        print(f"{seq_name(a.dataset, s)}: {n} frames detected, {nd} boxes, {1000 * t:.0f} ms/frame", flush=True)
         if n:
-            rec[f"{s:06d}"] = {"frames": n, "boxes": nd, "ms_per_frame": 1000 * t}
+            rec[seq_name(a.dataset, s)] = {"frames": n, "boxes": nd, "ms_per_frame": 1000 * t}
             json.dump(rec, open(log, "w"), indent=1)
 
 
