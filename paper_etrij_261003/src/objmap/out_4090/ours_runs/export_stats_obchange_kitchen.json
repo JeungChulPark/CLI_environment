@@ -1,0 +1,52 @@
+[
+ {
+  "dataset": "obchange_kitchen",
+  "scene": 2,
+  "landmarks": 12,
+  "accepted_dets": 250,
+  "dets_assigned": 246,
+  "processed_frames": 287,
+  "video_frames": 1490,
+  "sam6d_hz": 5.821501014198783
+ },
+ {
+  "dataset": "obchange_kitchen",
+  "scene": 3,
+  "landmarks": 15,
+  "accepted_dets": 244,
+  "dets_assigned": 239,
+  "processed_frames": 258,
+  "video_frames": 1499,
+  "sam6d_hz": 5.201612903225806
+ },
+ {
+  "dataset": "obchange_kitchen",
+  "scene": 4,
+  "landmarks": 8,
+  "accepted_dets": 265,
+  "dets_assigned": 261,
+  "processed_frames": 293,
+  "video_frames": 1499,
+  "sam6d_hz": 5.907258064516129
+ },
+ {
+  "dataset": "obchange_kitchen",
+  "scene": 5,
+  "landmarks": 10,
+  "accepted_dets": 383,
+  "dets_assigned": 370,
+  "processed_frames": 248,
+  "video_frames": 1495,
+  "sam6d_hz": 5.01010101010101
+ },
+ {
+  "dataset": "obchange_kitchen",
+  "scene": 6,
+  "landmarks": 17,
+  "accepted_dets": 442,
+  "dets_assigned": 439,
+  "processed_frames": 229,
+  "video_frames": 1496,
+  "sam6d_hz": 4.626262626262626
+ }
+]
