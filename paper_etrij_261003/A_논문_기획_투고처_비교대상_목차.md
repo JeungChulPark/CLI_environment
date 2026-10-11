@@ -1,6 +1,6 @@
 # 논문 기획 투고처 비교대상 목차
 
-> 논문 기획과 원고 — 투고처 검토, 추가 실험 계획, 비교 대상 논문, 목차, 재시작 메모, 논문 비교표 설계(17), 원고 v0.3 · 상태 전이 수식 작업 기록(19). 개별 문서 7개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 원문은 `개별문서/` 폴더에 있습니다. 생성 2026-10-11.
+> 논문 기획과 원고 — 투고처 검토, 추가 실험 계획, 비교 대상 논문, 목차, 재시작 메모, 논문 비교표 설계(17), 원고 v0.3 · 상태 전이 수식 작업 기록(19), 다른 장비(4090 · 5090)에서 다시 돌리기 안내(26). 개별 문서 8개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 원문은 `개별문서/` 폴더에 있습니다. 생성 2026-10-11.
 
 **이 묶음의 장**
 
@@ -11,6 +11,7 @@
 - **08_재시작_메모** — 08. 재시작 메모 (2026-10-06 새벽, 사용자 요청으로 중단)
 - **17_논문_비교표_설계_개선안3_261008** — 17. 논문 비교표 설계 — SAM-6D 원논문의 비교 방식과 개선안 3 이 내세울 것 (2026-10-08)
 - **19_작업기록_원고v0.3_3080반복_261010** — 19. 작업 기록 — 원고 v0.3, 상태 전이 수식, RTX 3080 반복 측정 (2026-10-10)
+- **26_다른장비_재현_안내_4090_5090_261011** — 26. 다른 장비에서 다시 돌리기 — 주말(10-10 · 10-11) 노트북 실험을 RTX 4090 · RTX 5090(Blackwell)으로 (2026-10-11)
 
 [TOC]
 
@@ -895,3 +896,176 @@ SAM-6D 표 2 형식을 따르되 **정제(render-and-compare 자세 정제) 없�
 - **실수 기록:** 대기 조건의 문자열 오류로 기존 방법 실행이 42분 늦게 시작했고, `pgrep -f` 패턴이 제 셸 명령과 겹쳐 셸이 두 번 종료됐습니다(다시 실행해 확인).
 - **260901:** 개선안 3 의 2회차는 ORB-SLAM3 의 3.10 m 잘못된 루프 보정으로 버리고 다시 돌렸습니다.
 - **실 데이터 비교(저녁):** 녹화 2~5 는 Mac 과 함께 제안 방법을 새로 실시간 실행해 궤적을 얻었고(4회, 각 8/0·7/1), 녹화 1 은 22 문서의 2b회차 궤적을 썼습니다. 처음 만든 궤적은 지워진 키프레임을 기준으로 한 자세에 보정을 안 줬는데(녹화 1 의 26%, 근처 보정량 최대 11 cm), 기준 방법 실행 전에 가장 가까운 보정을 쓰도록 고쳐 다시 만들었습니다. 결과(40개 합계): 제안 39/1, FM-Fusion 33/174, DualMap 14/12 · 19/18.
+
+---
+
+<a id="26_다른장비_재현_안내_4090_5090_261011"></a>
+
+## 26. 다른 장비에서 다시 돌리기 — 주말(10-10 · 10-11) 노트북 실험을 RTX 4090 · RTX 5090(Blackwell)으로 (2026-10-11)
+
+> 이번 주말 노트북(RTX 3080 Ti Laptop)에서 한 실험을 4090 과 5090 장비에서 그대로 다시 돌리기 위한 안내입니다. 결과와 해석은 19~25 문서에 있고, 이 문서는 **무엇을 옮기고, 어디를 고치고, 어떤 순서로 돌리는지**만 다룹니다. 논문 최종 수치는 5090 으로 냅니다.
+
+### 0. 요약
+
+- 주말 실험은 다섯 가지입니다. YCB-V 실시간 3회 반복(19), 실데이터 260901 3회 반복(22), 객체 지도 비교 YCB-V(20) · ObChange-Kitchen(21) · 실데이터 5개(23·24).
+- 코드는 저장소 브랜치 `objpose/memory-dup-suppression`(0f32112 이후)에 모두 있습니다. 다만 다음은 저장소에 없어 따로 옮겨야 합니다.
+  - 기준 방법 코드: FM-Fusion, DualMap(로컬 수정 포함)
+  - 데이터: 녹화, YCB-V, ObChange
+  - 채점 기준 실행의 `summary.json`
+- 장비마다 고칠 곳은 세 군데입니다. `objpose/pc/catalog.py` 의 `DATASET_ROOT`, 스크립트 안의 `l3080` 태그, `realdata/logs_live_261011/*.sh` 의 `REPO=` 절대 경로입니다.
+- 실데이터 실시간 실행에는 Mac(ORB-SLAM3)이 필요합니다. YCB-V 실시간은 그 장비의 로컬 ORB-SLAM3 로 돕니다(15 문서와 같은 방식).
+- 권하는 순서는 4절과 같습니다. 짧은 것(실데이터 5개 실시간, 약 30분)부터 돌려 환경을 확인하고, 긴 것(YCB-V 반복, 기준 방법)은 뒤에 둡니다.
+
+### 1. 주말 실험과 문서
+
+| 실험 | 문서 | 실행 스크립트 (`paper_etrij_261003/src/` 기준) | 결과 파일 | 노트북 소요 |
+|---|---|---|---|---|
+| YCB-V 12영상 실시간, 원본 0.5 대 개선안 3 + 군집 먼저, 3회 | 19 §4 · §7 | `ycbv_live/run_repeat_3080.sh` | `ycbv_live/results_3080/` | 회당 두 구성 × 12영상(각 약 11분 분량 재생) |
+| 260901 실데이터, 같은 두 구성, 3회 | 22 | `realdata/run_real_repeat_3080.sh` (+ `_redo.sh`) | `realdata/results_real5_repeats_3080.json` | 실행당 약 6분 × 6 |
+| 객체 지도 비교 ① YCB-V | 20 | `objmap/ycbv_gt.py`, `run_ours.py`, `fmfusion_*.py`, `dualmap_run.sh`, `evaluate.py` | `objmap/out/` | — |
+| 객체 지도 비교 ② ObChange-Kitchen | 21 | `objmap/obchange_gt.py`, `obchange_prep.py`, `seq_bags.py`, `run_obchange.sh`, `run_obchange_baselines.sh` | `objmap/out/obchange_scores.json` | — |
+| 객체 지도 비교 ③ 실데이터 5개 | 23 | `objmap/run_real_compare.sh` | `objmap/out/real_scores.json` | — |
+| ③ 재실행: 제안 실시간 5개 + 기준 방법 | 24 | `realdata/logs_live_261011/run_live5_261011.sh`, `objmap/run_real_compare_261011.sh` | `realdata/results_real5_live_261011.json`, `objmap/out_261011/real_scores.json` | 실시간 약 27분(녹화 1 재실행 포함), 기준 방법 약 40분 |
+| 요약 | 25 | — | — | — |
+
+- 소요 시간은 24 문서 실행 기록(`progress.log`, `out_261011/real_logs/`)에서 가져왔습니다. 24 의 기준 방법 40분은 23 의 FM-Fusion 검출 결과를 재사용한 시간입니다. 새 장비에서는 검출을 처음부터 하므로 더 걸립니다(3080 기준 검출한 프레임당 약 1.2초, 20 문서).
+- 4090 에서 전에 돌린 기록은 09(한 장 평가, 경로) · 15(실시간 여섯 구성 · 반복, 체인 스크립트 `~/Dataset/bop/ycbv_work/run_combo_4090.sh`)에 있습니다.
+
+### 2. 준비
+
+#### 2.1 코드
+
+```bash
+cd <저장소>              # 4090 은 전에 CLI_env_paper(15 문서), old/CLI_environment(09 문서)를 썼음
+git fetch origin
+git checkout objpose/memory-dup-suppression
+git pull                 # 0f32112 이후
+```
+
+- **받기 전에 확인:** 10-10 에 4090 사본(CLI_env_paper)에서 pull 하다가, 커밋 0c539f3 의 자기 참조 링크 3개(`sam6d_realtime/template`, SAM-6D 두 `checkpoints`)가 git 에서 무시하던 로컬 폴더를 지운 일이 있습니다. 지금 브랜치 끝에서는 이 링크가 추적되지 않지만, 받기 전에 `git diff --stat HEAD..origin/objpose/memory-dup-suppression` 으로 링크·폴더 경로를 보고 세 폴더는 먼저 다른 곳에 복사해 둡니다.
+- `sam6d_realtime/`(검증 · 배정 대안 · 크기 관문 수정 포함)은 저장소에 들어 있습니다. 09 문서 4절에서 "노트북에만 있다"고 했던 `sam6d_core.py`, `yolo_ism_object_n.py`, `verify_config.py`, `Pose_Estimation_Model/utils/model_utils.py` 도 지금은 커밋돼 있어 따로 복사하지 않아도 됩니다.
+
+#### 2.2 장비마다 고칠 곳
+
+| 파일 | 지금 값 | 바꿀 것 |
+|---|---|---|
+| `objpose/pc/catalog.py` 28행 | `DATASET_ROOT = Path("/home/jucpark/DeepLearning/Dataset")` | 그 장비의 녹화 폴더(4090 은 `~/Dataset` 였음, 09 문서) |
+| `realdata/logs_live_261011/run_live5_261011.sh`, `run_rerun1.sh` | `REPO=/home/jucpark/DeepLearning/CLI_environment` | 그 장비의 저장소 경로 |
+| 위 두 스크립트, `ycbv_live/run_repeat_3080.sh`, `realdata/run_real_repeat_3080*.sh` | 실행 이름의 `l3080` | `l4090` / `l5090`. 파일을 `_4090.sh` · `_5090.sh` 로 복사해 고치고, 결과 폴더(`results_3080`)와 결과 JSON 이름도 같이 바꿉니다. 노트북 결과를 덮어쓰지 않기 위해서입니다 |
+| `realdata/run_real_repeat_3080.sh` 11행 | ObChange 기준 방법의 로그에 `BASELINES_DONE` 이 나올 때까지 기다림 | 혼자 돌릴 때는 그 `until` 줄을 지웁니다 |
+
+나머지 스크립트는 `$HOME/anaconda3/envs/<이름>/bin/python`, `$HOME/DeepLearning/Dataset/bop/ycbv_work`, `$HOME/DeepLearning/baselines` 를 씁니다. 장비의 폴더가 다르면 같은 이름으로 심볼릭 링크를 만들어 두는 편이 스크립트를 고치는 것보다 간단합니다. 예: `ln -s ~/Dataset ~/DeepLearning/Dataset`.
+
+#### 2.3 실행 환경 (conda)
+
+| 환경 | 쓰는 곳 | 비고 |
+|---|---|---|
+| `sam6d` | 허브, SAM-6D, 채점, 변환기 전부 | 노트북과 같은 패키지. 4090 에는 이미 있음(15 문서) |
+| `fmfusion` | `fmfusion_detect.py`(GroundingDINO + SAM) | 노트북 설치 기록 `~/DeepLearning/baselines/fmfusion_env.log` |
+| `dualmap` | `dualmap_run.sh` | DualMap 저장소 안내대로 설치 |
+
+**5090(Blackwell) 주의:**
+- PyTorch 는 CUDA 12.8 이상 빌드가 필요합니다. 그보다 낮은 빌드에는 Blackwell 용 커널이 없습니다.
+- 직접 빌드하는 CUDA 확장은 그 장비에서 다시 빌드해야 합니다.
+  - GroundingDINO 연산(20 문서 §4에 적어 둠)
+  - SAM-6D 자세 추정의 pointnet2 연산
+- 세 환경 모두 `python -c "import torch; print(torch.cuda.get_device_capability())"` 가 (12, 0)을 내는지 먼저 봅니다.
+- 5090 에서는 아직 한 번도 돌려 보지 않았습니다. 위 목록은 예상입니다.
+
+#### 2.4 기준 방법 코드 (저장소 밖)
+
+`~/DeepLearning/baselines/` 아래에 둡니다. 노트북에서 폴더째 복사해도 되고, 새로 받아 아래 수정만 넣어도 됩니다.
+
+| 폴더 | 원 저장소 · 커밋 | 로컬 수정 |
+|---|---|---|
+| `FM-Fusion` | HKUST-Aerial-Robotics/FM-Fusion, b82d64c | `src/IntegrateInstanceMap.cpp` 71행 프레임 상한 4000 → 20000(ObChange 연속 입력 8,974프레임 때문). 수정 후 다시 빌드. Open3D 0.18 devel 패키지(`open3d-devel-linux-x86_64-cxx11-abi-0.18.0`)를 씀 |
+| `gsam_fmfusion` | glennliu/Grounded-Segment-Anything, 9cab32b | 없음 |
+| `DualMap` | Eku127/DualMap, 157235e | `utils/object_detector.py`: ① `DUALMAP_ULTRALYTICS_BGR=1` 일 때 ultralytics 에 BGR 사본을 넘김(BGR 수정 판), ② YOLO 검출이 없는 프레임을 건너뜀(없으면 멈춤). 노트북에서 `git -C ~/DeepLearning/baselines/DualMap diff > dualmap.patch` 로 떠서 `git apply` |
+| `weights` | — | `groundingdino_swint_ogc.pth`, `sam_vit_h_4b8939.pth` (3.1 GB) |
+
+#### 2.5 데이터
+
+| 데이터 | 노트북 위치 | 크기 | 쓰는 실험 |
+|---|---|---|---|
+| 실데이터 녹화 5개 | `~/DeepLearning/Dataset/<녹화>` (260826_etri_eightcircle_dark, 260901_cbnu_bigeightcircle, 260901_cbnu_eightcircle, 260910_object, 260915_eightcircle) | 24 + 25 + 12 + 15 + 15 GB | 22, 23, 24 |
+| 실데이터 인식 카메라 프레임 | `~/DeepLearning/Dataset/real_work` | 15 GB | 23, 24 (`real_prep.py` 로 다시 만들 수 있음) |
+| YCB-V 재생용 녹화 | `~/DeepLearning/Dataset/bop/ycbv_bags` | 30 GB | 19 |
+| YCB-V 원본 · 자산 | `~/DeepLearning/Dataset/bop/ycbv`, `ycbv_work/{templates, features, core_repo, ycbv_objects.yaml, predefined_poses, FastSAM-x.pt}` | 자산 약 2 GB | 19, 20, 전부(인식기) |
+| ObChange-Kitchen | `~/DeepLearning/Dataset/obchange` (Kitchen, bags, work) | 49 GB (zip 포함) | 21 |
+| 기준 방법 작업 폴더 | `ycbv_work/fmfusion`, `ycbv_work/dualmap` | 1.2 GB, 7.6 GB | 준비 스크립트(`*_prep.py`)가 다시 만듦. 옮기지 않아도 됨 |
+
+- **채점 기준 위치:** 실데이터 채점(`eval_real.py`, `real_score.py`)은 물체 8개의 기준 위치를 이전 실행들의 `summary.json` 중앙값으로 잡습니다. 그 실행 폴더는 git 에 없으므로 `summary.json` 만 옮깁니다(합계 0.5 MB 이하).
+
+  ```bash
+  cd ~/DeepLearning/CLI_environment
+  tar czf ref_summaries.tgz $(for r in live_260901_cbnu_bigeightcircle_orbslam3 live_260901_cbnu_bigeightcircle_orbslam3_f2000_dev01 \
+      live_260901_cbnu_bigeightcircle_orbslam3_f2000_dup5 live_260915_eightcircle_orbslam3 live_260826_etri_dark_orbslam3_f2000 \
+      live_260826_etri_dark_orbslam3_f2000_dup live_260826_etri_dark_orbslam3_f2000_dup5 live_260901_cbnu_eightcircle_orbslam3 \
+      ref_260910_object_ours; do echo objpose/output/$r/summary.json; done)
+  # 새 장비의 저장소 최상위에서: tar xzf ref_summaries.tgz
+  ```
+
+  - 260901_cbnu_bigeightcircle 은 기준 실행이 없어도 `results_real_laptop.json`(커밋됨)의 기준 위치를 씁니다.
+  - 나머지 4개 녹화는 이 파일이 없으면 채점이 멈춥니다.
+- **노트북 결과와 같은 자리에서 비교하려면** 23 · 24 의 제안 방법 실행 폴더도 옮깁니다. 대상은 `objpose/output/real_*_l3080_hyb3cf`, `real5_260901_l3080_hyb3cf_r2b`, `live_261011_*`, 합계 210 MB 입니다. 수치만 비교한다면 커밋된 결과 JSON 으로 충분합니다.
+
+#### 2.6 Mac 연결 (실데이터 실시간)
+
+- 새 장비에서 `ssh mac` 이 비밀번호 없이 돼야 합니다. 스크립트는 `BatchMode=yes` 로 붙고 Mac 에 `caffeinate` 를 겁니다.
+  - 그 장비의 공개키를 Mac `~/.ssh/authorized_keys` 에 넣습니다.
+  - `~/.ssh/config` 에 `Host mac` 을 적습니다. Mac 주소는 10-11 기준 192.168.219.108 이고 자주 바뀝니다.
+- Mac 은 `~/Documents/DefenseMeta/Dataset` 의 같은 녹화를 재생합니다(`catalog.MAC_ROOT`). Mac 쪽은 바꿀 것이 없습니다.
+- 허브가 Mac 에 SSH 역방향 터널(`-R 17001:127.0.0.1:17001`)을 열고 SLAM 결과를 받습니다(실행 폴더의 `mac_command.txt`). SSH 만 되면 따로 열 포트는 없습니다.
+- 한 번에 한 장비만 Mac 을 씁니다. 4090 과 5090 이 같은 Mac 에 동시에 붙으면 SLAM 재생이 섞입니다.
+
+### 3. 실행 전 확인 (10분)
+
+```bash
+cd <저장소>/paper_etrij_261003/src
+PY=$HOME/anaconda3/envs/sam6d/bin/python
+$PY -c "import torch;print(torch.__version__, torch.cuda.get_device_name(0), torch.cuda.get_device_capability())"
+(cd ../../objpose/pc && $PY -c "import catalog as c;print(' '.join(c.hub_args('260915_eightcircle','orbslam3',2000)))")   # 경로가 그 장비 것인지
+timeout 8 ssh -o BatchMode=yes mac true && echo MAC_OK
+```
+
+가장 짧은 녹화(260915_eightcircle, 128초)를 하나 돌려 보고 `summary written` 이 나오는지 확인한 뒤 4절로 넘어갑니다.
+
+### 4. 실행 순서
+
+| 순서 | 실험 | 명령 (고친 사본 기준) | 결과를 비교할 노트북 값 |
+|---|---|---|---|
+| 1 | 실데이터 5개 실시간 (24 와 같은 설정) | `bash realdata/logs_live_261011/run_live5_<장비>.sh` | 24 §2: 40 / 0 (23 은 39 / 1) |
+| 2 | 위 궤적으로 기준 방법 재실행 | `run_real_compare_261011.sh` 사본(태그·`OBJMAP_REAL_RUNS` 를 새 실행 이름으로) | 24 §4: FMF 33 / 176, DM 13 / 15, DM BGR 20 / 21 |
+| 3 | 260901 3회 반복 | `bash realdata/run_real_repeat_<장비>.sh` | 22, 4090 값은 15 §4-3 |
+| 4 | YCB-V 12영상 3회 반복 | `bash ycbv_live/run_repeat_<장비>.sh 1 2 3` | 19 §4 · §7, 4090 값은 15 §4-4 |
+| 5 | 객체 지도 비교 YCB-V | 20 문서 1절 순서(`ycbv_gt.py` → `run_ours.py` → FM-Fusion → DualMap → `evaluate.py`) | 20 §2 |
+| 6 | 객체 지도 비교 ObChange-Kitchen | `obchange_gt.py` → `obchange_prep.py` → `seq_bags.py` → `run_obchange.sh` → `run_obchange_baselines.sh` | 21 §3 |
+
+- **순서 1 과 2:** 1 이 끝나야 2 를 돌릴 수 있습니다(2 가 1 의 궤적을 씀).
+  - 2 의 스크립트는 23 의 FM-Fusion 검출 결과를 하드 링크해 재사용합니다. 새 장비에는 그 폴더가 없으므로 링크 없이 전부 다시 검출합니다(스크립트는 그대로 돎).
+  - 앞부분의 `cp -n $W/dualmap/real_prompts*_colors.json` 은 새 장비에서 "파일 없음"으로 실패하지만 무시해도 됩니다. DualMap 이 첫 실행에서 클래스별 표시 색 파일을 새로 만들고, 결과에는 영향이 없습니다.
+- **GPU 를 같이 쓰지 않기:**
+  - 제안 방법은 실시간 재생이라 GPU 를 같이 쓰면 인식 빈도가 떨어지고 결과가 바뀝니다.
+  - 실시간 실험(1, 3, 4)은 혼자 돌립니다.
+  - FM-Fusion 과 DualMap 은 오프라인이라 서로 겹쳐도 됩니다(스크립트가 둘을 동시에 돌림).
+- **루프 오결합:**
+  - 실데이터에서 ORB-SLAM3 가 수 m 짜리 잘못된 루프 보정을 낼 때가 있습니다. 노트북에서는 22 의 3.10 m, 24 녹화 1 의 296.7 cm 가 그랬습니다.
+  - 각 실행 끝 줄의 `max correction so far` 를 봅니다. 지금까지 3 m 안팎의 보정이 나온 실행은 버리고 다시 돌렸습니다(15 §2 의 3.6 m, 22 의 3.10 m, 24 의 296.7 cm). 다른 실행은 6~53 cm 였습니다.
+  - 녹화 4(260910_object)는 2 m 넘는 보정이 두 번 모두 나왔고(23 문서 235.5 cm, 24 문서 216.0 cm), 버리지 않고 그대로 썼습니다. 같은 기준을 따릅니다.
+
+### 5. 결과 정리
+
+- 실행 이름에 장비 태그(`l4090`, `l5090`)를 넣었으면 `eval_real.py --runs ...`, `real_score.py`, `eval_live.py`, `eval_penalized.py` 는 그대로 씁니다.
+- 노트북 결과와 나란히 놓을 때는 24 의 `realdata/compare_live_261011.py` 를 복사해 실행 목록만 바꾸면 됩니다.
+- 문서는 장비별로 새 번호(27~)를 붙여 `개별문서/` 에 쓰고, `build_bundles.py` 의 해당 묶음에 넣은 뒤 `python3 build_bundles.py` 로 묶음을 다시 만듭니다.
+  - 실시간 → C
+  - 객체 지도 비교 → F
+  - 장비 확인 실행 → B 또는 C
+
+### 6. 장비 사이 차이로 결과가 달라질 수 있는 곳
+
+| 항목 | 영향 |
+|---|---|
+| 인식 빈도 | 실시간 재생이라 GPU 가 빠르면 처리하는 프레임이 늘어납니다. 22 §3 에서 개선안 3 + 군집 먼저는 3080(3.48 Hz)과 4090(7.54 Hz) 모두 6번 다 8 / 0 이었고, 원본 0.5 는 0.87 대 3.63 Hz 로 차이가 커서 결과도 흔들렸습니다. 5090 에서는 원본 쪽 수치가 가장 많이 바뀔 것으로 봅니다 |
+| ORB-SLAM3 | Mac 쪽은 같습니다. YCB-V 실시간의 로컬 ORB-SLAM3(`~/objpose_pc/run_slam.sh`)는 장비마다 빌드가 따로라 궤적이 조금 다를 수 있습니다 |
+| 기준 방법 | 오프라인이라 장비와 무관해야 합니다. 다만 GroundingDINO · SAM 의 반정밀도 연산 차이로 상자가 약간 달라질 수 있습니다 |
