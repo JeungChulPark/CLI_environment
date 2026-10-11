@@ -300,10 +300,30 @@ a{color:var(--acc);word-break:break-all}
 <h3 id="41">4.1 조건</h3>
 <ul>
 <li>23 문서 <code>run_real_compare.sh</code> 와 같은 단계와 설정(검출 10프레임마다, FM-Fusion 융합 2프레임마다, DualMap 공개 설정 · BGR 수정)으로, 카메라 궤적만 오늘 실행의 것(녹화 1 은 <code>_r2</code>)으로 바꿨습니다. <code>objmap/common.py</code> 에 <code>OBJMAP_REAL_RUNS</code> 환경 변수를 넣어 녹화별 실행을 바꾸고, 결과·중간 파일은 <code>out_261011/</code>, <code>gt_261011/</code>, <code>ycbv_work/fmfusion_261011</code>, <code>ycbv_work/dualmap_261011</code> 에 따로 두어 23 문서 결과는 그대로입니다.</li>
-<li>인식 카메라 프레임은 녹화에만 달린 것이라 23 문서와 같습니다(녹화별 6,363 / 8,541 / 3,054 / 4,774 / 3,848 장). 궤적은 23 문서와 같은 방식으로 실행 끝의 키프레임 자세로 루프 보정을 반영했습니다.</li>
-<li><strong>FM-Fusion 2D 검출은 같은 프레임의 23 문서 결과를 다시 썼습니다.</strong> 영상과 글 문구가 같으므로 결과도 같습니다. 검출 대상 2,661장 중 2,597장을 그대로 쓰고, 23 문서에서 상자가 없어 파일이 남지 않은 64장만 다시 검출했으며 이번에도 상자가 0개였습니다. 궤적이 들어가는 융합은 처음부터 다시 했습니다. DualMap 은 검출이 내부 단계라 전부 다시 돌렸습니다.</li>
-<li>15:35 에 시작해 16:08 에 끝났습니다. FM-Fusion 융합은 DualMap 과 GPU 를 함께 써서 23 문서보다 1.4~1.9배 오래 걸렸습니다(녹화별 98~464 초).</li>
+<li><strong>DualMap 의 두 판.</strong> 표에 DualMap 을 두 줄로 싣습니다.</li>
 </ul>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>판</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>공개 설정</strong></td>
+<td>GitHub 공개 코드와 저장소 기본 설정 그대로입니다(데이터셋 모드, 구체 지도(local/concrete map)만). 아래의 RGB/BGR 문제도 고치지 않았습니다. 재현성 기준입니다.</td>
+</tr>
+<tr>
+<td><strong>BGR 수정</strong></td>
+<td>공개 설정에서 색 순서 하나만 고쳤습니다. DualMap 은 YOLO-World(검출) · MobileSAM · FastSAM(분할)에 영상을 RGB 순서로 넘기는데, 이 모델들을 돌리는 ultralytics 는 넘겨받은 배열을 BGR 로 읽습니다. 그래서 공개 코드 그대로면 빨강과 파랑이 뒤바뀐 영상으로 물체를 찾고, "blue spray bottle"·"pink mug" 처럼 색이 들어간 글 문구에 불리합니다. 이 판은 세 모델에 BGR 순서로 바꾼 영상을 넘깁니다(<code>DUALMAP_METHOD=dualmap_bgr</code> → <code>DUALMAP_ULTRALYTICS_BGR=1</code>). 기준 방법에 공정하게 하려는 것입니다.</td>
+</tr>
+</tbody>
+</table></div>
+<p>두 판 모두 공개 코드에서 바꾼 것은 세 가지뿐입니다. 찾을 물체 목록을 실데이터 8개 물체의 글 문구 + <code>unknown</code> 으로 바꿨고, 실행 화면 표시(<code>use_rerun</code>)를 껐으며(결과와 무관), 우리 영상과 궤적을 DualMap 이 읽는 Replica 형식으로 바꿔 넣었습니다(<code>dualmap_prep.py</code>). 설명은 <code>src/objmap/dualmap_run.sh</code> 머리말에도 있습니다. BGR 수정으로 결과가 조금 좋아지지만(실데이터 23 문서 26.9 → 32.8%, YCB-V F1 0.091 → 0.168, 20 문서), 제안 방법과의 차이는 큽니다.
+- 인식 카메라 프레임은 녹화에만 달린 것이라 23 문서와 같습니다(녹화별 6,363 / 8,541 / 3,054 / 4,774 / 3,848 장). 궤적은 23 문서와 같은 방식으로 실행 끝의 키프레임 자세로 루프 보정을 반영했습니다.
+- <strong>FM-Fusion 2D 검출은 같은 프레임의 23 문서 결과를 다시 썼습니다.</strong> 영상과 글 문구가 같으므로 결과도 같습니다. 검출 대상 2,661장 중 2,597장을 그대로 쓰고, 23 문서에서 상자가 없어 파일이 남지 않은 64장만 다시 검출했으며 이번에도 상자가 0개였습니다. 궤적이 들어가는 융합은 처음부터 다시 했습니다. DualMap 은 검출이 내부 단계라 전부 다시 돌렸습니다.
+- 15:35 에 시작해 16:08 에 끝났습니다. FM-Fusion 융합은 DualMap 과 GPU 를 함께 써서 23 문서보다 1.4~1.9배 오래 걸렸습니다(녹화별 98~464 초).</p>
 <h3 id="42-23">4.2 녹화별 최종 지도 (맞음 / 잘못, 23 문서 → 오늘)</h3>
 <div class="tw"><table>
 <thead>

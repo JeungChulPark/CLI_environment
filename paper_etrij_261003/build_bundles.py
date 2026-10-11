@@ -25,6 +25,11 @@ def shift(md):
 def html(md, title):
     body = markdown.markdown(md, extensions=["tables", "fenced_code", "toc"]).replace("<table>", '<div class="tw"><table>').replace("</table>", "</table></div>")
     return f'<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{title}</title><style>{CSS}</style></head><body><main>{body}</main></body></html>'
+# 요약 문서: 개별 문서를 이어 붙이지 않고 직접 쓴 요약(.md). html 만 여기서 만들고 색인에 올린다.
+SUMMARIES = [
+ ("F_공간객체상태지도를_위한_논문_비교", "공간 객체 상태 지도 논문 비교 — 제안 대 FM-Fusion 대 DualMap, YCB-V · ObChange-Kitchen · 실 데이터, 원고 v0.3 상태 전이 수식",
+  ["19_작업기록_원고v0.3_3080반복_261010", "20_객체지도_비교_FMFusion_DualMap_261010", "21_ObChange_상태지도_비교_261010", "22_260901_반복측정_3080_261010", "23_실데이터_객체지도_비교_261010"]),
+]
 rows = []
 for key, desc, parts in BUNDLES:
     chapters, toc = [], []
@@ -38,11 +43,15 @@ for key, desc, parts in BUNDLES:
     md = head + "".join(chapters)
     (ROOT / f"{key}.md").write_text(md); (ROOT / f"{key}.html").write_text(html(md, key.replace("_", " ")))
     rows.append((key, desc, parts)); print("built", key, len(md.splitlines()), "lines")
+for key, desc, parts in SUMMARIES:
+    md = (ROOT / f"{key}.md").read_text()
+    (ROOT / f"{key}.html").write_text(html(md, key.replace("_", " ")))
+    rows.append((key, desc + " (19~23 요약)", parts)); print("summary", key)
 li = "".join(f'<li><a href="{k}.html"><b>{k}</b></a> — {d}<br><small>{", ".join(p)}</small></li>' for k, d, p in rows)
 others = sorted(x.name for x in SRC.glob("*.html"))
 idx = f'''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>paper_etrij_261003 문서 색인</title><style>{CSS}</style></head><body><main>
 <h1>ETRI Journal 논문 문서 색인 (paper_etrij_261003)</h1>
-<p>비슷한 실험을 묶은 다섯 문서입니다. 개별 문서 원문은 <a href="개별문서/">개별문서/</a> 에 있습니다. 갱신 {datetime.date.today()}.</p>
+<p>비슷한 실험을 묶은 다섯 문서(A~E)와 요약 문서(F)입니다. 개별 문서 원문은 <a href="개별문서/">개별문서/</a> 에 있습니다. 갱신 {datetime.date.today()}.</p>
 <h2>묶음</h2><ul>{li}</ul>
 <h2>개별 문서 (원문)</h2><ul>{"".join(f'<li><a href="개별문서/{n}">{n}</a></li>' for n in others)}</ul>
 <p>원고: <code>etrij/</code>, <code>ko/</code>, <code>manuscript_en.md</code> · 코드·결과: <code>src/</code></p></main></body></html>'''
