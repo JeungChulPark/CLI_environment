@@ -157,6 +157,11 @@ REAL_SESSIONS = {   # scene: (recording, live run of ours on this laptop whose O
     4: ("260910_object", "real_260910_object_l3080_hyb3cf"),
     5: ("260915_eightcircle", "real_260915_eightcircle_l3080_hyb3cf"),
 }
+# OBJMAP_REAL_RUNS="1=<run>,2=<run>,..." swaps in other live runs (e.g. the 2026-10-11 re-runs, doc 24); use it
+# together with separate OBJMAP_OUT / OBJMAP_GT / FMFUSION_DATA / DUALMAP_DATA so the doc 23 maps are kept
+for _kv in filter(None, os.environ.get("OBJMAP_REAL_RUNS", "").split(",")):
+    _k, _run = _kv.split("=")
+    REAL_SESSIONS[int(_k)] = (REAL_SESSIONS[int(_k)][0], _run)
 # the 8 objects on the shelves of every real recording (realdata/eval_real.py OBJS) and the text prompts the
 # open-vocabulary detectors of the baselines get for them
 REAL_NAMES = ["saffron", "Febreze_high", "Dinosaur", "Bear", "milk", "choco_hazelnut_high", "Mugcup_high", "Sikhye_high"]
