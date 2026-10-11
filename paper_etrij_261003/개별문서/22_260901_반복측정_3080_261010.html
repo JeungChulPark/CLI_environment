@@ -1,0 +1,211 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>22. 실 데이터 반복 측정 — 260901, 원본 0.5 대 개선안 3 + 군집 먼저, RTX 3080 Ti Laptop (2026-10-10)</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1>22. 실 데이터 반복 측정 — 260901, 원본 0.5 대 개선안 3 + 군집 먼저, RTX 3080 Ti Laptop (2026-10-10)</h1>
+<blockquote>
+<p>15 문서 §4-3(RTX 4090)과 같은 실험을 노트북에서 다시 했습니다. Mac ORB-SLAM3(특징점 2000) + 이 노트북(RTX 3080 Ti Laptop)으로 녹화 260901_cbnu_bigeightcircle(314초, 선반 두 개, 물체 8개)을 1배속 실시간 재생했습니다. 확인용이며 최종 수치는 RTX 5090 에서 냅니다. 스크립트 <code>src/realdata/run_real_repeat_3080.sh</code>(+ <code>_redo.sh</code>), 결과 <code>src/realdata/results_real5_repeats_3080.json</code>.</p>
+</blockquote>
+<h2>0. 요약</h2>
+<ul>
+<li><strong>개선안 3 + 군집 먼저는 세 번 모두 8 / 0</strong> 입니다(최종 지도 맞음 / 잘못). 원본 0.5 는 7/2, 6/3, 6/3 이고 공룡 인형·사프란을 놓쳤습니다. 4090 과 같은 결과입니다(4090: 8/0 ×3 대 6/3, 6/3, 8/1).</li>
+<li><strong>인식 빈도:</strong> 원본 0.87 Hz, 개선안 3.48 Hz 로 <strong>4.0배</strong>입니다(4090 은 3.63 대 7.54 Hz, 2.1배). 원본의 ViT-L 특징 단계가 노트북 GPU 에서 더 무겁기 때문입니다.</li>
+<li>개선안 3 의 2회차는 ORB-SLAM3 가 <strong>3.10 m 짜리 잘못된 루프 보정</strong>을 넣어(다른 회 7~26 cm) 지도 전체가 틀어졌습니다. 4090 때와 같은 규칙으로 버리고 다시 돌렸습니다(아래 2절).</li>
+</ul>
+<h2>1. 구성</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>인식</th>
+<th>결과 이름</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 0.5</td>
+<td>FastSAM-x → ViT-L → 원본 판정 0.5 → PEM 기하 1위</td>
+<td><code>real5_260901_l3080_origL05_r1~3</code></td>
+</tr>
+<tr>
+<td>개선안 3 + 군집 먼저</td>
+<td>FastSAM-x → ViT-S → 판정 0.5 → PEM → 자세 검증(실 데이터 합의 0.5) + 군집 먼저</td>
+<td><code>real5_260901_l3080_hyb3cf_r1, r2b, r3</code></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>두 구성을 번갈아 돌렸습니다(원본 1 → 개선안 1 → 원본 2 → …). 설정은 4090 의 <code>run_real5.sh</code> 와 같고, 채점은 <code>eval_real.py</code>(물체 8개 기준 위치에서 20 cm 안이면 맞음)입니다.</li>
+<li>템플릿: 오늘 아침 git 사고로 지워진 <code>sam6d_realtime/template/</code> 을 T7 이동 디스크(<code>D:\old\CLI_environment\sam6d_realtime\template</code>)에서 복구해 썼습니다. 4090 에서 쓴 것과 같은 템플릿입니다.</li>
+</ul>
+<h2>2. 결과</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>회차</th>
+<th>인식 빈도</th>
+<th>지도 올라간 시간 (중앙값)</th>
+<th>최종 지도 맞음 / 잘못 (8개)</th>
+<th>못 찾은 물체</th>
+<th>점수 (끝 / 평균)</th>
+<th>루프 보정 최대</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 0.5</td>
+<td>1</td>
+<td>0.90 Hz</td>
+<td>52.3초</td>
+<td>7 / 2</td>
+<td>공룡 인형</td>
+<td>70.0 / 51.8%</td>
+<td>14.2 cm</td>
+</tr>
+<tr>
+<td></td>
+<td>2</td>
+<td>0.86 Hz</td>
+<td>52.4초</td>
+<td>6 / 3</td>
+<td>공룡 인형, 사프란</td>
+<td>54.5 / 57.6%</td>
+<td>25.8 cm</td>
+</tr>
+<tr>
+<td></td>
+<td>3</td>
+<td>0.86 Hz</td>
+<td>88.0초</td>
+<td>6 / 3</td>
+<td>공룡 인형, 사프란</td>
+<td>54.5 / 51.5%</td>
+<td>15.8 cm</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>평균</strong></td>
+<td><strong>0.87 Hz</strong></td>
+<td></td>
+<td><strong>6.3 / 2.7</strong></td>
+<td></td>
+<td><strong>59.7 / 53.6%</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>개선안 3 + 군집 먼저</td>
+<td>1</td>
+<td>3.47 Hz</td>
+<td>69.5초</td>
+<td>8 / 0</td>
+<td>–</td>
+<td>100 / 78.3%</td>
+<td>16.8 cm</td>
+</tr>
+<tr>
+<td></td>
+<td>2 (버림)</td>
+<td>3.46 Hz</td>
+<td>69.2초</td>
+<td>4 / 4</td>
+<td>우유, 초코, 머그, 식혜</td>
+<td>33.3 / 57.5%</td>
+<td><strong>309.6 cm</strong></td>
+</tr>
+<tr>
+<td></td>
+<td>2b (다시)</td>
+<td>3.53 Hz</td>
+<td>69.4초</td>
+<td>8 / 0</td>
+<td>–</td>
+<td>100 / 78.4%</td>
+<td>7.1 cm</td>
+</tr>
+<tr>
+<td></td>
+<td>3</td>
+<td>3.43 Hz</td>
+<td>69.1초</td>
+<td>8 / 0</td>
+<td>–</td>
+<td>100 / 78.5%</td>
+<td>9.0 cm</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>평균 (1, 2b, 3)</strong></td>
+<td><strong>3.48 Hz</strong></td>
+<td></td>
+<td><strong>8.0 / 0.0</strong></td>
+<td></td>
+<td><strong>100 / 78.4%</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>버린 2회차:</strong> 120초 시점까지는 8 / 0 이었는데, 그 뒤 ORB-SLAM3 가 3.10 m 보정의 잘못된 루프를 닫아 키프레임이 크게 옮겨지고, 키프레임에 고정된 물체들도 함께 엉뚱한 곳으로 옮겨졌습니다. 인식기가 아니라 SLAM 의 실패이며, 원고 7.5절 한계("키프레임 고정은 잘못된 보정도 따른다")의 사례입니다. 4090 측정에서도 같은 경우(3.6 m 보정)를 버리고 다시 돌렸습니다(15 문서 §2). 버린 실행은 <code>real5_260901_l3080_hyb3cf_r2</code> 로 남겨 두었습니다.</li>
+<li><strong>지도 올라간 시간</strong>은 로봇이 선반 앞을 지나는 시점이 정하므로 원본이 더 빠른 것처럼 보이는 차이(52 대 69초)는 같은 물체에서의 비교가 아닙니다. 원본은 일찍 올린 물체 중 일부가 틀린 자리입니다(잘못 2~3개).</li>
+</ul>
+<h2>3. 4090 과의 비교 (같은 녹화, 같은 설정)</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>원본 0.5 (3080 / 4090)</th>
+<th>개선안 3 + 군집 먼저 (3080 / 4090)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>인식 빈도</td>
+<td>0.87 / 3.63 Hz</td>
+<td>3.48 / 7.54 Hz</td>
+</tr>
+<tr>
+<td>최종 지도 맞음 / 잘못 (3회 평균)</td>
+<td>6.3 / 2.7  ·  6.7 / 2.3</td>
+<td><strong>8.0 / 0.0  ·  8.0 / 0.0</strong></td>
+</tr>
+<tr>
+<td>점수 끝 / 평균</td>
+<td>59.7 / 53.6%  ·  66.0 / 55.7%</td>
+<td>100 / 78.4%  ·  100 / 78.9%</td>
+</tr>
+<tr>
+<td>개선안 / 원본 인식 빈도</td>
+<td>4.0배 (3080)</td>
+<td>2.1배 (4090)</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>정확도는 GPU 와 관계없이 재현됩니다.</strong> 개선안 3 + 군집 먼저는 두 GPU 에서 6번 모두 8 / 0, 평균 점수 78.4 대 78.9% 입니다.</li>
+<li><strong>속도 이득은 작은 GPU 에서 더 큽니다.</strong> 개선안 3 은 노트북에서도 3.5 Hz 를 유지하지만, 원본은 ViT-L 특징 단계 때문에 0.9 Hz 로 떨어집니다. 18 문서 E 절(RTX PRO 6000 에서 2.7배)과 반대 방향이 아니라, "원본의 무거운 특징 단계가 GPU 에 민감하다"는 같은 이유입니다.</li>
+<li>원본의 실행 간 흔들림은 노트북에서 작아졌습니다(4090 은 6/3, 6/3, 8/1, 노트북은 7/2, 6/3, 6/3). 인식 빈도가 낮아 처리하는 프레임이 적고, 공룡 인형은 세 번 모두 놓쳤습니다.</li>
+</ul>
+<h2>4. 논문에서의 쓰임</h2>
+<ul>
+<li>원고 표 6(실시간 객체 지도)의 260901 행은 4090 수치를 유지하고, "노트북 GPU(RTX 3080 Ti Laptop)에서도 개선안 3 + 군집 먼저는 3회 모두 8 / 0, 인식 3.5 Hz(원본 0.9 Hz)"를 본문이나 각주로 덧붙일 수 있습니다. 녹화 실행(7.1·7.2절)의 인식 장치가 이 노트북이라 실제 운용 조건을 보여 주는 의미가 있습니다.</li>
+<li>잘못된 루프 보정 사례(3.10 m)는 7.5절 한계의 근거로 함께 적을 수 있습니다(40회 중 2회에 이어 노트북 6+1회 중 1회).</li>
+</ul></main></body></html>
