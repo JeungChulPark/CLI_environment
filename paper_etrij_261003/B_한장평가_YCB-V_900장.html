@@ -22,7 +22,7 @@ li{margin:3px 0}
 a{color:var(--acc);word-break:break-all}
 </style></head><body><main><h1 id="ycb-v-900">한장평가 YCB-V 900장</h1>
 <blockquote>
-<p>한 장 평가(YCB-V 900장·36장) — 기준 시스템 비교, 단계별 분해(L0→L4), 4090 확인 실행, 인식 방법 4가지, ViT-S 대 ViT-L, 개선안 3·군집 먼저 900장과 같은 물체끼리 ADD-S(16). 개별 문서 6개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-08.</p>
+<p>한 장 평가(YCB-V 900장·36장) — 기준 시스템 비교, 단계별 분해(L0→L4), 4090 확인 실행, 인식 방법 4가지, ViT-S 대 ViT-L, 개선안 3·군집 먼저 900장과 같은 물체끼리 ADD-S(16). 개별 문서 6개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-12.</p>
 </blockquote>
 <p><strong>이 묶음의 장</strong></p>
 <ul>
@@ -101,6 +101,7 @@ a{color:var(--acc);word-break:break-all}
 <li><a href="#3-ycb-v-36-165-pem">3. 자세까지 — YCB-V 36장, 물체 165개 (PEM + 자세 검증)</a></li>
 <li><a href="#4-l2-900">4. 참고 — 배포 중인 우리 기술과 L2 의 900장 끝까지 수치</a></li>
 <li><a href="#5_1">5. 정리</a></li>
+<li><a href="#4-900-rtx-pro-6000-blackwell41-2026-10-08">4. 후보 영역 단계 비교 — 900장 전체, RTX PRO 6000 Blackwell(.41) (2026-10-08 실행)</a></li>
 </ul>
 </li>
 <li><a href="#12-dinov2-vit-s-vit-l-4-ycb-v-rtx-4090-2026-10-07">12. 특징 모델 비교 — DINOv2 ViT-S 대 ViT-L, 인식 방법 4가지 (YCB-V, RTX 4090, 2026-10-07)</a><ul>
@@ -2422,6 +2423,109 @@ $PY eval_live.py --runs '&lt;repo&gt;/objpose/output/ycbv_live_v2_0*[0-9]' --out
 <p>원 데이터: <code>src/ycbv/det_study/out/mask_recog_900_vitl.json</code>(1), <code>mask_recog_900_vits.json</code>·<code>mask_e2e.json</code>(2), <code>decision_900_B.json</code>·<code>decision_900_B1.json</code>·<code>decision_e2e.json</code>(3·4). 코드는 노트북 브랜치 <code>objpose/memory-dup-suppression</code> 커밋 f8946b1·144a2ff 에 있고, 이 PC 의 <code>~/DeepLearning/CLI_env_paper</code> 작업 트리에도 들어왔습니다(결과 json 은 커밋되지 않아 노트북에만 있음).</p>
 </li>
 </ol>
+<h3 id="4-900-rtx-pro-6000-blackwell41-2026-10-08">4. 후보 영역 단계 비교 — 900장 전체, RTX PRO 6000 Blackwell(.41) (2026-10-08 실행)</h3>
+<blockquote>
+<p>뒤 단계를 고정(DINOv2 ViT-S → 원본 판정 → PEM 기하 1위, 검증 없음)하고 <strong>후보 영역을 만드는 방법만</strong> 세 가지로 바꿔 900장 전체를 돌렸습니다: FastSAM-x 마스크 / FastSAM-x 상자(마스크는 MobileSAM 재생성) / YOLO-World 문구 상자(+MobileSAM). 10-07 에 4090 에서 계획했던 실험(<code>run_candidates_4090.sh</code>)이 결과 보존 전에 old 트리와 함께 지워져, 이 .41 실행이 900장 후보 비교의 유일한 기록입니다. 결과 <code>src/ycbv/results_candidates_41.json</code>, <code>results_candidates_th05_41.json</code>.</p>
+</blockquote>
+<p><strong>판정 0.2 (원본 기본)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>후보</th>
+<th>후보/장</th>
+<th>후보 재현율</th>
+<th>찾은 비율</th>
+<th>정답 비율</th>
+<th>오답/장</th>
+<th>ADD-S AUC</th>
+<th>BOP AR</th>
+<th>장당 시간 (제안/특징/PEM)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FastSAM 마스크</td>
+<td>39</td>
+<td><strong>97.7%</strong></td>
+<td><strong>90.3%</strong></td>
+<td>90.9%</td>
+<td>0.412</td>
+<td>90.3</td>
+<td><strong>81.1</strong></td>
+<td>296 ms (9/27/255)</td>
+</tr>
+<tr>
+<td>FastSAM 상자</td>
+<td>39</td>
+<td>97.7%</td>
+<td>90.3%</td>
+<td>90.9%</td>
+<td>0.414</td>
+<td>90.3</td>
+<td>80.8</td>
+<td>325 ms (46/27/245)</td>
+</tr>
+<tr>
+<td>문구 상자</td>
+<td><strong>5</strong></td>
+<td>82.6%</td>
+<td>80.7%</td>
+<td><strong>94.4%</strong></td>
+<td><strong>0.220</strong></td>
+<td>80.0</td>
+<td>73.1</td>
+<td><strong>226 ms</strong> (18/7/198)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>판정 0.5</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>후보</th>
+<th>찾은 비율</th>
+<th>정답 비율</th>
+<th>오답/장</th>
+<th>ADD-S AUC</th>
+<th>BOP AR</th>
+<th>장당 시간</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FastSAM 마스크</td>
+<td>87.0%</td>
+<td>94.6%</td>
+<td>0.228</td>
+<td>86.3</td>
+<td>78.4</td>
+<td>257 ms</td>
+</tr>
+<tr>
+<td>FastSAM 상자</td>
+<td>86.9%</td>
+<td>94.1%</td>
+<td>0.248</td>
+<td>86.5</td>
+<td>77.6</td>
+<td>306 ms</td>
+</tr>
+<tr>
+<td>문구 상자</td>
+<td>76.9%</td>
+<td><strong>97.2%</strong></td>
+<td><strong>0.102</strong></td>
+<td>75.9</td>
+<td>69.5</td>
+<td>222 ms</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>후보 재현율이 손실의 상한을 정합니다.</strong> 문구 상자는 후보 자체가 82.6%만 커버해(장당 5개), 뒤 단계가 완벽해도 FastSAM(97.7%)을 못 따라갑니다. 06 문서의 L1→L2 손실(−10.0%p)이 후보 단계에서 온다는 분해와 일치합니다.</li>
+<li><strong>대신 문구 상자는 오답과 시간에서 이깁니다</strong>: 판정 0.5 에서 오답/장 0.102 로 FastSAM 마스크(0.228)의 절반 이하, 시간도 222 ms 로 가장 짧습니다. "많이 찾기"는 FastSAM, "틀리지 않기"는 문구 상자 — 우리 기술이 문구 상자를 고른 이유가 수치로 확인됩니다.</li>
+<li>FastSAM 마스크 대 상자: 정확도는 같고(마스크 재현율이 동일하므로), 상자판은 MobileSAM 재생성 비용(제안 9→46 ms)만 손해입니다.</li>
+</ul>
 <hr />
 <p><a id="12_ViT-S_ViT-L_비교표_261007"></a></p>
 <h2 id="12-dinov2-vit-s-vit-l-4-ycb-v-rtx-4090-2026-10-07">12. 특징 모델 비교 — DINOv2 ViT-S 대 ViT-L, 인식 방법 4가지 (YCB-V, RTX 4090, 2026-10-07)</h2>
