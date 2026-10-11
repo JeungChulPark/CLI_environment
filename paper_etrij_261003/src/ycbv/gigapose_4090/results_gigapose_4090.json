@@ -1,0 +1,200 @@
+{
+ "label": "GigaPose coarse, RTX 4090 (.3), 2026-10-08",
+ "protocol": "Per method (prediction JSON from run_orig.py / run_ours.py):\n  correct      ADD-S < 10 % of the object diameter (models_eval/models_info.json),\n               ADD-S over the models_eval vertices\n  Found        visible GT targets with a correct answer / visible GT targets\n               (visible = visib_fract > 0; all 4123 BOP19 targets are)\n  Answers correct   correct answers / all answers\n  Wrong / image     wrong answers / images\n  ADD-S AUC    area under the accuracy-threshold curve, 0-10 cm (PoseCNN VOCap), pooled over\n               all GT targets (missing answer = infinite error); per-object mean also reported\n  BOP AR       official bop_toolkit scripts/eval_bop19_pose.py (VSD, MSSD, MSPD) on BOP CSV\n  Time         median per-image time of the timed region\nBOP CSV files and bop_toolkit output go to OUT/bop; summary -> results.json.",
+ "evaluated": "2026-10-08 09:20:58",
+ "methods": {
+  "ladder_gigapose": {
+   "images": 900,
+   "visible_gt_targets": 4123,
+   "answers": 4123,
+   "correct_answers": 946,
+   "found_pct": 22.9,
+   "answers_correct_pct": 22.9,
+   "wrong_per_image": 3.53,
+   "adds_auc": 51.5,
+   "adds_auc_mean_over_objects": 50.3,
+   "time_ms": {
+    "median": 272.4952697753906,
+    "p90": 460.1399898529053,
+    "mean": 304.7761588626438,
+    "n": 900,
+    "note": "CSV time column (see doc)"
+   },
+   "per_object": {
+    "002_master_chef_can": {
+     "targets": 300,
+     "found": 54,
+     "found_pct": 18.0,
+     "answers": 300,
+     "correct": 54,
+     "adds_auc": 50.1
+    },
+    "003_cracker_box": {
+     "targets": 225,
+     "found": 46,
+     "found_pct": 20.4,
+     "answers": 225,
+     "correct": 46,
+     "adds_auc": 38.1
+    },
+    "004_sugar_box": {
+     "targets": 375,
+     "found": 73,
+     "found_pct": 19.5,
+     "answers": 375,
+     "correct": 73,
+     "adds_auc": 42.9
+    },
+    "005_tomato_soup_can": {
+     "targets": 448,
+     "found": 82,
+     "found_pct": 18.3,
+     "answers": 448,
+     "correct": 82,
+     "adds_auc": 66.7
+    },
+    "006_mustard_bottle": {
+     "targets": 150,
+     "found": 45,
+     "found_pct": 30.0,
+     "answers": 150,
+     "correct": 45,
+     "adds_auc": 54.5
+    },
+    "007_tuna_fish_can": {
+     "targets": 300,
+     "found": 86,
+     "found_pct": 28.7,
+     "answers": 300,
+     "correct": 86,
+     "adds_auc": 77.5
+    },
+    "008_pudding_box": {
+     "targets": 75,
+     "found": 13,
+     "found_pct": 17.3,
+     "answers": 75,
+     "correct": 13,
+     "adds_auc": 57.6
+    },
+    "009_gelatin_box": {
+     "targets": 75,
+     "found": 19,
+     "found_pct": 25.3,
+     "answers": 75,
+     "correct": 19,
+     "adds_auc": 63.7
+    },
+    "010_potted_meat_can": {
+     "targets": 225,
+     "found": 23,
+     "found_pct": 10.2,
+     "answers": 225,
+     "correct": 23,
+     "adds_auc": 46.4
+    },
+    "011_banana": {
+     "targets": 150,
+     "found": 76,
+     "found_pct": 50.7,
+     "answers": 150,
+     "correct": 76,
+     "adds_auc": 62.9
+    },
+    "019_pitcher_base": {
+     "targets": 225,
+     "found": 148,
+     "found_pct": 65.8,
+     "answers": 225,
+     "correct": 148,
+     "adds_auc": 76.4
+    },
+    "021_bleach_cleanser": {
+     "targets": 300,
+     "found": 82,
+     "found_pct": 27.3,
+     "answers": 300,
+     "correct": 82,
+     "adds_auc": 46.6
+    },
+    "024_bowl": {
+     "targets": 150,
+     "found": 11,
+     "found_pct": 7.3,
+     "answers": 150,
+     "correct": 11,
+     "adds_auc": 48.9
+    },
+    "025_mug": {
+     "targets": 150,
+     "found": 17,
+     "found_pct": 11.3,
+     "answers": 150,
+     "correct": 17,
+     "adds_auc": 72.1
+    },
+    "035_power_drill": {
+     "targets": 300,
+     "found": 67,
+     "found_pct": 22.3,
+     "answers": 300,
+     "correct": 67,
+     "adds_auc": 33.8
+    },
+    "036_wood_block": {
+     "targets": 75,
+     "found": 1,
+     "found_pct": 1.3,
+     "answers": 75,
+     "correct": 1,
+     "adds_auc": 11.6
+    },
+    "037_scissors": {
+     "targets": 75,
+     "found": 3,
+     "found_pct": 4.0,
+     "answers": 75,
+     "correct": 3,
+     "adds_auc": 30.0
+    },
+    "040_large_marker": {
+     "targets": 150,
+     "found": 28,
+     "found_pct": 18.7,
+     "answers": 150,
+     "correct": 28,
+     "adds_auc": 53.5
+    },
+    "051_large_clamp": {
+     "targets": 150,
+     "found": 46,
+     "found_pct": 30.7,
+     "answers": 150,
+     "correct": 46,
+     "adds_auc": 48.6
+    },
+    "052_extra_large_clamp": {
+     "targets": 150,
+     "found": 13,
+     "found_pct": 8.7,
+     "answers": 150,
+     "correct": 13,
+     "adds_auc": 12.4
+    },
+    "061_foam_brick": {
+     "targets": 75,
+     "found": 13,
+     "found_pct": 17.3,
+     "answers": 75,
+     "correct": 13,
+     "adds_auc": 62.5
+    }
+   },
+   "title": "ladder_gigapose",
+   "gpu": "NVIDIA GeForce RTX 4090",
+   "run_label": "GigaPose coarse (CNOS-FastSAM dets, no refinement), RTX 4090 host .3, 2026-10-08",
+   "prediction_file": "/home/jucpark/DeepLearning/server/CLI_environment/paper_etrij_261003/src/ycbv/out_4090/pred_ladder_gigapose.json",
+   "stage_ms": null
+  }
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "images": 900,
+ "label": "verification run, RTX 3080 Ti Laptop",
+ "rule": "GT visib_fract >= 0.1, target objects, mask_visib IoU",
+ "methods": {
+  "fastsam_full": {
+   "gt_instances": 4123,
+   "recall_iou50_pct": 97.6,
+   "recall_iou75_pct": 88.0,
+   "mean_best_iou": 0.851,
+   "proposals_per_image": 41.8,
+   "time_ms_median": {
+    "proposal": 32.9,
+    "mask": 0.0,
+    "total": 32.9
+   },
+   "time_ms_mean_total": 33.9,
+   "per_object_recall50": {
+    "002_master_chef_can": 100.0,
+    "003_cracker_box": 100.0,
+    "004_sugar_box": 100.0,
+    "005_tomato_soup_can": 95.8,
+    "006_mustard_bottle": 100.0,
+    "007_tuna_fish_can": 100.0,
+    "008_pudding_box": 100.0,
+    "009_gelatin_box": 100.0,
+    "010_potted_meat_can": 100.0,
+    "011_banana": 100.0,
+    "019_pitcher_base": 100.0,
+    "021_bleach_cleanser": 100.0,
+    "024_bowl": 100.0,
+    "025_mug": 100.0,
+    "035_power_drill": 86.7,
+    "036_wood_block": 100.0,
+    "037_scissors": 90.7,
+    "040_large_marker": 98.7,
+    "051_large_clamp": 100.0,
+    "052_extra_large_clamp": 79.3,
+    "061_foam_brick": 100.0
+   }
+  },
+  "fastsam_msam": {
+   "gt_instances": 4123,
+   "recall_iou50_pct": 96.8,
+   "recall_iou75_pct": 84.2,
+   "mean_best_iou": 0.833,
+   "proposals_per_image": 41.8,
+   "time_ms_median": {
+    "proposal": 30.9,
+    "mask": 90.2,
+    "total": 121.0
+   },
+   "time_ms_mean_total": 136.0,
+   "per_object_recall50": {
+    "002_master_chef_can": 100.0,
+    "003_cracker_box": 98.2,
+    "004_sugar_box": 100.0,
+    "005_tomato_soup_can": 96.0,
+    "006_mustard_bottle": 100.0,
+    "007_tuna_fish_can": 100.0,
+    "008_pudding_box": 100.0,
+    "009_gelatin_box": 100.0,
+    "010_potted_meat_can": 97.8,
+    "011_banana": 100.0,
+    "019_pitcher_base": 100.0,
+    "021_bleach_cleanser": 99.7,
+    "024_bowl": 100.0,
+    "025_mug": 100.0,
+    "035_power_drill": 83.7,
+    "036_wood_block": 100.0,
+    "037_scissors": 88.0,
+    "040_large_marker": 98.7,
+    "051_large_clamp": 100.0,
+    "052_extra_large_clamp": 71.3,
+    "061_foam_brick": 100.0
+   }
+  },
+  "text_msam": {
+   "gt_instances": 4123,
+   "recall_iou50_pct": 91.3,
+   "recall_iou75_pct": 79.5,
+   "mean_best_iou": 0.792,
+   "proposals_per_image": 7.1,
+   "time_ms_median": {
+    "proposal": 13.2,
+    "mask": 43.7,
+    "total": 57.3
+   },
+   "time_ms_mean_total": 58.2,
+   "per_object_recall50": {
+    "002_master_chef_can": 98.0,
+    "003_cracker_box": 93.8,
+    "004_sugar_box": 99.7,
+    "005_tomato_soup_can": 95.3,
+    "006_mustard_bottle": 100.0,
+    "007_tuna_fish_can": 99.7,
+    "008_pudding_box": 70.7,
+    "009_gelatin_box": 76.0,
+    "010_potted_meat_can": 91.6,
+    "011_banana": 100.0,
+    "019_pitcher_base": 100.0,
+    "021_bleach_cleanser": 99.0,
+    "024_bowl": 100.0,
+    "025_mug": 100.0,
+    "035_power_drill": 73.3,
+    "036_wood_block": 100.0,
+    "037_scissors": 80.0,
+    "040_large_marker": 98.0,
+    "051_large_clamp": 38.7,
+    "052_extra_large_clamp": 58.7,
+    "061_foam_brick": 96.0
+   },
+   "class_aware": {
+    "recall_iou50_pct": 83.9,
+    "recall_iou75_pct": 72.7,
+    "mean_best_iou": 0.723
+   }
+  }
+ }
+}

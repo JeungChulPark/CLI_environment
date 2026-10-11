@@ -1,0 +1,151 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box}
+body{margin:0;width:1000px;height:800px;background:#fff;font-family:"Times New Roman","Liberation Serif",serif;color:#111;position:relative;font-size:13.5px;line-height:1.25}
+.p{position:absolute;border-radius:9px;border:1.6px solid;padding:6px 9px;overflow:hidden}
+.h{font-weight:700;font-size:15px;margin-bottom:4px}
+.tag{font-weight:400;font-size:12px;color:#555;margin-left:4px}
+img{display:block;object-fit:cover}
+.ex{border-color:#9a9a94;background:#f6f6f4}.ex .h{color:#555}
+.as{border-color:#c0392b;background:#fdf1ef}.as .h{color:#a93226}
+.cr{border-color:#eb6834;background:#fff6ef;border-width:2.2px}.cr .h{color:#b9531c}
+.ka{border-color:#c8662a;background:#fff9f3;border-width:3.5px;border-style:double}.ka .h{color:#a63c12;font-size:16px}
+.lc{border-color:#2a78d6;background:#f3f8fe;border-width:2px}.lc .h{color:#1F5FA8}
+.vz{border-color:#1baf7a;background:#f3fbf7}.vz .h{color:#2E7D4F}
+sub,sup{font-size:72%}
+ul{margin:2px 0;padding-left:16px} li{margin:1px 0}
+.eq{font-size:14px;text-align:center;margin:3px 0}
+.st{display:flex;gap:6px;margin:3px 0}.st .n{flex:none;width:18px;height:18px;border-radius:9px;background:#eb6834;color:#fff;font-size:12px;text-align:center;line-height:18px;font-weight:700}
+table{border-collapse:collapse;font-size:12.5px;width:100%}td,th{padding:1px 4px;border-bottom:1px solid #ead8c8;text-align:left}th{font-weight:700}
+.cap{font-size:12px;color:#444;text-align:center}
+.flow{flex:1;border-radius:7px;padding:4px 6px;text-align:center;font-size:13px}
+.cv{background:#f2f2f0;border:1.4px solid #9a9a94}.pr{background:#fff;border:2px solid #eb6834}
+.ft{font-weight:700;font-size:14px;margin-bottom:3px}.cv .ft{color:#555}.pr .ft{color:#b9531c}
+.fs{border:1px solid #c9c8c2;border-radius:4px;background:#fff;padding:1px 3px}
+.pr .fs{border-color:#f0b896}
+.fa{font-size:12px;line-height:12px;color:#777}
+.ev{background:#fdebe4!important;border-color:#eb6834!important;color:#b9531c;font-weight:700}
+.bad{background:#fbe3e1!important;border-color:#c0392b!important;color:#a93226;font-weight:700}
+.good{background:#e6f6ee!important;border-color:#1baf7a!important;color:#1d7a50;font-weight:700}
+</style></head><body>
+
+<!-- existing SLAM 10% (250x320) -->
+<div class="p ex" style="left:0;top:0;width:242px;height:312px">
+ <div class="h">SLAM<span class="tag">(existing: ORB-SLAM3 / HDL-Graph-SLAM)</span></div>
+ <img src="real/slam_frame_0.png" style="width:222px;height:104px">
+ <img src="real/kf_traj.png" style="width:222px;height:70px;object-fit:contain;background:#fff;margin-top:4px">
+ <div style="margin-top:4px">keyframes and loop closure correct past poses; estimation unchanged, only K<sub>ref</sub> and keyframe lists are <b>exposed</b></div>
+</div>
+
+<!-- existing 6D 10% (250x320) -->
+<div class="p ex" style="left:0;top:320px;width:242px;height:312px">
+ <div class="h">Zero-shot 6D estimation<span class="tag">(existing SAM-6D, modified)</span></div>
+ <img src="real/est.png" style="width:222px;height:150px">
+ <div style="margin-top:4px">CAD templates only; text-prompted proposals, verification gates. Outputs T<sub>R←O</sub> for an image captured at <i>t</i>, at 3–5 images/s.</div>
+</div>
+
+<!-- visualization 5% (250x160) -->
+<div class="p vz" style="left:0;top:640px;width:242px;height:160px">
+ <div class="h">Visualization (15 Hz)</div>
+ <div style="display:flex;gap:6px"><img src="real/display.png" style="width:118px;height:88px"><div style="font-size:12.5px">map objects drawn at the display-time SLAM pose</div></div>
+</div>
+
+<!-- async / timing 15% (750x160) -->
+<div class="p as" style="left:250px;top:0;width:750px;height:156px">
+ <div class="h">Asynchronous communication and timing problem</div>
+ <div style="display:flex;gap:10px">
+  <svg width="470" height="118" style="flex:none;font-family:'Times New Roman','Liberation Serif',serif;font-size:12.5px">
+   <defs><marker id="r" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#a93226"/></marker></defs>
+   <text x="0" y="20">SLAM poses</text><line x1="88" y1="16" x2="465" y2="16" stroke="#ccc"/>
+   <g stroke="#2a78d6" stroke-width="1.2">
+    <line x1="92" y1="10" x2="92" y2="22"/><line x1="104" y1="10" x2="104" y2="22"/><line x1="116" y1="10" x2="116" y2="22"/><line x1="128" y1="10" x2="128" y2="22"/><line x1="140" y1="10" x2="140" y2="22"/><line x1="152" y1="10" x2="152" y2="22"/><line x1="164" y1="10" x2="164" y2="22"/><line x1="176" y1="10" x2="176" y2="22"/><line x1="188" y1="10" x2="188" y2="22"/><line x1="200" y1="10" x2="200" y2="22"/><line x1="212" y1="10" x2="212" y2="22"/><line x1="224" y1="10" x2="224" y2="22"/><line x1="236" y1="10" x2="236" y2="22"/><line x1="248" y1="10" x2="248" y2="22"/><line x1="260" y1="10" x2="260" y2="22"/><line x1="272" y1="10" x2="272" y2="22"/><line x1="284" y1="10" x2="284" y2="22"/><line x1="296" y1="10" x2="296" y2="22"/><line x1="308" y1="10" x2="308" y2="22"/><line x1="320" y1="10" x2="320" y2="22"/><line x1="332" y1="10" x2="332" y2="22"/><line x1="344" y1="10" x2="344" y2="22"/><line x1="356" y1="10" x2="356" y2="22"/><line x1="368" y1="10" x2="368" y2="22"/><line x1="380" y1="10" x2="380" y2="22"/><line x1="392" y1="10" x2="392" y2="22"/><line x1="404" y1="10" x2="404" y2="22"/><line x1="416" y1="10" x2="416" y2="22"/><line x1="428" y1="10" x2="428" y2="22"/><line x1="440" y1="10" x2="440" y2="22"/><line x1="452" y1="10" x2="452" y2="22"/>
+   </g>
+   <text x="0" y="52">keyframes</text><line x1="88" y1="48" x2="465" y2="48" stroke="#ccc"/>
+   <g fill="#2a78d6"><rect x="100" y="40" width="24" height="16"/><rect x="170" y="40" width="24" height="16"/><rect x="300" y="40" width="24" height="16"/><rect x="400" y="40" width="24" height="16"/></g>
+   <g fill="#fff" font-size="10.5" font-weight="700"><text x="104" y="52">K6</text><text x="174" y="52">K7</text><text x="304" y="52">K8</text><text x="404" y="52">K9</text></g>
+   <text x="0" y="88">6D result</text><line x1="88" y1="84" x2="465" y2="84" stroke="#ccc"/>
+   <line x1="200" y1="22" x2="200" y2="78" stroke="#888" stroke-dasharray="3 3"/>
+   <rect x="200" y="80" width="170" height="8" fill="#bfe7d6"/>
+   <circle cx="200" cy="84" r="6" fill="#1baf7a"/><rect x="364" y="78" width="12" height="12" fill="#1baf7a"/>
+   <line x1="250" y1="4" x2="250" y2="62" stroke="#eb6834" stroke-width="3"/>
+   <text x="200" y="108" text-anchor="middle">capture t</text><text x="255" y="108" fill="#b9531c">loop closure</text><text x="372" y="108" text-anchor="middle">arrival t + 0.7–6.6 s</text>
+  </svg>
+  <ul style="font-size:13px;margin-top:0">
+   <li>two computers, two clocks</li>
+   <li>two cameras, extrinsic X</li>
+   <li>result arrives 0.7–6.6 s late</li>
+   <li>map corrected while in flight</li>
+   <li>SLAM pose may arrive after the result</li>
+  </ul>
+ </div>
+</div>
+
+<!-- capture-time registration 20% (750x213) -->
+<div class="p cr" style="left:250px;top:164px;width:750px;height:205px">
+ <div class="h">Capture-time registration</div>
+ <div style="display:flex;gap:16px">
+  <div style="flex:1">
+   <div class="st"><span class="n">1</span><span>camera metadata timestamp, converted to the SLAM clock (offset Δ by round trip, residual τ)</span></div>
+   <div class="st"><span class="n">2</span><span>SLAM pose at <i>t</i>: interpolate the two bracketing poses (SLERP, linear); gap &gt; 0.25 s → discard</span></div>
+   <div class="st"><span class="n">3</span><span>reference keyframe K<sub>ref</sub>(<i>t</i>) and its pose, from <b>the same</b> pose message</span></div>
+   <div class="st"><span class="n">4</span><span>camera–camera extrinsic X = T<sub>S←R</sub> (estimated with τ)</span></div>
+   <div class="st"><span class="n">5</span><span>bracketing pose not yet arrived → wait in a queue (≤ 20 s)</span></div>
+  </div>
+  <div style="width:270px;border-left:1px dashed #eb6834;padding-left:12px">
+   <div class="eq">T<sub>map←O</sub> = T<sub>map←S</sub>(<i>t</i>) · X · T<sub>R←O</sub></div>
+   <div style="font-size:12.5px;margin-top:8px">not the pose at arrival time: registering at arrival misplaces the object by the motion in between</div>
+   <div style="font-size:12.5px;margin-top:8px">placed results: 46% → 100% with the waiting queue</div>
+  </div>
+ </div>
+</div>
+
+<!-- keyframe anchoring 25% (469x427) -->
+<div class="p ka" style="left:250px;top:377px;width:461px;height:423px">
+ <div class="h">Keyframe-Anchored Object Map: conventional vs. proposed</div>
+ <div style="display:flex;gap:10px">
+  <div class="flow cv"><div class="ft">Conventional</div>
+   <div class="fs">6D result</div><div class="fa">↓</div>
+   <div class="fs">T<sub>map←O</sub>(t<sub>capture</sub>)</div><div class="fa">↓</div>
+   <div class="fs">stored directly in the map</div><div class="fa">↓</div>
+   <div class="fs ev">loop closure</div><div class="fa">↓</div>
+   <div class="fs">SLAM map changes</div><div class="fa">↓</div>
+   <div class="fs">object remains at the old position</div><div class="fa">↓</div>
+   <div class="fs bad">spatial inconsistency</div></div>
+  <div class="flow pr"><div class="ft">Proposed</div>
+   <div class="fs">6D result</div><div class="fa">↓</div>
+   <div class="fs">find K<sub>ref</sub>(t<sub>capture</sub>)</div><div class="fa">↓</div>
+   <div class="fs">store T<sub>K←O</sub> <b style="color:#b9531c">(fixed)</b></div><div class="fa">↓</div>
+   <div class="fs ev">loop closure</div><div class="fa">↓</div>
+   <div class="fs">only T<sub>map←K</sub> updated</div><div class="fa">↓</div>
+   <div class="fs">T′<sub>map←K</sub> · T<sub>K←O</sub></div><div class="fa">↓</div>
+   <div class="fs good">consistent object map</div></div>
+ </div>
+ <div style="margin-top:7px;background:#fff;border:1.4px solid #c8662a;border-radius:6px;padding:4px 8px;font-size:14px;text-align:center">𝒪<sub><i>i</i></sub> = { ID<sub><i>i</i></sub>, <i>K<sub>i</sub></i>, <b style="color:#b9531c"><i>T</i><sub><i>K<sub>i</sub></i>←<i>O<sub>i</sub></i></sub></b>, <i>p<sub>i</sub></i>, <i>C<sub>i</sub></i> }<div style="font-size:11.5px;color:#555">object ID · anchor keyframe · relative pose · existence probability · class</div><div style="margin-top:3px"><i>T</i><sub>map←<i>O<sub>i</sub></i></sub> = <i>T</i><sub>map←<i>K<sub>i</sub></i></sub> · <b style="color:#b9531c"><i>T</i><sub><i>K<sub>i</sub></i>←<i>O<sub>i</sub></i></sub></b></div></div>
+ <div style="margin-top:8px;text-align:center;font-size:13.5px;color:#a63c12"><b>Key message:</b> <i>T</i><sub><i>K<sub>i</sub></i>←<i>O<sub>i</sub></i></sub> never changes; a map correction only updates the keyframe pose <i>T</i><sub>map←<i>K<sub>i</sub></i></sub>.</div>
+
+</div>
+
+<!-- loop-closure update 15% (281x427) -->
+<div class="p lc" style="left:719px;top:377px;width:281px;height:423px">
+ <div class="h">Loop-closure object-map update</div>
+ <div style="font-size:13px">keyframe list after loop closure → only the keyframe pose changes: <i>T</i><sub>map←<i>K<sub>i</sub></i></sub> → <span style="color:#1F5FA8"><i>T</i>′<sub>map←<i>K<sub>i</sub></i></sub></span></div>
+ <div class="eq" style="font-size:15px;margin:6px 0"><span style="color:#1F5FA8"><i>T</i>′<sub>map←<i>O<sub>i</sub></i></sub></span> = <span style="color:#1F5FA8"><i>T</i>′<sub>map←<i>K<sub>i</sub></i></sub></span> · <b style="color:#b9531c"><i>T</i><sub><i>K<sub>i</sub></i>←<i>O<sub>i</sub></i></sub></b></div><div style="font-size:12.5px;text-align:center;color:#b9531c"><b><i>T</i><sub><i>K<sub>i</sub></i>←<i>O<sub>i</sub></i></sub> is unchanged</b>; the object follows its keyframe</div>
+ <div style="font-size:12.5px">culled K<sub>i</sub> → re-anchor to the nearest keyframe</div>
+ <div style="display:flex;gap:4px;margin-top:6px">
+  <div><img src="ov2/map_b.png" style="width:126px;height:150px;object-fit:contain;background:#fff"><div class="cap">map frame:<br><b>68/119</b> &gt; 10 cm</div></div>
+  <div><img src="ov2/map_c.png" style="width:126px;height:150px;object-fit:contain;background:#fff"><div class="cap">keyframe-anchored:<br><b>6/119</b> &gt; 10 cm</div></div>
+ </div>
+ <div class="cap" style="margin-top:4px">real run, loop closure moved keyframes by up to 3 m · <span style="color:#2a78d6">●</span> ≤ 10 cm <span style="color:#eb6834">●</span> &gt; 10 cm + final position</div>
+</div>
+
+<!-- arrows -->
+<svg style="position:absolute;left:0;top:0" width="1000" height="800">
+ <defs><marker id="m" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9z" fill="#444"/></marker></defs>
+ <g stroke="#444" stroke-width="1.8" fill="none" marker-end="url(#m)">
+  <path d="M242,80 L249,80"/>
+  <path d="M242,345 L249,345"/>
+  <path d="M600,369 L600,376"/>
+  <path d="M711,590 L718,590"/>
+  <path d="M250,760 L243,760"/>
+ </g>
+</svg>
+</body></html>

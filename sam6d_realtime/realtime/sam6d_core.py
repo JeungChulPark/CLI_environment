@@ -232,6 +232,24 @@ class Sam6DCore:
                 ci = int(b.cls[j]) if b.cls is not None else 0
                 if ci in pb:
                     pb[ci].append(([x1, y1, x2, y2], float(b.conf[j])))
+        # map-projected proposals (objpose hub --map-prior): one box per object already in the
+        # map, added under that object's prompt unless the detector already proposed the spot.
+        # They pass through exactly the same gates and pose verification as detector boxes.
+        extra, self.extra_proposals = getattr(self, "extra_proposals", None), None
+        self.last_frame_diag["map_prior"] = {"given": len(extra or []), "added": 0}
+        for name, box, conf in extra or []:
+            o = next((o for o in self.objs if o["name"] == name), None)
+            if o is None or o["yolo_prompt"] not in self.unique_prompts:
+                continue
+            ci = self.unique_prompts.index(o["yolo_prompt"])
+            bx = [max(0, min(int(box[0]), w - 1)), max(0, min(int(box[1]), h - 1)),
+                  min(w, int(box[2])), min(h, int(box[3]))]
+            if bx[2] <= bx[0] or bx[3] <= bx[1]:
+                continue
+            if any(o_n._iou_xyxy(bx, b) >= 0.5 for b, _ in pb[ci]):
+                continue
+            pb[ci].append((bx, float(conf)))
+            self.last_frame_diag["map_prior"]["added"] += 1
         for k in pb:
             pb[k].sort(key=lambda t: t[1], reverse=True)
         n_boxes = sum(len(v) for v in pb.values())
@@ -242,6 +260,29 @@ class Sam6DCore:
 
         hits = [(n, r) for n, r in sorted(results.items())
                 if r.get("accepted") and r.get("mask") is not None]
+        # size gate (opt-in, paper ablation 2026-10-05): the masked depth points must not be
+        # larger than the CAD model (robust 5-95 % extent <= size_gate_max x CAD diagonal).
+        # Catches regions that look like the object but are a merged / wrong-shaped area.
+        sg = getattr(self, "size_gate_max", None)
+        if sg and hits:
+            kept = []
+            fx, fy, cx, cy = float(K[0][0]), float(K[1][1]), float(K[0][2]), float(K[1][2])
+            dm = np.asarray(depth, np.float32)
+            for nm, r in hits:
+                m = r["mask"].astype(bool) & (dm > 0)
+                ys, xs = np.nonzero(m)
+                cad = float(np.linalg.norm(self._extent[nm])) if nm in self._extent else 0.0
+                if len(ys) >= 30 and cad > 0:
+                    z = dm[ys, xs] / 1000.0
+                    P3 = np.stack([(xs - cx) * z / fx, (ys - cy) * z / fy, z], 1)
+                    ext = float(np.linalg.norm(np.percentile(P3, 95, 0) - np.percentile(P3, 5, 0)))
+                    if ext > sg * cad:
+                        self.last_frame_diag["rejections"].append(
+                            {"object": nm, "rejection_reason": "size_gate", "extent_m": round(ext, 4),
+                             "cad_diag_m": round(cad, 4)})
+                        continue
+                kept.append((nm, r))
+            hits = kept
         # PEM 예산제: 이번 프레임에 실제로 풀 객체만 남기고, 나머지는 직전 포즈를
         # 물려받는다. 스케줄러가 없으면 hits 가 그대로여서 원래 동작과 같다.
         carried = []
@@ -321,12 +362,12 @@ class Sam6DCore:
                         inp["dense_co"] = torch.cat([self._tem[n][2] for n in names], 0)
                     inp["obj_names"] = names              # 대칭 선언 조회용
                     out = self.pem(inp)
-                coarse = out["score"].detach().cpu().numpy()
-                pose_s = (out["pred_pose_score"].detach().cpu().numpy()
+                coarse = out["score"].detach().float().cpu().numpy()
+                pose_s = (out["pred_pose_score"].detach().float().cpu().numpy()
                           if "pred_pose_score" in out else None)
                 ps = coarse * pose_s if pose_s is not None else coarse
-                Rs = out["pred_R"].detach().cpu().numpy()
-                ts = out["pred_t"].detach().cpu().numpy() * 1000.0
+                Rs = out["pred_R"].detach().float().cpu().numpy()
+                ts = out["pred_t"].detach().float().cpu().numpy() * 1000.0
                 vfs = out.get("verify") or [None] * len(names)
                 explorer_payloads = out.get("pem_explorer") or [None] * len(names)
                 pds = out.get("pem_diagnostic") or [None] * len(names)

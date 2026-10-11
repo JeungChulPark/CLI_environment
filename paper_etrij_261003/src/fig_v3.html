@@ -1,0 +1,255 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+/* Re-drawing of the overview draft in HTML/SVG on the draft's own 1536x1024 grid.
+   All pictures are real data (see fig_v3/, real_stage/, fig3/, real915/). FONT can be switched to Times. */
+:root{--font:"Liberation Sans",Arial,sans-serif;--math:"Liberation Serif","Times New Roman",serif}
+*{box-sizing:border-box}
+body{margin:0;width:1536px;height:1024px;background:#fff;font-family:var(--font);color:#1c1c1c;position:relative;overflow:hidden}
+.a{position:absolute}
+img{display:block;object-fit:cover}
+.m{font-family:var(--math);font-style:italic}
+sub,sup{font-size:70%}
+.frame{position:absolute;border-radius:12px}
+.hdr{position:absolute;color:#fff;border-radius:8px;display:flex;align-items:center;padding-left:12px;font-size:20px;letter-spacing:.2px}
+.hdr small{font-size:15px;margin-left:12px;opacity:.95}
+.pn{position:absolute;border-radius:9px;background:#fff;border:2px solid}
+.ph{position:absolute;left:0;right:0;top:0;height:28px;color:#fff;border-radius:6px 6px 0 0;display:flex;align-items:center;padding-left:10px;font-size:16.5px}
+.ph small{font-size:12px;margin-left:6px}
+.t{position:absolute;font-size:12px;line-height:1.2}
+.lbl{position:absolute;font-size:10px;text-align:center;line-height:1.15;color:#222}
+.ul{position:absolute;margin:0;padding-left:15px;font-size:13.5px;line-height:1.55}
+.ul.s{font-size:11.2px;line-height:1.38}
+.box{position:absolute;border-radius:6px}
+.badge{position:absolute;width:22px;height:22px;border-radius:11px;color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.bg1{position:absolute;width:26px;height:26px;border-radius:6px;color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center}
+.ok{color:#1a9a3c;font-weight:700}.ng{color:#e02020;font-weight:700}
+table{border-collapse:collapse}
+.tb td,.tb th{font-size:10.5px;text-align:center;padding:1px 2px;border-bottom:1px solid #e8d6d6;font-weight:400}
+.tb th{color:#333}
+.st{position:absolute;left:0;width:72px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12.5px;border:1px solid}
+</style></head><body>
+
+<!-- ============================== A ============================== -->
+<div class="frame" style="left:4px;top:4px;width:1528px;height:516px;border:2px dashed #4a8be0;background:#f4f8fe"></div>
+<div class="hdr" style="left:6px;top:6px;width:1524px;height:34px;background:linear-gradient(90deg,#1f6fd1,#3d95f0 60%,#5aa8f5)">A.&nbsp; Asynchronous Perception and Capture-Time Registration <small>(SLAM + 6D Estimation + Timing + Registration)</small></div>
+
+<!-- 1 Sensor input -->
+<div class="pn" style="left:16px;top:46px;width:296px;height:394px;border-color:#555"><div class="ph" style="background:linear-gradient(90deg,#2f2f2f,#555);height:30px">1.&nbsp; Sensor Input (On Mobile Platform)</div></div>
+<div class="t" style="left:28px;top:88px;font-size:16px">RGB-D / LiDAR Camera</div>
+<img class="a" src="real/cart.png" style="left:28px;top:117px;width:139px;height:211px;border-radius:3px">
+<div class="t" style="left:180px;top:124px;font-size:13px">RGB image (30 Hz)</div>
+<img class="a" src="real_stage/rgb.png" style="left:180px;top:143px;width:117px;height:72px;border-radius:3px">
+<div class="t" style="left:180px;top:228px;font-size:13px">Depth image (30 Hz)</div>
+<img class="a" src="real_stage/depth.png" style="left:180px;top:246px;width:117px;height:83px;border-radius:3px">
+<ul class="ul" style="left:30px;top:336px;font-size:14.5px;line-height:1.5"><li>RGB-D camera or LiDAR</li><li>Real-time capture (30 Hz)</li><li>Camera intrinsics / extrinsics</li><li>Multi-object indoor environment</li></ul>
+
+<!-- SLAM -->
+<div class="pn" style="left:322px;top:46px;width:578px;height:140px;border-color:#2fae5a"><div class="ph" style="background:linear-gradient(90deg,#1e9e4a,#3cc56b)">SLAM (Lightweight, not main contribution)</div></div>
+<div class="t" style="left:340px;top:82px;font-size:13px">SLAM pose stream (30 Hz)</div>
+<div class="a" style="left:515px;top:81px;display:flex;gap:2px">
+ <img src="fig3/strip_1.png" style="width:67px;height:29px"><img src="fig3/strip_2.png" style="width:67px;height:29px"><img src="fig3/strip_3.png" style="width:67px;height:29px"><img src="fig3/strip_4.png" style="width:67px;height:29px"></div>
+<svg class="a" style="left:520px;top:112px" width="320" height="34">
+ <defs><marker id="bl" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#2a78d6"/></marker></defs>
+ <line x1="0" y1="22" x2="300" y2="22" stroke="#2a78d6" stroke-width="1.4" marker-end="url(#bl)" stroke-dasharray="0"/>
+ <g fill="#fff" stroke="#2a78d6" stroke-width="1.8"><polygon points="27,22 33,12 39,22"/><polygon points="91,22 97,12 103,22"/><polygon points="162,22 168,12 174,22"/></g>
+ <g font-family="Liberation Serif" font-style="italic" font-size="13"><text x="22" y="10">K<tspan font-size="9" baseline-shift="sub">i−1</tspan></text><text x="93" y="10">K<tspan font-size="9" baseline-shift="sub">i</tspan></text><text x="158" y="10">K<tspan font-size="9" baseline-shift="sub">i+1</tspan></text></g>
+ <text x="210" y="18" font-size="14">· · ·</text>
+</svg>
+<div class="t" style="left:832px;top:126px;font-size:14px">time</div>
+<ul class="ul s" style="left:340px;top:132px;font-size:11.8px;line-height:1.4"><li>Track camera pose and keyframes (3,844 / 3,844 frames)</li><li>Loop closure and map optimization</li><li>Output: SLAM pose <span class="m">T</span><sub>W←C</sub>(<span class="m">t</span>), keyframes <span class="m">K<sub>i</sub></span></li></ul>
+<svg class="a" style="left:900px;top:100px" width="40" height="30"><polygon points="0,9 24,9 24,2 38,15 24,28 24,21 0,21" fill="#2f86e8"/></svg>
+
+<!-- 2 6D estimation -->
+<div class="pn" style="left:322px;top:194px;width:610px;height:318px;border-color:#f08a24"><div class="ph" style="background:linear-gradient(90deg,#f07a10,#f5a043)">2.&nbsp; Improved Zero-Shot 6D Object Pose Estimation <small>(Accurate and Fast Detection)</small></div></div>
+<svg class="a" style="left:931px;top:200px" width="14" height="24"><polygon points="0,4 12,12 0,20" fill="#f07a10"/></svg>
+<!-- left column -->
+<div class="box" style="left:328px;top:226px;width:90px;height:280px;background:#f6f9fd;border:1px solid #dbe6f3"></div>
+<div class="t" style="left:333px;top:233px;font-size:14px;line-height:1.25">RGB-D frames<br>(≈ 2 Hz)</div>
+<img class="a" src="real_stage/rgb.png" style="left:333px;top:273px;width:83px;height:62px;border-radius:3px">
+<img class="a" src="real_stage/crop_rgb_milk.png" style="left:336px;top:348px;width:36px;height:56px;object-fit:contain">
+<img class="a" src="real_stage/crop_rgb_saffron.png" style="left:378px;top:348px;width:36px;height:56px;object-fit:contain">
+<img class="a" src="real_stage/crop_rgb_Febreze_high.png" style="left:336px;top:410px;width:36px;height:56px;object-fit:contain">
+<img class="a" src="real_stage/crop_rgb_Dinosaur.png" style="left:378px;top:410px;width:36px;height:56px;object-fit:contain">
+<div class="t" style="left:362px;top:474px;font-size:16px">· · ·</div>
+<!-- 2-1 -->
+<div class="box" style="left:426px;top:226px;width:230px;height:246px;background:#fff;border:1px solid #f3c9c9"></div>
+<div class="box" style="left:428px;top:228px;width:226px;height:17px;background:#fde8e6;color:#d8352a;font-size:9px;display:flex;align-items:center;justify-content:center;white-space:nowrap;letter-spacing:-.2px">2-1. Improved candidate generation &amp; verification</div>
+<div class="lbl" style="left:428px;top:250px;width:64px">Text prompt<br>(optional)</div>
+<div class="lbl" style="left:494px;top:250px;width:80px">Object proposals<br>(YOLO-World)</div>
+<div class="lbl" style="left:575px;top:250px;width:78px">Mask generation<br>(MobileSAM)</div>
+<div class="box" style="left:432px;top:279px;width:58px;height:55px;border:1px dashed #9aa6d8;background:#f2f3fd;font-size:8.6px;color:#3b46a8;text-align:center;line-height:1.35;padding-top:5px">"milk carton"<br>"white jug"<br>"dino doll"<br>…</div>
+<img class="a" src="real_stage/yolo_boxes.png" style="left:496px;top:279px;width:75px;height:55px">
+<img class="a" src="real_stage/masks.png" style="left:577px;top:279px;width:72px;height:55px">
+<!-- gates -->
+<div class="box" style="left:428px;top:338px;width:226px;height:128px"></div>
+<div class="bg1" style="left:432px;top:340px;background:#24a148">1</div><div class="t" style="left:462px;top:340px;font-size:10.5px">Semantic verification<br>(DINOv2 class token)</div>
+<div class="bg1" style="left:432px;top:371px;background:#2f86e8">2</div><div class="t" style="left:462px;top:371px;font-size:10.5px">Appearance verification<br>(feature similarity)</div>
+<div class="bg1" style="left:432px;top:402px;background:#f08a24">3</div><div class="t" style="left:462px;top:402px;font-size:10.5px">Color distribution check<br>(HSV histogram)</div>
+<div class="bg1" style="left:432px;top:433px;background:#7a4fd1">4</div><div class="t" style="left:462px;top:433px;font-size:10.5px">Exclusive assignment<br>(one object per instance)</div>
+<div class="a" style="left:576px;top:338px;width:78px;height:124px;background:#f7f7f7;border-radius:4px"></div>
+<div class="a" style="left:578px;top:340px"><img src="real_stage/crop_rgb_milk.png" style="width:20px;height:26px;object-fit:contain;background:#fff"></div><div class="t ok" style="left:600px;top:343px;font-size:14px">✓</div>
+<div class="a" style="left:613px;top:340px"><img src="real_stage/crop_reject.png" style="width:20px;height:26px;object-fit:contain;background:#fff"></div><div class="t ng" style="left:637px;top:343px;font-size:14px">✗</div>
+<div class="a" style="left:578px;top:371px"><img src="real_stage/crop_rgb_saffron.png" style="width:20px;height:26px;object-fit:contain;background:#fff"></div><div class="t ok" style="left:600px;top:374px;font-size:14px">✓</div>
+<div class="a" style="left:613px;top:371px"><img src="real_stage/crop_reject_alt.png" style="width:20px;height:26px;object-fit:contain;background:#fff"></div><div class="t ng" style="left:637px;top:374px;font-size:14px">✗</div>
+<div class="a" style="left:578px;top:402px"><img src="real_stage/crop_rgb_Febreze_high.png" style="width:20px;height:26px;object-fit:contain;background:#fff"></div><div class="t ok" style="left:600px;top:405px;font-size:14px">✓</div>
+<div class="t" style="left:612px;top:406px;font-size:8.5px;color:#888;width:40px;line-height:1.1">no reject<br>here</div>
+<div class="a" style="left:578px;top:433px"><img src="real_stage/crop_rgb_Dinosaur.png" style="width:20px;height:26px;object-fit:contain;background:#fff"></div><div class="t ok" style="left:600px;top:436px;font-size:14px">✓</div>
+<div class="t" style="left:612px;top:437px;font-size:8.5px;color:#888;width:40px;line-height:1.1">vs. teddy<br>bear</div>
+<!-- 2-2 -->
+<div class="box" style="left:660px;top:226px;width:240px;height:108px;background:#fff;border:1px solid #f3c9c9"></div>
+<div class="box" style="left:662px;top:228px;width:236px;height:17px;background:#fde8e6;color:#d8352a;font-size:10px;display:flex;align-items:center;justify-content:center">2-2. Improved 6D pose estimation and validation</div>
+<div class="lbl" style="left:662px;top:250px;width:74px;font-size:9px">Valid object<br>(mask + RGB-D)</div>
+<div class="lbl" style="left:736px;top:250px;width:94px;font-size:9px">Pose hypotheses<br>(coarse, 6000 → 300)</div>
+<div class="lbl" style="left:830px;top:250px;width:70px;font-size:9px">Fine refinement<br>(PEM)</div>
+<img class="a" src="real_stage/crop_rgb_milk.png" style="left:672px;top:279px;width:28px;height:48px;object-fit:contain">
+<img class="a" src="real_stage/crop_mask_milk.png" style="left:701px;top:279px;width:26px;height:48px;object-fit:contain;background:#000">
+<div class="a" style="left:740px;top:276px;display:grid;grid-template-columns:repeat(3,25px);gap:2px">
+ <img src="real_stage/hyp_0.png" style="width:25px;height:25px"><img src="real_stage/hyp_1.png" style="width:25px;height:25px"><img src="real_stage/hyp_2.png" style="width:25px;height:25px">
+ <img src="real_stage/hyp_3.png" style="width:25px;height:25px"><img src="real_stage/hyp_4.png" style="width:25px;height:25px"><div style="font-size:12px;text-align:center;line-height:25px">…</div></div>
+<svg class="a" style="left:820px;top:296px" width="14" height="14"><polygon points="0,1 12,7 0,13" fill="#b97b7b"/></svg>
+<img class="a" src="real_stage/fine.png" style="left:836px;top:276px;width:60px;height:52px">
+<div class="box" style="left:662px;top:337px;width:236px;height:17px;background:linear-gradient(90deg,#e8343a,#f05b5b);color:#fff;font-size:11.5px;display:flex;align-items:center;justify-content:center">Candidate filtering and validation (proposed)</div>
+<div class="lbl" style="left:662px;top:357px;width:80px;font-size:8.6px">1. Silhouette<br>overlap</div>
+<div class="lbl" style="left:741px;top:357px;width:80px;font-size:8.6px">2. Feature<br>agreement</div>
+<div class="lbl" style="left:820px;top:357px;width:80px;font-size:8.6px">3. Pose<br>consensus</div>
+<img class="a" src="real_stage/hyp_0.png" data-f="1" style="left:680px;top:380px;width:44px;height:26px;object-fit:contain">
+<img class="a" src="real_stage/hyp_2.png" data-f="1" style="left:759px;top:380px;width:44px;height:26px;object-fit:contain">
+<img class="a" src="real_stage/hyp_5.png" data-f="1" style="left:838px;top:380px;width:44px;height:26px;object-fit:contain">
+<div class="lbl" style="left:662px;top:408px;width:80px;font-size:9px">IoU 0.87 &gt; 0.42 <span class="ok">✓</span><br><span style="color:#777">267 / 300 pass</span></div>
+<div class="lbl" style="left:741px;top:408px;width:80px;font-size:9px">cos 0.68 &gt; 0.45 <span class="ok">✓</span><br><span style="color:#777">250 / 300 pass</span></div>
+<div class="lbl" style="left:820px;top:408px;width:80px;font-size:9px">cluster 153 <span class="ok">✓</span><br><span style="color:#777">occupancy 0.61</span></div>
+<div class="box" style="left:662px;top:442px;width:236px;height:64px;background:#eef6fe;border:1px solid #c9def5"></div>
+<div class="t" style="left:668px;top:445px;font-size:11.5px;color:#1f5fa8">Output of 6D Estimation (Object Observation)</div>
+<table class="tb a" style="left:664px;top:461px;width:232px"><tr><th>Object</th><th>Label</th><th>Center<br><span class="m">T</span><sub>R←O</sub></th><th>Capture<br>time</th><th>Score</th><th>Mask</th></tr>
+<tr><td>1</td><td>milk</td><td><img src="real_stage/crop_rgb_milk.png" style="width:16px;height:18px;object-fit:contain;margin:auto"></td><td>59.75 s</td><td>1.00</td><td><img src="real_stage/crop_mask_milk.png" style="width:14px;height:18px;object-fit:contain;background:#000;margin:auto"></td></tr></table>
+
+<!-- 3 timing -->
+<div class="pn" style="left:940px;top:46px;width:586px;height:222px;border-color:#2f86e8"><div class="ph" style="background:linear-gradient(90deg,#1f6fd1,#4ea0f2)">3.&nbsp; Asynchronous Timing Modeling (Different Processing Rates)</div></div>
+<div class="t" style="left:956px;top:82px;font-size:13.5px">SLAM pose stream (30 Hz)</div>
+<div class="t" style="left:956px;top:138px;font-size:13.5px;line-height:1.3">6D estimation stream (object<br>poses, 2.1 Hz measured)</div>
+<svg class="a" style="left:1150px;top:80px" width="370" height="110" style="font-family:Liberation Serif">
+ <defs><marker id="b2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#2a78d6"/></marker>
+ <marker id="r2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#e02020"/></marker></defs>
+ <line x1="5" y1="44" x2="325" y2="44" stroke="#2a78d6" stroke-width="1.5" marker-end="url(#b2)"/>
+ <line x1="5" y1="98" x2="325" y2="98" stroke="#2a78d6" stroke-width="1.5" marker-end="url(#b2)"/>
+ <g fill="#fff" stroke="#2a78d6" stroke-width="2"><polygon points="36,44 42,32 48,44"/><polygon points="102,44 108,32 114,44"/><polygon points="173,44 179,32 185,44"/></g>
+ <g font-family="Liberation Serif" font-style="italic" font-size="14"><text x="28" y="22">K<tspan font-size="10" baseline-shift="sub">i−1</tspan></text><text x="102" y="22">K<tspan font-size="10" baseline-shift="sub">i</tspan></text><text x="168" y="22">K<tspan font-size="10" baseline-shift="sub">i+1</tspan></text>
+ <text x="40" y="118">O<tspan font-size="10" baseline-shift="sub">j−1</tspan></text><text x="105" y="118">O<tspan font-size="10" baseline-shift="sub">j</tspan></text><text x="170" y="118">O<tspan font-size="10" baseline-shift="sub">j+1</tspan></text></g>
+ <g stroke="#2a78d6" stroke-width="1.2"><line x1="42" y1="44" x2="42" y2="92"/></g>
+ <g stroke="#e02020" stroke-width="1.4"><line x1="108" y1="44" x2="108" y2="92" marker-end="url(#r2)"/><line x1="179" y1="44" x2="179" y2="92" marker-end="url(#r2)"/></g>
+ <g fill="#e02020"><rect x="37" y="93" width="10" height="10"/><rect x="103" y="93" width="10" height="10"/><rect x="174" y="93" width="10" height="10"/></g>
+ <text x="196" y="62" fill="#e02020" font-family="Liberation Serif" font-style="italic" font-size="13">Δt = 1.57 s</text>
+ <text x="196" y="76" fill="#e02020" font-size="10.5">(median, capture→arrival)</text>
+ <text x="250" y="34" font-size="14">· · ·</text><text x="230" y="90" font-size="14">· · ·</text>
+ <text x="335" y="48" font-size="14">time</text><text x="335" y="102" font-size="14">time</text>
+</svg>
+<ul class="ul s" style="left:956px;top:192px;font-size:12px;line-height:1.45"><li>Processing rates differ (SLAM: 30 Hz, 6D: 2.1 Hz; 265 images in 128 s).</li><li>Use capture time <span class="m">t<sub>c</sub></span> for each 6D result.</li><li>Arrival time <span class="m">t<sub>a</sub></span> = <span class="m">t<sub>c</sub></span> + 0.7–6.6 s (network / computation).</li><li>Time alignment using <span class="m">t<sub>c</sub></span> is required.</li></ul>
+<svg class="a" style="left:1222px;top:262px" width="28" height="22"><polygon points="7,0 21,0 21,8 28,8 14,22 0,8 7,8" fill="#2f86e8"/></svg>
+
+<!-- 4 registration -->
+<div class="pn" style="left:940px;top:280px;width:586px;height:226px;border-color:#7a4fd1"><div class="ph" style="background:linear-gradient(90deg,#6a3fd0,#8f6ce6)">4.&nbsp; Capture-time Registration (To Reference Keyframe)</div></div>
+<div class="box" style="left:948px;top:316px;width:206px;height:184px;background:#f7f5fd"></div>
+<div class="badge" style="left:954px;top:322px;background:#6a3fd0;width:26px;height:26px;border-radius:13px;font-size:15px">1</div>
+<div class="t" style="left:988px;top:324px;font-size:12.5px">Interpolate SLAM pose<br>at capture time <span class="m">t<sub>c</sub></span></div>
+<svg class="a" style="left:952px;top:356px" width="200" height="80">
+ <defs><marker id="b3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#2a78d6"/></marker></defs>
+ <line x1="2" y1="34" x2="160" y2="34" stroke="#2a78d6" stroke-width="1.5" marker-end="url(#b3)"/>
+ <g fill="#fff" stroke="#2a78d6" stroke-width="2"><polygon points="24,34 30,22 36,34"/><polygon points="117,34 123,22 129,34"/></g>
+ <rect x="68" y="24" width="20" height="20" fill="#fff4e6" stroke="#f08a24" stroke-width="2.2"/><rect x="73" y="29" width="10" height="10" fill="#f08a24"/>
+ <g font-family="Liberation Serif" font-style="italic" font-size="13"><text x="18" y="16">K<tspan font-size="9" baseline-shift="sub">64</tspan></text><text x="70" y="16">K<tspan font-size="9" baseline-shift="sub">65</tspan></text><text x="112" y="16">K<tspan font-size="9" baseline-shift="sub">66</tspan></text></g>
+ <text x="164" y="40" font-size="12">time</text>
+ <line x1="78" y1="44" x2="78" y2="60" stroke="#e02020" stroke-width="1.5"/><polygon points="74,58 78,66 82,58" fill="#e02020"/>
+ <text x="86" y="64" fill="#e02020" font-size="11.5"><tspan font-family="Liberation Serif" font-style="italic">t</tspan><tspan font-size="8" baseline-shift="sub">c</tspan> = 59.75 s</text>
+</svg>
+<div class="t" style="left:964px;top:440px;font-size:15px;line-height:1.2"><span class="m">T</span><sub>W←C</sub>(<span class="m">t<sub>c</sub></span>)<br><span style="font-size:12px">(interpolated)</span></div>
+<div class="box" style="left:1160px;top:316px;width:360px;height:30px;background:#f3effd"></div>
+<div class="badge" style="left:1166px;top:318px;background:#6a3fd0;width:26px;height:26px;border-radius:13px;font-size:15px">2</div>
+<div class="t" style="left:1200px;top:324px;font-size:12.5px">Find reference keyframe <span class="m">K</span><sub>ref</sub>(<span class="m">t<sub>c</sub></span>) = <span class="m">K</span><sub>65</sub></div>
+<img class="a" src="fig3/kf_prev.png" style="left:1197px;top:350px;width:78px;height:36px">
+<img class="a" src="fig3/kf_ref.png" style="left:1300px;top:350px;width:72px;height:36px;outline:2.5px solid #f08a24">
+<img class="a" src="fig3/kf_next.png" style="left:1396px;top:350px;width:76px;height:36px">
+<svg class="a" style="left:1278px;top:360px" width="20" height="16"><polygon points="0,4 10,4 10,0 20,8 10,16 10,12 0,12" fill="#4ea0f2"/></svg>
+<svg class="a" style="left:1374px;top:360px" width="20" height="16"><polygon points="0,4 10,4 10,0 20,8 10,16 10,12 0,12" fill="#4ea0f2"/></svg>
+<div class="t m" style="left:1226px;top:388px;font-size:13px">K<sub>64</sub></div><div class="t m" style="left:1320px;top:388px;font-size:13px;color:#e02020;font-weight:700">K<sub>ref</sub></div><div class="t m" style="left:1424px;top:388px;font-size:13px">K<sub>66</sub></div>
+<div class="box" style="left:1160px;top:404px;width:360px;height:30px;background:#f3effd"></div>
+<div class="badge" style="left:1166px;top:406px;background:#6a3fd0;width:26px;height:26px;border-radius:13px;font-size:15px">3</div>
+<div class="t" style="left:1200px;top:406px;font-size:12px">Apply camera extrinsic and transform<br>to keyframe coordinate</div>
+<div class="t" style="left:1236px;top:436px;font-size:17px;font-family:var(--math)"><i>T</i><sub>K←O</sub> = <i>T</i><sub>W←K</sub><sup>−1</sup> · <i>T</i><sub>W←C</sub>(<i>t<sub>c</sub></i>) · <i>X</i><sub>C←O</sub></div>
+<img class="a" src="real_stage/fine.png" style="left:1168px;top:452px;width:60px;height:50px">
+<div class="t" style="left:1408px;top:468px;font-size:9.5px;line-height:1.22"><span class="m">X</span><sub>C←O</sub> : camera extrinsic<br>C&nbsp;&nbsp; : recognition camera<br>K&nbsp;&nbsp; : reference keyframe</div>
+
+<!-- arrow A -> observation -->
+<svg class="a" style="left:752px;top:510px" width="34" height="24"><polygon points="0,0 34,0 17,22" fill="#ef3b3b"/></svg>
+
+<!-- ============================== Observation ============================== -->
+<div class="frame" style="left:362px;top:532px;width:813px;height:74px;border:2px dashed #ef6b6b;background:#fff3f3;border-radius:8px"></div>
+<div class="a" style="left:505px;top:534px;width:513px;height:22px;border-radius:5px;background:linear-gradient(90deg,#e8343a,#f15b5b);color:#fff;font-size:15px;display:flex;align-items:center;justify-content:center">Anchored Object Observation (Output of Step 4)</div>
+<img class="a" src="real_stage/crop_rgb_milk.png" style="left:432px;top:548px;width:64px;height:54px;object-fit:contain">
+<table class="a" style="left:500px;top:558px;width:670px;font-size:12.5px;border-collapse:collapse">
+<tr style="color:#333"><td style="text-align:center;padding:2px;border-bottom:1px solid #f0c8c8">Object ID</td><td style="text-align:center;border-bottom:1px solid #f0c8c8">Label</td><td style="text-align:center;border-bottom:1px solid #f0c8c8">Reference keyframe</td><td style="text-align:center;border-bottom:1px solid #f0c8c8">Relative pose</td><td style="text-align:center;border-bottom:1px solid #f0c8c8">Capture time</td><td style="text-align:center;border-bottom:1px solid #f0c8c8">Confidence</td><td style="text-align:center;border-bottom:1px solid #f0c8c8">Features / mask</td></tr>
+<tr><td style="text-align:center;padding-top:3px">4</td><td style="text-align:center">milk carton</td><td style="text-align:center" class="m">K<sub>65</sub></td><td style="text-align:center" class="m">T<sub>K←O</sub></td><td style="text-align:center">59.75 s</td><td style="text-align:center">1.00</td><td style="text-align:center"><div style="display:flex;gap:2px;justify-content:center;align-items:center"><img src="real_stage/crop_mask_milk.png" style="width:20px;height:18px;object-fit:contain;background:#000"><img src="real_stage/crop_rgb_milk.png" style="width:20px;height:18px;object-fit:contain"> …</div></td></tr></table>
+<svg class="a" style="left:752px;top:604px" width="34" height="16"><polygon points="0,0 34,0 17,14" fill="#ef3b3b"/></svg>
+
+<!-- ============================== B ============================== -->
+<div class="frame" style="left:4px;top:616px;width:1528px;height:326px;border:2px dashed #ef6b6b;background:#fff7f7"></div>
+<div class="hdr" style="left:6px;top:618px;width:1524px;height:32px;background:linear-gradient(90deg,#e0222a,#f24d4d 60%,#f56d6d)">B.&nbsp; Keyframe-Anchored Spatial Object Mapping <small>(Object State Map + Loop-Closure Update)</small></div>
+
+<!-- 5 -->
+<div class="pn" style="left:12px;top:654px;width:930px;height:282px;border-color:#e8343a"><div class="ph" style="background:linear-gradient(90deg,#e0222a,#f05252);height:26px">5.&nbsp; Keyframe-Anchored Spatial Object State Map (Main Contribution)</div></div>
+<div class="a" style="left:14px;top:682px;width:926px;height:18px;background:#fde6e6;color:#e0222a;font-size:13.5px;padding-left:8px">Store each object relative to its reference keyframe and its state over time.</div>
+<div class="a" id="smap" style="left:16px;top:702px;width:440px;height:232px;overflow:hidden"><img src="fig_v3/statemap.png" style="width:440px;height:232px;object-fit:cover;object-position:50% 40%"></div>
+<div class="a" id="callouts" style="left:16px;top:702px;width:440px;height:232px"></div>
+<div class="t" style="left:20px;top:704px;font-size:10px;line-height:1.45;background:rgba(255,255,255,.85);padding:1px 4px;border-radius:3px"><span style="color:#1f5fa8">▲</span> : SLAM keyframe (K)<br><span style="color:#1f5fa8">—</span> : keyframe trajectory<br><span style="color:#d39100">■</span> : tracked object (anchored to K)</div>
+<div class="t" style="left:24px;top:902px;font-size:10px;color:#555">real point cloud, keyframes and objects (office run)</div>
+<!-- object state table -->
+<div class="box" style="left:462px;top:702px;width:338px;height:136px;background:#fff;border:1px solid #f3c9c9"></div>
+<div class="a" style="left:464px;top:704px;width:240px;height:17px;background:linear-gradient(90deg,#e8343a,#f05b5b);color:#fff;font-size:11.5px;padding-left:6px;border-radius:3px">Object State (stored in the keyframe map)</div>
+<table class="tb a" id="tbl" style="left:466px;top:724px;width:330px"><tr><th>ID</th><th>Label<br>(category)</th><th>Reference<br>keyframe</th><th>Relative pose<br><span class="m">T</span><sub>K←O</sub></th><th>Confidence</th><th>Obs.<br>count</th><th>State</th></tr></table>
+<div class="box" style="left:462px;top:842px;width:338px;height:90px;background:#fff3f3;border:1px solid #f3c9c9"></div>
+<div class="t" style="left:470px;top:845px;font-size:13.5px;color:#e0222a">Key features</div>
+<ul class="ul s" style="left:470px;top:862px;font-size:10px;line-height:1.38"><li>Each object is anchored to a reference keyframe.</li><li>Store relative pose, confidence, observation history and class.</li><li>Manage object state (tentative / active / lost / remembered / deleted).</li><li>Re-associate with the same ID when the object reappears.</li><li>Robust to temporary tracking failures and viewpoint changes.</li></ul>
+<!-- state machine -->
+<div class="t" style="left:808px;top:702px;width:130px;font-size:10.5px;text-align:center">Object state management<br>(existence probability)</div>
+<div class="a" style="left:836px;top:730px;width:72px;height:200px">
+ <div class="st" style="top:0;background:#dcebfd;border-color:#8fbaf0;color:#1f5fa8">tentative</div>
+ <div class="st" style="top:44px;background:#d9f3df;border-color:#86cf98;color:#1d7a3a">active</div>
+ <div class="st" style="top:88px;background:#ffe2b8;border-color:#f3b45d;color:#9a5b00">lost</div>
+ <div class="st" style="top:132px;background:#e9e9e9;border-color:#bdbdbd;color:#444">remembered</div>
+ <div class="st" style="top:176px;background:#fdd5d5;border-color:#f08f8f;color:#c42020">deleted</div>
+</div>
+<svg class="a" style="left:866px;top:754px" width="12" height="160"><g fill="#3a7bd5"><polygon points="2,0 10,0 6,18"/><polygon points="2,44 10,44 6,62"/><polygon points="2,88 10,88 6,106"/><polygon points="2,132 10,132 6,150"/></g></svg>
+<div class="t" style="left:880px;top:755px;font-size:8.6px;color:#333;line-height:1.1">≥ 2 obs.,<br><span class="m">p</span> &gt; 0.6</div>
+<div class="t" style="left:880px;top:799px;font-size:8.6px;color:#333;line-height:1.1">missed in<br>view &amp; range</div>
+<div class="t" style="left:880px;top:843px;font-size:8.6px;color:#333;line-height:1.1"><span class="m">p</span> &lt; 0.05,<br>≥ 5 obs.</div>
+<div class="t" style="left:880px;top:887px;font-size:8.6px;color:#333;line-height:1.1">removed<br>(depth check)</div>
+<svg class="a" style="left:800px;top:740px" width="38" height="140"><path d="M36,136 C4,120 4,60 34,48" stroke="#1d7a3a" stroke-width="1.4" fill="none" marker-end="url(#gm)"/><defs><marker id="gm" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#1d7a3a"/></marker></defs></svg>
+<div class="t" style="left:806px;top:790px;font-size:8px;color:#1d7a3a;line-height:1.1;width:30px">same<br>ID</div>
+
+<!-- 6 -->
+<div class="pn" style="left:948px;top:654px;width:578px;height:282px;border-color:#e8343a"><div class="ph" style="background:linear-gradient(90deg,#e0222a,#f05252);height:26px">6.&nbsp; Loop-Closure-Aware Object Map Update (Main Contribution)</div></div>
+<div class="a" style="left:950px;top:682px;width:574px;height:18px;background:#fde6e6;color:#e0222a;font-size:13px;padding-left:8px">When SLAM is corrected by loop closure, update all anchored objects consistently.</div>
+<div class="a" style="left:1010px;top:703px;width:160px;height:18px;border-radius:4px;background:#8a8a8a;color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center">Before loop closure</div>
+<div class="a" style="left:1310px;top:703px;width:160px;height:18px;border-radius:4px;background:#e8343a;color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center">After loop closure</div>
+<img class="a" src="fig_v3/loop_before.png" style="left:955px;top:724px;width:215px;height:116px;object-fit:contain;background:#fff">
+<img class="a" src="fig_v3/loop_after.png" style="left:1285px;top:724px;width:235px;height:116px;object-fit:contain;background:#fff">
+<div class="t" style="left:1172px;top:726px;width:112px;text-align:center;font-size:13.5px;line-height:1.2">SLAM<br>loop closure<br><span style="font-size:11px">(graph optimization)</span></div>
+<svg class="a" style="left:1186px;top:778px" width="86" height="34"><defs><linearGradient id="ga"><stop offset="0" stop-color="#d0d0d0"/><stop offset="1" stop-color="#555"/></linearGradient></defs><polygon points="0,9 58,9 58,0 86,17 58,34 58,25 0,25" fill="url(#ga)"/></svg>
+<div class="t" style="left:1174px;top:816px;width:110px;text-align:center;font-size:10px;color:#a63c12">keyframes moved<br>by up to 3.05 m</div>
+<div class="box" style="left:956px;top:842px;width:564px;height:46px;background:#f2f0fb;border:1px solid #d8d2f0"></div>
+<div class="t" style="left:964px;top:845px;font-size:12.5px">Update anchored objects using updated keyframe pose</div>
+<div class="t" style="left:990px;top:861px;font-size:22px;font-family:var(--math)"><i>T</i>′<sub>W←O</sub> = <i>T</i>′<sub>W←K</sub> · <i>T</i><sub>K←O</sub></div>
+<div class="t" style="left:1300px;top:846px;font-size:9.2px;line-height:1.22"><span class="m">T</span><sub>K←O</sub> : stored relative pose (unchanged)<br><span class="m">T</span>′<sub>W←K</sub> : updated keyframe pose after loop closure<br><span class="m">T</span>′<sub>W←O</sub> : updated global object pose</div>
+<ul class="ul s" style="left:958px;top:892px;font-size:10.8px;line-height:1.35"><li>All anchored objects move together with the updated keyframe pose.</li><li>Same 119 results: 68 (map frame) vs 6 (anchored) end &gt; 10 cm from the final object position.</li><li>Maintain global consistency of the object state map.</li></ul>
+
+<!-- ============================== 7 ============================== -->
+<div class="frame" style="left:8px;top:946px;width:1520px;height:72px;border:1.5px solid #8fd3a6;background:#effaf2;border-radius:8px"></div>
+<div class="a" style="left:14px;top:952px;width:440px;height:36px;border-radius:7px;background:linear-gradient(90deg,#118a3c,#2fb361);color:#fff;font-size:17px;display:flex;align-items:center;padding-left:14px">7.&nbsp; Result: Globally Consistent 3D Object State Map</div>
+<ul class="ul" style="left:474px;top:950px;font-size:12px;line-height:1.5"><li>Real-time SLAM (0 dropped frames) with 6D poses arriving 1.6 s late.</li><li>8 objects confirmed, 0 same-class duplicates in the map.</li><li>Supports text prompt object search and robotic manipulation.</li></ul>
+<img class="a" src="real915/map3d.png" style="left:855px;top:952px;width:325px;height:60px;object-fit:cover;object-position:50% 45%">
+<img class="a" src="fig3/objcrop_milk.png" style="left:1205px;top:950px;width:60px;height:62px;object-fit:contain;background:#fff;border-radius:3px">
+<img class="a" src="fig3/objcrop_saffron.png" style="left:1272px;top:950px;width:60px;height:62px;object-fit:contain;background:#fff;border-radius:3px">
+<img class="a" src="fig3/objcrop_Dinosaur.png" style="left:1339px;top:950px;width:60px;height:62px;object-fit:contain;background:#fff;border-radius:3px">
+<img class="a" src="fig3/objcrop_Febreze_high.png" style="left:1406px;top:950px;width:60px;height:62px;object-fit:contain;background:#fff;border-radius:3px">
+<div class="t" style="left:1478px;top:968px;font-size:20px">· · ·</div>
+
+<script src="fig_v3_data.js"></script>
+</body></html>

@@ -1,0 +1,137 @@
+{
+ "T_slam_sam": [
+  [
+   0.01862750650643008,
+   0.3024108788195837,
+   -0.9529956329243695,
+   -0.2955399836991394
+  ],
+  [
+   0.02434636924733489,
+   0.9527411874683268,
+   0.3028060171230338,
+   0.09446646900851048
+  ],
+  [
+   0.9995300247145281,
+   -0.028842504624419816,
+   0.010384585748357544,
+   -0.37029219750386655
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "dataset": "260915_eightcircle",
+ "source": "offline: trajectory-plane gravity + planar SE(2) hand-eye on ORB-SLAM3 f2000 relative motions + depth floor height",
+ "inputs": {
+  "slam_traj": "objpose/rt/260915/slam_orb_tum.txt.optimized.txt",
+  "sam_traj": "objpose/rt/260915/sam_orb_tum.txt.optimized.txt",
+  "windows_s": [
+   0.5,
+   1.0,
+   1.5,
+   2.0,
+   3.0,
+   4.0
+  ]
+ },
+ "down": {
+  "slam": [
+   0.026799406191497115,
+   0.9985705414282215,
+   -0.046245709201308965
+  ],
+  "sam": [
+   -0.021413201626602055,
+   0.9608175574709258,
+   0.27635320886811354
+  ],
+  "plane_rms_cm": [
+   0.579,
+   0.355
+  ]
+ },
+ "tau_s": 0.002,
+ "planar_handeye": {
+  "pairs": 7596,
+  "tx_m": -0.3658955955818871,
+  "ty_m": -0.29796796427255323,
+  "phi_deg": -88.61736265879877,
+  "residual_median_cm": 1.05,
+  "residual_p90_cm": 3.511,
+  "sd_tx_mm": 0.44,
+  "sd_ty_mm": 0.31,
+  "sd_phi_deg": 0.0326,
+  "quarters": [
+   {
+    "t_from_s": 0.0,
+    "n": 1899,
+    "d_tx_mm": -19.1,
+    "d_ty_mm": 6.8,
+    "d_phi_deg": 0.405
+   },
+   {
+    "t_from_s": 31.6,
+    "n": 1899,
+    "d_tx_mm": 10.2,
+    "d_ty_mm": 9.4,
+    "d_phi_deg": -0.674
+   },
+   {
+    "t_from_s": 63.3,
+    "n": 1899,
+    "d_tx_mm": -10.9,
+    "d_ty_mm": -4.1,
+    "d_phi_deg": 1.799
+   },
+   {
+    "t_from_s": 94.9,
+    "n": 1899,
+    "d_tx_mm": -0.1,
+    "d_ty_mm": -16.5,
+    "d_phi_deg": -0.088
+   }
+  ]
+ },
+ "floor": {
+  "h_slam_m": 1.1035821990621357,
+  "h_sam_m": 1.0000466367411993,
+  "mad_cm": [
+   4.68,
+   0.71
+  ],
+  "frames_used": [
+   20,
+   275
+  ],
+  "normal_vs_trajectory_deg": [
+   1.619,
+   0.578
+  ]
+ },
+ "compare": {
+  "previous_axzb": {
+   "translation_diff_cm": 5.0,
+   "rotation_diff_deg": 1.62
+  },
+  "shared_map_loc": {
+   "translation_diff_cm": 7.68,
+   "rotation_diff_deg": 4.21
+  },
+  "shared_map_loc_ftime": {
+   "translation_diff_cm": 9.97,
+   "rotation_diff_deg": 1.66
+  },
+  "offline_assoc_stamps": {
+   "translation_diff_cm": 4.39,
+   "rotation_diff_deg": 1.56
+  }
+ },
+ "object_consistency_check (reference only)": {},
+ "clock": "header stamps (converted bags)",
+ "sam_tau_s": 0.002
+}

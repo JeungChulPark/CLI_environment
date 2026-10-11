@@ -196,7 +196,7 @@ def _run_initiator(store, live_ids_by_name, det, name, score, T_meas, ts,
 
 def _run_deleter(store, live_ids_by_name, seen_ids, ts, pose, ages,
                  cam_K, img_size, pd_base, r_lost, r_retire,
-                 tentative_max_age, min_obs_longterm):
+                 tentative_max_age, min_obs_longterm, pd_max_range_m=None):
     """Deleter stage (Stone Soup pattern): decay existence of unseen live
     instances in proportion to their expected detection probability P_D and
     retire the ones whose existence ran out. An instance outside the camera view
@@ -215,7 +215,7 @@ def _run_deleter(store, live_ids_by_name, seen_ids, ts, pose, ages,
                 # remembered = stable long-term memory; misses no longer count.
                 continue
             p_d = expected_p_d(pose.T_map_cam, lm.T_map_obj, cam_K, img_size,
-                               pd_base=pd_base)
+                               pd_base=pd_base, max_range_m=pd_max_range_m)
             r = update_existence_missed(lm.confidence, p_d)
             store.update_landmark(
                 object_id,
@@ -307,6 +307,7 @@ class StreamingObjectMemory:
         quality_weighting: bool = False,
         weights: Optional[QualityWeights] = None,
         r_prior: float = R_PRIOR,
+        pd_max_range_m: Optional[float] = None,
     ):
         self.assoc_trans_gate_m = assoc_trans_gate_m
         self.assoc_rot_gate_deg = assoc_rot_gate_deg
@@ -314,6 +315,7 @@ class StreamingObjectMemory:
         self.score_floor = score_floor
         self.tentative_gate_mult = tentative_gate_mult
         self.pd_base = pd_base
+        self.pd_max_range_m = pd_max_range_m
         self.clutter_ratio = clutter_ratio
         self.r_init = r_init
         self.r_promote = r_promote
@@ -516,7 +518,7 @@ class StreamingObjectMemory:
         released = _run_deleter(
             store, live_ids_by_name, seen_ids, ts, pose, ages,
             self.cam_K, self.img_size, self.pd_base, self.r_lost, self.r_retire,
-            self.tentative_max_age, self.min_obs_longterm,
+            self.tentative_max_age, self.min_obs_longterm, self.pd_max_range_m,
         )
         for name, object_id in released:
             # drop the deleted instance from its class's live list.

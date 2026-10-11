@@ -1,0 +1,44 @@
+{
+ "fastsam_full": {
+  "images": 36,
+  "targets": 165,
+  "answers": 138,
+  "correct": 136,
+  "found_pct": 82.4,
+  "wrong_per_image": 0.056,
+  "time_median_ms": 1908.0,
+  "stage_median_ms": {
+   "yolo": 0.0,
+   "ism": 164.0,
+   "pem": 1739.0
+  }
+ },
+ "fastsam_msam": {
+  "images": 36,
+  "targets": 165,
+  "answers": 132,
+  "correct": 130,
+  "found_pct": 78.8,
+  "wrong_per_image": 0.056,
+  "time_median_ms": 2096.0,
+  "stage_median_ms": {
+   "yolo": 0.0,
+   "ism": 276.0,
+   "pem": 1786.0
+  }
+ },
+ "text_msam": {
+  "images": 36,
+  "targets": 165,
+  "answers": 125,
+  "correct": 125,
+  "found_pct": 75.8,
+  "wrong_per_image": 0.0,
+  "time_median_ms": 1566.0,
+  "stage_median_ms": {
+   "yolo": 0.0,
+   "ism": 109.0,
+   "pem": 1460.0
+  }
+ }
+}

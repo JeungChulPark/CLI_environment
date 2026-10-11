@@ -1,0 +1,37 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+body{margin:0;width:1000px;background:#fff;font-family:"Times New Roman","Liberation Serif",serif;color:#111;font-size:14px;line-height:1.25}
+.wrap{display:grid;grid-template-columns:290px 100px 1fr;gap:0;padding:8px}
+.dev{border:2px solid;border-radius:8px;padding:0 8px 8px}
+.h{font-weight:700;font-size:15px;margin:0 -8px 8px;padding:4px 8px;color:#fff;border-radius:6px 6px 0 0}
+.b{border:1.4px solid #2a78d6;border-radius:6px;padding:4px 6px;background:#f4f8fd}
+.b b{display:block;font-size:14.5px}
+.g .b{border-color:#1baf7a;background:#f1faf6}
+.k{border:2.4px solid #eb6834!important;background:#fff4ee!important}
+.dn{text-align:center;font-size:13px;line-height:15px;color:#333}
+.grid{display:grid;grid-template-columns:1fr 1fr;column-gap:22px;row-gap:0}
+.mid{display:flex;flex-direction:column;justify-content:center;gap:56px;text-align:center;font-size:13.5px}
+.ar{border-top:2px solid #333;position:relative;margin:2px 4px}
+.ar:after{content:"";position:absolute;right:-2px;top:-6px;border-left:9px solid #333;border-top:5px solid transparent;border-bottom:5px solid transparent}
+.rt{position:relative}.rt:after{content:"→";position:absolute;right:-19px;top:40%;font-size:15px}
+</style></head><body><div class="wrap">
+<div class="dev" style="border-color:#2a78d6"><div class="h" style="background:#2a78d6">Device 1: SLAM computer</div>
+<div class="b"><b>SLAM camera (RGB-D) or LiDAR</b>capture time from frame metadata</div><div class="dn">↓</div>
+<div class="b"><b>Real-time SLAM</b>ORB-SLAM3 or HDL-Graph-SLAM; 2,000 features within the 33.3 ms period</div><div class="dn">↓</div>
+<div class="b k"><b>Per-frame pose message</b>capture time, pose or "no pose", <u>reference keyframe id and pose</u>, map id</div><div class="dn">&nbsp;</div>
+<div class="b k"><b>Keyframe-list broadcast</b>all live keyframes every 1 s, after each map change, and again +0.5 s, +3 s</div><div class="dn">&nbsp;</div>
+<div class="b"><b>Optional prior-map mode</b>unanchored poses sent as "no pose"</div>
+</div>
+<div class="mid"><div>pose messages<br>(≤30 Hz)<div class="ar"></div></div><div>keyframe lists<div class="ar"></div></div><div><b>wired LAN</b><br>RTT 3.1 ms</div></div>
+<div class="dev g" style="border-color:#1baf7a"><div class="h" style="background:#1baf7a">Device 2: recognition and fusion computer (GPU)</div>
+<div class="grid">
+<div class="b"><b>Sensor alignment</b>clock offset; residual offset τ and extrinsic X</div>
+<div class="b"><b>Template pre-computation</b>CAD, 42 views, DINOv2, color histogram, text embedding</div>
+<div class="dn">↓</div><div class="dn">&nbsp;</div>
+<div class="b rt"><b>Multi-object 6D pose estimation</b>text-prompt proposals, sequential gates, PEM, pose verification</div>
+<div class="b k"><b>Capture-time registration</b>pose at capture time t; object stored <u>relative to the reference keyframe at t</u>; wait if no pose yet</div>
+<div class="dn">&nbsp;</div><div class="dn">↓</div>
+<div class="b rt"><b>Keyframe store</b>keyframe poses from lists; culled keyframes re-anchored</div>
+<div class="b"><b>Object state map</b>rotation-free association, voted orientation, existence probability, duplicate suppression</div>
+</div><div class="dn">↓</div>
+<div class="b"><b>Latency-compensated display (15 Hz)</b>image buffer; all map objects projected with the display-time SLAM pose; adaptive delay</div>
+</div></div></body></html>

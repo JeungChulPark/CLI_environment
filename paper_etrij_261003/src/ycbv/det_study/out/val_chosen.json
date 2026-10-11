@@ -1,0 +1,380 @@
+{
+ "split": "val",
+ "images": 563,
+ "rule": "top-3 boxes per object, score >= 0.02, IoU >= 0.5",
+ "label": "verification run, RTX 3080 Ti Laptop",
+ "results": {
+  "text:yolov8m-worldv2.pt:/home/jucpark/DeepLearning/CLI_environment/paper_etrij_261003/src/ycbv/det_study/out/prompts_best_m.json": {
+   "recall": 82.9,
+   "hit": 2188,
+   "n": 2639,
+   "boxes_per_image": 9.49,
+   "det_ms_median": 12.9,
+   "per_object": {
+    "002_master_chef_can": {
+     "recall": 99.5,
+     "n": 200
+    },
+    "003_cracker_box": {
+     "recall": 92.0,
+     "n": 150
+    },
+    "004_sugar_box": {
+     "recall": 98.4,
+     "n": 250
+    },
+    "005_tomato_soup_can": {
+     "recall": 62.1,
+     "n": 277
+    },
+    "006_mustard_bottle": {
+     "recall": 100.0,
+     "n": 86
+    },
+    "007_tuna_fish_can": {
+     "recall": 93.5,
+     "n": 186
+    },
+    "008_pudding_box": {
+     "recall": 78.0,
+     "n": 50
+    },
+    "009_gelatin_box": {
+     "recall": 58.0,
+     "n": 50
+    },
+    "010_potted_meat_can": {
+     "recall": 79.5,
+     "n": 127
+    },
+    "011_banana": {
+     "recall": 100.0,
+     "n": 100
+    },
+    "019_pitcher_base": {
+     "recall": 93.4,
+     "n": 136
+    },
+    "021_bleach_cleanser": {
+     "recall": 98.5,
+     "n": 200
+    },
+    "024_bowl": {
+     "recall": 100.0,
+     "n": 77
+    },
+    "025_mug": {
+     "recall": 100.0,
+     "n": 100
+    },
+    "035_power_drill": {
+     "recall": 65.0,
+     "n": 200
+    },
+    "036_wood_block": {
+     "recall": 100.0,
+     "n": 50
+    },
+    "037_scissors": {
+     "recall": 32.0,
+     "n": 50
+    },
+    "040_large_marker": {
+     "recall": 100.0,
+     "n": 100
+    },
+    "051_large_clamp": {
+     "recall": 1.0,
+     "n": 100
+    },
+    "052_extra_large_clamp": {
+     "recall": 58.0,
+     "n": 100
+    },
+    "061_foam_brick": {
+     "recall": 96.0,
+     "n": 50
+    }
+   }
+  },
+  "text:yolov8m-worldv2.pt:/home/jucpark/DeepLearning/CLI_environment/paper_etrij_261003/src/ycbv/det_study/out/prompts_ensemble_m.json": {
+   "recall": 81.7,
+   "hit": 2156,
+   "n": 2639,
+   "boxes_per_image": 11.93,
+   "det_ms_median": 11.9,
+   "per_object": {
+    "002_master_chef_can": {
+     "recall": 92.5,
+     "n": 200
+    },
+    "003_cracker_box": {
+     "recall": 93.3,
+     "n": 150
+    },
+    "004_sugar_box": {
+     "recall": 91.6,
+     "n": 250
+    },
+    "005_tomato_soup_can": {
+     "recall": 74.7,
+     "n": 277
+    },
+    "006_mustard_bottle": {
+     "recall": 100.0,
+     "n": 86
+    },
+    "007_tuna_fish_can": {
+     "recall": 71.0,
+     "n": 186
+    },
+    "008_pudding_box": {
+     "recall": 94.0,
+     "n": 50
+    },
+    "009_gelatin_box": {
+     "recall": 96.0,
+     "n": 50
+    },
+    "010_potted_meat_can": {
+     "recall": 82.7,
+     "n": 127
+    },
+    "011_banana": {
+     "recall": 100.0,
+     "n": 100
+    },
+    "019_pitcher_base": {
+     "recall": 100.0,
+     "n": 136
+    },
+    "021_bleach_cleanser": {
+     "recall": 97.5,
+     "n": 200
+    },
+    "024_bowl": {
+     "recall": 100.0,
+     "n": 77
+    },
+    "025_mug": {
+     "recall": 100.0,
+     "n": 100
+    },
+    "035_power_drill": {
+     "recall": 57.0,
+     "n": 200
+    },
+    "036_wood_block": {
+     "recall": 72.0,
+     "n": 50
+    },
+    "037_scissors": {
+     "recall": 32.0,
+     "n": 50
+    },
+    "040_large_marker": {
+     "recall": 100.0,
+     "n": 100
+    },
+    "051_large_clamp": {
+     "recall": 1.0,
+     "n": 100
+    },
+    "052_extra_large_clamp": {
+     "recall": 55.0,
+     "n": 100
+    },
+    "061_foam_brick": {
+     "recall": 94.0,
+     "n": 50
+    }
+   }
+  },
+  "text:yolov8x-worldv2.pt:/home/jucpark/DeepLearning/CLI_environment/paper_etrij_261003/src/ycbv/det_study/out/prompts_best_m.json": {
+   "recall": 89.6,
+   "hit": 2364,
+   "n": 2639,
+   "boxes_per_image": 8.54,
+   "det_ms_median": 23.5,
+   "per_object": {
+    "002_master_chef_can": {
+     "recall": 92.0,
+     "n": 200
+    },
+    "003_cracker_box": {
+     "recall": 98.7,
+     "n": 150
+    },
+    "004_sugar_box": {
+     "recall": 89.2,
+     "n": 250
+    },
+    "005_tomato_soup_can": {
+     "recall": 87.4,
+     "n": 277
+    },
+    "006_mustard_bottle": {
+     "recall": 100.0,
+     "n": 86
+    },
+    "007_tuna_fish_can": {
+     "recall": 80.6,
+     "n": 186
+    },
+    "008_pudding_box": {
+     "recall": 98.0,
+     "n": 50
+    },
+    "009_gelatin_box": {
+     "recall": 90.0,
+     "n": 50
+    },
+    "010_potted_meat_can": {
+     "recall": 83.5,
+     "n": 127
+    },
+    "011_banana": {
+     "recall": 100.0,
+     "n": 100
+    },
+    "019_pitcher_base": {
+     "recall": 77.2,
+     "n": 136
+    },
+    "021_bleach_cleanser": {
+     "recall": 99.5,
+     "n": 200
+    },
+    "024_bowl": {
+     "recall": 100.0,
+     "n": 77
+    },
+    "025_mug": {
+     "recall": 100.0,
+     "n": 100
+    },
+    "035_power_drill": {
+     "recall": 93.0,
+     "n": 200
+    },
+    "036_wood_block": {
+     "recall": 100.0,
+     "n": 50
+    },
+    "037_scissors": {
+     "recall": 32.0,
+     "n": 50
+    },
+    "040_large_marker": {
+     "recall": 100.0,
+     "n": 100
+    },
+    "051_large_clamp": {
+     "recall": 55.0,
+     "n": 100
+    },
+    "052_extra_large_clamp": {
+     "recall": 93.0,
+     "n": 100
+    },
+    "061_foam_brick": {
+     "recall": 100.0,
+     "n": 50
+    }
+   }
+  },
+  "text:yolov8x-worldv2.pt:/home/jucpark/DeepLearning/CLI_environment/paper_etrij_261003/src/ycbv/det_study/out/prompts_best_m.json+visual:yoloe-11l-seg.pt:12": {
+   "recall": 95.4,
+   "hit": 2518,
+   "n": 2639,
+   "boxes_per_image": 10.28,
+   "det_ms_median": 52.0,
+   "per_object": {
+    "002_master_chef_can": {
+     "recall": 100.0,
+     "n": 200
+    },
+    "003_cracker_box": {
+     "recall": 100.0,
+     "n": 150
+    },
+    "004_sugar_box": {
+     "recall": 100.0,
+     "n": 250
+    },
+    "005_tomato_soup_can": {
+     "recall": 92.8,
+     "n": 277
+    },
+    "006_mustard_bottle": {
+     "recall": 100.0,
+     "n": 86
+    },
+    "007_tuna_fish_can": {
+     "recall": 98.4,
+     "n": 186
+    },
+    "008_pudding_box": {
+     "recall": 98.0,
+     "n": 50
+    },
+    "009_gelatin_box": {
+     "recall": 98.0,
+     "n": 50
+    },
+    "010_potted_meat_can": {
+     "recall": 83.5,
+     "n": 127
+    },
+    "011_banana": {
+     "recall": 100.0,
+     "n": 100
+    },
+    "019_pitcher_base": {
+     "recall": 86.0,
+     "n": 136
+    },
+    "021_bleach_cleanser": {
+     "recall": 99.5,
+     "n": 200
+    },
+    "024_bowl": {
+     "recall": 100.0,
+     "n": 77
+    },
+    "025_mug": {
+     "recall": 100.0,
+     "n": 100
+    },
+    "035_power_drill": {
+     "recall": 96.5,
+     "n": 200
+    },
+    "036_wood_block": {
+     "recall": 100.0,
+     "n": 50
+    },
+    "037_scissors": {
+     "recall": 32.0,
+     "n": 50
+    },
+    "040_large_marker": {
+     "recall": 100.0,
+     "n": 100
+    },
+    "051_large_clamp": {
+     "recall": 92.0,
+     "n": 100
+    },
+    "052_extra_large_clamp": {
+     "recall": 94.0,
+     "n": 100
+    },
+    "061_foam_brick": {
+     "recall": 100.0,
+     "n": 50
+    }
+   }
+  }
+ }
+}

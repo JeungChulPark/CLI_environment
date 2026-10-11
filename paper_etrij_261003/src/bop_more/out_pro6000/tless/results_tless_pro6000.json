@@ -1,0 +1,605 @@
+{
+ "label": "tless run, RTX PRO 6000 Blackwell (GPU1), 2026-10-08",
+ "protocol": "Per method (prediction JSON from run_orig.py / run_ours.py):\n  correct      ADD-S < 10 % of the object diameter (models_eval/models_info.json),\n               ADD-S over the models_eval vertices\n  Found        visible GT targets with a correct answer / visible GT targets\n               (visible = visib_fract > 0; all 4123 BOP19 targets are)\n  Answers correct   correct answers / all answers\n  Wrong / image     wrong answers / images\n  ADD-S AUC    area under the accuracy-threshold curve, 0-10 cm (PoseCNN VOCap), pooled over\n               all GT targets (missing answer = infinite error); per-object mean also reported\n  BOP AR       official bop_toolkit scripts/eval_bop19_pose.py (VSD, MSSD, MSPD) on BOP CSV\n  Time         median per-image time of the timed region\nBOP CSV files and bop_toolkit output go to OUT/bop; summary -> results.json.",
+ "evaluated": "2026-10-08 17:13:36",
+ "methods": {
+  "ladder_L0": {
+   "images": 1000,
+   "visible_gt_targets": 4904,
+   "answers": 4617,
+   "correct_answers": 3267,
+   "found_pct": 66.6,
+   "answers_correct_pct": 70.8,
+   "wrong_per_image": 1.35,
+   "adds_auc": 72.2,
+   "adds_auc_mean_over_objects": 70.2,
+   "time_ms": {
+    "median": 665.4,
+    "p90": 824.1,
+    "mean": 670.6,
+    "n": 1000
+   },
+   "per_object": {
+    "tless_01": {
+     "targets": 294,
+     "found": 213,
+     "found_pct": 72.4,
+     "answers": 284,
+     "correct": 213,
+     "adds_auc": 84.1
+    },
+    "tless_02": {
+     "targets": 196,
+     "found": 143,
+     "found_pct": 73.0,
+     "answers": 191,
+     "correct": 143,
+     "adds_auc": 87.3
+    },
+    "tless_03": {
+     "targets": 197,
+     "found": 171,
+     "found_pct": 86.8,
+     "answers": 178,
+     "correct": 171,
+     "adds_auc": 87.5
+    },
+    "tless_04": {
+     "targets": 248,
+     "found": 195,
+     "found_pct": 78.6,
+     "answers": 223,
+     "correct": 195,
+     "adds_auc": 83.4
+    },
+    "tless_05": {
+     "targets": 190,
+     "found": 158,
+     "found_pct": 83.2,
+     "answers": 188,
+     "correct": 158,
+     "adds_auc": 84.7
+    },
+    "tless_06": {
+     "targets": 98,
+     "found": 51,
+     "found_pct": 52.0,
+     "answers": 97,
+     "correct": 51,
+     "adds_auc": 63.5
+    },
+    "tless_07": {
+     "targets": 250,
+     "found": 166,
+     "found_pct": 66.4,
+     "answers": 248,
+     "correct": 166,
+     "adds_auc": 73.9
+    },
+    "tless_08": {
+     "targets": 150,
+     "found": 60,
+     "found_pct": 40.0,
+     "answers": 141,
+     "correct": 60,
+     "adds_auc": 39.9
+    },
+    "tless_09": {
+     "targets": 246,
+     "found": 222,
+     "found_pct": 90.2,
+     "answers": 245,
+     "correct": 222,
+     "adds_auc": 90.3
+    },
+    "tless_10": {
+     "targets": 143,
+     "found": 129,
+     "found_pct": 90.2,
+     "answers": 142,
+     "correct": 129,
+     "adds_auc": 91.0
+    },
+    "tless_11": {
+     "targets": 135,
+     "found": 79,
+     "found_pct": 58.5,
+     "answers": 128,
+     "correct": 79,
+     "adds_auc": 69.0
+    },
+    "tless_12": {
+     "targets": 139,
+     "found": 54,
+     "found_pct": 38.8,
+     "answers": 132,
+     "correct": 54,
+     "adds_auc": 43.0
+    },
+    "tless_13": {
+     "targets": 140,
+     "found": 26,
+     "found_pct": 18.6,
+     "answers": 133,
+     "correct": 26,
+     "adds_auc": 27.1
+    },
+    "tless_14": {
+     "targets": 146,
+     "found": 100,
+     "found_pct": 68.5,
+     "answers": 123,
+     "correct": 100,
+     "adds_auc": 72.8
+    },
+    "tless_15": {
+     "targets": 146,
+     "found": 69,
+     "found_pct": 47.3,
+     "answers": 102,
+     "correct": 69,
+     "adds_auc": 53.2
+    },
+    "tless_16": {
+     "targets": 144,
+     "found": 98,
+     "found_pct": 68.1,
+     "answers": 140,
+     "correct": 98,
+     "adds_auc": 78.7
+    },
+    "tless_17": {
+     "targets": 146,
+     "found": 119,
+     "found_pct": 81.5,
+     "answers": 138,
+     "correct": 119,
+     "adds_auc": 83.8
+    },
+    "tless_18": {
+     "targets": 146,
+     "found": 127,
+     "found_pct": 87.0,
+     "answers": 144,
+     "correct": 127,
+     "adds_auc": 86.7
+    },
+    "tless_19": {
+     "targets": 191,
+     "found": 96,
+     "found_pct": 50.3,
+     "answers": 186,
+     "correct": 96,
+     "adds_auc": 63.8
+    },
+    "tless_20": {
+     "targets": 197,
+     "found": 71,
+     "found_pct": 36.0,
+     "answers": 192,
+     "correct": 71,
+     "adds_auc": 62.9
+    },
+    "tless_21": {
+     "targets": 148,
+     "found": 94,
+     "found_pct": 63.5,
+     "answers": 132,
+     "correct": 94,
+     "adds_auc": 71.9
+    },
+    "tless_22": {
+     "targets": 143,
+     "found": 97,
+     "found_pct": 67.8,
+     "answers": 122,
+     "correct": 97,
+     "adds_auc": 73.4
+    },
+    "tless_23": {
+     "targets": 199,
+     "found": 139,
+     "found_pct": 69.8,
+     "answers": 191,
+     "correct": 139,
+     "adds_auc": 71.1
+    },
+    "tless_24": {
+     "targets": 192,
+     "found": 152,
+     "found_pct": 79.2,
+     "answers": 166,
+     "correct": 152,
+     "adds_auc": 81.0
+    },
+    "tless_25": {
+     "targets": 95,
+     "found": 78,
+     "found_pct": 82.1,
+     "answers": 94,
+     "correct": 78,
+     "adds_auc": 87.4
+    },
+    "tless_26": {
+     "targets": 99,
+     "found": 54,
+     "found_pct": 54.5,
+     "answers": 95,
+     "correct": 54,
+     "adds_auc": 60.3
+    },
+    "tless_27": {
+     "targets": 96,
+     "found": 30,
+     "found_pct": 31.2,
+     "answers": 95,
+     "correct": 30,
+     "adds_auc": 33.8
+    },
+    "tless_28": {
+     "targets": 148,
+     "found": 128,
+     "found_pct": 86.5,
+     "answers": 140,
+     "correct": 128,
+     "adds_auc": 87.4
+    },
+    "tless_29": {
+     "targets": 98,
+     "found": 21,
+     "found_pct": 21.4,
+     "answers": 94,
+     "correct": 21,
+     "adds_auc": 24.0
+    },
+    "tless_30": {
+     "targets": 144,
+     "found": 127,
+     "found_pct": 88.2,
+     "answers": 133,
+     "correct": 127,
+     "adds_auc": 89.1
+    }
+   },
+   "title": "ladder_L0",
+   "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+   "run_label": "tless run, RTX PRO 6000 Blackwell (GPU1), 2026-10-08",
+   "prediction_file": "/home/jucpark/Dataset/bop/bop_more_out/tless/pred_ladder_L0.json",
+   "stage_ms": {
+    "proposals": {
+     "median": 9.9,
+     "p90": 10.4,
+     "mean": 10.0,
+     "n": 1000
+    },
+    "descriptors": {
+     "median": 348.6,
+     "p90": 437.8,
+     "mean": 337.8,
+     "n": 1000
+    },
+    "matching": {
+     "median": 9.5,
+     "p90": 18.3,
+     "mean": 11.6,
+     "n": 1000
+    },
+    "pem": {
+     "median": 279.1,
+     "p90": 462.1,
+     "mean": 311.2,
+     "n": 1000
+    }
+   },
+   "bop_ar": {
+    "bop19_average_recall": 41.2,
+    "bop19_average_recall_mspd": 43.0,
+    "bop19_average_recall_mssd": 42.3,
+    "bop19_average_recall_vsd": 38.5,
+    "raw": {
+     "bop19_average_recall": 0.4123488504852353,
+     "bop19_average_recall_mspd": 0.42986143546629296,
+     "bop19_average_recall_mssd": 0.422621827806321,
+     "bop19_average_recall_vsd": 0.38456328818309204,
+     "bop19_average_time_per_image": 0.67058268
+    }
+   }
+  },
+  "ladder_hybS05cf": {
+   "images": 1000,
+   "visible_gt_targets": 4904,
+   "answers": 2289,
+   "correct_answers": 1997,
+   "found_pct": 40.7,
+   "answers_correct_pct": 87.2,
+   "wrong_per_image": 0.292,
+   "adds_auc": 41.8,
+   "adds_auc_mean_over_objects": 43.2,
+   "time_ms": {
+    "median": 210.8,
+    "p90": 302.6,
+    "mean": 222.5,
+    "n": 1000
+   },
+   "per_object": {
+    "tless_01": {
+     "targets": 294,
+     "found": 18,
+     "found_pct": 6.1,
+     "answers": 22,
+     "correct": 18,
+     "adds_auc": 6.9
+    },
+    "tless_02": {
+     "targets": 196,
+     "found": 28,
+     "found_pct": 14.3,
+     "answers": 34,
+     "correct": 28,
+     "adds_auc": 16.3
+    },
+    "tless_03": {
+     "targets": 197,
+     "found": 41,
+     "found_pct": 20.8,
+     "answers": 44,
+     "correct": 41,
+     "adds_auc": 21.5
+    },
+    "tless_04": {
+     "targets": 248,
+     "found": 25,
+     "found_pct": 10.1,
+     "answers": 29,
+     "correct": 25,
+     "adds_auc": 10.5
+    },
+    "tless_05": {
+     "targets": 190,
+     "found": 160,
+     "found_pct": 84.2,
+     "answers": 168,
+     "correct": 160,
+     "adds_auc": 84.1
+    },
+    "tless_06": {
+     "targets": 98,
+     "found": 22,
+     "found_pct": 22.4,
+     "answers": 40,
+     "correct": 22,
+     "adds_auc": 24.7
+    },
+    "tless_07": {
+     "targets": 250,
+     "found": 143,
+     "found_pct": 57.2,
+     "answers": 158,
+     "correct": 143,
+     "adds_auc": 57.0
+    },
+    "tless_08": {
+     "targets": 150,
+     "found": 53,
+     "found_pct": 35.3,
+     "answers": 54,
+     "correct": 53,
+     "adds_auc": 34.6
+    },
+    "tless_09": {
+     "targets": 246,
+     "found": 201,
+     "found_pct": 81.7,
+     "answers": 201,
+     "correct": 201,
+     "adds_auc": 80.1
+    },
+    "tless_10": {
+     "targets": 143,
+     "found": 120,
+     "found_pct": 83.9,
+     "answers": 123,
+     "correct": 120,
+     "adds_auc": 83.4
+    },
+    "tless_11": {
+     "targets": 135,
+     "found": 70,
+     "found_pct": 51.9,
+     "answers": 94,
+     "correct": 70,
+     "adds_auc": 57.4
+    },
+    "tless_12": {
+     "targets": 139,
+     "found": 60,
+     "found_pct": 43.2,
+     "answers": 62,
+     "correct": 60,
+     "adds_auc": 43.5
+    },
+    "tless_13": {
+     "targets": 140,
+     "found": 12,
+     "found_pct": 8.6,
+     "answers": 34,
+     "correct": 12,
+     "adds_auc": 11.1
+    },
+    "tless_14": {
+     "targets": 146,
+     "found": 6,
+     "found_pct": 4.1,
+     "answers": 10,
+     "correct": 6,
+     "adds_auc": 5.8
+    },
+    "tless_15": {
+     "targets": 146,
+     "found": 1,
+     "found_pct": 0.7,
+     "answers": 1,
+     "correct": 1,
+     "adds_auc": 0.7
+    },
+    "tless_16": {
+     "targets": 144,
+     "found": 85,
+     "found_pct": 59.0,
+     "answers": 90,
+     "correct": 85,
+     "adds_auc": 59.8
+    },
+    "tless_17": {
+     "targets": 146,
+     "found": 10,
+     "found_pct": 6.8,
+     "answers": 10,
+     "correct": 10,
+     "adds_auc": 6.7
+    },
+    "tless_18": {
+     "targets": 146,
+     "found": 78,
+     "found_pct": 53.4,
+     "answers": 87,
+     "correct": 78,
+     "adds_auc": 54.9
+    },
+    "tless_19": {
+     "targets": 191,
+     "found": 72,
+     "found_pct": 37.7,
+     "answers": 127,
+     "correct": 72,
+     "adds_auc": 48.0
+    },
+    "tless_20": {
+     "targets": 197,
+     "found": 44,
+     "found_pct": 22.3,
+     "answers": 85,
+     "correct": 44,
+     "adds_auc": 34.4
+    },
+    "tless_21": {
+     "targets": 148,
+     "found": 77,
+     "found_pct": 52.0,
+     "answers": 94,
+     "correct": 77,
+     "adds_auc": 54.0
+    },
+    "tless_22": {
+     "targets": 143,
+     "found": 94,
+     "found_pct": 65.7,
+     "answers": 103,
+     "correct": 94,
+     "adds_auc": 65.6
+    },
+    "tless_23": {
+     "targets": 199,
+     "found": 114,
+     "found_pct": 57.3,
+     "answers": 114,
+     "correct": 114,
+     "adds_auc": 56.0
+    },
+    "tless_24": {
+     "targets": 192,
+     "found": 94,
+     "found_pct": 49.0,
+     "answers": 95,
+     "correct": 94,
+     "adds_auc": 48.6
+    },
+    "tless_25": {
+     "targets": 95,
+     "found": 70,
+     "found_pct": 73.7,
+     "answers": 78,
+     "correct": 70,
+     "adds_auc": 75.4
+    },
+    "tless_26": {
+     "targets": 99,
+     "found": 73,
+     "found_pct": 73.7,
+     "answers": 79,
+     "correct": 73,
+     "adds_auc": 75.6
+    },
+    "tless_27": {
+     "targets": 96,
+     "found": 39,
+     "found_pct": 40.6,
+     "answers": 58,
+     "correct": 39,
+     "adds_auc": 41.9
+    },
+    "tless_28": {
+     "targets": 148,
+     "found": 128,
+     "found_pct": 86.5,
+     "answers": 128,
+     "correct": 128,
+     "adds_auc": 84.8
+    },
+    "tless_29": {
+     "targets": 98,
+     "found": 30,
+     "found_pct": 30.6,
+     "answers": 37,
+     "correct": 30,
+     "adds_auc": 32.4
+    },
+    "tless_30": {
+     "targets": 144,
+     "found": 29,
+     "found_pct": 20.1,
+     "answers": 30,
+     "correct": 29,
+     "adds_auc": 20.4
+    }
+   },
+   "title": "ladder_hybS05cf",
+   "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+   "run_label": "tless run, RTX PRO 6000 Blackwell (GPU1), 2026-10-08",
+   "prediction_file": "/home/jucpark/Dataset/bop/bop_more_out/tless/pred_ladder_hybS05cf.json",
+   "stage_ms": {
+    "yolo": {
+     "median": 0.0,
+     "p90": 0.0,
+     "mean": 0.0,
+     "n": 1000
+    },
+    "ism": {
+     "median": 73.0,
+     "p90": 87.1,
+     "mean": 71.7,
+     "n": 1000
+    },
+    "pem": {
+     "median": 137.0,
+     "p90": 228.0,
+     "mean": 150.5,
+     "n": 1000
+    }
+   },
+   "bop_ar": {
+    "bop19_average_recall": 27.6,
+    "bop19_average_recall_mspd": 28.7,
+    "bop19_average_recall_mssd": 28.7,
+    "bop19_average_recall_vsd": 25.6,
+    "raw": {
+     "bop19_average_recall": 0.27642534641133426,
+     "bop19_average_recall_mspd": 0.2867196014323524,
+     "bop19_average_recall_mssd": 0.28667289428615905,
+     "bop19_average_recall_vsd": 0.25588354351549125,
+     "bop19_average_time_per_image": 0.22352392543859648
+    }
+   }
+  }
+ }
+}

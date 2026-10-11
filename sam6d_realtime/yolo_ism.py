@@ -59,16 +59,31 @@ VALID_PATCH_THRESH = 0.5     # SAM-6D validpatch_thresh
 # ---------------------------------------------------------------------------
 # DINOv2 backbone (SAM-6D's exact ViT-S/14), loaded standalone (read-only import)
 # ---------------------------------------------------------------------------
+# ViT size follows the checkpoint name (dinov2_vits14 / vitb14 / vitl14 / vitg14), like SAM-6D's CustomDINOv2.
+_DINOV2_ARCH = {"vits14": "vit_small", "vitb14": "vit_base", "vitl14": "vit_large", "vitg14": "vit_giant2"}
+
+
+def dinov2_arch_of(checkpoint_path):
+    name = os.path.basename(str(checkpoint_path))
+    for k, v in _DINOV2_ARCH.items():
+        if k in name:
+            return v
+    return "vit_small"
+
+
 def build_dinov2(checkpoint_path, device):
     if ISM_DIR not in sys.path:
         sys.path.insert(0, ISM_DIR)
     import model.vision_transformer as vits  # noqa: E402 (SAM-6D vendored DINOv2)
 
-    model = vits.vit_small(
+    arch = dinov2_arch_of(checkpoint_path)
+    model = getattr(vits, arch)(
         patch_size=14, img_size=518, init_values=1.0, block_chunks=0,
         ffn_layer="mlp", num_register_tokens=0,
     )
     model.load_state_dict(torch.load(checkpoint_path, map_location="cpu"), strict=True)
+    if arch != "vit_small":
+        print(f"[dinov2] {arch} ({len(model.blocks)} blocks, dim {model.embed_dim}) from {os.path.basename(checkpoint_path)}")
     model.eval().to(device)
     return model
 

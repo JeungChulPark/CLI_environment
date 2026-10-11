@@ -1,0 +1,244 @@
+{
+ "L0": {
+  "quick": {
+   "images": 36,
+   "targets": 165,
+   "answers": 164,
+   "correct": 159,
+   "found_pct": 96.4,
+   "wrong_per_image": 0.139,
+   "time_median_ms": 1565.0,
+   "stage_median_ms": {
+    "proposals": 31.0,
+    "descriptors": 834.0,
+    "matching": 31.0,
+    "pem": 646.0
+   }
+  },
+  "full_same_images": {
+   "images": 36,
+   "targets": 165,
+   "answers": 164,
+   "correct": 160,
+   "found_pct": 97.0,
+   "wrong_per_image": 0.111,
+   "time_median_ms": 1599.0,
+   "stage_median_ms": {
+    "proposals": 32.0,
+    "descriptors": 830.0,
+    "matching": 31.0,
+    "pem": 660.0
+   }
+  },
+  "agree_pct": 99.4
+ },
+ "L1": {
+  "quick": {
+   "images": 36,
+   "targets": 165,
+   "answers": 164,
+   "correct": 154,
+   "found_pct": 93.3,
+   "wrong_per_image": 0.278,
+   "time_median_ms": 798.0,
+   "stage_median_ms": {
+    "proposals": 31.0,
+    "descriptors": 97.0,
+    "matching": 21.0,
+    "pem": 637.0
+   }
+  },
+  "full_same_images": {
+   "images": 36,
+   "targets": 165,
+   "answers": 164,
+   "correct": 153,
+   "found_pct": 92.7,
+   "wrong_per_image": 0.306,
+   "time_median_ms": 826.0,
+   "stage_median_ms": {
+    "proposals": 31.0,
+    "descriptors": 105.0,
+    "matching": 22.0,
+    "pem": 662.0
+   }
+  },
+  "agree_pct": 98.2
+ },
+ "L2": {
+  "quick": {
+   "images": 36,
+   "targets": 165,
+   "answers": 137,
+   "correct": 129,
+   "found_pct": 78.2,
+   "wrong_per_image": 0.222,
+   "time_median_ms": 597.0,
+   "stage_median_ms": {
+    "proposals": 59.0,
+    "descriptors": 17.0,
+    "matching": 11.0,
+    "pem": 505.0
+   }
+  }
+ },
+ "L1_th04": {
+  "quick": {
+   "images": 36,
+   "targets": 165,
+   "answers": 163,
+   "correct": 152,
+   "found_pct": 92.1,
+   "wrong_per_image": 0.306,
+   "time_median_ms": 799.0,
+   "stage_median_ms": {
+    "proposals": 31.0,
+    "descriptors": 93.0,
+    "matching": 20.0,
+    "pem": 629.0
+   }
+  }
+ },
+ "L1_th05": {
+  "quick": {
+   "images": 36,
+   "targets": 165,
+   "answers": 154,
+   "correct": 147,
+   "found_pct": 89.1,
+   "wrong_per_image": 0.194,
+   "time_median_ms": 760.0,
+   "stage_median_ms": {
+    "proposals": 31.0,
+    "descriptors": 98.0,
+    "matching": 21.0,
+    "pem": 534.0
+   }
+  }
+ },
+ "L3": {
+  "quick": {
+   "images": 36,
+   "targets": 165,
+   "answers": 106,
+   "correct": 100,
+   "found_pct": 60.6,
+   "wrong_per_image": 0.167,
+   "time_median_ms": 303.0,
+   "stage_median_ms": {
+    "yolo": 14.0,
+    "ism": 72.0,
+    "pem": 219.0
+   }
+  },
+  "full_same_images": {
+   "images": 36,
+   "targets": 165,
+   "answers": 106,
+   "correct": 102,
+   "found_pct": 61.8,
+   "wrong_per_image": 0.111,
+   "time_median_ms": 317.0,
+   "stage_median_ms": {
+    "yolo": 15.0,
+    "ism": 75.0,
+    "pem": 224.0
+   }
+  },
+  "agree_pct": 98.8
+ },
+ "L4": {
+  "quick": {
+   "images": 36,
+   "targets": 165,
+   "answers": 97,
+   "correct": 96,
+   "found_pct": 58.2,
+   "wrong_per_image": 0.028,
+   "time_median_ms": 1211.0,
+   "stage_median_ms": {
+    "yolo": 13.0,
+    "ism": 78.0,
+    "pem": 1128.0
+   }
+  },
+  "full_same_images": {
+   "images": 36,
+   "targets": 165,
+   "answers": 95,
+   "correct": 94,
+   "found_pct": 57.0,
+   "wrong_per_image": 0.028,
+   "time_median_ms": 1246.0,
+   "stage_median_ms": {
+    "yolo": 14.0,
+    "ism": 82.0,
+    "pem": 1152.0
+   }
+  },
+  "agree_pct": 96.4
+ },
+ "L5": {
+  "quick": {
+   "images": 36,
+   "targets": 165,
+   "answers": 112,
+   "correct": 110,
+   "found_pct": 66.7,
+   "wrong_per_image": 0.056,
+   "time_median_ms": 1260.0,
+   "stage_median_ms": {
+    "yolo": 13.0,
+    "ism": 90.0,
+    "pem": 1127.0
+   }
+  },
+  "full_same_images": {
+   "images": 36,
+   "targets": 165,
+   "answers": 112,
+   "correct": 110,
+   "found_pct": 66.7,
+   "wrong_per_image": 0.056,
+   "time_median_ms": 1289.0,
+   "stage_median_ms": {
+    "yolo": 14.0,
+    "ism": 81.0,
+    "pem": 1185.0
+   }
+  },
+  "agree_pct": 97.6
+ },
+ "A_noverify": {
+  "quick": {
+   "images": 36,
+   "targets": 165,
+   "answers": 132,
+   "correct": 113,
+   "found_pct": 68.5,
+   "wrong_per_image": 0.528,
+   "time_median_ms": 513.0,
+   "stage_median_ms": {
+    "yolo": 31.0,
+    "ism": 222.0,
+    "pem": 252.0
+   }
+  }
+ },
+ "A": {
+  "quick": {
+   "images": 36,
+   "targets": 165,
+   "answers": 105,
+   "correct": 101,
+   "found_pct": 61.2,
+   "wrong_per_image": 0.111,
+   "time_median_ms": 1607.0,
+   "stage_median_ms": {
+    "yolo": 30.0,
+    "ism": 239.0,
+    "pem": 1346.0
+   }
+  }
+ }
+}

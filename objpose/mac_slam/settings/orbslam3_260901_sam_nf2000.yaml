@@ -1,0 +1,56 @@
+%YAML:1.0
+
+# ORB-SLAM3 RGB-D settings for dataset 260901_cbnu_eightcircle / SAM (objpose rig RT run)
+#   source : SAM/SAM_0.db3 (converted rosbag2, standard topics, depth already aligned)
+#   device : Intel RealSense D455F, the same object camera as 260826/260910
+#            (identical distortion coefficients and principal point; focal differs by 0.1 px)
+#   NOTE   : intrinsics below are the COLOR stream's, read straight out of the bag
+#            (/camera/camera/color/camera_info) and match info.json's SAM.camera.K exactly.
+
+File.version: "1.0"
+Camera.type: "PinHole"
+
+Camera1.fx: 386.813
+Camera1.fy: 386.242
+Camera1.cx: 322.784
+Camera1.cy: 250.280
+
+# RealSense reports "Inverse Brown Conrady" for the color stream; coefficients are
+# small (|k1| ~ 0.056) and are used here as plumb_bob, matching the convention
+# already used by sam_camera_nf2000.yaml in this project.
+Camera1.k1: -0.056362
+Camera1.k2:  0.067728
+Camera1.p1:  0.000344
+Camera1.p2:  0.000891
+Camera1.k3: -0.022403
+
+Camera.width: 640
+Camera.height: 480
+# the SAM camera dropped frames while recording: 3066 frames over 151.9 s ~ 20 Hz
+Camera.fps: 30
+Camera.RGB: 1
+
+# Depth_Units in the bag = 0.001 m/count -> factor 1000
+RGBD.DepthMapFactor: 1000.0
+
+# kept identical to sam_camera_nf2000.yaml so timing/accuracy stay
+# comparable with this project's earlier runs
+Stereo.ThDepth: 40.0
+Stereo.b: 0.0745
+
+ORBextractor.nFeatures: 2000
+ORBextractor.scaleFactor: 1.2
+ORBextractor.nLevels: 8
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
+
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1.0
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2.0
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3.0
+Viewer.ViewpointX: 0.0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -3.5
+Viewer.ViewpointF: 500.0

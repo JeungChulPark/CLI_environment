@@ -280,13 +280,14 @@ class Fusion:
         T_w_kf, _ = self.poses.kfs.resolve(ob.kf)
         return None if T_w_kf is None else T_w_kf @ ob.T_anchor_obj
 
-    def add_estimate(self, t_ns: int, name: str, R, t_mm, score: float) -> dict:
+    def add_estimate(self, t_ns: int, name: str, R, t_mm, score: float, count_unplaced=True) -> dict:
         T_sam_obj = np.eye(4)
         T_sam_obj[:3, :3] = np.asarray(R, np.float64).reshape(3, 3)
         T_sam_obj[:3, 3] = np.asarray(t_mm, np.float64) / 1000.0
         T_ws, status = self.T_w_sam(t_ns)
         if T_ws is None:
-            self.unplaced += 1
+            # a retry of an estimate already counted once must not count again
+            self.unplaced += int(count_unplaced)
             return {"name": name, "placed": False, "reason": "no SLAM pose at SAM frame time"}
         T_w_obj = T_ws @ T_sam_obj
         kf = self.poses.anchor_at(t_ns)

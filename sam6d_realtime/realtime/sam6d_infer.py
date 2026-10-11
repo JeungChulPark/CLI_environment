@@ -113,7 +113,15 @@ def main():
         explorer_cfg["completion_tolerance_policy"] = (
             "max(sync_slop,5_attested_mean_frame_periods)")
 
-    core = Sam6DCore(cfg.get("ism", {}).get("config", "configs/yolo_ism_objects.yaml"),
+    alt = os.environ.get("OBJPOSE_RECOGNIZER")
+    if alt:      # benchmark baseline: another recogniser with the same process() interface
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("alt_recognizer", alt)
+        mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+        core = mod.LiveCore(cfg)
+    else:
+        core = None
+    core = core or Sam6DCore(cfg.get("ism", {}).get("config", "configs/yolo_ism_objects.yaml"),
                      cfg.get("ism", {}).get("objects", []),
                      rt.get("device", "cuda:0"), rt.get("det_score_thresh", 0.2),
                      appe_rerank=rt.get("appe_rerank"),
@@ -177,6 +185,14 @@ def main():
             if slam_context is not None and not slam_context.get("map_id"):
                 slam_context["map_id"] = str(slam_cfg.get("map_id", "default"))
             bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+            prior_path = os.environ.get("OBJPOSE_MAP_PRIOR")
+            if prior_path:                   # boxes the hub projected from its object map for this frame
+                try:
+                    pr = json.load(open(prior_path))
+                    if int(pr.get("stamp_ns", -1)) == int(stamp_ns):
+                        core.extra_proposals = [(b["name"], b["xyxy"], b.get("conf", 0.25)) for b in pr["boxes"]]
+                except (OSError, ValueError, KeyError):
+                    pass
             t_a = time.time()
             rows, ms, n_boxes, lab = core.process(
                 bgr, depth, K, want_mask=(diag or recorder is not None),

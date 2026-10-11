@@ -1,0 +1,3 @@
+{"T_slam_sam": [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],
+ "source": "YCB-V benchmark replay: SLAM and recognition use the same camera (identity extrinsic)",
+ "dataset": "ycbv", "tau_s": 0.0, "sam_tau_s": 0.0, "clock": "header stamps (converted bags)"}

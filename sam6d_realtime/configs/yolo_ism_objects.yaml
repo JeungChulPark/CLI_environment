@@ -286,6 +286,20 @@ objects:
 
   - name: Mugcup_high
     yolo_prompt: "mug cup"
+    # Phase 1C: the real mug reads ~24 deg redder than its render, so its HSV score sat just
+    #   above the gate (median .137, min .105 vs thr .1214) and the gate was rejecting frames
+    #   YOLO and DINOv2 had both found confidently (yolo .82 / sem .64). Shift THIS class's
+    #   reference hue +12 OpenCV units (= +24 deg in 0-360): score median .137 -> .576, min
+    #   .105 -> .456. Measured on the 163 frames of 260901_cbnu_eightcircle where the mug is
+    #   in view: TP 23 -> 39, FP 3 -> 4 (precision 88.5 -> 90.7 %); on the 234 frames where it
+    #   is out of view, 0 -> 0 accepted, and every other object's count is unchanged in both
+    #   sets. The optimum is sharp (+13 drops to .392) but the whole +8..+12 plateau clears the
+    #   gate by 2.5x or more. Changing the prompt to "pink cup" on top of this adds +1 frame
+    #   and costs milk -1, so the prompt stays.
+    #   The correction is baked into the reference cache, so after editing this value run
+    #   `python tools/build_hsv_template_cache.py` (no --force: it rebuilds only the object
+    #   whose correction changed). Until then the runtime refuses to start with the gate on.
+    hsv_hue_correction_ocv: 12
     object_id: Mugcup_color_high
     template_dir: template/Mugcup_color_high/templates
     cad_ply: data/cad/Mugcup_color_high/Mugcup_color_with_normal_vertexcolor.ply

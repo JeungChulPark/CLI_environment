@@ -1,0 +1,77 @@
+{
+ "id": 4,
+ "box": [
+  20,
+  156,
+  46,
+  190
+ ],
+ "yolo_score": 0.32912,
+ "yolo_prompts": [
+  {
+   "prompt": "mug cup",
+   "score": 0.32912
+  },
+  {
+   "prompt": "white jug",
+   "score": 0.03514
+  },
+  {
+   "prompt": "orange bottle",
+   "score": 0.02005
+  },
+  {
+   "prompt": "yellow can",
+   "score": 0.06611
+  }
+ ],
+ "semantic_all": {
+  "Febreze_high": 0.26133,
+  "saffron": 0.25831,
+  "Sauce_high": 0.24429,
+  "milk": 0.23229,
+  "choco_hazelnut_high": 0.21524,
+  "Sikhye_high": 0.21194,
+  "Mugcup_high": 0.19922,
+  "Dinosaur": 0.13406,
+  "Bear": 0.08533
+ },
+ "semantic_argmax": "Febreze_high",
+ "color_tiebreak_group": [
+  "Febreze_high",
+  "saffron",
+  "Sauce_high"
+ ],
+ "owner": "saffron",
+ "semantic": 0.25831,
+ "appearance": 0.64982,
+ "color_hsv": 0.35967,
+ "mask_px": 688,
+ "gates": [
+  {
+   "gate": "1_semantic",
+   "score": 0.25831,
+   "thr": 0.35,
+   "pass": false,
+   "evaluated": true
+  },
+  {
+   "gate": "2_appearance",
+   "score": 0.64982,
+   "thr": 0.605,
+   "pass": true,
+   "evaluated": false
+  },
+  {
+   "gate": "3_color_hsv",
+   "score": 0.35967,
+   "thr": 0.1214,
+   "pass": true,
+   "evaluated": false
+  }
+ ],
+ "rejected_by": "1_semantic",
+ "exclusive": null,
+ "cross_object_nms": null,
+ "final_accept": false
+}
