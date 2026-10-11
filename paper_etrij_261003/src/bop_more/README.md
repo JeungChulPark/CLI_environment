@@ -64,3 +64,20 @@ $SAM6D_PY ladder/same_object_adds.py --preds pred_ladder_L0.json,pred_hybS05_cf.
 `run_ds.sh <ds>` (copied here) does all of this for one dataset (L0 on GPU2, ours on GPU3).
 Results of the 2026-10-08 run: `out_4090/<ds>/` in the server copy of the paper folder, summary in
 `bop_more_report.md`.
+
+## T-LESS (optional run, 2026-10-08, RTX PRO 6000)
+`BOP_DATASET=tless`, 30 objects, 1000 test images (720x540), 4904 targets (930 of them with
+several instances, 6423 instances in all). Results in `out_pro6000/tless/`.
+
+| method | found | answers correct | wrong/img | ADD-S AUC | BOP AR (VSD/MSSD/MSPD) | median ms | same-object ADD-S (2229) |
+|---|---|---|---|---|---|---|---|
+| ladder_L0 | 66.6% | 70.8% | 1.35 | 72.2 | 41.2 (38.5/42.3/43.0) | 665 | 83.9 |
+| hybS05_cf | 40.7% | 87.2% | 0.29 | 41.8 | 27.6 (25.6/28.7/28.7) | 211 | 89.6 |
+
+Precision is the lowest of the five datasets (87.2%): look-alike symmetric parts (objects 13, 20,
+06, 19, 14 at 35-60% precision) pass the gates with the right pose but the wrong identity, which the
+pose verification does not re-check. Rejections (1423): convergence_insufficient 638,
+texture_filter_empty 559, final_texture_below_threshold 151, mask_filter_empty 71,
+final_mask_below_threshold 4 — unlike LM-O/TUD-L the consensus gate dominates, because the
+equivalent poses of rotationally symmetric objects do not fall into one 20°/25 mm cluster.
+The original ISM (score > 0.5) already drops 1189 of the 4904 targets before our gates.
