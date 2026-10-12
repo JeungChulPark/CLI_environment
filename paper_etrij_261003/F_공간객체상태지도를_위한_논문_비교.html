@@ -2224,7 +2224,7 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>늘어난 FP 는 그 장면에 없는 종류의 물체입니다.</strong> ObChange 방문별 지도의 항목 중 그 방문에 없는 종류가 노트북 18개, 4090 31개입니다(방문 6: 1 → 6). YCB-V 도 FP 가 배경 6 → 15, 라벨 오류 14 → 17, 중복·어긋남 6 → 12 로 모두 늘었습니다. 20 문서 3절과 원고 7.5절의 한계("없는 물체에 대한 그럴듯한 답이 검증을 통과한다")가 인식 빈도에 비례해 커진 것입니다.</li>
 <li><strong>인식 빈도는 YCB-V 1.15 → 3.36 Hz(영상 평균, 2.9배), ObChange 1.9 → 5.5 Hz(2.9배)입니다.</strong> 처리한 인식 프레임이 3배 가까이 늘어 없는 물체의 답이 검증을 통과하는 횟수도 늘었습니다. 맞게 찾은 물체의 3D 일치도는 같습니다(YCB-V ours_cad mIoU 0.629 → 0.622, 표면 거리 4.3 → 4.4 mm).</li>
 <li><strong>순위는 그대로입니다.</strong> 4090 의 제안 F1 0.706(YCB-V) · 0.543(ObChange 방문별)은 노트북에서 돌린 FM-Fusion 0.296 · 0.248, DualMap 0.091~0.168 · 0.175~0.351 보다 여전히 높습니다. 다만 기준 방법을 같은 장비에서 다시 돌리지 못했으므로 본문 표는 아직 노트북(20 · 21 문서) 값을 씁니다.</li>
-<li><strong>(2026-10-12 저녁 추가) 기준 방법도 같은 장비에서 돌렸습니다(7절).</strong> 노트북의 <code>~/DeepLearning/baselines/</code> 를 가져와 빌드한 뒤 YCB-V 와 ObChange 를 돌린 결과, FM-Fusion 은 노트북과 같은 값(YCB-V F1 0.296, ObChange 방문별 0.248 — 검출은 노트북 것을 재사용, 융합만 4090), DualMap 공개 설정은 YCB-V 0.115(11 장면) · ObChange 0.175(노트북과 같음), DualMap BGR 수정은 0.165 · 0.414(노트북 0.168 · 0.351)입니다. 같은 장비에서도 제안 0.706 · 0.543 이 가장 높습니다.</li>
+<li><strong>(2026-10-12 저녁 추가) 기준 방법도 같은 장비에서 돌렸습니다(7절).</strong> 노트북의 <code>~/DeepLearning/baselines/</code> 를 가져와 빌드한 뒤 YCB-V 와 ObChange 를 돌린 결과, FM-Fusion 은 노트북과 같은 값(YCB-V F1 0.296, ObChange 방문별 0.248 — 검출은 노트북 것을 재사용, 융합만 4090), DualMap 공개 설정은 YCB-V 0.109 · ObChange 0.175(노트북과 같음), DualMap BGR 수정은 0.165 · 0.414(노트북 0.168 · 0.351)입니다. 같은 장비에서도 제안 0.706 · 0.543 이 가장 높습니다.</li>
 <li><strong>ObChange 연속 지도의 변화 반영:</strong> 새로 놓은 물체는 15/21 → 17/21 로 조금 더 올렸고, 치운 물체는 여전히 지우지 못했습니다(남음 / 직전 지도에 있었음 10/11 → 13/14). 인식 빈도가 3배인데도 지우지 못한 것은, 치운 자리가 화면에 든 인식 프레임보다 "확정 → 놓침"에 필요한 연속 미검출 46~66번이 여전히 많기 때문입니다(21 문서 4절).</li>
 </ul>
 <h3 id="1_5">1. 실행 조건</h3>
@@ -2496,18 +2496,18 @@ a{color:var(--acc);word-break:break-all}
 <td>0.380</td>
 </tr>
 <tr>
-<td>DualMap 공개 설정 (이 PC, 장면 49 제외 11개)</td>
+<td>DualMap 공개 설정 (이 PC)</td>
 <td><strong>4090</strong></td>
 <td>IoU 0.25</td>
 <td>6</td>
-<td>47</td>
-<td>45</td>
-<td>0.113</td>
-<td>0.118</td>
-<td>0.115</td>
+<td>49</td>
+<td>49</td>
+<td>0.109</td>
+<td>0.109</td>
+<td>0.109</td>
 <td>0.364</td>
 <td>6.3</td>
-<td>0.138</td>
+<td>0.127</td>
 </tr>
 <tr>
 <td>DualMap BGR 수정 (이 PC)</td>
@@ -3108,7 +3108,7 @@ a{color:var(--acc);word-break:break-all}
 <td>DualMap 공개</td>
 <td>전부 (YOLO-World + MobileSAM + MobileCLIP, 지도 갱신)</td>
 <td>없음</td>
-<td>ObChange <strong>같음</strong>(5/27/20), YCB-V 는 장면 49 가 빠져(아래) 11 장면 6/47/45</td>
+<td>ObChange <strong>같음</strong>(5/27/20), YCB-V 5/50/50 → 6/49/49 (장면 49 는 아래 수정 뒤 20:12 재실행)</td>
 </tr>
 <tr>
 <td>DualMap BGR 수정</td>
@@ -3118,5 +3118,5 @@ a{color:var(--acc);word-break:break-all}
 </tr>
 </tbody>
 </table></div>
-<p><strong>DualMap 장면 49 멈춤:</strong> 공개 설정 첫 실행이 YCB-V 장면 49 에서 25분 제한까지 멈췄습니다. YOLO-World 가 아무 상자도 내지 않은 프레임에서 <code>curr_detections</code> 가 이전 프레임 것으로 남아 <code>process_detections</code> 가 빈 마스크 배열을 필터링하다 멈추는 것이라, <code>utils/object_detector.py</code> 에 빈 결과를 <code>None</code> 으로 두고 그 프레임을 건너뛰는 두 줄을 넣었습니다(노트북 패치에는 없던 수정, 26 문서 §7). 장면 49 는 <code>dualmap_fixup_4090.sh</code> 로 다시 돌려 12 장면 값으로 바꿉니다(끝나면 2.1 절 행 갱신).</p>
-<p><strong>결론:</strong> 같은 장비에서 제안 F1 0.706(YCB-V) · 0.543(ObChange 방문별)이 FM-Fusion 0.296 · 0.248, DualMap 0.115~0.165 · 0.175~0.414 보다 높습니다. 노트북 표(20 · 21 문서)와의 차이는 제안 방법의 FP 가 는 것(2 · 3 절)뿐이고 기준 방법은 거의 그대로이므로, 본문의 "같은 장비" 조건은 4090 표로도 성립합니다. 최종 수치는 5090 에서 세 방법을 모두 돌린 뒤 정합니다.</p></main></body></html>
+<p><strong>DualMap 장면 49 멈춤:</strong> 공개 설정 첫 실행이 YCB-V 장면 49 에서 25분 제한까지 멈췄습니다. YOLO-World 가 아무 상자도 내지 않은 프레임에서 <code>curr_detections</code> 가 이전 프레임 것으로 남아 <code>process_detections</code> 가 빈 마스크 배열을 필터링하다 멈추는 것이라, <code>utils/object_detector.py</code> 에 빈 결과를 <code>None</code> 으로 두고 그 프레임을 건너뛰는 두 줄을 넣었습니다(노트북 패치에는 없던 수정, 26 문서 §7). 장면 49 는 <code>dualmap_fixup_4090.sh</code> 로 다시 돌렸고(20:11~20:12, 수정 뒤에는 90초에 끝남) 2.1 절 행은 12 장면 값입니다.</p>
+<p><strong>결론:</strong> 같은 장비에서 제안 F1 0.706(YCB-V) · 0.543(ObChange 방문별)이 FM-Fusion 0.296 · 0.248, DualMap 0.109~0.165 · 0.175~0.414 보다 높습니다. 노트북 표(20 · 21 문서)와의 차이는 제안 방법의 FP 가 는 것(2 · 3 절)뿐이고 기준 방법은 거의 그대로이므로, 본문의 "같은 장비" 조건은 4090 표로도 성립합니다. 최종 수치는 5090 에서 세 방법을 모두 돌린 뒤 정합니다.</p></main></body></html>
