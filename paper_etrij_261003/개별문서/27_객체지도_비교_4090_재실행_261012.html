@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>27. 객체 지도 비교 — 제안 방법을 RTX 4090 에서 다시 돌림 (YCB-V · ObChange-Kitchen, 2026-10-12)</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>27_객체지도_비교_4090_재실행_261012</title><style>
 :root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
 @media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
 *{box-sizing:border-box}
@@ -20,19 +20,20 @@ hr{border:0;border-top:1px solid var(--line);margin:30px 0}
 li{margin:3px 0}
 
 a{color:var(--acc);word-break:break-all}
-</style></head><body><main><h1>27. 객체 지도 비교 — 제안 방법을 RTX 4090 에서 다시 돌림 (YCB-V · ObChange-Kitchen, 2026-10-12)</h1>
+</style></head><body><main><h1 id="27-rtx-4090-ycb-v-obchange-kitchen-2026-10-12">27. 객체 지도 비교 — 제안 방법을 RTX 4090 에서 다시 돌림 (YCB-V · ObChange-Kitchen, 2026-10-12)</h1>
 <blockquote>
 <p>F 묶음의 20 문서(YCB-V)와 21 문서(ObChange-Kitchen)에서 노트북(RTX 3080 Ti Laptop)으로 돌린 <strong>제안 방법</strong> 실행을 이 PC(RTX 4090 ×4, GPU0 하나만 사용)에서 26 문서의 순서대로 다시 돌렸습니다. 기준 방법(FM-Fusion · DualMap)은 코드와 가중치가 이 PC와 이동식 디스크 어디에도 없어 돌리지 못했고, 실 데이터 녹화 5개(23 · 24 문서)는 Mac(ORB-SLAM3)에 연결되지 않아 돌리지 못했습니다(5절). 노트북 실행의 데이터는 이동식 디스크 T7 의 <code>주말데이터_261011</code> 압축 두 개를 복사해 풀어 썼습니다. 결과는 <code>src/objmap/out_4090/</code>, 노트북 결과(<code>out/</code>)와의 비교는 <code>src/objmap/compare_4090.py</code> → <code>out_4090/compare_4090.md</code> 입니다.</p>
 </blockquote>
-<h2>0. 요약</h2>
+<h2 id="0">0. 요약</h2>
 <ul>
 <li><strong>맞게 찾은 물체(TP)는 두 장비가 같고, 잘못 올린 물체(FP)만 4090 에서 늘었습니다.</strong> YCB-V 는 TP 54 · FN 1 로 같고 FP 가 26 → 44, F1 이 0.800 → 0.706 입니다(제안 CAD 모델 지도). ObChange 방문별 지도는 TP 22 · FN 3 으로 같고 FP 가 19 → 34, F1 이 0.667 → 0.543 입니다(제안 관측 점군 지도, 중심 5 cm).</li>
 <li><strong>늘어난 FP 는 그 장면에 없는 종류의 물체입니다.</strong> ObChange 방문별 지도의 항목 중 그 방문에 없는 종류가 노트북 18개, 4090 31개입니다(방문 6: 1 → 6). YCB-V 도 FP 가 배경 6 → 15, 라벨 오류 14 → 17, 중복·어긋남 6 → 12 로 모두 늘었습니다. 20 문서 3절과 원고 7.5절의 한계("없는 물체에 대한 그럴듯한 답이 검증을 통과한다")가 인식 빈도에 비례해 커진 것입니다.</li>
 <li><strong>인식 빈도는 YCB-V 1.15 → 3.36 Hz(영상 평균, 2.9배), ObChange 1.9 → 5.5 Hz(2.9배)입니다.</strong> 처리한 인식 프레임이 3배 가까이 늘어 없는 물체의 답이 검증을 통과하는 횟수도 늘었습니다. 맞게 찾은 물체의 3D 일치도는 같습니다(YCB-V ours_cad mIoU 0.629 → 0.622, 표면 거리 4.3 → 4.4 mm).</li>
 <li><strong>순위는 그대로입니다.</strong> 4090 의 제안 F1 0.706(YCB-V) · 0.543(ObChange 방문별)은 노트북에서 돌린 FM-Fusion 0.296 · 0.248, DualMap 0.091~0.168 · 0.175~0.351 보다 여전히 높습니다. 다만 기준 방법을 같은 장비에서 다시 돌리지 못했으므로 본문 표는 아직 노트북(20 · 21 문서) 값을 씁니다.</li>
+<li><strong>(2026-10-12 저녁 추가) 기준 방법도 같은 장비에서 돌렸습니다(7절).</strong> 노트북의 <code>~/DeepLearning/baselines/</code> 를 가져와 빌드한 뒤 YCB-V 와 ObChange 를 돌린 결과, FM-Fusion 은 노트북과 같은 값(YCB-V F1 0.296, ObChange 방문별 0.248 — 검출은 노트북 것을 재사용, 융합만 4090), DualMap 공개 설정은 YCB-V 0.115(11 장면) · ObChange 0.175(노트북과 같음), DualMap BGR 수정은 0.165 · 0.414(노트북 0.168 · 0.351)입니다. 같은 장비에서도 제안 0.706 · 0.543 이 가장 높습니다.</li>
 <li><strong>ObChange 연속 지도의 변화 반영:</strong> 새로 놓은 물체는 15/21 → 17/21 로 조금 더 올렸고, 치운 물체는 여전히 지우지 못했습니다(남음 / 직전 지도에 있었음 10/11 → 13/14). 인식 빈도가 3배인데도 지우지 못한 것은, 치운 자리가 화면에 든 인식 프레임보다 "확정 → 놓침"에 필요한 연속 미검출 46~66번이 여전히 많기 때문입니다(21 문서 4절).</li>
 </ul>
-<h2>1. 실행 조건</h2>
+<h2 id="1">1. 실행 조건</h2>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -98,8 +99,8 @@ a{color:var(--acc);word-break:break-all}
 <li>채점은 20 · 21 문서와 같은 <code>evaluate.py</code>(IoU ≥ 0.25 / 중심 5 cm, <code>--clean</code>)와 <code>obchange_score.py</code> 입니다. <code>obchange_score.py</code> 는 ours_obs 에 <code>--clean</code> 을 자동으로 적용합니다(노트북과 같음).</li>
 <li>두 장비의 차이는 GPU 가 빠른 만큼 1배속 재생 중 처리하는 인식 프레임이 많다는 것만입니다(26 문서 6절).</li>
 </ul>
-<h2>2. YCB-V (영상 12개, 물체 55개, 보인 표면 정답)</h2>
-<h3>2.1 전체</h3>
+<h2 id="2-ycb-v-12-55">2. YCB-V (영상 12개, 물체 55개, 보인 표면 정답)</h2>
+<h3 id="21">2.1 전체</h3>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -286,13 +287,55 @@ a{color:var(--acc);word-break:break-all}
 <td>6.1</td>
 <td>0.180</td>
 </tr>
+<tr>
+<td>FM-Fusion (이 PC, 검출은 노트북 것 재사용)</td>
+<td><strong>4090</strong></td>
+<td>IoU 0.25</td>
+<td>28</td>
+<td>106</td>
+<td>27</td>
+<td>0.209</td>
+<td>0.509</td>
+<td>0.296</td>
+<td>0.368</td>
+<td>6.5</td>
+<td>0.380</td>
+</tr>
+<tr>
+<td>DualMap 공개 설정 (이 PC, 장면 49 제외 11개)</td>
+<td><strong>4090</strong></td>
+<td>IoU 0.25</td>
+<td>6</td>
+<td>47</td>
+<td>45</td>
+<td>0.113</td>
+<td>0.118</td>
+<td>0.115</td>
+<td>0.364</td>
+<td>6.3</td>
+<td>0.138</td>
+</tr>
+<tr>
+<td>DualMap BGR 수정 (이 PC)</td>
+<td><strong>4090</strong></td>
+<td>IoU 0.25</td>
+<td>10</td>
+<td>56</td>
+<td>45</td>
+<td>0.152</td>
+<td>0.182</td>
+<td>0.165</td>
+<td>0.382</td>
+<td>5.3</td>
+<td>0.167</td>
+</tr>
 </tbody>
 </table></div>
 <ul>
 <li>찾은 물체는 같습니다(54/55, 놓친 것은 두 장비 모두 장면 48 의 물체 20 하나). 늘어난 것은 FP 만입니다.</li>
 <li>ours_obs raw 는 4090 에서 더 나빠졌습니다(TP 45 → 39). 인식 프레임이 늘어 마스크 가장자리의 배경 깊이가 더 많이 붙고, 짝짓기가 IoU 0.25 를 넘지 못한 물체가 늘었기 때문입니다. <code>--clean</code> 으로 바깥 덩어리를 떼면 TP 53 으로 돌아옵니다. 20 문서와 같이 raw 와 <code>--clean</code> 을 함께 보고합니다.</li>
 </ul>
-<h3>2.2 영상별 (제안 ours_cad, IoU 0.25)</h3>
+<h3 id="22-ours_cad-iou-025">2.2 영상별 (제안 ours_cad, IoU 0.25)</h3>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -415,7 +458,7 @@ a{color:var(--acc);word-break:break-all}
 <li>노트북의 YCB-V 인식 빈도는 0.42~1.86 Hz 로, 20 문서에 적은 "1.5~3.5 Hz" 보다 낮았습니다(실행 기록 <code>summary.json</code> 의 <code>sam6d_frames / duration_s</code>). 4090 은 2.03~4.36 Hz 입니다.</li>
 <li>FP 가 늘어난 영상은 48~51 과 59 이고(2 → 5, 4 → 6, 2 → 7, 6 → 10, 0 → 3), 54~58 은 같거나 하나 줄었습니다. 물체가 많고 서로 비슷한 장면(50 · 51: 물체 10~11개)에서 없는 종류의 답이 더 많이 올라갑니다.</li>
 </ul>
-<h3>2.3 틀린 원인 (<code>fn_fp_breakdown.py</code>)</h3>
+<h3 id="23-fn_fp_breakdownpy">2.3 틀린 원인 (<code>fn_fp_breakdown.py</code>)</h3>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -453,8 +496,8 @@ a{color:var(--acc);word-break:break-all}
 </tbody>
 </table></div>
 <p>FN 은 같고 FP 의 세 종류가 모두 늘었습니다. 배경 FP(정답 물체에서 20 cm 밖)가 가장 많이 늘었는데, 그 장면에 없는 종류의 CAD 모델이 책상 위 다른 물건이나 빈 자리에 놓인 것입니다.</p>
-<h2>3. ObChange-Kitchen (방문 2~6, 물체 25개)</h2>
-<h3>3.1 방문별 지도 (방문 하나만 보고 만든 지도)</h3>
+<h2 id="3-obchange-kitchen-26-25">3. ObChange-Kitchen (방문 2~6, 물체 25개)</h2>
+<h3 id="31">3.1 방문별 지도 (방문 하나만 보고 만든 지도)</h3>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -615,6 +658,45 @@ a{color:var(--acc);word-break:break-all}
 <td>0.082</td>
 <td>14.2</td>
 </tr>
+<tr>
+<td>FM-Fusion (이 PC, 검출은 노트북 것 재사용)</td>
+<td><strong>4090</strong></td>
+<td>중심 5 cm</td>
+<td>13</td>
+<td>67</td>
+<td>12</td>
+<td>0.163</td>
+<td>0.520</td>
+<td>0.248</td>
+<td>0.160</td>
+<td>11.9</td>
+</tr>
+<tr>
+<td>DualMap BGR 수정 (이 PC)</td>
+<td><strong>4090</strong></td>
+<td>중심 5 cm</td>
+<td>12</td>
+<td>21</td>
+<td>13</td>
+<td>0.364</td>
+<td>0.480</td>
+<td>0.414</td>
+<td>0.064</td>
+<td>17.8</td>
+</tr>
+<tr>
+<td>DualMap 공개 (이 PC)</td>
+<td><strong>4090</strong></td>
+<td>중심 5 cm</td>
+<td>5</td>
+<td>27</td>
+<td>20</td>
+<td>0.156</td>
+<td>0.200</td>
+<td>0.175</td>
+<td>0.063</td>
+<td>17.1</td>
+</tr>
 </tbody>
 </table></div>
 <p>방문별 (TP / FP / FN, 중심 5 cm, ours_obs): 3080 은 3/5/1, 4/5/0, 4/3/0, 5/4/0, 6/2/2 · <strong>4090 은 3/7/1, 4/10/0, 4/4/0, 5/3/0, 6/10/2</strong>. TP · FN 은 방문마다 같고 FP 만 방문 2 · 3 · 6 에서 늘었습니다.</p>
@@ -644,7 +726,7 @@ a{color:var(--acc);word-break:break-all}
 </tbody>
 </table></div>
 <p>방문 6(물체 8개)에서 없는 종류가 1 → 6 으로 가장 많이 늘었습니다. 물체가 많은 장면에서 없는 종류의 그럴듯한 답이 더 많이 나오는 YCB-V 와 같은 경향입니다.</p>
-<h3>3.2 연속 지도 (방문 1→6 을 이어 지도 하나 유지, 중심 5 cm)</h3>
+<h3 id="32-16-5-cm">3.2 연속 지도 (방문 1→6 을 이어 지도 하나 유지, 중심 5 cm)</h3>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -729,13 +811,43 @@ a{color:var(--acc);word-break:break-all}
 <td>5 / 5 / 17</td>
 <td>5 / 21</td>
 </tr>
+<tr>
+<td>FM-Fusion (이 PC, 검출은 노트북 것 재사용)</td>
+<td><strong>4090</strong></td>
+<td>11</td>
+<td>100</td>
+<td>14</td>
+<td>0.162</td>
+<td>9 / 10 / 17</td>
+<td>9 / 21</td>
+</tr>
+<tr>
+<td>DualMap BGR 수정 (이 PC)</td>
+<td><strong>4090</strong></td>
+<td>9</td>
+<td>56</td>
+<td>16</td>
+<td>0.200</td>
+<td>6 / 7 / 17</td>
+<td>8 / 21</td>
+</tr>
+<tr>
+<td>DualMap 공개 (이 PC)</td>
+<td><strong>4090</strong></td>
+<td>7</td>
+<td>63</td>
+<td>18</td>
+<td>0.147</td>
+<td>5 / 6 / 17</td>
+<td>6 / 21</td>
+</tr>
 </tbody>
 </table></div>
 <ul>
 <li>새 물체는 더 잘 올립니다(15 → 17 / 21). 치운 물체는 13/14 가 그대로 남았습니다. 인식이 5.5 Hz 라 50초 방문에 인식 프레임이 약 275장인데도 지우지 못했으므로, 21 문서 4절의 해석(연속 미검출 46~66번이 필요)이 맞고, 지우기는 인식 빈도가 아니라 존재확률 설정(P_D 0.08 · c 0.01)의 문제입니다.</li>
 <li>인식 빈도: 방문별 1.49~2.44 → 4.63~5.91 Hz, 연속 1.87 → 5.55 Hz.</li>
 </ul>
-<h2>4. 실행 기록과 사고</h2>
+<h2 id="4">4. 실행 기록과 사고</h2>
 <ul>
 <li><strong>시간:</strong> ObChange 연속(300초 영상) 328초, 방문별 5회 각 72~75초, YCB-V 12영상 각 54~106초(영상 길이 28~80초 + 모델 적재). 제안 방법 전체는 GPU 약 45분이었습니다(07:33~08:18, 재실행 포함).</li>
 <li><strong>체크포인트·템플릿 링크:</strong> 26 문서가 경고한 대로 이 PC 의 <code>CLI_env_paper</code> 에서 10-12 pull 뒤 <code>sam6d_realtime/template</code> 과 SAM-6D 두 <code>checkpoints</code> 폴더가 없어져 첫 실행이 <code>dinov2_vits14_pretrain.pth</code> 를 찾지 못하고 죽었습니다. <code>~/DeepLearning/CLI_environment/sam6d_realtime/</code> 의 같은 폴더로 심볼릭 링크를 만들어 해결했습니다. <code>run_ours.py</code> 가 고정으로 쓰는 <code>ycbv_work/FastSAM-x.pt</code> 도 <code>weights_dl/</code> 로 링크했습니다.</li>
@@ -745,37 +857,72 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>디스크:</strong> 루트 디스크가 97%(여유 111 GB)입니다. T7 에서 복사한 압축 두 개(42 GB, <code>~/DeepLearning/t7_copy/</code>)는 다 풀었으므로 지워도 됩니다.</li>
 <li><strong>허브 하나씩:</strong> 허브와 인식기의 공유 메모리 채널 이름(<code>/sam6d_frame</code>)이 고정이라 GPU 가 4장이어도 실시간 실행은 한 번에 하나만 돌립니다.</li>
 </ul>
-<h2>5. 돌리지 못한 것</h2>
+<h2 id="5-2026-10-12">5. 돌리지 못한 것 → 2026-10-12 저녁 상태</h2>
 <div class="tw"><table>
 <thead>
 <tr>
 <th>실험</th>
-<th>이유</th>
-<th>필요한 것</th>
+<th>아침 상태</th>
+<th>저녁 상태</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>FM-Fusion · DualMap (YCB-V · ObChange · 실데이터)</td>
-<td>코드와 가중치가 이 PC, T7, "새 볼륨" 디스크, NAS 어디에도 없음. T7 압축에는 노트북의 <strong>결과</strong>(<code>out/</code>, DualMap <code>output/</code>)와 <strong>입력</strong>(<code>fmfusion/</code>, <code>dualmap/</code> 작업 폴더)만 들어 있음</td>
-<td>노트북 <code>~/DeepLearning/baselines/</code> (FM-Fusion b82d64c + 프레임 상한 수정, gsam_fmfusion 9cab32b, DualMap 157235e + <code>dualmap.patch</code>, <code>weights/</code> 3.1 GB), conda <code>fmfusion</code> · <code>dualmap</code> 설치(26 문서 2.3 · 2.4절)</td>
+<td>FM-Fusion · DualMap (YCB-V · ObChange)</td>
+<td>코드와 가중치가 이 PC 어디에도 없음</td>
+<td><strong>됨.</strong> 노트북 <code>~/DeepLearning/baselines/</code> 를 이 PC 의 같은 자리로 복사해 빌드(26 문서 §7). 결과 7절, 표는 2.1 · 3.1 · 3.2 절에 4090 행으로</td>
 </tr>
 <tr>
 <td>실데이터 5개 제안 방법 실시간 (23 · 24)</td>
-<td><code>ssh mac</code>(192.168.20.55) 연결 불가</td>
-<td>Mac 을 같은 망에 켜고 공개키 등록</td>
+<td>Mac 연결 불가</td>
+<td>Mac 대신 이 PC 의 ORB-SLAM3 로 돌림(18 문서 A 절, 26 문서 §8). 궤적은 Mac 것과 다르므로 23 · 24 의 수치와 직접 비교하지는 않음</td>
 </tr>
 <tr>
 <td>실데이터 기준 방법 재실행 (24 §4)</td>
-<td>위 코드 없음. 입력(<code>real_work/</code>, <code>fmfusion_261011/</code>, <code>dualmap_261011/</code>)과 노트북 궤적은 복사돼 있음</td>
-<td>코드가 오면 <code>run_real_compare_261011.sh</code> 를 <code>OBJMAP_OUT=out_4090</code> 사본으로 바로 돌릴 수 있음</td>
+<td>코드 없음</td>
+<td>코드 옴. <code>TAG=4090 OBJMAP_REAL_RUNS=... run_real_compare_261011.sh</code> 로 이 PC 궤적 위에서 20:xx 부터 실행 중(FM-Fusion 검출 + DualMap 2 설정 + 채점). 끝나면 여기에 추가</td>
 </tr>
 </tbody>
 </table></div>
-<h2>6. 논문에서의 쓰임과 다음 일</h2>
+<h2 id="6">6. 논문에서의 쓰임과 다음 일</h2>
 <ul>
 <li><strong>본문 표는 20 · 21 문서(노트북) 값을 그대로 둡니다.</strong> 세 방법을 같은 장비에서 돌린 것이 그 표이기 때문입니다. 이 문서는 "제안 방법의 TP 는 장비와 무관하게 재현되고, FP 는 인식 빈도에 따라 는다"는 재현성 근거로 각주나 보충에 씁니다. 22 문서(실데이터 3회 반복)의 "정확도는 GPU 와 관계없이 재현된다"는 TP 쪽 이야기이고, 없는 물체의 FP 는 빠른 GPU 에서 더 늘어난다는 점을 함께 적어야 합니다.</li>
 <li><strong>FP 가 인식 프레임 수에 비례한다</strong>는 것은 없는 물체를 거르는 단계(자세 검증 · 합의)가 병목이라는 뜻입니다. 두 가지를 확인할 수 있습니다. (1) 기록된 인식 결과(<code>sam6d/detections.jsonl</code>)를 재생해 GPU 없이 존재확률 c 와 확정 조건(후보 → 확정 검출 2번)을 바꿔 보기(25 문서 7절의 재생 실험과 같은 방법). (2) 인식 빈도를 노트북 수준으로 제한한 실행(허브의 인식 간격 옵션)으로 FP 가 노트북 값으로 돌아오는지 보기.</li>
 <li>기준 방법 코드가 오면 YCB-V · ObChange 기준 방법을 이 PC 에서 돌려 세 방법을 같은 장비(4090)에서 비교한 표를 만들고, 그 뒤 5090 에서 최종 수치를 냅니다(26 문서).</li>
 <li><strong>파일:</strong> 결과 <code>src/objmap/out_4090/{ours_cad,ours_obs}/metrics_*.json</code>, <code>out_4090/obchange_scores.json</code>, <code>out_4090/ours_runs/export_stats_*.json</code>, 비교표 <code>out_4090/compare_4090.md</code>, 로그 <code>out_4090/logs/</code>, 스크립트 <code>src/objmap/{chain_ours_4090.sh, fixup_ycbv_4090.sh, fixup2_export_4090.sh, compare_4090.py}</code>. 실행 폴더(<code>out_4090/ours_runs/&lt;scene&gt;/</code>)와 지도(<code>ours_*/ycbv/</code>, <code>ours_*/obchange_*/</code>)는 git 에 넣지 않습니다(노트북과 같음).</li>
-</ul></main></body></html>
+</ul>
+<h2 id="7-2026-10-12">7. 기준 방법을 같은 장비에서 (2026-10-12 저녁 추가)</h2>
+<p>노트북에서 가져온 <code>~/DeepLearning/baselines/</code>(FM-Fusion b82d64c + 프레임 상한 수정, gsam_fmfusion, DualMap 157235e + BGR 수정)를 이 PC 에서 빌드해 돌렸습니다(<code>src/objmap/chain_ours_4090.sh</code> 뒷부분, <code>setup_baselines_4090.sh</code>, <code>dualmap_fixup_4090.sh</code>). 환경은 <code>sam6d</code> conda 환경을 복제한 <code>fmfusion</code> · <code>dualmap</code>(torch 2.7.1 cu12.9). 걸린 것은 26 문서 §7.</p>
+<p><strong>무엇이 실제로 다시 돌았나</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>4090 에서 다시 돈 부분</th>
+<th>노트북 것을 그대로 쓴 부분</th>
+<th>결과가 노트북과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FM-Fusion</td>
+<td>인스턴스 융합(<code>IntegrateInstanceMap</code>, CPU) + 내보내기·채점</td>
+<td>GroundingDINO + SAM 검출(<code>scans/&lt;장면&gt;/prediction_no_augment</code>, 10-09 노트북 생성)</td>
+<td><strong>같음</strong> (YCB-V 28/106/27, ObChange 13/67/12). 융합이 결정적이라는 확인이지 같은 GPU 재실행은 아님. 검출까지 다시 돌리려면 <code>fmfusion_detect.py</code> 를 4090 에서 돌리면 됨(gsam 환경은 빌드돼 있음)</td>
+</tr>
+<tr>
+<td>DualMap 공개</td>
+<td>전부 (YOLO-World + MobileSAM + MobileCLIP, 지도 갱신)</td>
+<td>없음</td>
+<td>ObChange <strong>같음</strong>(5/27/20), YCB-V 는 장면 49 가 빠져(아래) 11 장면 6/47/45</td>
+</tr>
+<tr>
+<td>DualMap BGR 수정</td>
+<td>전부</td>
+<td>없음</td>
+<td>조금 다름: YCB-V 10/54/45 → 10/56/45, ObChange 10/22/15 → 12/21/13 (F1 0.351 → 0.414)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>DualMap 장면 49 멈춤:</strong> 공개 설정 첫 실행이 YCB-V 장면 49 에서 25분 제한까지 멈췄습니다. YOLO-World 가 아무 상자도 내지 않은 프레임에서 <code>curr_detections</code> 가 이전 프레임 것으로 남아 <code>process_detections</code> 가 빈 마스크 배열을 필터링하다 멈추는 것이라, <code>utils/object_detector.py</code> 에 빈 결과를 <code>None</code> 으로 두고 그 프레임을 건너뛰는 두 줄을 넣었습니다(노트북 패치에는 없던 수정, 26 문서 §7). 장면 49 는 <code>dualmap_fixup_4090.sh</code> 로 다시 돌려 12 장면 값으로 바꿉니다(끝나면 2.1 절 행 갱신).</p>
+<p><strong>결론:</strong> 같은 장비에서 제안 F1 0.706(YCB-V) · 0.543(ObChange 방문별)이 FM-Fusion 0.296 · 0.248, DualMap 0.115~0.165 · 0.175~0.414 보다 높습니다. 노트북 표(20 · 21 문서)와의 차이는 제안 방법의 FP 가 는 것(2 · 3 절)뿐이고 기준 방법은 거의 그대로이므로, 본문의 "같은 장비" 조건은 4090 표로도 성립합니다. 최종 수치는 5090 에서 세 방법을 모두 돌린 뒤 정합니다.</p></main></body></html>

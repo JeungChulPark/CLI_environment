@@ -12,6 +12,8 @@ W=$HOME/DeepLearning/Dataset/bop/ycbv_work
 TAG=${TAG:-261011}   # 2026-10-12: overridable (TAG=4090 with OBJMAP_REAL_RUNS = the 4090 live runs)
 [ -n "${OBJMAP_REAL_RUNS:-}" ] || export OBJMAP_REAL_RUNS="1=live_261011_260901_cbnu_bigeightcircle_l3080_hyb3cf_r2,2=live_261011_260826_etri_eightcircle_dark_l3080_hyb3cf,3=live_261011_260901_cbnu_eightcircle_l3080_hyb3cf,4=live_261011_260910_object_l3080_hyb3cf,5=live_261011_260915_eightcircle_l3080_hyb3cf"
 export OBJMAP_OUT=$PWD/out_$TAG OBJMAP_GT=$PWD/gt_$TAG FMFUSION_DATA=$W/fmfusion_$TAG DUALMAP_DATA=$W/dualmap_$TAG
+# frames + poses laid out by real_prep.py: ids depend on the trajectory, so another tag gets its own dir (laptop tag keeps real_work)
+export OBJMAP_REAL_WORK=${OBJMAP_REAL_WORK:-$HOME/DeepLearning/Dataset/real_work$([ "$TAG" = 261011 ] || echo _$TAG)}
 SCENES="1 2 3 4 5"
 L=$OBJMAP_OUT/real_logs; mkdir -p $L $FMFUSION_DATA $DUALMAP_DATA
 cp -n $W/dualmap/real_prompts_colors.json $W/dualmap/real_prompts_id_colors.json $DUALMAP_DATA/

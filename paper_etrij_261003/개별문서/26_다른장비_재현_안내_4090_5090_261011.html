@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>26. 다른 장비에서 다시 돌리기 — 주말(10-10 · 10-11) 노트북 실험을 RTX 4090 · RTX 5090(Blackwell)으로 (2026-10-11)</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>26_다른장비_재현_안내_4090_5090_261011</title><style>
 :root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
 @media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
 *{box-sizing:border-box}
@@ -429,6 +429,168 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 <td>10-07, 10-08 드라이버 멈춤</td>
 <td>둘 다 GPU0 실시간 + 다른 GPU 배치가 겹쳤을 때. 이 PC 에서는 GPU 작업을 하나씩만 순서대로</td>
 </tr>
+<tr>
+<td>DualMap 멈춤</td>
+<td>YCB-V 장면 49 에서 25분 제한까지 진행 없음</td>
+<td>YOLO-World 가 상자를 하나도 내지 않은 프레임에서 <code>curr_detections</code> 가 이전 값으로 남아 빈 마스크를 필터링하다 멈춤. <code>utils/object_detector.py</code>: 빈 결과면 <code>curr_detections=None</code>, <code>process_detections</code> 는 그때 <code>curr_results={}</code> 로 반환. 장면 49 는 <code>dualmap_fixup_4090.sh</code> 로 재실행</td>
+</tr>
+<tr>
+<td>실제 영상 채점 기준 행</td>
+<td><code>eval_real.py</code> 가 <code>live_&lt;녹화&gt;_orbslam3/slam_poses.jsonl</code> 없음으로 실패</td>
+<td>노트북 배포 실행 폴더는 요약(<code>summary.json</code>)만 복사돼 있고 궤적이 없음. 기준 행을 이 PC 에서 만든 <code>ref_&lt;녹화&gt;_ours_r1</code>(기준 위치는 r1 · r2 중앙값, <code>EVAL_REAL_REFS</code>)로 바꿔 채점</td>
+</tr>
+<tr>
+<td>SLAM 스트림 멈춤</td>
+<td>260826 기준 r2 가 27초 뒤 자세 없음(오류 없음)</td>
+<td>1회성. 폴더를 <code>_slamstall_261012</code> 로 두고 재실행(27 문서 4절 장면 57 과 같은 증상)</td>
+</tr>
+<tr>
+<td>실데이터 기준 방법 준비</td>
+<td><code>real_prep.py</code> 가 <code>StopIteration</code>(bag 없음) / 장면 1 실행 이름 없음</td>
+<td>① <code>objpose/pc/catalog.py</code> 의 <code>DATASET_ROOT</code>(<code>~/DeepLearning/Dataset/&lt;녹화&gt;</code>)에 이 PC 는 260826 만 있음 → 나머지 4 녹화는 NAS <code>data_slam_converted/&lt;녹화&gt;</code> 로 심볼릭 링크 ② <code>fmfusion_4090/scans</code> 가 노트북 <code>fmfusion/scans</code> 전체를 가리키는 링크라 실데이터 준비가 노트북 입력을 덮어쓸 뻔함 → 장면별 링크 폴더로 바꿈 ③ 프레임 번호가 궤적에 따라 달라지므로 <code>real_prep.py</code> 출력 폴더를 <code>OBJMAP_REAL_WORK</code>(태그별 <code>real_work_&lt;TAG&gt;</code>)로 분리 ④ 260901 큰 8자의 4090 실행 이름은 <code>real5_260901_hybS05</code>(군집 먼저 없음)</td>
+</tr>
 </tbody>
 </table></div>
-<p>같은 날 폴더도 정리했습니다. 코드는 <code>~/DeepLearning/server/CLI_environment</code> 하나(옛 <code>CLI_env_paper</code> 는 삭제, 이 문서의 그 경로는 지금의 server/CLI_environment 를 뜻함), 4090 체인 스크립트는 <code>src/run_4090/</code>, 기준 방법 코드는 <code>~/DeepLearning/baselines</code>, 데이터는 NAS <code>/mnt/synology/Dataset/DeepLearning_dataset/</code>(옛 <code>~/DeepLearning/Dataset</code> 경로는 링크로 유지)입니다. 환경 설치 기록은 <code>src/objmap/setup_baselines_4090.sh</code> 입니다.</p></main></body></html>
+<p>같은 날 폴더도 정리했습니다. 코드는 <code>~/DeepLearning/server/CLI_environment</code> 하나(옛 <code>CLI_env_paper</code> 는 삭제, 이 문서의 그 경로는 지금의 server/CLI_environment 를 뜻함), 4090 체인 스크립트는 <code>src/run_4090/</code>, 기준 방법 코드는 <code>~/DeepLearning/baselines</code>, 데이터는 NAS <code>/mnt/synology/Dataset/DeepLearning_dataset/</code>(옛 <code>~/DeepLearning/Dataset</code> 경로는 링크로 유지)입니다. 환경 설치 기록은 <code>src/objmap/setup_baselines_4090.sh</code> 입니다.</p>
+<h2 id="8-4090-08-2026-10-12">8. 4090 재현 결과 — 08 문서 세트 (2026-10-12)</h2>
+<p><code>src/run_4090/run_08_4090.sh</code>(16:06~19:29): 260901 큰 8자 6구성(R1), 실제 영상 4개 × 4구성(R2), YCB-V 12영상 × 6구성. SLAM 은 이 PC 의 ORB-SLAM3(f2000). 결과 <code>src/realdata/results_real5_4090.json</code>, <code>results_real_&lt;녹화&gt;_4090.json</code>, <code>src/ycbv_live/results_penalized_4090.json</code>. 노트북 값은 08 문서(1회 측정, Mac SLAM).</p>
+<p><strong>R1. 260901 큰 8자 (평균 점수 % / 인식 빈도)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>노트북 3080</th>
+<th>이 PC 4090</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 0.5</td>
+<td>53.6 / 0.89 Hz</td>
+<td>57.9 / 3.62 Hz</td>
+</tr>
+<tr>
+<td>개선안 (g13)</td>
+<td>79.2 / 3.68 Hz</td>
+<td>77.0 / 4.77 Hz</td>
+</tr>
+<tr>
+<td>개선안 2 (원본 S 0.5)</td>
+<td>–</td>
+<td>28.7 / 6.89 Hz</td>
+</tr>
+<tr>
+<td>개선안 3</td>
+<td>77.3 / 2.77 Hz</td>
+<td>78.6 / 6.17 Hz</td>
+</tr>
+<tr>
+<td>개선안 3 검증 없음</td>
+<td>–</td>
+<td>29.3 / 7.80 Hz</td>
+</tr>
+<tr>
+<td>A안</td>
+<td>–</td>
+<td>79.6 / 5.16 Hz</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>R2. 실제 영상 4개 (평균 점수 %, 노트북 → 4090; 4090 의 기준 행은 체인 A 의 배포 실행 r1)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화</th>
+<th>기준(배포, 4090)</th>
+<th>원본 0.5</th>
+<th>개선안</th>
+<th>개선안 3</th>
+<th>A안</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>260915 8자</td>
+<td>72.2</td>
+<td>59.3 → 58.1</td>
+<td>60.7 → 65.9</td>
+<td>67.8 → 70.7</td>
+<td>66.9 → 70.2</td>
+</tr>
+<tr>
+<td>260901 cbnu 8자</td>
+<td>83.9</td>
+<td>62.3 → 65.1</td>
+<td>80.1 → 81.3</td>
+<td>69.6 → 76.8</td>
+<td>77.7 → 81.7</td>
+</tr>
+<tr>
+<td>260910 물체</td>
+<td>59.1</td>
+<td>61.1 → 45.9</td>
+<td>72.9 → 57.5</td>
+<td>71.0 → 59.7</td>
+<td>56.0 → 68.5</td>
+</tr>
+<tr>
+<td>260826 어두운 8자</td>
+<td>94.4</td>
+<td>63.5 → 68.8</td>
+<td>88.0 → 91.2</td>
+<td>88.2 → 90.8</td>
+<td>86.6 → 91.5</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>인식 빈도는 원본 0.6~0.9 → 2.1~3.3 Hz, 개선안 3 0.9~2.5 → 4.2~6.0 Hz. 순위(검증 있는 세 구성 &gt; 원본)는 네 녹화 모두 유지됩니다.</li>
+<li>260910 은 원본 0.5 와 개선안 3 이 두 번 모두 루프 보정 1 m 를 넘겨 마지막 시도를 채점했습니다(18 문서 A 절과 같은 이유). 4090 값이 노트북보다 낮은 것은 그 보정 때문입니다.</li>
+<li>기준 행이 노트북(Mac SLAM 배포 실행)과 다르므로 절대값은 참고만 하고, 구성 간 차이로 읽습니다.</li>
+</ul>
+<p><strong>YCB-V 12영상 (프레임 평균 점수 %, 벌점 포함)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>노트북 3080</th>
+<th>이 PC 4090</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 0.5</td>
+<td>64.6</td>
+<td>57.5</td>
+</tr>
+<tr>
+<td>개선안 (g13p)</td>
+<td>60.4</td>
+<td>62.4</td>
+</tr>
+<tr>
+<td>개선안 2 (원본 S 0.5)</td>
+<td>37.0</td>
+<td>31.6</td>
+</tr>
+<tr>
+<td>개선안 3</td>
+<td>70.1</td>
+<td>63.3</td>
+</tr>
+<tr>
+<td>개선안 3 검증 없음</td>
+<td>–</td>
+<td>27.9</td>
+</tr>
+<tr>
+<td>A안</td>
+<td>–</td>
+<td>50.9</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>4090 에서는 원본 0.5 와 개선안 3 이 노트북보다 6~7 점 낮고 개선안은 2 점 높습니다. 27 문서와 같은 원인(인식 프레임이 2~3 배라 없는 물체의 답이 더 많이 통과)으로 보이며, 검증 없음(27.9)과의 차이는 그대로입니다.</li>
+<li>실행 시간: 실제 영상 1회 5~12분(NAS 에서 녹화 읽기 2분 포함), YCB-V 1장면 1~2분, 세트 전체 3시간 23분.</li>
+</ul></main></body></html>
