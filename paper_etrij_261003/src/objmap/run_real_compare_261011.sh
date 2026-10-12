@@ -20,7 +20,7 @@ cp -n $W/dualmap/real_prompts_colors.json $W/dualmap/real_prompts_id_colors.json
 for s in $SCENES; do $PY real_prep.py --scene $s || echo "PREP_FAILED $s"; done
 $PY fmfusion_prep.py --dataset real --scenes $SCENES > $L/fmf_prep.log 2>&1
 $PY dualmap_prep.py --dataset real --scenes $SCENES > $L/dm_prep.log 2>&1
-for s in $SCENES; do
+[ "$TAG" = 261011 ] && for s in $SCENES; do   # laptop tag only: frame ids of another trajectory set do not match these detections
   src=$W/fmfusion/scans/real_$(printf %06d $s)/prediction_no_augment
   dst=$FMFUSION_DATA/scans/real_$(printf %06d $s)/prediction_no_augment
   for f in $dst/../color/frame-*.png; do

@@ -1103,6 +1103,7 @@ timeout 8 ssh -o BatchMode=yes mac true && echo MAC_OK
 | 실제 영상 채점 기준 행 | `eval_real.py` 가 `live_<녹화>_orbslam3/slam_poses.jsonl` 없음으로 실패 | 노트북 배포 실행 폴더는 요약(`summary.json`)만 복사돼 있고 궤적이 없음. 기준 행을 이 PC 에서 만든 `ref_<녹화>_ours_r1`(기준 위치는 r1 · r2 중앙값, `EVAL_REAL_REFS`)로 바꿔 채점 |
 | SLAM 스트림 멈춤 | 260826 기준 r2 가 27초 뒤 자세 없음(오류 없음) | 1회성. 폴더를 `_slamstall_261012` 로 두고 재실행(27 문서 4절 장면 57 과 같은 증상) |
 | 실데이터 기준 방법 준비 | `real_prep.py` 가 `StopIteration`(bag 없음) / 장면 1 실행 이름 없음 | ① `objpose/pc/catalog.py` 의 `DATASET_ROOT`(`~/DeepLearning/Dataset/<녹화>`)에 이 PC 는 260826 만 있음 → 나머지 4 녹화는 NAS `data_slam_converted/<녹화>` 로 심볼릭 링크 ② `fmfusion_4090/scans` 가 노트북 `fmfusion/scans` 전체를 가리키는 링크라 실데이터 준비가 노트북 입력을 덮어쓸 뻔함 → 장면별 링크 폴더로 바꿈 ③ 프레임 번호가 궤적에 따라 달라지므로 `real_prep.py` 출력 폴더를 `OBJMAP_REAL_WORK`(태그별 `real_work_<TAG>`)로 분리 ④ 260901 큰 8자의 4090 실행 이름은 `real5_260901_hybS05`(군집 먼저 없음) |
+| GroundingDINO 적재 | `'BertModel' object has no attribute 'get_extended_attention_mask'` | `sam6d` 를 복제한 `fmfusion` 환경의 transformers 가 5.19. GroundingDINO 의 `bertwarper.py` 는 4.x API 를 씀 → `pip install transformers==4.44.2` (fmfusion 환경에만). YCB-V · ObChange 는 노트북 검출을 재사용해서 이 오류를 만나지 않았고, 실데이터는 궤적이 달라 검출부터 다시 돌려야 해서 드러남 |
 
 같은 날 폴더도 정리했습니다. 코드는 `~/DeepLearning/server/CLI_environment` 하나(옛 `CLI_env_paper` 는 삭제, 이 문서의 그 경로는 지금의 server/CLI_environment 를 뜻함), 4090 체인 스크립트는 `src/run_4090/`, 기준 방법 코드는 `~/DeepLearning/baselines`, 데이터는 NAS `/mnt/synology/Dataset/DeepLearning_dataset/`(옛 `~/DeepLearning/Dataset` 경로는 링크로 유지)입니다. 환경 설치 기록은 `src/objmap/setup_baselines_4090.sh` 입니다.
 
