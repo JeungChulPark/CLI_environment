@@ -241,4 +241,69 @@ a{color:var(--acc);word-break:break-all}
 <ul>
 <li><strong>정확도 지표는 소수점 한 자리까지 재현</strong>됩니다(찾은 비율 ±0.2%p, 오답/장 ±0.001). 1절의 결론(검증의 손익, 군집 먼저의 무손실 가속)이 세 번째 GPU 에서 그대로 섭니다.</li>
 <li><strong>속도</strong>: 개선안 3 342 → 238 ms(1.4배), 군집 먼저 240 → 173 ms(1.4배). 06 문서 9절에서 본 것처럼 ViT-S/FastSAM 앞단이 남아 검증 중심 구성(배포 2.9배)보다는 이득이 작습니다. 군집 먼저 173 ms 는 <strong>원본 457 ms 의 38%</strong> 입니다.</li>
+</ul>
+<h2>5. 객체 자세 추정 속도 — 개선안 3·배포, RTX 4090 대 Blackwell (한 장 평가 + 실시간)</h2>
+<blockquote>
+<p>개선안 3 과 배포(L4)의 자세 추정 속도를 두 GPU 로 나눠 정리했습니다. 한 장 평가는 장당 처리 시간 중앙값(이 문서 4절·06 §9), 실시간은 YCB-V 영상 인식 처리율(15 §7 의 3회 평균, 높을수록 빠름)입니다.</p>
+</blockquote>
+<h3>5.1 한 장 평가 (YCB-V 900장, 장당 ms)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>RTX 4090</th>
+<th>Blackwell (.41)</th>
+<th>배속</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>개선안 3 (검증 켬)</td>
+<td>342</td>
+<td><strong>238</strong></td>
+<td>1.4×</td>
+</tr>
+<tr>
+<td>개선안 3 + 군집 먼저</td>
+<td>240</td>
+<td><strong>173</strong></td>
+<td>1.4×</td>
+</tr>
+<tr>
+<td>배포 (L4)</td>
+<td>513</td>
+<td><strong>180</strong></td>
+<td><strong>2.9×</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3>5.2 실시간 (YCB-V 영상, 인식 Hz)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>RTX 4090</th>
+<th>Blackwell (.41)</th>
+<th>배속</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>개선안 3 (+ 군집 먼저)</td>
+<td>2.28</td>
+<td><strong>4.38</strong> (3회 평균)</td>
+<td>1.9×</td>
+</tr>
+<tr>
+<td>배포</td>
+<td>1.49</td>
+<td><strong>4.54</strong> (27 §2, 1회)</td>
+<td>3.0×</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>배포가 Blackwell 에서 가장 크게 빨라집니다</strong>(한 장 2.9×, 실시간 3.0×). 배포는 시간의 거의 전부가 PEM·자세 검증 같은 GPU 집약 연산이라 GPU 세대 효과를 그대로 받습니다.</li>
+<li><strong>개선안 3 은 1.4~1.9×로 이득이 작습니다.</strong> FastSAM·ViT-S 앞단(원본 판정 경로)이 남아 그 부분은 GPU 개선 효과가 작습니다.</li>
+<li>그 결과 관계가 역전됐습니다: 4090 에서는 배포(513 ms)가 개선안 3(342 ms)보다 <strong>느렸는데</strong>, Blackwell 에서는 배포(180 ms)가 개선안 3(238 ms)보다 <strong>빠릅니다</strong>. 검증 포함 전체가 200 ms 아래로 내려와 실시간 여유가 커집니다.</li>
 </ul></main></body></html>
