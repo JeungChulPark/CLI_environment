@@ -387,4 +387,48 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 <td>오프라인이라 장비와 무관해야 합니다. 다만 GroundingDINO · SAM 의 반정밀도 연산 차이로 상자가 약간 달라질 수 있습니다</td>
 </tr>
 </tbody>
-</table></div></main></body></html>
+</table></div>
+<h2 id="7-4090-2026-10-12">7. 4090 에서 실제로 걸린 것 (2026-10-12 추가)</h2>
+<p>이 PC(RTX 4090 ×4, 드라이버 575 → CUDA 12.9 까지)에서 2절 안내대로 옮겨 돌리다가 걸린 것들입니다. 5090/.41 에서도 같은 일이 생길 수 있어 적어 둡니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>증상</th>
+<th>원인과 조치</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FM-Fusion 빌드</td>
+<td>링크 오류 <code>undefined reference to std::__1::basic_iostream</code></td>
+<td>Open3D 0.18 devel 패키지가 libc++ 로 만들어져 있음. <code>-DCMAKE_EXE_LINKER_FLAGS="-lc++ -lc++abi"</code> 로 링크하고 libc++.so.1 · libc++abi.so.1 (conda <code>libcxx</code>, <code>libcxxabi</code> 패키지)을 Open3D <code>lib/</code> 옆에 두면 됨 (<code>patchelf --set-rpath '$ORIGIN' libOpen3D.so</code>)</td>
+</tr>
+<tr>
+<td>FM-Fusion 실행</td>
+<td><code>Read 0 frames</code>, 지도 없음</td>
+<td>노트북 <code>ycbv_work/fmfusion/scans/&lt;장면&gt;/{color,depth}</code> 가 <code>Dataset/bop/ycbv/full/test/&lt;장면&gt;/{rgb,depth}</code> 를 가리키는 링크인데 T7 사본에 rgb 가 없었음(depth 만). <code>ycbv_test_all.zip</code> 에서 48~59 장면의 rgb·depth 를 풀면 됨. Open3D 는 대상이 없는 링크를 조용히 건너뛰어 프레임이 0 이 됨</td>
+</tr>
+<tr>
+<td>DualMap 환경</td>
+<td><code>No module named mobileclip</code>, <code>Detector has no attribute yolo</code></td>
+<td>① <code>3rdparty/mobileclip</code> 서브모듈이 사본에 비어 있음 → <code>pip install git+https://github.com/apple/ml-mobileclip</code> ② <code>model/</code> 가중치가 사본에 없음 → <code>mobile_sam.pt</code>(sam6d_realtime 것), <code>FastSAM-s.pt</code>(SAM-6D ISM checkpoints 것) 복사, <code>yolov8l-world.pt</code> 는 ultralytics 가 내려받음(96 MB) ③ <code>scikit-learn</code> 필요</td>
+</tr>
+<tr>
+<td>conda 환경 복사</td>
+<td>.41 의 <code>dualmap</code> 은 torch cu130</td>
+<td>드라이버 580 미만에서는 못 씀. 이 PC 는 <code>sam6d</code> 환경을 복제(<code>conda create --clone sam6d --offline</code>)한 뒤 DualMap <code>environment.yml</code> 의 pip 목록을 얹음. <code>fmfusion</code> 도 같은 방식 + <code>pip install -e gsam_fmfusion/GroundingDINO</code>(CUDA 연산 빌드: <code>CUDA_HOME=/usr/local/cuda-12.9</code>, <code>TORCH_CUDA_ARCH_LIST=8.9</code>, <code>CPATH=&lt;env&gt;/targets/x86_64-linux/include</code> — cusparse.h 가 거기에만 있음)</td>
+</tr>
+<tr>
+<td>포트 17001</td>
+<td>실시간 체인이 서로 SLAM 을 죽임</td>
+<td>.41 의 실시간 08 체인이 이 PC 의 ORB-SLAM3 를 ssh 역터널(17001)로 씀. 같은 PC 의 로컬 체인은 <code>SLAM_PORT=17002 HTTP_PORT=8766</code>(<code>ycbv_live/run_live.sh</code>, <code>run_4090/*.sh</code>)으로 돌리고 <code>pkill slam_stream</code> 은 자기 포트 것만</td>
+</tr>
+<tr>
+<td>GPU 겹침</td>
+<td>10-07, 10-08 드라이버 멈춤</td>
+<td>둘 다 GPU0 실시간 + 다른 GPU 배치가 겹쳤을 때. 이 PC 에서는 GPU 작업을 하나씩만 순서대로</td>
+</tr>
+</tbody>
+</table></div>
+<p>같은 날 폴더도 정리했습니다. 코드는 <code>~/DeepLearning/server/CLI_environment</code> 하나(옛 <code>CLI_env_paper</code> 는 삭제, 이 문서의 그 경로는 지금의 server/CLI_environment 를 뜻함), 4090 체인 스크립트는 <code>src/run_4090/</code>, 기준 방법 코드는 <code>~/DeepLearning/baselines</code>, 데이터는 NAS <code>/mnt/synology/Dataset/DeepLearning_dataset/</code>(옛 <code>~/DeepLearning/Dataset</code> 경로는 링크로 유지)입니다. 환경 설치 기록은 <code>src/objmap/setup_baselines_4090.sh</code> 입니다.</p></main></body></html>
