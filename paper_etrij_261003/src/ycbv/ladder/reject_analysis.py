@@ -1,6 +1,6 @@
 """개선안 2(검증 끔) 에는 있고 개선안 3(검증 켬) 에는 없는 답(= 검증이 버린 답)을 정답 여부와 탈락 사유로 나눈다."""
 import json, sys, collections, numpy as np, trimesh
-sys.path.insert(0, "/home/jucpark/DeepLearning/CLI_env_paper/paper_etrij_261003/src/ycbv")
+sys.path.insert(0, "/home/jucpark/DeepLearning/server/CLI_environment/paper_etrij_261003/src/ycbv")
 import data as D, paths as P
 from evaluate import adds_mm
 OUT = "/home/jucpark/DeepLearning/server/CLI_environment/paper_etrij_261003/src/ycbv/out_4090/"

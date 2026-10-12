@@ -187,6 +187,9 @@ def main():
     a = ap.parse_args()
     if a.cmd == "run":
         for s in a.scenes:
+            if (RUNS / seq_name(a.dataset, s) / "summary.json").exists():   # resumable (2026-10-12)
+                print(f"{seq_name(a.dataset, s)} skip (summary.json exists)", flush=True)
+                continue
             run_scene(s, a.http_port, a.slam_port, a.dataset)
             time.sleep(5)     # let the ports and the shared-memory channel go
     else:

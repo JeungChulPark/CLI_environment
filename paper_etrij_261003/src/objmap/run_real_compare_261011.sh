@@ -9,8 +9,8 @@ set -u
 cd "$(dirname "$0")"
 PY=$HOME/anaconda3/envs/sam6d/bin/python; FMF=$HOME/anaconda3/envs/fmfusion/bin/python
 W=$HOME/DeepLearning/Dataset/bop/ycbv_work
-TAG=261011
-export OBJMAP_REAL_RUNS="1=live_261011_260901_cbnu_bigeightcircle_l3080_hyb3cf_r2,2=live_261011_260826_etri_eightcircle_dark_l3080_hyb3cf,3=live_261011_260901_cbnu_eightcircle_l3080_hyb3cf,4=live_261011_260910_object_l3080_hyb3cf,5=live_261011_260915_eightcircle_l3080_hyb3cf"
+TAG=${TAG:-261011}   # 2026-10-12: overridable (TAG=4090 with OBJMAP_REAL_RUNS = the 4090 live runs)
+[ -n "${OBJMAP_REAL_RUNS:-}" ] || export OBJMAP_REAL_RUNS="1=live_261011_260901_cbnu_bigeightcircle_l3080_hyb3cf_r2,2=live_261011_260826_etri_eightcircle_dark_l3080_hyb3cf,3=live_261011_260901_cbnu_eightcircle_l3080_hyb3cf,4=live_261011_260910_object_l3080_hyb3cf,5=live_261011_260915_eightcircle_l3080_hyb3cf"
 export OBJMAP_OUT=$PWD/out_$TAG OBJMAP_GT=$PWD/gt_$TAG FMFUSION_DATA=$W/fmfusion_$TAG DUALMAP_DATA=$W/dualmap_$TAG
 SCENES="1 2 3 4 5"
 L=$OBJMAP_OUT/real_logs; mkdir -p $L $FMFUSION_DATA $DUALMAP_DATA
