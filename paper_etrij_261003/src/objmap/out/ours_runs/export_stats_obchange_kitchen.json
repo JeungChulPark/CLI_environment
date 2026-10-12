@@ -2,51 +2,51 @@
  {
   "dataset": "obchange_kitchen",
   "scene": 2,
-  "landmarks": 9,
-  "accepted_dets": 92,
-  "dets_assigned": 88,
-  "processed_frames": 103,
+  "landmarks": 10,
+  "accepted_dets": 334,
+  "dets_assigned": 321,
+  "processed_frames": 350,
   "video_frames": 1490,
-  "sam6d_hz": 2.0892494929006085
+  "sam6d_hz": 7.099391480730223
  },
  {
   "dataset": "obchange_kitchen",
   "scene": 3,
-  "landmarks": 10,
-  "accepted_dets": 78,
-  "dets_assigned": 73,
-  "processed_frames": 94,
+  "landmarks": 17,
+  "accepted_dets": 325,
+  "dets_assigned": 318,
+  "processed_frames": 313,
   "video_frames": 1499,
-  "sam6d_hz": 1.8951612903225805
+  "sam6d_hz": 6.310483870967742
  },
  {
   "dataset": "obchange_kitchen",
   "scene": 4,
-  "landmarks": 7,
-  "accepted_dets": 90,
-  "dets_assigned": 87,
-  "processed_frames": 121,
+  "landmarks": 9,
+  "accepted_dets": 340,
+  "dets_assigned": 337,
+  "processed_frames": 325,
   "video_frames": 1499,
-  "sam6d_hz": 2.439516129032258
+  "sam6d_hz": 6.552419354838709
  },
  {
   "dataset": "obchange_kitchen",
   "scene": 5,
-  "landmarks": 10,
-  "accepted_dets": 130,
-  "dets_assigned": 125,
-  "processed_frames": 86,
+  "landmarks": 13,
+  "accepted_dets": 478,
+  "dets_assigned": 463,
+  "processed_frames": 308,
   "video_frames": 1495,
-  "sam6d_hz": 1.7373737373737375
+  "sam6d_hz": 6.222222222222222
  },
  {
   "dataset": "obchange_kitchen",
   "scene": 6,
-  "landmarks": 9,
-  "accepted_dets": 133,
-  "dets_assigned": 128,
-  "processed_frames": 74,
+  "landmarks": 19,
+  "accepted_dets": 566,
+  "dets_assigned": 563,
+  "processed_frames": 290,
   "video_frames": 1496,
-  "sam6d_hz": 1.494949494949495
+  "sam6d_hz": 5.858585858585859
  }
 ]
