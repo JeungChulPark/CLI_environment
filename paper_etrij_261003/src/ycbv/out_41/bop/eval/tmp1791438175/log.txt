@@ -1,0 +1,1 @@
+10/8|05:42:56: Running: python /home/jucpark/Dataset/bop/ycbv_work/bop_toolkit/bop_toolkit_lib/call_vsd_worker.py --input_dir=/home/jucpark/DeepLearning/CLI_env_paper/paper_etrij_261003/src/ycbv/out_41/bop/eval/tmp1791438175 --worker_id=0
