@@ -880,7 +880,7 @@ a{color:var(--acc);word-break:break-all}
 <tr>
 <td>실데이터 기준 방법 재실행 (24 §4)</td>
 <td>코드 없음</td>
-<td>코드 옴. <code>TAG=4090 OBJMAP_REAL_RUNS=... run_real_compare_261011.sh</code> 로 이 PC 궤적 위에서 20:xx 부터 실행 중(FM-Fusion 검출 + DualMap 2 설정 + 채점). 끝나면 여기에 추가</td>
+<td><strong>됨</strong> (20:13~21:35, 8절). 이 PC 궤적(체인 A 의 개선안 3 + 군집 먼저 r1, 녹화 1 은 08 세트의 개선안 3) 위에서 FM-Fusion 은 검출부터, DualMap 은 두 설정 모두 다시 돌림</td>
 </tr>
 </tbody>
 </table></div>
@@ -925,4 +925,75 @@ a{color:var(--acc);word-break:break-all}
 </tbody>
 </table></div>
 <p><strong>DualMap 장면 49 멈춤:</strong> 공개 설정 첫 실행이 YCB-V 장면 49 에서 25분 제한까지 멈췄습니다. YOLO-World 가 아무 상자도 내지 않은 프레임에서 <code>curr_detections</code> 가 이전 프레임 것으로 남아 <code>process_detections</code> 가 빈 마스크 배열을 필터링하다 멈추는 것이라, <code>utils/object_detector.py</code> 에 빈 결과를 <code>None</code> 으로 두고 그 프레임을 건너뛰는 두 줄을 넣었습니다(노트북 패치에는 없던 수정, 26 문서 §7). 장면 49 는 <code>dualmap_fixup_4090.sh</code> 로 다시 돌렸고(20:11~20:12, 수정 뒤에는 90초에 끝남) 2.1 절 행은 12 장면 값입니다.</p>
-<p><strong>결론:</strong> 같은 장비에서 제안 F1 0.706(YCB-V) · 0.543(ObChange 방문별)이 FM-Fusion 0.296 · 0.248, DualMap 0.109~0.165 · 0.175~0.414 보다 높습니다. 노트북 표(20 · 21 문서)와의 차이는 제안 방법의 FP 가 는 것(2 · 3 절)뿐이고 기준 방법은 거의 그대로이므로, 본문의 "같은 장비" 조건은 4090 표로도 성립합니다. 최종 수치는 5090 에서 세 방법을 모두 돌린 뒤 정합니다.</p></main></body></html>
+<p><strong>결론:</strong> 같은 장비에서 제안 F1 0.706(YCB-V) · 0.543(ObChange 방문별)이 FM-Fusion 0.296 · 0.248, DualMap 0.109~0.165 · 0.175~0.414 보다 높습니다. 노트북 표(20 · 21 문서)와의 차이는 제안 방법의 FP 가 는 것(2 · 3 절)뿐이고 기준 방법은 거의 그대로이므로, 본문의 "같은 장비" 조건은 4090 표로도 성립합니다. 최종 수치는 5090 에서 세 방법을 모두 돌린 뒤 정합니다.</p>
+<h2 id="8-5-pc-2026-10-12">8. 실데이터 5개 — 기준 방법을 이 PC 궤적 위에서 (2026-10-12 저녁 추가)</h2>
+<p>24 문서 4절과 같은 단계(<code>run_real_compare_261011.sh</code>, <code>TAG=4090</code>): 녹화마다 이 PC 에서 돌린 제안 방법 실행의 ORB-SLAM3 궤적(루프 보정 반영)을 세 방법이 함께 쓰고, 인식 카메라 프레임을 <code>real_work_4090/</code> 에 다시 깔았습니다(녹화별 6,362 / 8,539 / 3,054 / 4,774 / 3,848 장). 궤적 출처는 녹화 1 이 <code>real5_260901_hybS05</code>(08 세트), 2~5 가 체인 A 의 <code>hol_&lt;녹화&gt;_hybS05_cf_r1</code>. FM-Fusion 은 <strong>GroundingDINO + SAM 검출부터</strong> 이 PC 에서 돌렸고(10프레임마다 2,658장, 13.5분), DualMap 은 두 설정을 전부 돌렸습니다(25분). 결과 <code>src/objmap/out_4090/real_scores.json</code>, 지도 <code>out_4090/&lt;방법&gt;/real/00000k/map.json</code>, 로그 <code>out_4090/real_logs/</code>.</p>
+<p><strong>녹화별 최종 지도 (맞음 / 잘못; 괄호는 24 문서의 노트북 값)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화</th>
+<th>제안 (인식 빈도)</th>
+<th>FM-Fusion</th>
+<th>DualMap 공개 설정</th>
+<th>DualMap BGR 수정</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 260901 bigeightcircle</td>
+<td>7/1 (8/0) — 6.17 Hz</td>
+<td>6/24 (6/23)</td>
+<td>3/0 (2/1)</td>
+<td>3/3 (3/4)</td>
+</tr>
+<tr>
+<td>2 260826 어두운 조건</td>
+<td>8/0 (8/0) — 5.33 Hz</td>
+<td>7/50 (7/51)</td>
+<td>4/6 (4/6)</td>
+<td>4/5 (5/6)</td>
+</tr>
+<tr>
+<td>3 260901 eightcircle</td>
+<td>8/0 (8/0) — 6.54 Hz</td>
+<td>6/13 (6/11)</td>
+<td>3/1 (3/1)</td>
+<td>4/2 (4/3)</td>
+</tr>
+<tr>
+<td>4 260910 object</td>
+<td>8/0 (8/0) — 6.32 Hz</td>
+<td>7/48 (7/51)</td>
+<td>3/5 (3/6)</td>
+<td>5/7 (5/7)</td>
+</tr>
+<tr>
+<td>5 260915 eightcircle</td>
+<td>8/0 (8/0) — 5.18 Hz</td>
+<td>7/40 (7/40)</td>
+<td>1/1 (1/1)</td>
+<td>3/2 (3/1)</td>
+</tr>
+<tr>
+<td><strong>합계 (40개)</strong></td>
+<td><strong>39/1</strong> (40/0)</td>
+<td>33/175 (33/176)</td>
+<td>14/13 (13/15)</td>
+<td>19/19 (20/21)</td>
+</tr>
+<tr>
+<td><strong>점수</strong> 맞음/(맞음+잘못+못 찾음)</td>
+<td><strong>95.1%</strong> (100%)</td>
+<td>15.3% (15.3%)</td>
+<td>26.4% (23.6%)</td>
+<td>32.2% (32.8%)</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>기준 방법은 궤적과 장비를 바꿔도 거의 그대로입니다.</strong> FM-Fusion 은 합계 33/176 → 33/175, 못 찾은 물체도 같은 종류(식혜 캔 5회, 공룡 인형 2회)이고 잘못의 대부분이 "다른 자리"(5개 녹화 합계 151개)입니다. DualMap 두 설정도 ±2 안에서 같습니다. 이 PC 의 검출부터 다시 돌린 FM-Fusion 이 노트북 검출을 재사용한 값과 같은 수준이므로, 2.1 · 3.1 절의 YCB-V · ObChange 행(검출 재사용)도 그대로 써도 됩니다.</li>
+<li><strong>제안 방법의 39/1</strong> 은 녹화 1 의 공룡 인형 하나가 라벨 오류로 잘못 올라간 것입니다(08 세트 <code>real5_260901_hybS05</code>, 군집 먼저 없음). 24 문서의 40/0 은 군집 먼저가 있는 구성이었습니다. 체인 A 의 다른 네 녹화(군집 먼저 있음)는 모두 8/0 입니다.</li>
+<li>인식 빈도는 노트북 2.5~3.5 Hz → 5.2~6.5 Hz.</li>
+<li><strong>쓰임:</strong> 23 · 24 문서의 실데이터 표가 "같은 장비·같은 궤적" 조건으로 이 PC 에서도 재현된다는 근거. 본문 표는 24 문서 값을 두고 이 표를 보충으로 둡니다.</li>
+</ul></main></body></html>
