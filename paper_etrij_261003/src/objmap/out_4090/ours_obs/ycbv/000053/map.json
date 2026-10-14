@@ -1,0 +1,33 @@
+{
+ "units": "m",
+ "frame": "world",
+ "method": "ours",
+ "form": "observed",
+ "run": "/home/jucpark/DeepLearning/server/CLI_environment/paper_etrij_261003/src/objmap/out_4090/ours_runs/000053",
+ "objects": [
+  {
+   "id": 0,
+   "label": "ycbv_04",
+   "points": "points/0.npy",
+   "n_obs": 112
+  },
+  {
+   "id": 1,
+   "label": "ycbv_09",
+   "points": "points/1.npy",
+   "n_obs": 108
+  },
+  {
+   "id": 2,
+   "label": "ycbv_13",
+   "points": "points/2.npy",
+   "n_obs": 14
+  },
+  {
+   "id": 3,
+   "label": "ycbv_21",
+   "points": "points/3.npy",
+   "n_obs": 4
+  }
+ ]
+}

@@ -16,6 +16,7 @@ Output: ~/DeepLearning/Dataset/real_work/<session>/{rgb,depth}/<id:06d>.png (BGR
 """
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -33,7 +34,7 @@ from conv_session import ConvSession  # noqa: E402
 from hub import SAM_MINUS_SLAM_CLOCK_NS, load_extrinsic  # noqa: E402
 from rs_session import RsSession  # noqa: E402
 
-WORK = Path.home() / "DeepLearning/Dataset/real_work"
+WORK = Path(os.environ.get("OBJMAP_REAL_WORK", Path.home() / "DeepLearning/Dataset/real_work"))   # 2026-10-12: separate dir per trajectory set (frame ids depend on the trajectory)
 MAX_GAP_NS = 100_000_000
 
 

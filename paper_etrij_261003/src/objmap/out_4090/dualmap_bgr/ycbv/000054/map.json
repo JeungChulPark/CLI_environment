@@ -1,0 +1,55 @@
+{
+ "units": "m",
+ "frame": "world",
+ "dataset": "ycbv",
+ "scene": 54,
+ "kind": "dualmap_bgr",
+ "source": "/home/jucpark/DeepLearning/baselines/DualMap/output/ycbv_runs_dualmap_bgr_4090/ycbv000054/ycbv_ycbv000054/map",
+ "objects": [
+  {
+   "id": 0,
+   "label": "021_bleach_cleanser",
+   "points": "points/0.npy"
+  },
+  {
+   "id": 1,
+   "label": "040_large_marker",
+   "points": "points/1.npy"
+  },
+  {
+   "id": 2,
+   "label": "unknown",
+   "points": "points/2.npy"
+  },
+  {
+   "id": 3,
+   "label": "unknown",
+   "points": "points/3.npy"
+  },
+  {
+   "id": 4,
+   "label": "035_power_drill",
+   "points": "points/4.npy"
+  },
+  {
+   "id": 5,
+   "label": "unknown",
+   "points": "points/5.npy"
+  },
+  {
+   "id": 6,
+   "label": "unknown",
+   "points": "points/6.npy"
+  },
+  {
+   "id": 7,
+   "label": "unknown",
+   "points": "points/7.npy"
+  },
+  {
+   "id": 8,
+   "label": "unknown",
+   "points": "points/8.npy"
+  }
+ ]
+}

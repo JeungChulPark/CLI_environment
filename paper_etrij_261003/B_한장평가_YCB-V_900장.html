@@ -22,7 +22,7 @@ li{margin:3px 0}
 a{color:var(--acc);word-break:break-all}
 </style></head><body><main><h1 id="ycb-v-900">한장평가 YCB-V 900장</h1>
 <blockquote>
-<p>한 장 평가(YCB-V 900장·36장) — 기준 시스템 비교, 단계별 분해(L0→L4), 4090 확인 실행, 인식 방법 4가지, ViT-S 대 ViT-L, 개선안 3·군집 먼저 900장과 같은 물체끼리 ADD-S(16), 연휴 실험 — 다른 GPU 시간 · 다른 데이터셋 · FoundationPose · 관문 곡선(18). 개별 문서 7개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-13.</p>
+<p>한 장 평가(YCB-V 900장·36장) — 기준 시스템 비교, 단계별 분해(L0→L4), 4090 확인 실행, 인식 방법 4가지, ViT-S 대 ViT-L, 개선안 3·군집 먼저 900장과 같은 물체끼리 ADD-S(16), 연휴 실험 — 다른 GPU 시간 · 다른 데이터셋 · FoundationPose · 관문 곡선(18). 개별 문서 7개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-14.</p>
 </blockquote>
 <p><strong>이 묶음의 장</strong></p>
 <ul>
@@ -127,6 +127,7 @@ a{color:var(--acc);word-break:break-all}
 </li>
 <li><a href="#18-2026-10-08-10-10-gpu-gpu">18. 연휴 실험 (2026-10-08 ~ 10-10) — 실시간 반복, 관문 곡선, 다른 데이터셋, 같은 GPU 상대, 다른 GPU 시간</a><ul>
 <li><a href="#0">0. 실험 목록</a></li>
+<li><a href="#a-4-05-3-3-3-pc-rtx-4090-pc-orb-slam3-2026-10-12">A. 실제 영상 4개 반복 측정 — 원본 0.5 ×3, 개선안 3 + 군집 먼저 ×3 (이 PC RTX 4090 + 이 PC ORB-SLAM3, 2026-10-12)</a></li>
 <li><a href="#e-gpu-rtx-pro-6000-blackwell-41-gpu2-ycb-v-900">E. 다른 GPU 에서의 시간 — RTX PRO 6000 Blackwell (.41, GPU2), YCB-V 900장</a></li>
 <li><a href="#c-lm-o-tud-l-ic-bin-rtx-pro-6000-41-gpu1">C. 다른 데이터셋 — LM-O · TUD-L · IC-BIN (RTX PRO 6000, .41 GPU1)</a><ul>
 <li><a href="#c-2-t-less-30-1000-4904">C-2. T-LESS (물체 30, 1,000장, 목표 4,904개) — 무늬 없는 대칭 공업 부품의 한계 사례</a></li>
@@ -3276,7 +3277,7 @@ $PY eval_live.py --runs '&lt;repo&gt;/objpose/output/ycbv_live_v2_0*[0-9]' --out
 <td>실제 영상 4개 × (원본 0.5 3회, 개선안 3 + 군집 먼저 3회)</td>
 <td>이 PC GPU0</td>
 <td>표 6 (실시간 지도) 반복 측정 확장</td>
-<td><strong>중단</strong> (GPU 드라이버 멈춤, 재부팅 뒤 재개)</td>
+<td><strong>완료</strong> (10-12 이 PC 에서 처음부터 다시 돌림, A 절)</td>
 </tr>
 <tr>
 <td>B</td>
@@ -3310,6 +3311,57 @@ $PY eval_live.py --runs '&lt;repo&gt;/objpose/output/ycbv_live_v2_0*[0-9]' --out
 </table></div>
 <p>HB 는 BOP 가 테스트 정답을 공개하지 않아(서버 채점만 가능) IC-BIN 으로 바꿨습니다.</p>
 <p><strong>사고 (2026-10-08 15:45경):</strong> 이 PC 의 NVIDIA 드라이버(575.57.08)가 멈췄습니다. GPU 를 여는 모든 프로세스(GPU1 의 관문 실행, GPU3 의 LM-O 원본 실행, Blender 템플릿 렌더, 실시간 인식기, nvidia-smi)가 드라이버 잠금(<code>os_acquire_rwlock</code>)에서 D 상태로 멈춰 SIGKILL 로도 죽지 않고, sudo 권한이 없어 GPU 리셋·재부팅을 할 수 없습니다. 커널 로그는 읽을 수 없어 원인(Xid)은 확인하지 못했습니다. 직전에 겹친 일: GPU1 의 900장 실행 종료·시작, GPU3 의 원본 실행 시작, Blender(EGL) 시작, 실시간 허브 종료. <strong>조치:</strong> B 의 남은 질감 4점과 C 의 전체를 .41(RTX PRO 6000)로 옮겨 계속합니다. 정확도 지표는 GPU 와 무관함을 E 에서 확인했으므로(0.2%p 안), 시간 열만 GPU 를 표기합니다. <strong>A(실시간 반복)는 이 PC 의 4090 이 필요하므로 재부팅 뒤에 다시 돌립니다</strong>(260901_cbnu_eightcircle 의 기준 실행 2회는 완료, 나머지는 미실행).</p>
+<h3 id="a-4-05-3-3-3-pc-rtx-4090-pc-orb-slam3-2026-10-12">A. 실제 영상 4개 반복 측정 — 원본 0.5 ×3, 개선안 3 + 군집 먼저 ×3 (이 PC RTX 4090 + 이 PC ORB-SLAM3, 2026-10-12)</h3>
+<p>10-08 에 드라이버 멈춤으로 끊긴 체인 A 를 10-12 에 이 PC 에서 처음부터 다시 돌렸습니다(<code>src/run_4090/holiday_real_repeats.sh</code>, 로그 <code>ycbv_work/logs/holiday_real.log</code>). SLAM 은 Mac 이 아니라 이 PC 의 ORB-SLAM3(f2000, 127.0.0.1:17002)이고, 기준 위치는 녹화마다 우리 기술 배포 구성을 2회 돌려 그 중앙값으로 잡았습니다(<code>EVAL_REAL_REFS</code>). 채점은 <code>src/realdata/eval_real.py</code>, 결과 <code>src/realdata/results_holiday_&lt;녹화&gt;_4090.json</code>. 점수는 10 · 30 · 60 · 120초 · 끝 시점의 (맞음 − 잘못)/정답 평균(평균 점수)과 최종 지도 맞음/잘못입니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화 (물체 8개)</th>
+<th>기준 2회 평균 점수</th>
+<th>원본 0.5 — 평균 점수 3회 (평균) · 최종 지도</th>
+<th>개선안 3 + 군집 먼저 — 평균 점수 3회 (평균) · 최종 지도</th>
+<th>인식 빈도 원본 / 개선안 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>260826 어두운 8자</td>
+<td>94.4 · 94.5</td>
+<td>69.0, 67.9, 67.9 (<strong>68.3</strong>) · 7/2, 6/3, 7/2</td>
+<td>90.4, 90.9, 90.4 (<strong>90.6</strong>) · 8/0 ×3</td>
+<td>2.07 / 5.36 Hz</td>
+</tr>
+<tr>
+<td>260901 cbnu 8자</td>
+<td>83.9 · 81.8</td>
+<td>60.5, 64.8, 65.0 (<strong>63.4</strong>) · 6/3, 7/2, 7/2</td>
+<td>70.9, 71.9, 73.2 (<strong>72.0</strong>) · 8/0 ×3</td>
+<td>3.29 / 6.56 Hz</td>
+</tr>
+<tr>
+<td>260910 물체</td>
+<td>59.1 · 59.2</td>
+<td>27.2, 36.9, 41.0 (<strong>35.0</strong>) · 0/8, 1/7, 7/2</td>
+<td>62.4, 26.5, 59.7 (<strong>49.5</strong>) · 8/0, 0/8, 8/0</td>
+<td>2.85 / 6.36 Hz</td>
+</tr>
+<tr>
+<td>260915 8자</td>
+<td>72.2 · 74.6</td>
+<td>63.4, 62.7, 57.8 (<strong>61.3</strong>) · 7/2, 7/2, 6/3</td>
+<td>70.0, 71.6, 71.7 (<strong>71.1</strong>) · 8/0, 7/2, 7/1</td>
+<td>2.05 / 5.19 Hz</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>세 번의 편차:</strong> 개선안 3 은 260826 · 260901 · 260915 에서 세 번의 평균 점수 폭이 0.5 ~ 2.3 점이고 최종 지도는 11/12 회가 8/0 입니다. 원본 0.5 는 폭이 1.1 ~ 5.6 점이고 최종 지도에 잘못 2~3 개가 매번 남습니다(주로 곰 인형·공룡 인형·식혜 캔을 다른 자리로). 17 문서 표 6a(260901 큰 8자 3회)와 같은 그림입니다.</li>
+<li><strong>260910 은 루프 보정이 큰 녹화입니다.</strong> 8회 모두 ORB-SLAM3 의 루프 닫힘 보정이 1.0 ~ 3.5 m 로 스크립트의 재시도 기준(1 m)을 넘겨 두 번씩 돌았고, 둘 다 넘기면 마지막 시도를 그대로 채점했습니다(26 문서가 적은 대로 이 녹화는 노트북에서도 2 m 넘는 보정이 있었음). 보정 크기에 따라 최종 지도가 8/0 또는 0/8 로 갈리므로(개선안 3 r2 · 원본 r1 · r2 는 보정 뒤 모든 물체가 20 cm 반경 밖), 이 녹화의 반복 편차는 인식기가 아니라 SLAM 보정의 편차입니다. 본문에 쓸 때는 이 녹화를 빼거나 보정 크기를 함께 적어야 합니다.</li>
+<li><strong>260826 기준 r2 사고:</strong> 첫 실행(14:23)에서 SLAM 스트림이 27초(708 프레임) 뒤 자세 전송을 멈춰(오류 로그 없음, 허브는 끝까지 돎) 평균 점수 2.6 이 나왔습니다. 그 폴더는 <code>ref_260826_etri_eightcircle_dark_ours_r2_slamstall_261012</code> 로 두고 19:47 에 다시 만들었습니다(루프 보정 9.6 cm, 94.5). 27 문서 4절의 장면 57 과 같은 종류의 1회성 스트림 멈춤입니다.</li>
+<li><strong>260901 개선안 3 r1~r3</strong> 은 아침 실행이 <code>dinov2_vits14_pretrain.pth</code> 링크 깨짐(26 문서 §7)으로 인식기가 뜨지 못해 저녁에 다시 돌렸습니다. 다른 실행과 조건은 같습니다.</li>
+<li><strong>노트북 값과의 관계:</strong> 08 문서 7절의 1회 측정(노트북, Mac SLAM)과 순위가 같습니다(개선안 3 &gt; 원본 0.5, 인식 빈도 2.3~2.6배). 기준 위치가 이 PC 의 배포 실행 중앙값이라 절대값은 노트북 표와 직접 비교하지 않습니다.</li>
+<li><strong>쓰임:</strong> 17 문서 표 6c(실제 영상 4개 × 3회). 실행 시간은 녹화당 8회 42~80분, 전체 10:12~16:06 + 재실행 19:30~19:58.</li>
+</ul>
 <h3 id="e-gpu-rtx-pro-6000-blackwell-41-gpu2-ycb-v-900">E. 다른 GPU 에서의 시간 — RTX PRO 6000 Blackwell (.41, GPU2), YCB-V 900장</h3>
 <p>같은 코드(커밋 0c539f3)·같은 자산을 .41 서버에서 돌렸습니다. 결과 <code>src/ycbv/out_pro6000/</code> (<code>results_pro6000.json</code>, <code>pred_sam6d.json</code>, <code>pred_hybS05_cf_900.json</code>, 로그, <code>run_pro6000.sh</code>, <code>env_host.sh</code>).</p>
 <div class="tw"><table>

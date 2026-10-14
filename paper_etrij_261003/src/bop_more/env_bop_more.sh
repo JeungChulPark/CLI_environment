@@ -1,8 +1,8 @@
 # Environment for src/bop_more on the 4x RTX 4090 PC (GPU0/1 are busy: use CUDA_VISIBLE_DEVICES=2 or 3).
 # usage: export BOP_DATASET=lmo; source env_bop_more.sh
 source $HOME/Dataset/bop/ycbv_work/env.sh          # FASTSAM_X, DINOV2_VITL_DIR (vitl + vits symlinks), YCBV_* (unused here)
-export OBJPOSE_REPO=$HOME/DeepLearning/CLI_env_paper
-export SAM6D_ORIG=$HOME/DeepLearning/CLI_env_paper/sam6d_ws/sam6d_master/SAM-6D
+export OBJPOSE_REPO=$HOME/DeepLearning/server/CLI_environment
+export SAM6D_ORIG=$HOME/DeepLearning/server/CLI_environment/sam6d_ws/sam6d_master/SAM-6D
 export BOP_DATASET=${BOP_DATASET:-lmo}
 export BOP_DS_DIR=$HOME/Dataset/bop/$BOP_DATASET
 export BOP_WORK=$HOME/Dataset/bop/${BOP_DATASET}_work

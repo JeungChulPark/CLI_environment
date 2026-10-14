@@ -12,9 +12,9 @@ python3 -I $D/csv_to_pred.py $D/foundationpose_ycbv-test.csv $O/pred_ladder_foun
   "FoundationPose model-based (CNOS-FastSAM masks, hypotheses+refiner x5+scorer), RTX 4090 host .3, 2026-10-08" \
   "NVlabs/FoundationPose a1b694b, weights 2023-10-28-18-33-37 (refiner) + 2024-01-11-20-02-45 (scorer), est.register iteration=5, zfar 1.5 m" \
   $D/foundationpose_ycbv-test_timing.json
-export YCBV_DIR=$HOME/Dataset/bop/ycbv YCBV_WORK=$HOME/Dataset/bop/ycbv_work YCBV_OUT=$O OBJPOSE_REPO=$HOME/DeepLearning/CLI_env_paper
+export YCBV_DIR=$HOME/Dataset/bop/ycbv YCBV_WORK=$HOME/Dataset/bop/ycbv_work YCBV_OUT=$O OBJPOSE_REPO=$HOME/DeepLearning/server/CLI_environment
 export YCBV_RUN_LABEL="FoundationPose model-based, RTX 4090 (.3), 2026-10-08" CUDA_VISIBLE_DEVICES=""
-cd $HOME/DeepLearning/CLI_env_paper/paper_etrij_261003/src/ycbv
+cd $HOME/DeepLearning/server/CLI_environment/paper_etrij_261003/src/ycbv
 timeout 1200 $HOME/anaconda3/envs/sam6d/bin/python evaluate.py --skip_bop --methods ladder_foundationpose --results $D/results_foundationpose_4090.json 2>&1 | tail -2
 python3 -I - <<PY
 import json

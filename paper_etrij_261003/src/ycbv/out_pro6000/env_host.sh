@@ -1,5 +1,5 @@
 # paper_etrij_261003/src/ycbv on this host (.41: RTX PRO 6000 Blackwell x4; use GPU2, GPU0 is shared). 2026-10-08
-export OBJPOSE_REPO=$HOME/DeepLearning/CLI_env_paper
+export OBJPOSE_REPO=$HOME/DeepLearning/server/CLI_environment
 export SAM6D_ORIG=$OBJPOSE_REPO/sam6d_ws/sam6d_master/SAM-6D
 export YCBV_DIR=$HOME/Dataset/bop/ycbv
 export YCBV_WORK=$HOME/Dataset/bop/ycbv_work

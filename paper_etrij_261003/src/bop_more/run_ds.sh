@@ -2,7 +2,7 @@
 # One BOP dataset end to end: wait for templates -> build_assets -> smoke (--limit 2) -> L0 (GPU2) || ours (GPU3) -> evaluate (+BOP AR) -> same-object ADD-S
 # usage: run_ds.sh lmo|tudl|icbin [GPU_L0 GPU_OURS]
 ds=$1; G0=${2:-2}; G1=${3:-3}
-SRC=$HOME/DeepLearning/CLI_env_paper/paper_etrij_261003/src/bop_more
+SRC=$HOME/DeepLearning/server/CLI_environment/paper_etrij_261003/src/bop_more
 export BOP_DATASET=$ds; source $SRC/env_bop_more.sh; mkdir -p $BOP_OUT; cd $SRC
 LOG=$BOP_OUT/chain.log; say(){ echo "[$(date +%T)] $*" | tee -a $LOG; }
 OBJS=$($SAM6D_PY -c "import paths as P; print(' '.join(map(str, P.OIDS)))"); LAST=$(echo $OBJS | awk '{print $NF}')
