@@ -18,6 +18,8 @@ export LD_LIBRARY_PATH=$HOME/anaconda3/envs/fmfbuild/lib:$HOME/DeepLearning/base
 export FMFUSION_DATA=$W/fmfusion_41det OBJMAP_OUT=$S/out_41det
 export CUDA_VISIBLE_DEVICES=${OBJMAP_GPU:-2}
 SC=$FMFUSION_DATA/scans; mkdir -p $SC $FMFUSION_DATA/output $OBJMAP_OUT/logs
+# IntegrateInstanceMap 이 읽는 config_*.yaml·likelihood_*.txt·splits 는 노트북 작업 폴더에서 복사 (10-14 첫 실행에서 빠져 융합이 전부 실패했음)
+[ -e $FMFUSION_DATA/config_ycbv.yaml ] || { cp $W/fmfusion/config_*.yaml $W/fmfusion/likelihood_*.txt $FMFUSION_DATA/; cp -r $W/fmfusion/splits $FMFUSION_DATA/; }
 for s in 0000{48..59} obchange_kitchen_00000{2..6} obchange_kitchen_all_00000{2..6}; do
   [ -d $SC/$s ] || { mkdir $SC/$s; for k in color depth pose; do ln -s $W/fmfusion/scans/$s/$k $SC/$s/$k; done; }
   case $s in
