@@ -22,7 +22,7 @@ li{margin:3px 0}
 a{color:var(--acc);word-break:break-all}
 </style></head><body><main><h1 id="_1">공간객체상태지도를 위한 논문 비교</h1>
 <blockquote>
-<p>공간 객체 상태 지도를 위한 논문 비교 — 요약(25), 제안 대 FM-Fusion 대 DualMap: YCB-V(20), ObChange-Kitchen 재방문(21), 실 데이터 녹화 5개(23), 하루 뒤 재실행(24). 개별 문서 5개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-13.</p>
+<p>공간 객체 상태 지도를 위한 논문 비교 — 요약(25), 제안 대 FM-Fusion 대 DualMap: YCB-V(20), ObChange-Kitchen 재방문(21), 실 데이터 녹화 5개(23), 하루 뒤 재실행(24). 개별 문서 5개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-14.</p>
 </blockquote>
 <p><strong>이 묶음의 장</strong></p>
 <ul>
@@ -103,6 +103,13 @@ a{color:var(--acc);word-break:break-all}
 </ul>
 </li>
 <li><a href="#6_2">6. 한계와 남은 확인</a></li>
+<li><a href="#7-rtx-pro-6000-blackwell41-2026-10-13-14">7. RTX PRO 6000 Blackwell(.41) 재실행 (2026-10-13 ~ 14)</a><ul>
+<li><a href="#71-23">7.1 녹화별 최종 지도 (맞음 / 잘못, 점수) — 괄호는 23 문서(노트북)</a></li>
+<li><a href="#72-5-23">7.2 못 찾은 물체와 잘못의 종류 (5개 녹화 합계) — 괄호는 23 문서</a></li>
+<li><a href="#73">7.3 해석</a></li>
+<li><a href="#74">7.4 실행에서 고친 것 (기록)</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#24-5-23-2026-10-11">24. 실 데이터 녹화 5개 실시간 재실행 — 23 문서 결과와 비교 (2026-10-11)</a><ul>
@@ -127,6 +134,10 @@ a{color:var(--acc);word-break:break-all}
 </li>
 <li><a href="#5_3">5. 해석</a></li>
 <li><a href="#6_3">6. 남은 일</a></li>
+<li><a href="#7-rtx-pro-6000-blackwell41-2026-10-13-14_1">7. RTX PRO 6000 Blackwell(.41) 궤적으로 세 번째 실행 (2026-10-13 ~ 14)</a><ul>
+<li><a href="#71-23-24-41">7.1 녹화별 최종 지도 (맞음 / 잘못): 23 문서 → 24 문서 → .41</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1934,6 +1945,120 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>물체를 치운 장면이 없습니다.</strong> 실 데이터 5개 모두 한 번 지나가며 지도를 만드는 장면이라, 변화 반영은 ObChange(21 문서)로만 확인했습니다.</li>
 <li><strong>녹화 4 의 SLAM 오차 구간</strong>(80~95초)은 세 방법 모두 같은 궤적을 받았으므로 비교에는 영향이 없지만, 기준 방법은 이 구간의 프레임을 틀린 자리에 융합합니다. 제안 방법은 키프레임 고정이라 보정 뒤 함께 옮겨집니다.</li>
 </ul>
+<h3 id="7-rtx-pro-6000-blackwell41-2026-10-13-14">7. RTX PRO 6000 Blackwell(.41) 재실행 (2026-10-13 ~ 14)</h3>
+<blockquote>
+<p>세 방법의 실 데이터 객체 지도를 .41(RTX PRO 6000 Blackwell ×4) 에서 다시 만들고 같은 채점기로 비교했습니다. 제안 방법은 15 문서 7절의 Blackwell 실행(.41 인식 서버 + .192 ORB-SLAM3, 개선안 3 + 군집 먼저; 실행 이름 <code>real_&lt;녹화&gt;_hybS05</code>, 녹화 1 은 <code>real5_260901_hybS05</code>)을 쓰고, 그 궤적으로 FM-Fusion·DualMap 을 .41 에서 오프라인으로 다시 돌렸습니다(검출 10프레임마다, DualMap 공개 설정·BGR 수정 — 24 문서 4.1절과 같은 조건). 체인 <code>src/objmap/run_objmap_real_41.sh</code>(제안 궤적 → <code>real_prep</code> → FM-Fusion·DualMap → <code>real_score</code>; 원본은 .41 의 <code>~/Dataset/bop/ycbv_work/</code>) 와 DualMap 만 다시 돌린 <code>src/objmap/run_objmap_real_41_dm.sh</code>, 결과 <code>src/objmap/out_41r/real_scores.json</code>, 기록 <code>src/objmap/out_41r/real_logs/</code>. 23 문서(노트북 3080 Ti)·24 문서(하루 뒤 재실행) 결과는 그대로 두고 <code>out_41r/</code> 에 따로 두었습니다.</p>
+</blockquote>
+<h4 id="71-23">7.1 녹화별 최종 지도 (맞음 / 잘못, 점수) — 괄호는 23 문서(노트북)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화</th>
+<th>제안</th>
+<th>FM-Fusion</th>
+<th>DualMap 공개 설정</th>
+<th>DualMap BGR 수정</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 260901 bigeightcircle</td>
+<td><strong>8 / 0</strong> (8 / 0)</td>
+<td>6 / 24 (6 / 24)</td>
+<td>2 / 3 (2 / 0)</td>
+<td>3 / 6 (3 / 3)</td>
+</tr>
+<tr>
+<td>2 260826 어두운 조건</td>
+<td><strong>8 / 0</strong> (8 / 0)</td>
+<td>7 / 49 (7 / 49)</td>
+<td>4 / 6 (4 / 5)</td>
+<td>4 / 4 (4 / 5)</td>
+</tr>
+<tr>
+<td>3 260901 eightcircle</td>
+<td><strong>7 / 1</strong> (7 / 1)</td>
+<td>7 / 22 (6 / 11)</td>
+<td>3 / 1 (3 / 1)</td>
+<td>5 / 3 (4 / 3)</td>
+</tr>
+<tr>
+<td>4 260910 object</td>
+<td><strong>8 / 0</strong> (8 / 0)</td>
+<td>7 / 51 (7 / 51)</td>
+<td>3 / 7 (3 / 4)</td>
+<td>5 / 9 (5 / 5)</td>
+</tr>
+<tr>
+<td>5 260915 eightcircle</td>
+<td><strong>7 / 1</strong> (8 / 0)</td>
+<td>7 / 40 (7 / 39)</td>
+<td>2 / 1 (2 / 2)</td>
+<td>3 / 2 (3 / 2)</td>
+</tr>
+<tr>
+<td><strong>합계 (40개)</strong></td>
+<td><strong>38 / 2</strong> (39 / 1)</td>
+<td>34 / 186 (33 / 174)</td>
+<td>14 / 18 (14 / 12)</td>
+<td>20 / 24 (19 / 18)</td>
+</tr>
+<tr>
+<td><strong>점수</strong></td>
+<td><strong>90.5%</strong> (95.1%)</td>
+<td>15.0% (15.4%)</td>
+<td>24.1% (26.9%)</td>
+<td>31.2% (32.8%)</td>
+</tr>
+</tbody>
+</table></div>
+<p>제안 방법(.41)의 실행 기록: 인식 빈도 7.98 / 6.73 / 6.93 / 6.47 / 5.37 Hz(평균 6.70 Hz, 노트북 2.72 Hz 의 2.5배), 실행 중 매 순간 점수 평균 78.8 / 90.4 / 76.6 / 60.0 / 70.8%(평균 75.3%, 노트북 76.4%).</p>
+<h4 id="72-5-23">7.2 못 찾은 물체와 잘못의 종류 (5개 녹화 합계) — 괄호는 23 문서</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>못 찾은 물체 (녹화 수)</th>
+<th>잘못: 중복 / 라벨 / 엉뚱한 자리</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>제안</td>
+<td>우유 (1, 녹화 3), 곰 인형 (1, 녹화 5)</td>
+<td>0 / 1 / 1 (0 / 0 / 1)</td>
+</tr>
+<tr>
+<td>FM-Fusion</td>
+<td>식혜 (5), 공룡 인형 (1)</td>
+<td>13 / 15 / <strong>158</strong> (8 / 16 / 150)</td>
+</tr>
+<tr>
+<td>DualMap 공개 설정</td>
+<td>식혜 (5), 초코 (5), 샤프란 (5), 우유 (4), 페브리즈 (3), 머그컵 (3), 곰 인형 (1)</td>
+<td>8 / 5 / 5 (6 / 4 / 2)</td>
+</tr>
+<tr>
+<td>DualMap BGR 수정</td>
+<td>초코 (5), 샤프란 (5), 우유 (4), 머그컵 (3), 식혜 (2), 곰 인형 (1)</td>
+<td>17 / 2 / 5 (14 / 2 / 2)</td>
+</tr>
+</tbody>
+</table></div>
+<p>DualMap 지도의 물체 수(이름 붙은 / unknown)는 공개 설정 5/26 · 10/63 · 4/8 · 10/30 · 3/37, BGR 수정 9/24 · 8/68 · 8/11 · 14/29 · 5/39 입니다. FM-Fusion 지도의 물체 수는 30 / 56 / 29 / 58 / 47 입니다.</p>
+<h4 id="73">7.3 해석</h4>
+<ul>
+<li><strong>순위와 차이가 그대로 재현됩니다.</strong> 제안 90.5% ≫ DualMap BGR 31.2% &gt; DualMap 공개 24.1% &gt; FM-Fusion 15.0%. 23 문서(95.1 / 32.8 / 26.9 / 15.4%)와 24 문서(100 / 32.8 / 23.6 / 15.3%)에 이어 세 번째 실행인데, 제안 방법은 매번 40개 중 38~40개를 맞히고 기준 방법은 14~20개(DualMap)·33~34개(FM-Fusion, 잘못 174~186개)에 머뭅니다.</li>
+<li><strong>제안 방법의 잘못 2개는 모두 경계 사례입니다.</strong> 녹화 3 은 23 문서와 같은 우유(기준 위치에서 20 cm 를 조금 넘는 자리), 녹화 5 는 곰 인형을 공룡 인형 자리의 라벨로 올린 것 1개입니다. 24 문서 5절의 결론대로 논문 수치는 반복 실행 평균으로 내는 것이 맞습니다.</li>
+<li><strong>기준 방법은 .41 에서 다시 검출·융합했는데도 노트북과 거의 같습니다.</strong> FM-Fusion 의 엉뚱한 자리 잘못은 150 → 158 개로 여전히 잘못의 85%이고, 식혜는 이번에도 다섯 녹화 모두 못 찾았습니다. DualMap 은 중복이 조금 늘었습니다(공개 6 → 8, BGR 14 → 17). 궤적이 바뀌고(.192 ORB-SLAM3, 인식 2.5배 빠름) 검출을 새로 돌려도 기준 방법의 특성(FM-Fusion 은 배경에 붙는 문구, DualMap 은 못 찾음)은 변하지 않습니다.</li>
+<li><strong>인식 빈도 6.7 Hz 에서도 최종 지도는 노트북(2.7 Hz)과 같은 수준입니다.</strong> 빠른 인식이 잘못을 늘리지는 않았습니다(20·21 문서의 FP 증가는 GT 궤적 오프라인 실행에서 처리 프레임이 늘어난 경우였고, 실시간 실행에서는 나타나지 않습니다).</li>
+</ul>
+<h4 id="74">7.4 실행에서 고친 것 (기록)</h4>
+<ul>
+<li><strong>.41 의 DualMap 환경에 <code>mobileclip</code> 모듈이 없어 10-13 첫 실행의 DualMap 10회가 전부 실패했습니다.</strong> DualMap 은 CLIP 로드가 실패하면 검출기 초기화를 그 자리에서 끝내서 YOLO-World·MobileSAM·FastSAM 도 안 올라가고, 로그에는 <code>'Detector' object has no attribute 'yolo'</code> 로만 남습니다. .192 의 <code>mobileclip 0.1.0</code>(DualMap 3rdparty, <code>pip install -e . --no-deps</code> 한 것)을 .41 dualmap 환경(python 3.10)에 복사해 해결했습니다.</li>
+<li><strong>.41 의 DualMap 소스에 26 문서 ② 패치(YOLO 검출이 0개인 프레임 건너뛰기)가 빠져 있었습니다.</strong> 녹화 2(어두운 조건)·녹화 3 공개 설정은 첫 프레임 검출이 0개라 <code>curr_detections</code> 속성 오류가 나고, 작업 스레드만 남아 25분 timeout 까지 멈춥니다. .192 의 <code>utils/object_detector.py</code>(BGR 패치 + ② 패치)를 그대로 복사해 두 머신의 DualMap 코드를 같게 맞췄습니다. 그 뒤 10회(두 판 × 5녹화)가 녹화당 0.6~2.8분에 끝났습니다(노트북 2~6분).</li>
+<li>24 문서 4.1절은 BGR 수정이 YOLO-World·MobileSAM·FastSAM 세 모델에 BGR 영상을 넘긴다고 적었는데, 두 머신의 실제 패치는 <strong>YOLO-World 검출 한 곳만</strong> 바꿉니다(MobileSAM 은 YOLO 상자로 분할하고 FastSAM 은 이름 없는 덩어리만 내므로 결과에 영향이 거의 없지만, 문서 표현은 "YOLO-World 입력만 BGR" 로 읽어야 합니다).</li>
+</ul>
 <hr />
 <p><a id="24_실데이터_실시간_재실행_23대비_261011"></a></p>
 <h2 id="24-5-23-2026-10-11">24. 실 데이터 녹화 5개 실시간 재실행 — 23 문서 결과와 비교 (2026-10-11)</h2>
@@ -2352,4 +2477,77 @@ a{color:var(--acc);word-break:break-all}
 <li>기준 방법의 글 문구는 23 문서와 같습니다. 식혜 문구를 바꿔 보는 것은 하지 않았습니다.</li>
 <li>녹화 1 의 루프 오결합 원인(같은 녹화에서 두 번)은 따로 보지 않았습니다.</li>
 <li>같은 날 먼저 돌린 기본 설정 실행(<code>live_261011_etri_dark_orbslam3_f2000</code>, 녹화 2, 개선안 3 아님)은 이 비교에 넣지 않았습니다.</li>
+</ul>
+<h3 id="7-rtx-pro-6000-blackwell41-2026-10-13-14_1">7. RTX PRO 6000 Blackwell(.41) 궤적으로 세 번째 실행 (2026-10-13 ~ 14)</h3>
+<blockquote>
+<p>23 문서(노트북, 10-10) → 24 문서(노트북 하루 뒤, 10-11) 에 이어 .41 Blackwell(인식 서버) + .192 ORB-SLAM3 로 돌린 제안 방법 실행(15 문서 7절, <code>real_&lt;녹화&gt;_hybS05</code>)의 궤적으로 FM-Fusion·DualMap 을 .41 에서 다시 돌렸습니다. 조건은 4.1절과 같고(검출 10프레임마다, DualMap 공개·BGR), 결과 <code>src/objmap/out_41r/real_scores.json</code>. 자세한 표와 실행 기록은 23 문서 7절에 있습니다.</p>
+</blockquote>
+<h4 id="71-23-24-41">7.1 녹화별 최종 지도 (맞음 / 잘못): 23 문서 → 24 문서 → .41</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화</th>
+<th>제안</th>
+<th>FM-Fusion</th>
+<th>DualMap 공개 설정</th>
+<th>DualMap BGR 수정</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 260901 bigeightcircle</td>
+<td>8/0 → 8/0 → <strong>8/0</strong></td>
+<td>6/24 → 6/23 → 6/24</td>
+<td>2/0 → 2/1 → 2/3</td>
+<td>3/3 → 3/4 → 3/6</td>
+</tr>
+<tr>
+<td>2 260826 어두운 조건</td>
+<td>8/0 → 8/0 → <strong>8/0</strong></td>
+<td>7/49 → 7/51 → 7/49</td>
+<td>4/5 → 4/6 → 4/6</td>
+<td>4/5 → 5/6 → 4/4</td>
+</tr>
+<tr>
+<td>3 260901 eightcircle</td>
+<td>7/1 → 8/0 → <strong>7/1</strong></td>
+<td>6/11 → 6/11 → 7/22</td>
+<td>3/1 → 3/1 → 3/1</td>
+<td>4/3 → 4/3 → 5/3</td>
+</tr>
+<tr>
+<td>4 260910 object</td>
+<td>8/0 → 8/0 → <strong>8/0</strong></td>
+<td>7/51 → 7/51 → 7/51</td>
+<td>3/4 → 3/6 → 3/7</td>
+<td>5/5 → 5/7 → 5/9</td>
+</tr>
+<tr>
+<td>5 260915 eightcircle</td>
+<td>8/0 → 8/0 → <strong>7/1</strong></td>
+<td>7/39 → 7/40 → 7/40</td>
+<td>2/2 → 1/1 → 2/1</td>
+<td>3/2 → 3/1 → 3/2</td>
+</tr>
+<tr>
+<td><strong>합계 (40개)</strong></td>
+<td>39/1 → 40/0 → <strong>38/2</strong></td>
+<td>33/174 → 33/176 → 34/186</td>
+<td>14/12 → 13/15 → 14/18</td>
+<td>19/18 → 20/21 → 20/24</td>
+</tr>
+<tr>
+<td><strong>점수</strong></td>
+<td>95.1 → 100 → <strong>90.5%</strong></td>
+<td>15.4 → 15.3 → 15.0%</td>
+<td>26.9 → 23.6 → 24.1%</td>
+<td>32.8 → 32.8 → 31.2%</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>세 번의 실행에서 제안 방법은 38~40 / 40, 기준 방법은 FM-Fusion 33~34(잘못 174~186), DualMap 13~20 으로, 순위와 차이는 장비(노트북 ↔ Blackwell)·날짜·궤적이 바뀌어도 그대로입니다.</strong></li>
+<li>제안 방법의 .41 실행은 인식 빈도가 평균 6.70 Hz(노트북 2.72 → 2.76 Hz)로 2.5배 빠른데, 최종 지도 정확도는 같은 범위입니다. 잘못 2개는 녹화 3 의 우유(23 문서와 같은 경계 사례, 20 cm 를 조금 넘음)와 녹화 5 의 곰 인형 라벨 1개입니다.</li>
+<li>기준 방법의 변동은 24 문서 4.3절과 같은 성격입니다. FM-Fusion 은 엉뚱한 자리 잘못이 150 → 150 → 158 개, 식혜는 세 번 모두 다섯 녹화에서 못 찾았습니다. DualMap 은 중복이 1~3개씩 늘거나 줍니다.</li>
+<li>5절의 결론(논문 수치는 반복 실행 평균, 루프 오결합 실행은 버리는 기준)이 그대로 적용됩니다. 이번 .41 실행 궤적의 루프 보정 크기는 15 문서 7절과 <code>objpose/output/real_*_hybS05/</code> 의 실행 기록을 참고하십시오.</li>
 </ul></main></body></html>
