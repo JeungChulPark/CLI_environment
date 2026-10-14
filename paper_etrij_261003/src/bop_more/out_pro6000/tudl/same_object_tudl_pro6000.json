@@ -1,0 +1,30 @@
+{
+ "per_method": {
+  "L0_원본": {
+   "answered": 591,
+   "correct": 507,
+   "adds_auc_all_answered": 84.3,
+   "median_err_mm": 2.69
+  },
+  "개선안3_cf": {
+   "answered": 371,
+   "correct": 368,
+   "adds_auc_all_answered": 96.5,
+   "median_err_mm": 2.49
+  }
+ },
+ "pairs": {
+  "L0_원본 vs 개선안3_cf": {
+   "common_answered": 366,
+   "L0_원본": {
+    "adds_auc": 94.4,
+    "median_err_mm": 2.51
+   },
+   "개선안3_cf": {
+    "adds_auc": 96.5,
+    "median_err_mm": 2.49
+   },
+   "B_better_frac": 0.489
+  }
+ }
+}

@@ -1,0 +1,439 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>24. 실 데이터 녹화 5개 실시간 재실행 — 23 문서 결과와 비교 (2026-10-11)</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1 id="24-5-23-2026-10-11">24. 실 데이터 녹화 5개 실시간 재실행 — 23 문서 결과와 비교 (2026-10-11)</h1>
+<blockquote>
+<p>23 문서의 제안 방법 실행과 같은 설정으로 실 데이터 녹화 5개를 하루 뒤 다시 실시간으로 돌리고, 같은 기준으로 채점해 나란히 놓았습니다. 설정은 Mac ORB-SLAM3(특징점 2000) + 개선안 3 + 군집 먼저이고, 장비는 노트북 RTX 3080 Ti Laptop 입니다. 확인용이며 최종 수치는 RTX 5090 으로 냅니다. 같은 날 FM-Fusion · DualMap 도 오늘 실행의 궤적으로 다시 돌렸습니다(4절). 비교 코드는 <code>src/realdata/compare_live_261011.py</code>, 결과는 <code>src/realdata/results_real5_live_261011.json</code>, 실행 스크립트와 진행 기록은 <code>src/realdata/logs_live_261011/</code> 에 있습니다. 기준 방법 재실행은 <code>src/objmap/run_real_compare_261011.sh</code>, 결과는 <code>src/objmap/out_261011/real_scores.json</code> 입니다.</p>
+</blockquote>
+<h2 id="0">0. 요약</h2>
+<ul>
+<li><strong>최종 지도 맞음 / 잘못:</strong> 23 문서 <strong>39 / 1 (95.1%)</strong> → 오늘 <strong>40 / 0 (100%)</strong>. 다섯 녹화 모두 8개 물체를 다 찾았고 잘못 올린 물체가 없습니다.</li>
+<li><strong>달라진 것은 녹화 3 하나입니다.</strong> 23 문서에서는 우유를 기준 위치에서 23.0 cm 떨어진 자리에 올려 7/1 이었는데(반경 20 cm 를 조금 넘음), 오늘은 4.3 cm 안에 올려 8/0 입니다. 23 문서의 잘못 1개는 실행마다 달라질 수 있는 경계 사례로 봐야 합니다.</li>
+<li><strong>녹화 1 첫 실행은 ORB-SLAM3 가 루프를 잘못 결합했습니다(키프레임 보정 최대 296.7 cm).</strong> 22 문서의 r2(3.10 m)와 같은 현상입니다. 그래도 최종 지도는 8/0 이었는데, 물체 위치가 기준에서 11~18 cm 로 밀려 반경 20 cm 안에 겨우 들었습니다. 22 문서와 같은 방식으로 이 실행은 참고로만 두고, 다시 돌린 실행(<code>_r2</code>, 보정 최대 15.9 cm)을 이 녹화의 결과로 씁니다.</li>
+<li><strong>인식 빈도와 실행 중 평균 점수는 23 문서와 거의 같습니다.</strong> 인식 빈도는 다섯 녹화 평균 2.72 → 2.76 Hz, 실행 중 매 순간 점수의 평균은 76.4 → 74.9% 입니다.</li>
+<li><strong>물체 위치 오차는 조금 커졌습니다.</strong> 40개 물체의 기준 위치까지 거리 중앙값이 2.1 → 2.7 cm, 10 cm 를 넘은 물체가 3 → 6개입니다. 늘어난 것은 대부분 녹화 4(SLAM 이 크게 틀어지는 녹화)에서 나왔습니다(3.3절).</li>
+<li><strong>FM-Fusion · DualMap 을 오늘 궤적으로 다시 돌려도 23 문서와 거의 같습니다.</strong> 맞음 / 잘못이 FM-Fusion 33 / 174 → 33 / 176, DualMap 공개 설정 14 / 12 → 13 / 15, BGR 수정 19 / 18 → 20 / 21 입니다. 점수는 15.4 → 15.3%, 26.9 → 23.6%, 32.8 → 32.8% 로, 세 방법의 순위와 차이는 그대로입니다(4절).</li>
+</ul>
+<h2 id="1">1. 실행 조건</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>23 문서 실행 (2026-10-10)</th>
+<th>오늘 실행 (2026-10-11)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SLAM</td>
+<td>Mac ORB-SLAM3, 특징점 2000, 1배속, 사전 지도 없이 처음부터</td>
+<td>같음</td>
+</tr>
+<tr>
+<td>인식기</td>
+<td>개선안 3 + 군집 먼저 (<code>OBJPOSE_LIVE_MODE=hybrid</code>, ViT-S, 판정 0.5, <code>--verify-cluster-first</code>)</td>
+<td>같음</td>
+</tr>
+<tr>
+<td>객체 지도</td>
+<td>키프레임 고정, 존재확률 P_D 0.08 · c 0.01</td>
+<td>같음</td>
+</tr>
+<tr>
+<td>PC</td>
+<td>RTX 3080 Ti Laptop</td>
+<td>같음</td>
+</tr>
+<tr>
+<td>Mac 네트워크</td>
+<td>192.168.219.x</td>
+<td>192.168.219.108 (Wi-Fi)</td>
+</tr>
+<tr>
+<td>실행 이름</td>
+<td><code>objmap/common.py</code> REAL_SESSIONS (녹화 1 은 22 문서의 <code>real5_260901_l3080_hyb3cf_r2b</code>)</td>
+<td><code>live_261011_&lt;녹화&gt;_l3080_hyb3cf</code> (녹화 1 은 <code>_r2</code> 도)</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>실행 순서: 녹화 1 → 2 → 3 → 4 → 5 → 녹화 1 재실행. 14:50 에 시작해 15:17 에 끝났습니다.</li>
+<li>채점은 23 문서 <code>real_score.py</code> 와 같습니다. 기준 위치는 녹화마다 <code>realdata/eval_real.py</code> 의 기준 실행(23 문서 실행보다 앞선 실행들) 중앙값이므로 두 실행에 똑같이 적용됩니다. 물체 종류가 맞고 기준 위치에서 20 cm 안이면 맞음이고, 점수는 맞음 ÷ (8 + 잘못) 입니다.</li>
+<li>비교 코드로 23 문서 실행을 다시 채점하면 23 문서 3.1절의 표와 같은 값이 나옵니다(39/1, 녹화별 Hz·평균 점수 같음).</li>
+</ul>
+<h2 id="2">2. 결과</h2>
+<h3 id="21">2.1 녹화별 최종 지도</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화</th>
+<th>23 문서</th>
+<th>오늘</th>
+<th>오늘 (녹화 1 재실행)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 260901 bigeightcircle</td>
+<td>8 / 0 (100%)</td>
+<td>8 / 0 (100%) · 루프 오결합</td>
+<td><strong>8 / 0 (100%)</strong></td>
+</tr>
+<tr>
+<td>2 260826 어두운 조건</td>
+<td>8 / 0 (100%)</td>
+<td><strong>8 / 0 (100%)</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>3 260901 eightcircle</td>
+<td>7 / 1 (77.8%)</td>
+<td><strong>8 / 0 (100%)</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>4 260910 object</td>
+<td>8 / 0 (100%)</td>
+<td><strong>8 / 0 (100%)</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>5 260915 eightcircle</td>
+<td>8 / 0 (100%)</td>
+<td><strong>8 / 0 (100%)</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>합계 (40개)</strong></td>
+<td><strong>39 / 1 (95.1%)</strong></td>
+<td><strong>40 / 0 (100%)</strong></td>
+<td>40 / 0 (100%)</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>오늘 실행에서는 다섯 녹화 모두 잘못이 0 입니다(중복 · 라벨 · 엉뚱한 자리 모두 0).</li>
+</ul>
+<h3 id="22">2.2 실행 기록</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화</th>
+<th>인식 빈도 (Hz) 23 → 오늘</th>
+<th>실행 중 평균 점수 (%) 23 → 오늘</th>
+<th>인식 처리 프레임 23 → 오늘</th>
+<th>가장 큰 루프 보정 (cm) 23 → 오늘</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>3.53 → 3.73 · 재실행 3.72</td>
+<td>78.4 → 74.6 · 재실행 78.4</td>
+<td>1,108 → 1,172 · 재실행 1,169</td>
+<td>7.1 → <strong>296.7</strong> · 재실행 15.9</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1.93 → 1.96</td>
+<td>87.7 → 86.6</td>
+<td>548 → 556</td>
+<td>9.6 → 6.6</td>
+</tr>
+<tr>
+<td>3</td>
+<td>3.29 → 3.39</td>
+<td>70.3 → 70.3</td>
+<td>496 → 511</td>
+<td>6.7 → 9.9</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.72 → 2.52</td>
+<td>75.0 → 69.8</td>
+<td>431 → 400</td>
+<td>235.5 → 216.0</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.13 → 2.20</td>
+<td>70.7 → 69.4</td>
+<td>272 → 282</td>
+<td>15.7 → 15.5</td>
+</tr>
+<tr>
+<td><strong>평균</strong> (녹화 1 은 재실행)</td>
+<td><strong>2.72 → 2.76</strong></td>
+<td><strong>76.4 → 74.9</strong></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>SLAM 은 다섯 녹화 모두 프레임당 10.4~12.9 ms 로 추적했고, 버린 프레임은 녹화 1 첫 실행의 6개 말고는 없습니다.</li>
+<li>녹화 4 는 23 문서와 오늘 모두 루프 보정이 2 m 를 넘습니다. 23 문서 2.1절의 "SLAM 자세가 2.4 m 틀어졌다가 바로잡힌 구간"이 매번 나오는 녹화라는 뜻입니다.</li>
+</ul>
+<h2 id="3">3. 달라진 점</h2>
+<h3 id="31-3">3.1 녹화 3 — 우유</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>23 문서</th>
+<th>오늘</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>우유의 기준 위치까지 거리</td>
+<td>23.0 cm (잘못 1, 놓침 1)</td>
+<td><strong>4.3 cm (맞음)</strong></td>
+</tr>
+<tr>
+<td>나머지 7개</td>
+<td>3.9~6.9 cm</td>
+<td>2.7~6.2 cm</td>
+</tr>
+</tbody>
+</table></div>
+<p>23 문서 3.2절에 적은 대로, 그때의 잘못 1개는 우유를 반경을 조금 넘는 자리에 올린 것이었습니다. 오늘은 같은 설정에서 우유를 제자리에 올렸습니다. 이 녹화의 우유는 실행에 따라 반경 안팎을 오가는 경계 사례입니다.</p>
+<h3 id="32-1">3.2 녹화 1 — 루프 오결합</h3>
+<ul>
+<li>첫 실행에서는 314초 녹화의 약 250초 지점(14:54:49)에 ORB-SLAM3 가 루프를 잘못 결합해 키프레임이 최대 296.7 cm 옮겨졌습니다. 22 문서 r2 의 3.10 m 오결합과 같은 현상이고, 같은 녹화에서 두 번째입니다.</li>
+<li>객체 지도는 키프레임에 고정돼 있어 보정과 함께 옮겨졌고, 최종 지도는 8/0 이었습니다. 다만 물체 8개가 기준 위치에서 6.9~18.3 cm(중앙값 15.1 cm) 떨어져, 다른 실행의 0.4~12.2 cm 보다 크게 밀렸습니다. 기억 지도에 '임시' 상태 물체도 4개 남았습니다.</li>
+<li>22 문서에서 r2 를 버리고 r2b 로 바꾼 것과 같은 방식으로, 이 실행은 참고로 두고 바로 다시 돌린 <code>_r2</code>(보정 최대 15.9 cm, 물체 중앙값 2.4 cm)를 이 녹화의 결과로 씁니다.</li>
+</ul>
+<h3 id="33">3.3 물체 위치 오차</h3>
+<p>기준 위치까지 거리 (40개 물체, 녹화 1 은 재실행):</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>중앙값</th>
+<th>평균</th>
+<th>10 cm 넘음</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>23 문서</td>
+<td>2.1 cm</td>
+<td>3.6 cm</td>
+<td>3개</td>
+</tr>
+<tr>
+<td>오늘</td>
+<td>2.7 cm</td>
+<td>4.5 cm</td>
+<td>6개</td>
+</tr>
+<tr>
+<td>(참고) 오늘, 녹화 1 첫 실행 포함</td>
+<td>5.8 cm</td>
+<td>6.6 cm</td>
+<td>12개</td>
+</tr>
+</tbody>
+</table></div>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화</th>
+<th>23 문서 중앙값 / 최대</th>
+<th>오늘 중앙값 / 최대</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>2.1 / 10.5 cm</td>
+<td>2.4 / 12.2 cm (재실행)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0.7 / 1.6 cm</td>
+<td>0.6 / 16.9 cm (공룡 인형)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>5.8 / 23.0 cm</td>
+<td>4.9 / 6.2 cm</td>
+</tr>
+<tr>
+<td>4</td>
+<td>3.9 / 6.1 cm</td>
+<td>9.1 / 12.0 cm</td>
+</tr>
+<tr>
+<td>5</td>
+<td>1.3 / 14.6 cm</td>
+<td>0.9 / 13.9 cm</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>녹화 4:</strong> 물체 8개가 모두 6~12 cm 로 함께 밀렸습니다(23 문서는 1.3~6.1 cm). 한 물체가 아니라 지도 전체가 옮겨진 모양이라, 2 m 넘는 루프 보정 뒤 키프레임 자세가 23 문서 실행과 조금 다르게 자리 잡은 것으로 보입니다.</li>
+<li><strong>녹화 2:</strong> 공룡 인형 하나만 16.9 cm 이고 나머지 7개는 0.1~1.7 cm 입니다.</li>
+<li>어느 경우도 반경 20 cm 안이라 맞음/잘못 결과는 바뀌지 않습니다.</li>
+</ul>
+<h2 id="4-fm-fusion-dualmap">4. FM-Fusion · DualMap — 오늘 궤적으로 재실행</h2>
+<h3 id="41">4.1 조건</h3>
+<ul>
+<li>23 문서 <code>run_real_compare.sh</code> 와 같은 단계와 설정(검출 10프레임마다, FM-Fusion 융합 2프레임마다, DualMap 공개 설정 · BGR 수정)으로, 카메라 궤적만 오늘 실행의 것(녹화 1 은 <code>_r2</code>)으로 바꿨습니다. <code>objmap/common.py</code> 에 <code>OBJMAP_REAL_RUNS</code> 환경 변수를 넣어 녹화별 실행을 바꾸고, 결과·중간 파일은 <code>out_261011/</code>, <code>gt_261011/</code>, <code>ycbv_work/fmfusion_261011</code>, <code>ycbv_work/dualmap_261011</code> 에 따로 두어 23 문서 결과는 그대로입니다.</li>
+<li><strong>DualMap 의 두 판.</strong> 표에 DualMap 을 두 줄로 싣습니다.</li>
+</ul>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>판</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>공개 설정</strong></td>
+<td>GitHub 공개 코드와 저장소 기본 설정 그대로입니다(데이터셋 모드, 구체 지도(local/concrete map)만). 아래의 RGB/BGR 문제도 고치지 않았습니다. 재현성 기준입니다.</td>
+</tr>
+<tr>
+<td><strong>BGR 수정</strong></td>
+<td>공개 설정에서 색 순서 하나만 고쳤습니다. DualMap 은 YOLO-World(검출) · MobileSAM · FastSAM(분할)에 영상을 RGB 순서로 넘기는데, 이 모델들을 돌리는 ultralytics 는 넘겨받은 배열을 BGR 로 읽습니다. 그래서 공개 코드 그대로면 빨강과 파랑이 뒤바뀐 영상으로 물체를 찾고, "blue spray bottle"·"pink mug" 처럼 색이 들어간 글 문구에 불리합니다. 이 판은 세 모델에 BGR 순서로 바꾼 영상을 넘깁니다(<code>DUALMAP_METHOD=dualmap_bgr</code> → <code>DUALMAP_ULTRALYTICS_BGR=1</code>). 기준 방법에 공정하게 하려는 것입니다.</td>
+</tr>
+</tbody>
+</table></div>
+<p>두 판 모두 공개 코드에서 바꾼 것은 세 가지뿐입니다. 찾을 물체 목록을 실데이터 8개 물체의 글 문구 + <code>unknown</code> 으로 바꿨고, 실행 화면 표시(<code>use_rerun</code>)를 껐으며(결과와 무관), 우리 영상과 궤적을 DualMap 이 읽는 Replica 형식으로 바꿔 넣었습니다(<code>dualmap_prep.py</code>). 설명은 <code>src/objmap/dualmap_run.sh</code> 머리말에도 있습니다. BGR 수정으로 결과가 조금 좋아지지만(실데이터 23 문서 26.9 → 32.8%, YCB-V F1 0.091 → 0.168, 20 문서), 제안 방법과의 차이는 큽니다.
+- 인식 카메라 프레임은 녹화에만 달린 것이라 23 문서와 같습니다(녹화별 6,363 / 8,541 / 3,054 / 4,774 / 3,848 장). 궤적은 23 문서와 같은 방식으로 실행 끝의 키프레임 자세로 루프 보정을 반영했습니다.
+- <strong>FM-Fusion 2D 검출은 같은 프레임의 23 문서 결과를 다시 썼습니다.</strong> 영상과 글 문구가 같으므로 결과도 같습니다. 검출 대상 2,661장 중 2,597장을 그대로 쓰고, 23 문서에서 상자가 없어 파일이 남지 않은 64장만 다시 검출했으며 이번에도 상자가 0개였습니다. 궤적이 들어가는 융합은 처음부터 다시 했습니다. DualMap 은 검출이 내부 단계라 전부 다시 돌렸습니다.
+- 15:35 에 시작해 16:08 에 끝났습니다. FM-Fusion 융합은 DualMap 과 GPU 를 함께 써서 23 문서보다 1.4~1.9배 오래 걸렸습니다(녹화별 98~464 초).</p>
+<h3 id="42-23">4.2 녹화별 최종 지도 (맞음 / 잘못, 23 문서 → 오늘)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화</th>
+<th>제안</th>
+<th>FM-Fusion</th>
+<th>DualMap 공개 설정</th>
+<th>DualMap BGR 수정</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 260901 bigeightcircle</td>
+<td>8/0 → 8/0</td>
+<td>6/24 → 6/23</td>
+<td>2/0 → 2/1</td>
+<td>3/3 → 3/4</td>
+</tr>
+<tr>
+<td>2 260826 어두운 조건</td>
+<td>8/0 → 8/0</td>
+<td>7/49 → 7/51</td>
+<td>4/5 → 4/6</td>
+<td>4/5 → 5/6</td>
+</tr>
+<tr>
+<td>3 260901 eightcircle</td>
+<td>7/1 → <strong>8/0</strong></td>
+<td>6/11 → 6/11</td>
+<td>3/1 → 3/1</td>
+<td>4/3 → 4/3</td>
+</tr>
+<tr>
+<td>4 260910 object</td>
+<td>8/0 → 8/0</td>
+<td>7/51 → 7/51</td>
+<td>3/4 → 3/6</td>
+<td>5/5 → 5/7</td>
+</tr>
+<tr>
+<td>5 260915 eightcircle</td>
+<td>8/0 → 8/0</td>
+<td>7/39 → 7/40</td>
+<td>2/2 → 1/1</td>
+<td>3/2 → 3/1</td>
+</tr>
+<tr>
+<td><strong>합계 (40개)</strong></td>
+<td>39/1 → <strong>40/0</strong></td>
+<td>33/174 → 33/176</td>
+<td>14/12 → 13/15</td>
+<td>19/18 → 20/21</td>
+</tr>
+<tr>
+<td><strong>점수</strong></td>
+<td>95.1 → <strong>100%</strong></td>
+<td>15.4 → 15.3%</td>
+<td>26.9 → 23.6%</td>
+<td>32.8 → 32.8%</td>
+</tr>
+</tbody>
+</table></div>
+<p>FM-Fusion 지도에 올라간 물체 수도 녹화별 33 / 59 / 19 / 59 / 46 → 32 / 60 / 20 / 60 / 47 로 거의 같습니다.</p>
+<h3 id="43-5">4.3 못 찾은 물체와 잘못의 종류 (5개 녹화 합계, 오늘)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>못 찾은 물체 (녹화 수)</th>
+<th>잘못: 중복 / 라벨 / 엉뚱한 자리 (23 문서)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>제안</td>
+<td>없음</td>
+<td>0 / 0 / 0 (0 / 0 / 1)</td>
+</tr>
+<tr>
+<td>FM-Fusion</td>
+<td>식혜 (5), 공룡 인형 (1), 곰 인형 (1)</td>
+<td>9 / 17 / 150 (8 / 16 / 150)</td>
+</tr>
+<tr>
+<td>DualMap 공개 설정</td>
+<td>식혜 (5), 초코 (5), 샤프란 (5), 우유 (4), 페브리즈 (4), 머그컵 (3), 곰 인형 (1)</td>
+<td>7 / 6 / 2 (6 / 4 / 2)</td>
+</tr>
+<tr>
+<td>DualMap BGR 수정</td>
+<td>초코 (5), 우유 (4), 샤프란 (4), 식혜 (3), 머그컵 (3), 곰 인형 (1)</td>
+<td>16 / 3 / 2 (14 / 2 / 2)</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>FM-Fusion:</strong> 엉뚱한 자리 잘못이 23 문서와 똑같이 150개입니다. 같은 검출 결과에서 나온 것이라, 궤적이 몇 cm 달라져도 배경 물건에 붙은 문구는 그대로 지도에 올라갑니다. 녹화 3 의 못 찾은 물체가 공룡 인형에서 곰 인형으로 바뀐 것만 다릅니다.</li>
+<li><strong>DualMap:</strong> 바뀐 것은 대부분 중복·라벨 잘못이 1~2개씩 늘거나 준 정도입니다. 녹화 5 공개 설정은 맞음이 2 → 1 로 줄었습니다(페브리즈를 못 찾음). DualMap 은 검출을 다시 돌려 실행마다 조금씩 달라집니다.</li>
+<li><strong>식혜는 이번에도 FM-Fusion 이 다섯 녹화 모두 못 찾았습니다.</strong> 23 문서 6절의 글 문구 한계가 그대로입니다.</li>
+</ul>
+<h2 id="5">5. 해석</h2>
+<ul>
+<li><strong>최종 지도 정확도는 하루 뒤 다시 돌려도 유지됩니다.</strong> 다섯 녹화 40개 물체가 23 문서에서 39개, 오늘 40개 맞았고, 잘못은 1개에서 0개가 됐습니다. 기준 방법도 오늘 궤적으로 다시 돌렸는데 FM-Fusion 15.3%, DualMap 23.6~32.8% 로, 23 문서의 순위와 차이(제안 95.1%, FM-Fusion 15.4%, DualMap 26.9~32.8%)는 바뀌지 않습니다.</li>
+<li><strong>실행마다 달라지는 부분은 SLAM 루프 보정과 실시간 처리에서 나옵니다.</strong> 실시간 실행이라 처리되는 인식 프레임이 매번 조금씩 다르고(녹화당 ±5% 안팎), ORB-SLAM3 루프 결합도 실행마다 다릅니다. 녹화 1 은 이번까지 3.10 m · 2.97 m 오결합이 두 번 나왔습니다.</li>
+<li><strong>논문 수치에는 반복 실행을 쓰는 것이 좋습니다.</strong> 23 문서의 실 데이터 표를 실행 한 번으로 내면 녹화 3 같은 경계 사례 때문에 95~100% 사이에서 달라집니다. RTX 5090 최종 측정에서는 녹화마다 반복 실행을 하고, 루프 오결합 실행을 버리는 기준(예: 키프레임 보정 1 m 이상)을 정해 두는 것이 좋습니다.</li>
+</ul>
+<h2 id="6">6. 남은 일</h2>
+<ul>
+<li>기준 방법의 글 문구는 23 문서와 같습니다. 식혜 문구를 바꿔 보는 것은 하지 않았습니다.</li>
+<li>녹화 1 의 루프 오결합 원인(같은 녹화에서 두 번)은 따로 보지 않았습니다.</li>
+<li>같은 날 먼저 돌린 기본 설정 실행(<code>live_261011_etri_dark_orbslam3_f2000</code>, 녹화 2, 개선안 3 아님)은 이 비교에 넣지 않았습니다.</li>
+</ul></main></body></html>

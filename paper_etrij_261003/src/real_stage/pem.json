@@ -1,0 +1,182 @@
+{
+ "object": "milk",
+ "frame_index": 1808,
+ "torch_seed": 7,
+ "n_coarse_proposals": 6000,
+ "n_hypotheses": 300,
+ "thresholds": {
+  "mask_iou_min": 0.420998,
+  "texture_min_score": 0.449562,
+  "cluster_rotation_deg": 20,
+  "cluster_translation_mm": 25,
+  "cluster_min_occupancy": 0.5
+ },
+ "counts_from_flags": {
+  "mask_pass": 267,
+  "texture_pass": 250,
+  "cluster_member": 153
+ },
+ "mask_survivors": 267,
+ "texture_survivors": 250,
+ "cluster_size": 153,
+ "cluster_occupancy": 0.612,
+ "selected_index300": 292,
+ "selected_proposal6000_index": 5289,
+ "rank_geo_of_selected": 0,
+ "selection_method": "geometry_mask_texture_convergence",
+ "final_mask_iou": 0.866414,
+ "final_texture_score": 0.67650056,
+ "coverage": 1.0,
+ "size_ratio": 0.891015,
+ "final_pose": {
+  "R": [
+   [
+    -0.987404,
+    0.155356,
+    0.029978
+   ],
+   [
+    0.019473,
+    0.307352,
+    -0.951397
+   ],
+   [
+    -0.157018,
+    -0.938829,
+    -0.306506
+   ]
+  ],
+  "t_mm": [
+   343.3629,
+   9.2489,
+   887.814
+  ],
+  "pose_score": 1.0
+ },
+ "crop_window_xyxy": [
+  396,
+  115,
+  561,
+  280
+ ],
+ "crop_scale": 1.9394,
+ "hypotheses_rendered": [
+  {
+   "file": "hyp_0.png",
+   "index300": 141,
+   "proposal6000": 2421,
+   "rank_geo": 277,
+   "status": "rejected_mask_iou",
+   "geometry_score": 8.25377,
+   "mask_iou": 0.34577,
+   "texture_score": 0.4217,
+   "t_mm": [
+    324.6,
+    -53.8,
+    896.8
+   ]
+  },
+  {
+   "file": "hyp_1.png",
+   "index300": 76,
+   "proposal6000": 1348,
+   "rank_geo": 288,
+   "status": "rejected_mask_iou",
+   "geometry_score": 5.64715,
+   "mask_iou": 0.12361,
+   "texture_score": 0.41022,
+   "t_mm": [
+    446.4,
+    -24.5,
+    887.5
+   ]
+  },
+  {
+   "file": "hyp_2.png",
+   "index300": 78,
+   "proposal6000": 2111,
+   "rank_geo": 192,
+   "status": "rejected_texture",
+   "geometry_score": 19.94676,
+   "mask_iou": 0.61032,
+   "texture_score": 0.44533,
+   "t_mm": [
+    368.4,
+    5.3,
+    875.8
+   ]
+  },
+  {
+   "file": "hyp_3.png",
+   "index300": 296,
+   "proposal6000": 4920,
+   "rank_geo": 4,
+   "status": "rejected_not_in_cluster",
+   "geometry_score": 41.76821,
+   "mask_iou": 0.86216,
+   "texture_score": 0.64404,
+   "t_mm": [
+    346.7,
+    7.8,
+    888.5
+   ]
+  },
+  {
+   "file": "hyp_4.png",
+   "index300": 135,
+   "proposal6000": 3285,
+   "rank_geo": 1,
+   "status": "survivor_cluster_member",
+   "geometry_score": 42.42514,
+   "mask_iou": 0.87593,
+   "texture_score": 0.65418,
+   "t_mm": [
+    341.5,
+    8.3,
+    885.8
+   ]
+  },
+  {
+   "file": "hyp_5.png",
+   "index300": 292,
+   "proposal6000": 5289,
+   "rank_geo": 0,
+   "status": "selected",
+   "geometry_score": 42.52993,
+   "mask_iou": 0.86794,
+   "texture_score": 0.67054,
+   "t_mm": [
+    341.3,
+    9.5,
+    885.9
+   ]
+  }
+ ],
+ "colour_key(BGR)": {
+  "selected": [
+   0,
+   255,
+   255
+  ],
+  "survivor_cluster_member": [
+   255,
+   200,
+   0
+  ],
+  "rejected_mask_iou": [
+   0,
+   0,
+   255
+  ],
+  "rejected_texture": [
+   0,
+   140,
+   255
+  ],
+  "rejected_not_in_cluster": [
+   255,
+   0,
+   255
+  ]
+ }
+}

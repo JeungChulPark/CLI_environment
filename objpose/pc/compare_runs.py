@@ -6,6 +6,12 @@ frame. The two SLAM maps have different world frames: the trajectories are align
 rigid (SE(3), no scale) Umeyama fit at common stamps, and that transform also carries one
 run's objects into the other's map.
 
+The corrected ("final") trajectory is built through the hub's own keyframe table, so a pose
+whose reference keyframe was culled still follows the cull redirects onto the corrected map.
+The few poses that reach no surviving keyframe at all are reported as `unrefined_poses` and
+left out of the final-map numbers, since their coordinates never received the corrections
+being compared.
+
     python objpose/pc/compare_runs.py objpose/output/<orb run> objpose/output/<rtab run>
 """
 from __future__ import annotations
@@ -19,7 +25,7 @@ import numpy as np
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-from fusion import mat  # noqa: E402
+from fusion import KeyframeMap, mat  # noqa: E402
 
 
 def load_run(d: Path, X=None) -> dict:
@@ -28,24 +34,40 @@ def load_run(d: Path, X=None) -> dict:
     S = json.loads((d / "summary.json").read_text())
     poses = [json.loads(l) for l in open(d / "slam_poses.jsonl")]
     kfu = [json.loads(l) for l in open(d / "kf_updates.jsonl")] if (d / "kf_updates.jsonl").exists() else []
-    last_kf = {int(r[0]): mat(r[1:]) for r in kfu[-1]["kfs"]} if kfu else {}
-    t, live, final = [], [], []
+    # Rebuild the hub's own keyframe table by replaying every update, instead of reading the
+    # last one. Local mapping culls redundant keyframes, and the table re-anchors each culled id
+    # to a surviving neighbour, so a pose that referenced it still reaches the corrected map.
+    # Reading only the final update and testing membership loses those redirects: it left a
+    # quarter of a 260901 run's poses on their live, still-drifted coordinates and made two maps
+    # that both sit within 4 cm of the LiDAR trajectory look 173 cm apart.
+    kfs = KeyframeMap()
+    for m in kfu:
+        kfs.apply_update(m.get("map_id"), m.get("kfs", []))
+    t, live, final, refined = [], [], [], []
     for m in poses:
         if m.get("state") not in ("OK", "OK_KLT") or m.get("T_wc") is None:
             continue
         T = mat(m["T_wc"])
         F = T
-        if m.get("ref_kf") is not None and m.get("T_w_kf") is not None and int(m["ref_kf"]) in last_kf:
-            F = last_kf[int(m["ref_kf"])] @ np.linalg.inv(mat(m["T_w_kf"])) @ T
+        T_w_kf = None
+        if m.get("ref_kf") is not None and m.get("T_w_kf") is not None:
+            T_w_kf, _ = kfs.resolve(int(m["ref_kf"]))
+        ok = T_w_kf is not None
+        if ok:
+            F = T_w_kf @ np.linalg.inv(mat(m["T_w_kf"])) @ T
         if X is not None:
             T, F = T @ X, F @ X
         t.append(int(m["t_ns"]))
         live.append(T[:3, 3])
         final.append(F[:3, 3])
+        refined.append(ok)
     lag = np.array([m["recv_lag_s"] for m in poses if m.get("recv_lag_s") is not None]) * 1000
     track = np.array([m.get("track_ms", np.nan) for m in poses], float)
+    # with no keyframe update at all there is nothing to correct against, and `final` is `live`
+    # everywhere by definition rather than by loss, so the whole run stays comparable
+    ref = np.ones(len(t), bool) if not kfs.T else np.array(refined, bool)
     return {"dir": d, "S": S, "poses": poses, "t": np.array(t), "live": np.array(live), "final": np.array(final),
-            "lag": lag, "track": track, "kfu": kfu}
+            "refined": ref, "lag": lag, "track": track, "kfu": kfu}
 
 
 def umeyama(A, B):
@@ -55,6 +77,15 @@ def umeyama(A, B):
     D = np.diag([1, 1, np.sign(np.linalg.det(U @ Vt))])
     R = U @ D @ Vt
     return R, cb - R @ ca
+
+
+def lvf(R: dict) -> dict:
+    """How far the keyframe corrections moved this run's own poses, over the corrected ones."""
+    d = np.linalg.norm(R["live"][R["refined"]] - R["final"][R["refined"]], axis=1) * 100
+    if not len(d):
+        return {"median": None, "p95": None, "max": None}
+    return {"median": round(float(np.median(d)), 2), "p95": round(float(np.percentile(d, 95)), 2),
+            "max": round(float(d.max()), 2)}
 
 
 def obs_positions(S):
@@ -112,9 +143,12 @@ def main():
             "arrival_lag_ms_median": round(float(np.median(R["lag"])), 1), "arrival_lag_ms_p99": round(float(np.percentile(R["lag"], 99)), 1),
             "loop_events": S.get("slam_loop_events"), "kf_count": S.get("kf_count"), "kf_updates": S.get("kf_updates"),
             "kf_max_correction_cm": S.get("kf_max_correction_cm"),
-            "live_vs_final_traj_cm": {"median": round(float(np.median(np.linalg.norm(R["live"] - R["final"], axis=1))) * 100, 2),
-                                      "p95": round(float(np.percentile(np.linalg.norm(R["live"] - R["final"], axis=1), 95)) * 100, 2),
-                                      "max": round(float(np.max(np.linalg.norm(R["live"] - R["final"], axis=1))) * 100, 2)},
+            # only over poses that reached the corrected map: an unrefined one has final == live
+            # by construction, and counting its zero would pull the median toward 0
+            "live_vs_final_traj_cm": lvf(R),
+            "unrefined_poses": {"n": int((~R["refined"]).sum()),
+                                "pct": round(100 * float((~R["refined"]).mean()), 1),
+                                "kf_culled": S.get("kf_culled")},
             "sam6d_frames": S["sam6d_frames"], "objects_unplaced": S["objects_unplaced"],
             "observation_spread_cm": {"median": round(float(np.median(sp)), 2), "p90": round(float(np.percentile(sp, 90)), 2)},
             "interp_prediction": interp,
@@ -137,14 +171,21 @@ def main():
         if interp_b:
             Pa = A[which][ok]
             Pb = ((1 - u) * B[which][k - 1] + u * B[which][k])[ok]
+            # an interpolated point is only corrected when both of its neighbours are
+            keep = (A["refined"][ok] & B["refined"][k - 1][ok] & B["refined"][k][ok]
+                    if which == "final" else np.ones(len(Pa), bool))
         else:
             Pa, Pb = A[which][ia], B[which][ib]
+            keep = A["refined"][ia] & B["refined"][ib] if which == "final" else np.ones(len(Pa), bool)
+        dropped = int((~keep).sum())
+        Pa, Pb = Pa[keep], Pb[keep]
         R_, t_ = umeyama(Pb, Pa)
         err = np.linalg.norm((Pb @ R_.T + t_) - Pa, axis=1) * 100
-        out[f"trajectory_{which}_B_aligned_to_A_cm"] = {"n": int(len(common)), "rmse": round(float(np.sqrt(np.mean(err ** 2))), 2),
+        out[f"trajectory_{which}_B_aligned_to_A_cm"] = {"n": int(len(Pa)), "rmse": round(float(np.sqrt(np.mean(err ** 2))), 2),
                                                         "median": round(float(np.median(err)), 2), "p95": round(float(np.percentile(err, 95)), 2),
                                                         "max": round(float(err.max()), 2)}
         if which == "final":
+            out["trajectory_final_B_aligned_to_A_cm"]["unrefined_dropped"] = dropped
             R_final, t_final = R_, t_
 
     # objects: memory instances of B carried into A's map

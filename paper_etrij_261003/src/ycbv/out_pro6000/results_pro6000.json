@@ -1,0 +1,435 @@
+{
+ "label": "RTX PRO 6000 Blackwell, 2026-10-08",
+ "protocol": "Per method (prediction JSON from run_orig.py / run_ours.py):\n  correct      ADD-S < 10 % of the object diameter (models_eval/models_info.json),\n               ADD-S over the models_eval vertices\n  Found        visible GT targets with a correct answer / visible GT targets\n               (visible = visib_fract > 0; all 4123 BOP19 targets are)\n  Answers correct   correct answers / all answers\n  Wrong / image     wrong answers / images\n  ADD-S AUC    area under the accuracy-threshold curve, 0-10 cm (PoseCNN VOCap), pooled over\n               all GT targets (missing answer = infinite error); per-object mean also reported\n  BOP AR       official bop_toolkit scripts/eval_bop19_pose.py (VSD, MSSD, MSPD) on BOP CSV\n  Time         median per-image time of the timed region\nBOP CSV files and bop_toolkit output go to OUT/bop; summary -> results.json.",
+ "evaluated": "2026-10-08 15:45:22",
+ "methods": {
+  "sam6d": {
+   "images": 900,
+   "visible_gt_targets": 4123,
+   "answers": 4088,
+   "correct_answers": 3801,
+   "found_pct": 92.2,
+   "answers_correct_pct": 93.0,
+   "wrong_per_image": 0.319,
+   "adds_auc": 91.8,
+   "adds_auc_mean_over_objects": 90.8,
+   "time_ms": {
+    "median": 495.3,
+    "p90": 721.1,
+    "mean": 500.5,
+    "n": 900
+   },
+   "per_object": {
+    "002_master_chef_can": {
+     "targets": 300,
+     "found": 287,
+     "found_pct": 95.7,
+     "answers": 299,
+     "correct": 287,
+     "adds_auc": 95.7
+    },
+    "003_cracker_box": {
+     "targets": 225,
+     "found": 216,
+     "found_pct": 96.0,
+     "answers": 225,
+     "correct": 216,
+     "adds_auc": 95.9
+    },
+    "004_sugar_box": {
+     "targets": 375,
+     "found": 369,
+     "found_pct": 98.4,
+     "answers": 375,
+     "correct": 369,
+     "adds_auc": 97.2
+    },
+    "005_tomato_soup_can": {
+     "targets": 448,
+     "found": 427,
+     "found_pct": 95.3,
+     "answers": 428,
+     "correct": 427,
+     "adds_auc": 93.7
+    },
+    "006_mustard_bottle": {
+     "targets": 150,
+     "found": 150,
+     "found_pct": 100.0,
+     "answers": 150,
+     "correct": 150,
+     "adds_auc": 98.7
+    },
+    "007_tuna_fish_can": {
+     "targets": 300,
+     "found": 293,
+     "found_pct": 97.7,
+     "answers": 300,
+     "correct": 293,
+     "adds_auc": 96.4
+    },
+    "008_pudding_box": {
+     "targets": 75,
+     "found": 56,
+     "found_pct": 74.7,
+     "answers": 75,
+     "correct": 56,
+     "adds_auc": 73.5
+    },
+    "009_gelatin_box": {
+     "targets": 75,
+     "found": 75,
+     "found_pct": 100.0,
+     "answers": 75,
+     "correct": 75,
+     "adds_auc": 98.7
+    },
+    "010_potted_meat_can": {
+     "targets": 225,
+     "found": 176,
+     "found_pct": 78.2,
+     "answers": 214,
+     "correct": 176,
+     "adds_auc": 84.1
+    },
+    "011_banana": {
+     "targets": 150,
+     "found": 150,
+     "found_pct": 100.0,
+     "answers": 150,
+     "correct": 150,
+     "adds_auc": 97.9
+    },
+    "019_pitcher_base": {
+     "targets": 225,
+     "found": 225,
+     "found_pct": 100.0,
+     "answers": 225,
+     "correct": 225,
+     "adds_auc": 98.2
+    },
+    "021_bleach_cleanser": {
+     "targets": 300,
+     "found": 283,
+     "found_pct": 94.3,
+     "answers": 300,
+     "correct": 283,
+     "adds_auc": 92.7
+    },
+    "024_bowl": {
+     "targets": 150,
+     "found": 149,
+     "found_pct": 99.3,
+     "answers": 150,
+     "correct": 149,
+     "adds_auc": 97.6
+    },
+    "025_mug": {
+     "targets": 150,
+     "found": 145,
+     "found_pct": 96.7,
+     "answers": 150,
+     "correct": 145,
+     "adds_auc": 96.9
+    },
+    "035_power_drill": {
+     "targets": 300,
+     "found": 261,
+     "found_pct": 87.0,
+     "answers": 300,
+     "correct": 261,
+     "adds_auc": 92.3
+    },
+    "036_wood_block": {
+     "targets": 75,
+     "found": 73,
+     "found_pct": 97.3,
+     "answers": 75,
+     "correct": 73,
+     "adds_auc": 95.5
+    },
+    "037_scissors": {
+     "targets": 75,
+     "found": 63,
+     "found_pct": 84.0,
+     "answers": 72,
+     "correct": 63,
+     "adds_auc": 86.2
+    },
+    "040_large_marker": {
+     "targets": 150,
+     "found": 150,
+     "found_pct": 100.0,
+     "answers": 150,
+     "correct": 150,
+     "adds_auc": 98.1
+    },
+    "051_large_clamp": {
+     "targets": 150,
+     "found": 84,
+     "found_pct": 56.0,
+     "answers": 150,
+     "correct": 84,
+     "adds_auc": 55.5
+    },
+    "052_extra_large_clamp": {
+     "targets": 150,
+     "found": 94,
+     "found_pct": 62.7,
+     "answers": 150,
+     "correct": 94,
+     "adds_auc": 62.7
+    },
+    "061_foam_brick": {
+     "targets": 75,
+     "found": 75,
+     "found_pct": 100.0,
+     "answers": 75,
+     "correct": 75,
+     "adds_auc": 98.3
+    }
+   },
+   "title": "SAM-6D (original)",
+   "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+   "run_label": "RTX PRO 6000 Blackwell, 2026-10-08",
+   "prediction_file": "/home/jucpark/Dataset/bop/ycbv_work/out_pro6000/pred_sam6d.json",
+   "stage_ms": {
+    "proposals": {
+     "median": 8.8,
+     "p90": 9.5,
+     "mean": 8.9,
+     "n": 900
+    },
+    "descriptors": {
+     "median": 178.9,
+     "p90": 421.5,
+     "mean": 215.1,
+     "n": 900
+    },
+    "matching": {
+     "median": 5.8,
+     "p90": 15.5,
+     "mean": 8.0,
+     "n": 900
+    },
+    "pem": {
+     "median": 268.2,
+     "p90": 354.4,
+     "mean": 268.4,
+     "n": 900
+    }
+   }
+  },
+  "ladder_hybS05cf": {
+   "images": 900,
+   "visible_gt_targets": 4123,
+   "answers": 3385,
+   "correct_answers": 3339,
+   "found_pct": 81.0,
+   "answers_correct_pct": 98.6,
+   "wrong_per_image": 0.051,
+   "adds_auc": 79.4,
+   "adds_auc_mean_over_objects": 74.8,
+   "time_ms": {
+    "median": 185.0,
+    "p90": 237.8,
+    "mean": 190.8,
+    "n": 900
+   },
+   "per_object": {
+    "002_master_chef_can": {
+     "targets": 300,
+     "found": 295,
+     "found_pct": 98.3,
+     "answers": 295,
+     "correct": 295,
+     "adds_auc": 95.5
+    },
+    "003_cracker_box": {
+     "targets": 225,
+     "found": 200,
+     "found_pct": 88.9,
+     "answers": 200,
+     "correct": 200,
+     "adds_auc": 87.1
+    },
+    "004_sugar_box": {
+     "targets": 375,
+     "found": 314,
+     "found_pct": 83.7,
+     "answers": 314,
+     "correct": 314,
+     "adds_auc": 82.6
+    },
+    "005_tomato_soup_can": {
+     "targets": 448,
+     "found": 389,
+     "found_pct": 86.8,
+     "answers": 390,
+     "correct": 389,
+     "adds_auc": 85.2
+    },
+    "006_mustard_bottle": {
+     "targets": 150,
+     "found": 150,
+     "found_pct": 100.0,
+     "answers": 150,
+     "correct": 150,
+     "adds_auc": 98.7
+    },
+    "007_tuna_fish_can": {
+     "targets": 300,
+     "found": 259,
+     "found_pct": 86.3,
+     "answers": 259,
+     "correct": 259,
+     "adds_auc": 84.1
+    },
+    "008_pudding_box": {
+     "targets": 75,
+     "found": 45,
+     "found_pct": 60.0,
+     "answers": 47,
+     "correct": 45,
+     "adds_auc": 61.0
+    },
+    "009_gelatin_box": {
+     "targets": 75,
+     "found": 75,
+     "found_pct": 100.0,
+     "answers": 75,
+     "correct": 75,
+     "adds_auc": 98.8
+    },
+    "010_potted_meat_can": {
+     "targets": 225,
+     "found": 160,
+     "found_pct": 71.1,
+     "answers": 160,
+     "correct": 160,
+     "adds_auc": 69.4
+    },
+    "011_banana": {
+     "targets": 150,
+     "found": 148,
+     "found_pct": 98.7,
+     "answers": 148,
+     "correct": 148,
+     "adds_auc": 96.6
+    },
+    "019_pitcher_base": {
+     "targets": 225,
+     "found": 206,
+     "found_pct": 91.6,
+     "answers": 206,
+     "correct": 206,
+     "adds_auc": 89.9
+    },
+    "021_bleach_cleanser": {
+     "targets": 300,
+     "found": 287,
+     "found_pct": 95.7,
+     "answers": 287,
+     "correct": 287,
+     "adds_auc": 93.8
+    },
+    "024_bowl": {
+     "targets": 150,
+     "found": 11,
+     "found_pct": 7.3,
+     "answers": 11,
+     "correct": 11,
+     "adds_auc": 7.2
+    },
+    "025_mug": {
+     "targets": 150,
+     "found": 140,
+     "found_pct": 93.3,
+     "answers": 140,
+     "correct": 140,
+     "adds_auc": 91.4
+    },
+    "035_power_drill": {
+     "targets": 300,
+     "found": 272,
+     "found_pct": 90.7,
+     "answers": 273,
+     "correct": 272,
+     "adds_auc": 89.5
+    },
+    "036_wood_block": {
+     "targets": 75,
+     "found": 52,
+     "found_pct": 69.3,
+     "answers": 52,
+     "correct": 52,
+     "adds_auc": 67.1
+    },
+    "037_scissors": {
+     "targets": 75,
+     "found": 10,
+     "found_pct": 13.3,
+     "answers": 13,
+     "correct": 10,
+     "adds_auc": 13.0
+    },
+    "040_large_marker": {
+     "targets": 150,
+     "found": 84,
+     "found_pct": 56.0,
+     "answers": 84,
+     "correct": 84,
+     "adds_auc": 55.0
+    },
+    "051_large_clamp": {
+     "targets": 150,
+     "found": 103,
+     "found_pct": 68.7,
+     "answers": 134,
+     "correct": 103,
+     "adds_auc": 66.8
+    },
+    "052_extra_large_clamp": {
+     "targets": 150,
+     "found": 68,
+     "found_pct": 45.3,
+     "answers": 76,
+     "correct": 68,
+     "adds_auc": 44.3
+    },
+    "061_foam_brick": {
+     "targets": 75,
+     "found": 71,
+     "found_pct": 94.7,
+     "answers": 71,
+     "correct": 71,
+     "adds_auc": 92.7
+    }
+   },
+   "title": "ladder_hybS05cf",
+   "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+   "run_label": "RTX PRO 6000 Blackwell, 2026-10-08",
+   "prediction_file": "/home/jucpark/Dataset/bop/ycbv_work/out_pro6000/pred_ladder_hybS05cf.json",
+   "stage_ms": {
+    "yolo": {
+     "median": 0.0,
+     "p90": 0.0,
+     "mean": 0.0,
+     "n": 900
+    },
+    "ism": {
+     "median": 46.0,
+     "p90": 81.0,
+     "mean": 50.4,
+     "n": 900
+    },
+    "pem": {
+     "median": 135.0,
+     "p90": 181.0,
+     "mean": 140.2,
+     "n": 900
+    }
+   }
+  }
+ }
+}

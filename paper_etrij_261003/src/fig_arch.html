@@ -1,0 +1,105 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box}
+body{margin:0;width:1000px;height:820px;background:#fff;font-family:"Times New Roman","Liberation Serif",serif;color:#111;position:relative;font-size:13.5px;line-height:1.22}
+.a{position:absolute}
+img{display:block;object-fit:cover}
+.dev{position:absolute;border-radius:10px;border:1.6px solid}
+.dt{position:absolute;font-weight:700;font-size:16px;letter-spacing:.4px}
+.b{position:absolute;border:1.5px solid #8a8984;border-radius:7px;background:#fff;padding:4px 6px;text-align:center}
+.b>b{display:block;font-size:14.5px;margin-bottom:2px}
+.s{border-color:#2a78d6}.r{border-color:#1baf7a}
+.k{border-color:#eb6834;border-width:2.2px;background:#fff7f2}
+.cap{font-size:12.5px;color:#333}
+ul{margin:3px 0 0;padding-left:16px;text-align:left} li{margin:2px 0}
+sub,sup{font-size:72%}
+.map{position:absolute;border:4px double #c8662a;border-radius:10px;background:#fffaf5}
+.rec{font-size:13.5px;text-align:left;line-height:1.5}
+.lan{position:absolute;left:10px;width:980px;height:30px;background:linear-gradient(90deg,#fde7e2,#fbd3cb,#fde7e2);border-radius:15px;text-align:center;font-size:14px;color:#a63c12;font-weight:700;padding-top:6px}
+</style></head><body>
+
+<!-- SLAM DEVICE -->
+<div class="dev" style="left:10px;top:8px;width:980px;height:230px;border-color:#2a78d6;background:#f6f9fd"></div>
+<div class="dt" style="left:24px;top:14px;color:#1F5FA8">SLAM DEVICE</div>
+<div class="b s" style="left:30px;top:44px;width:150px;height:120px"><b>RGB-D / LiDAR</b><img src="real/slam_frame_0.png" style="width:136px;height:72px"><div class="cap">every frame, capture time</div></div>
+<div class="b s" style="left:215px;top:44px;width:150px;height:120px"><b>Tracking</b><div style="margin-top:14px">camera pose T<sub>map←S</sub> for every input frame, within the camera period</div></div>
+<div class="b s" style="left:400px;top:44px;width:180px;height:120px"><b>Keyframes</b><img src="real/kf_traj.png" style="width:150px;height:72px;object-fit:contain;margin:0 auto"><div class="cap">reference keyframe K<sub>ref</sub> of each frame</div></div>
+<div class="b s" style="left:615px;top:44px;width:150px;height:120px"><b>Loop closure</b><div style="margin-top:14px">graph optimization corrects past keyframe poses</div></div>
+<div class="b k" style="left:800px;top:44px;width:175px;height:178px;text-align:left"><b style="text-align:center">Pose / keyframe stream</b>
+ <div style="margin-top:4px"><b style="display:inline;font-size:13.5px">per frame:</b> t, T<sub>map←S</sub>, K<sub>ref</sub>, T<sub>map←K<sub>ref</sub></sub></div>
+ <div style="margin-top:8px"><b style="display:inline;font-size:13.5px">keyframe list:</b> all (K<sub>i</sub>, T<sub>map←K<sub>i</sub></sub>), periodically and re-sent after each map change</div></div>
+<div class="a cap" style="left:470px;top:196px;width:260px;text-align:center;color:#1F5FA8">update (corrected keyframe poses)</div>
+
+<!-- LAN -->
+<div class="lan" style="top:246px">asynchronous LAN: pose messages, keyframe lists, and results arrive late and out of order</div>
+
+<!-- RECOGNITION DEVICE -->
+<div class="dev" style="left:10px;top:284px;width:980px;height:528px;border-color:#1baf7a;background:#f5fbf7"></div>
+<div class="dt" style="left:24px;top:290px;color:#2E7D4F">RECOGNITION DEVICE</div>
+
+<div class="b r" style="left:30px;top:320px;width:200px;height:160px"><b>RGB-D frame</b>
+ <div style="display:flex;gap:4px;justify-content:center"><img src="real/rgb.png" style="width:92px;height:70px"><img src="real/depth.png" style="width:92px;height:70px"></div>
+ <div class="cap" style="margin-top:4px">captured at time t<br>(metadata timestamp)</div></div>
+<div class="b r" style="left:260px;top:320px;width:200px;height:160px"><b>Zero-shot 6D object pose</b>
+ <img src="real/est.png" style="width:150px;height:84px;margin:0 auto">
+ <div class="cap" style="margin-top:3px">T<sub>R←O</sub>, delayed result<br>(arrives 0.7–6.6 s after t)</div></div>
+
+<div class="b k" style="left:120px;top:540px;width:250px;height:190px;text-align:left"><b style="text-align:center">Capture-Time Registration</b>
+ <ul>
+  <li>timestamp alignment (one clock, offset τ)</li>
+  <li>SLAM pose interpolated at t: T<sub>map←S</sub>(t)</li>
+  <li>reference keyframe K<sub>ref</sub>(t) of that pose</li>
+  <li>extrinsic transform X = T<sub>S←R</sub></li>
+  <li>wait if the pose for t has not arrived</li>
+ </ul>
+ <div style="margin-top:5px;font-size:13px;text-align:center">T<sub>K←O</sub> = T<sub>map←K</sub>(t)<sup>−1</sup> T<sub>map←S</sub>(t) X T<sub>R←O</sub></div></div>
+
+<div class="map" style="left:410px;top:316px;width:565px;height:300px"></div>
+<div class="a" style="left:426px;top:324px;font-weight:700;font-size:15.5px;color:#a63c12;letter-spacing:.3px">KEYFRAME-ANCHORED OBJECT STATE MAP</div>
+<div class="b" style="left:428px;top:352px;width:250px;height:250px;text-align:left;border-color:#c8662a"><b style="text-align:center">Object i</b>
+ <div class="rec">
+  ├ object ID and class<br>
+  ├ reference keyframe K<sub>i</sub><br>
+  ├ relative pose T<sub>K<sub>i</sub>←O<sub>i</sub></sub><br>
+  ├ existence probability p<sub>i</sub> and state<br>
+  &nbsp;&nbsp;&nbsp;(tentative / active / lost / remembered)<br>
+  └ observations (position mean,<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;orientation vote)
+ </div></div>
+<div class="b" style="left:700px;top:352px;width:258px;height:250px;border-color:#c8662a">
+ <div style="margin-top:6px">keyframe update after loop closure<br><span class="cap">(from the keyframe list)</span></div>
+ <div style="font-size:20px;margin:4px 0">↓</div>
+ <div style="font-size:15px">T′<sub>map←K<sub>i</sub></sub> · T<sub>K<sub>i</sub>←O<sub>i</sub></sub></div>
+ <div style="font-size:20px;margin:4px 0">↓</div>
+ <div><b style="display:inline">consistent global object pose</b><br>T′<sub>map←O<sub>i</sub></sub>; culled K<sub>i</sub> → re-anchored to the nearest keyframe</div>
+</div>
+
+<div class="b r" style="left:410px;top:640px;width:565px;height:160px"><b>Object map / visualization</b>
+ <div style="display:flex;gap:10px;justify-content:center;align-items:center">
+  <div><img src="real/map3d.png" style="width:200px;height:110px;object-fit:contain"><div class="cap">object map on the final SLAM map</div></div>
+  <div><img src="real/display.png" style="width:150px;height:110px"><div class="cap">display at the display-time pose (15 Hz)</div></div>
+ </div></div>
+
+<svg class="a" style="left:0;top:0" width="1000" height="820">
+ <defs>
+  <marker id="m" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9z" fill="#444"/></marker>
+  <marker id="o" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9z" fill="#eb6834"/></marker>
+  <marker id="u" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9z" fill="#2a78d6"/></marker>
+ </defs>
+ <g stroke="#444" stroke-width="1.6" fill="none" marker-end="url(#m)">
+  <path d="M180,104 L213,104"/><path d="M365,104 L398,104"/><path d="M580,104 L613,104"/><path d="M765,104 L798,104"/>
+  <path d="M230,400 L258,400"/>
+  <path d="M130,480 L130,538"/><path d="M360,480 L300,538"/>
+  <path d="M370,640 L408,560"/>
+  <path d="M692,616 L692,638"/>
+ </g>
+ <path d="M690,166 C690,205 490,205 490,168" stroke="#2a78d6" stroke-width="1.8" fill="none" marker-end="url(#u)"/>
+ <g stroke="#eb6834" stroke-width="2.2" fill="none" marker-end="url(#o)">
+  <path d="M845,222 L845,236 L60,236 L60,276 L60,536 L118,536"/>
+  <path d="M930,222 L930,350"/>
+ </g>
+ <text x="48" y="500" font-size="12.5" fill="#333" font-family="Times New Roman, Liberation Serif, serif">capture time t</text>
+ <text x="300" y="512" font-size="12.5" fill="#333" font-family="Times New Roman, Liberation Serif, serif">delayed result</text>
+ <text x="66" y="300" font-size="12.5" fill="#a63c12" font-family="Times New Roman, Liberation Serif, serif" transform="rotate(90 66 300)">pose messages</text>
+ <text x="936" y="300" font-size="12.5" fill="#a63c12" font-family="Times New Roman, Liberation Serif, serif" transform="rotate(90 936 300)">keyframe lists</text>
+</svg>
+</body></html>

@@ -1,0 +1,122 @@
+[
+ {
+  "dataset": "ycbv",
+  "scene": 48,
+  "landmarks": 9,
+  "accepted_dets": 958,
+  "dets_assigned": 943,
+  "processed_frames": 246,
+  "video_frames": 2243,
+  "sam6d_hz": 3.3064516129032255
+ },
+ {
+  "dataset": "ycbv",
+  "scene": 49,
+  "landmarks": 10,
+  "accepted_dets": 880,
+  "dets_assigned": 869,
+  "processed_frames": 311,
+  "video_frames": 2401,
+  "sam6d_hz": 3.902132998745295
+ },
+ {
+  "dataset": "ycbv",
+  "scene": 50,
+  "landmarks": 12,
+  "accepted_dets": 818,
+  "dets_assigned": 810,
+  "processed_frames": 161,
+  "video_frames": 1916,
+  "sam6d_hz": 2.5354330708661417
+ },
+ {
+  "dataset": "ycbv",
+  "scene": 51,
+  "landmarks": 15,
+  "accepted_dets": 554,
+  "dets_assigned": 539,
+  "processed_frames": 135,
+  "video_frames": 2008,
+  "sam6d_hz": 2.027027027027027
+ },
+ {
+  "dataset": "ycbv",
+  "scene": 52,
+  "landmarks": 4,
+  "accepted_dets": 336,
+  "dets_assigned": 336,
+  "processed_frames": 129,
+  "video_frames": 899,
+  "sam6d_hz": 4.358108108108108
+ },
+ {
+  "dataset": "ycbv",
+  "scene": 53,
+  "landmarks": 4,
+  "accepted_dets": 239,
+  "dets_assigned": 238,
+  "processed_frames": 112,
+  "video_frames": 836,
+  "sam6d_hz": 4.072727272727272
+ },
+ {
+  "dataset": "ycbv",
+  "scene": 54,
+  "landmarks": 8,
+  "accepted_dets": 975,
+  "dets_assigned": 972,
+  "processed_frames": 206,
+  "video_frames": 1928,
+  "sam6d_hz": 3.223787167449139
+ },
+ {
+  "dataset": "ycbv",
+  "scene": 55,
+  "landmarks": 9,
+  "accepted_dets": 987,
+  "dets_assigned": 980,
+  "processed_frames": 198,
+  "video_frames": 1829,
+  "sam6d_hz": 3.267326732673267
+ },
+ {
+  "dataset": "ycbv",
+  "scene": 56,
+  "landmarks": 4,
+  "accepted_dets": 683,
+  "dets_assigned": 682,
+  "processed_frames": 171,
+  "video_frames": 1225,
+  "sam6d_hz": 4.222222222222222
+ },
+ {
+  "dataset": "ycbv",
+  "scene": 57,
+  "landmarks": 7,
+  "accepted_dets": 784,
+  "dets_assigned": 782,
+  "processed_frames": 180,
+  "video_frames": 1871,
+  "sam6d_hz": 2.903225806451613
+ },
+ {
+  "dataset": "ycbv",
+  "scene": 58,
+  "landmarks": 7,
+  "accepted_dets": 847,
+  "dets_assigned": 840,
+  "processed_frames": 215,
+  "video_frames": 1719,
+  "sam6d_hz": 3.7719298245614037
+ },
+ {
+  "dataset": "ycbv",
+  "scene": 59,
+  "landmarks": 9,
+  "accepted_dets": 782,
+  "dets_assigned": 782,
+  "processed_frames": 168,
+  "video_frames": 1863,
+  "sam6d_hz": 2.7184466019417477
+ }
+]

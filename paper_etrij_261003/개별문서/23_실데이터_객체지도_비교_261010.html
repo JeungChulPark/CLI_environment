@@ -1,0 +1,455 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>23. 공간 객체 상태 지도 비교 4단계 — 실 데이터 녹화 5개 (제안 대 FM-Fusion 대 DualMap, 2026-10-10)</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1>23. 공간 객체 상태 지도 비교 4단계 — 실 데이터 녹화 5개 (제안 대 FM-Fusion 대 DualMap, 2026-10-10)</h1>
+<blockquote>
+<p>20 문서(YCB-V)와 21 문서(ObChange-Kitchen)에 이어, 우리 로봇으로 찍은 실 데이터 녹화 5개로 세 방법의 객체 지도를 비교했습니다. 장비는 Mac ORB-SLAM3(특징점 2000) + 노트북 RTX 3080 Ti Laptop 이고 확인용입니다(최종 수치는 RTX 5090). 코드는 <code>src/objmap/</code>(real_prep.py, real_score.py, run_real_compare.sh, 그리고 세 방법 변환기의 <code>--dataset real</code>), 결과는 <code>src/objmap/out/real_scores.json</code> 입니다. 끝에 세 데이터의 비교표를 함께 정리했습니다(5절).</p>
+</blockquote>
+<h2>0. 요약</h2>
+<ul>
+<li><strong>녹화 5개, 물체 40개(녹화마다 8개) 합계, 최종 지도 맞음 / 잘못:</strong> 제안 <strong>39 / 1</strong>, FM-Fusion 33 / 174, DualMap 14 / 12(공개 설정) · 19 / 18(BGR 수정). 점수(맞음 ÷ (8 + 잘못))는 제안 <strong>95.1%</strong>, FM-Fusion 15.4%, DualMap 26.9% · 32.8% 입니다.</li>
+<li><strong>FM-Fusion 은 물체를 많이 찾지만(33/40) 잘못 올린 물체가 녹화당 11~51개입니다.</strong> 잘못의 86%(150/174)가 8개 물체 어디에도 가깝지 않은 자리, 즉 배경의 다른 물건입니다. "brown snack box"(초코) 문구가 실험실의 상자들에, "pink mug"·"blue spray bottle" 이 비슷한 물건들에 붙었습니다.</li>
+<li><strong>DualMap 은 잘못은 적지만 대부분 못 찾습니다(14~19/40).</strong> 물체를 2D 상자로 찾지 못한 덩어리는 'unknown' 으로만 남고(녹화당 9~67개), 이름이 붙은 물체는 녹화당 2~10개뿐입니다. 샤프란·초코·우유·식혜는 거의 못 찾았습니다.</li>
+<li><strong>식혜("gold drink can")는 두 기준 방법 모두 다섯 녹화에서 한 번도 찾지 못했습니다.</strong> 글 문구 선택의 영향일 수 있어 아래 6절에 한계로 적었습니다.</li>
+<li><strong>조건:</strong> 세 방법 모두 같은 영상과 같은 카메라 궤적(제안 방법의 실시간 실행에서 Mac ORB-SLAM3 가 낸 궤적)을 씁니다. 제안 방법은 1배속 실시간(인식 1.9~3.5 Hz)이고, 두 기준 방법은 오프라인으로 10프레임마다 처리했습니다(FM-Fusion 검출 장당 1.2~2.0 초).</li>
+</ul>
+<h2>1. 데이터</h2>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>번호</th>
+<th>녹화</th>
+<th>장면</th>
+<th>길이</th>
+<th>인식 카메라 프레임</th>
+<th>제안 방법 실행 (궤적 출처)</th>
+<th>가장 큰 루프 보정</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>260901_cbnu_bigeightcircle</td>
+<td>선반 두 개</td>
+<td>314 초</td>
+<td>6,363</td>
+<td><code>real5_260901_l3080_hyb3cf_r2b</code> (22 문서)</td>
+<td>7.1 cm</td>
+</tr>
+<tr>
+<td>2</td>
+<td>260826_etri_eightcircle_dark</td>
+<td>둥근 탁자 두 개, 어두운 조명</td>
+<td>285 초</td>
+<td>8,541</td>
+<td><code>real_260826_etri_eightcircle_dark_l3080_hyb3cf</code></td>
+<td>9.6 cm</td>
+</tr>
+<tr>
+<td>3</td>
+<td>260901_cbnu_eightcircle</td>
+<td>선반 두 개</td>
+<td>151 초</td>
+<td>3,054</td>
+<td><code>real_260901_cbnu_eightcircle_l3080_hyb3cf</code></td>
+<td>6.7 cm</td>
+</tr>
+<tr>
+<td>4</td>
+<td>260910_object</td>
+<td>둥근 탁자 두 개</td>
+<td>159 초</td>
+<td>4,774</td>
+<td><code>real_260910_object_l3080_hyb3cf</code></td>
+<td><strong>235.5 cm</strong></td>
+</tr>
+<tr>
+<td>5</td>
+<td>260915_eightcircle</td>
+<td>둥근 탁자</td>
+<td>128 초</td>
+<td>3,848</td>
+<td><code>real_260915_eightcircle_l3080_hyb3cf</code></td>
+<td>15.7 cm</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>물체는 다섯 녹화 모두 같은 8개(샤프란, 페브리즈, 공룡 인형, 곰 인형, 우유, 초코, 머그컵, 식혜)입니다. 260901_cbnu_longcircle 은 녹화 파일이 깨져 있어 뺐습니다(전과 같음).</li>
+<li>녹화 2~5 의 제안 방법 실행은 오늘 Mac 과 함께 새로 돌렸습니다. 설정은 22 문서와 같은 개선안 3 + 군집 먼저(실 데이터 합의 0.5)입니다.</li>
+</ul>
+<h2>2. 실행 구성</h2>
+<h3>2.1 공통 입력 (<code>real_prep.py</code>)</h3>
+<ul>
+<li><strong>영상:</strong> 허브가 읽는 방식 그대로 인식 카메라 RGB-D 를 꺼냈습니다. 같은 시각 보정을 쓰고, 녹화 2 는 원시 SDK 녹화라 깊이를 컬러 화면에 맞춰 옮겼습니다.</li>
+<li><strong>카메라 궤적:</strong> 제안 방법 실행이 기록한 Mac ORB-SLAM3 자세(<code>slam_poses.jsonl</code>)를 쓰고, 실행 끝의 키프레임 자세로 루프 보정을 반영했습니다. 식으로는 T_w_c' = T_w_kf(끝) · T_w_kf(그때)⁻¹ · T_w_c 이고, 키프레임 고정 지도가 받는 보정과 같습니다. 기준 키프레임이 지워진 자세(녹화 1 은 26%, 녹화 3 은 25%)에는 시간상 가장 가까운 자세의 보정을 썼습니다. 이 자세를 인식 카메라로 옮기는 데는 실행의 T_slam_sam 을 썼습니다.</li>
+<li><strong>궤적 확인:</strong> 물체 기준 위치를 영상에 투영해 깊이와 맞는지 10초 구간별로 봤습니다. 대부분 구간에서 90~100% 맞았습니다. 녹화 4 의 80~95초 구간만 43% 인데, SLAM 자세가 2.4 m 틀어졌다가 나중에 바로잡힌 구간입니다(프레임 몇 장). 제안 방법이 받은 SLAM 출력과 같은 것이므로 그대로 두었습니다.</li>
+</ul>
+<h3>2.2 방법별</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>처리</th>
+<th>설정</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>제안</strong></td>
+<td>1배속 실시간. Mac SLAM 과 동시에 돌고, 인식은 처리할 수 있는 프레임만</td>
+<td>개선안 3 + 군집 먼저, 존재확률 P_D 0.08 · c 0.01, CAD 모델</td>
+</tr>
+<tr>
+<td>FM-Fusion</td>
+<td>오프라인. 검출(GroundingDINO + SAM)을 10프레임마다, 융합은 2프레임마다</td>
+<td>20 문서와 같은 변경(1 cm 복셀, 최소 점 50), 녹화마다 카메라 내부 변수</td>
+</tr>
+<tr>
+<td>DualMap</td>
+<td>오프라인. 10프레임마다</td>
+<td>저장소 기본 설정(구체 지도만). 공개 코드 그대로인 판과 BGR 입력 수정 판</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>두 기준 방법의 글 문구:</strong> 물체 모습을 영상에서 보고 정했습니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>물체</th>
+<th>글 문구</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>샤프란</td>
+<td>yellow detergent bottle (섬유유연제 큰 통)</td>
+</tr>
+<tr>
+<td>페브리즈</td>
+<td>blue spray bottle</td>
+</tr>
+<tr>
+<td>공룡 인형</td>
+<td>green stuffed toy</td>
+</tr>
+<tr>
+<td>곰 인형</td>
+<td>brown teddy bear</td>
+</tr>
+<tr>
+<td>우유</td>
+<td>milk carton</td>
+</tr>
+<tr>
+<td>초코</td>
+<td>brown snack box</td>
+</tr>
+<tr>
+<td>머그컵</td>
+<td>pink mug</td>
+</tr>
+<tr>
+<td>식혜</td>
+<td>gold drink can</td>
+</tr>
+</tbody>
+</table></div>
+<h3>2.3 채점 (<code>real_score.py</code>)</h3>
+<ul>
+<li>물체 정답(점군, 6D 자세)은 없습니다. 기준은 <code>realdata/eval_real.py</code> 와 같고, 각 물체 위치는 이전 실행들의 중앙값입니다.</li>
+<li><strong>맞음:</strong> 8개 중 하나의 종류이고, 그 물체 기준 위치에서 20 cm 안이면 맞음입니다. 종류마다 하나만 셉니다.</li>
+<li><strong>잘못:</strong> 이름이 붙은 나머지 물체는 모두 잘못입니다. 다시 세 가지로 나눴습니다.</li>
+<li>중복: 이미 찾은 물체 위에 하나 더 올린 것</li>
+<li>라벨: 8개 중 다른 물체 자리에 다른 이름을 붙인 것</li>
+<li>엉뚱한 자리: 8개 어디에도 가깝지 않은 것</li>
+<li><strong>위치:</strong> 제안 방법은 최종 지도의 물체 자세 위치이고, 기준 방법은 물체 점군에서 가장 큰 연결 덩어리의 중심입니다.</li>
+<li><strong>제외:</strong> DualMap 의 'unknown' 덩어리는 어떤 물체라고 주장하지 않으므로 세지 않았습니다.</li>
+</ul>
+<h2>3. 결과</h2>
+<h3>3.1 녹화별 (최종 지도 맞음 / 잘못, 점수)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화</th>
+<th>제안</th>
+<th>FM-Fusion</th>
+<th>DualMap 공개 설정</th>
+<th>DualMap BGR 수정</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 260901 bigeightcircle</td>
+<td><strong>8 / 0</strong> (100%)</td>
+<td>6 / 24 (18.8%)</td>
+<td>2 / 0 (25.0%)</td>
+<td>3 / 3 (27.3%)</td>
+</tr>
+<tr>
+<td>2 260826 어두운 조건</td>
+<td><strong>8 / 0</strong> (100%)</td>
+<td>7 / 49 (12.3%)</td>
+<td>4 / 5 (30.8%)</td>
+<td>4 / 5 (30.8%)</td>
+</tr>
+<tr>
+<td>3 260901 eightcircle</td>
+<td><strong>7 / 1</strong> (77.8%)</td>
+<td>6 / 11 (31.6%)</td>
+<td>3 / 1 (33.3%)</td>
+<td>4 / 3 (36.4%)</td>
+</tr>
+<tr>
+<td>4 260910 object</td>
+<td><strong>8 / 0</strong> (100%)</td>
+<td>7 / 51 (11.9%)</td>
+<td>3 / 4 (25.0%)</td>
+<td>5 / 5 (38.5%)</td>
+</tr>
+<tr>
+<td>5 260915 eightcircle</td>
+<td><strong>8 / 0</strong> (100%)</td>
+<td>7 / 39 (14.9%)</td>
+<td>2 / 2 (20.0%)</td>
+<td>3 / 2 (30.0%)</td>
+</tr>
+<tr>
+<td><strong>합계 (40개)</strong></td>
+<td><strong>39 / 1 (95.1%)</strong></td>
+<td>33 / 174 (15.4%)</td>
+<td>14 / 12 (26.9%)</td>
+<td>19 / 18 (32.8%)</td>
+</tr>
+</tbody>
+</table></div>
+<p>제안 방법의 실행 기록은 다음과 같습니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화</th>
+<th>인식 빈도</th>
+<th>평균 점수(실행 중 매 순간)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>3.53 Hz</td>
+<td>78.4%</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1.93 Hz</td>
+<td>87.7%</td>
+</tr>
+<tr>
+<td>3</td>
+<td>3.29 Hz</td>
+<td>70.3%</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2.72 Hz</td>
+<td>75.0%</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2.13 Hz</td>
+<td>70.7%</td>
+</tr>
+</tbody>
+</table></div>
+<h3>3.2 못 찾은 물체와 잘못의 종류 (5개 녹화 합계)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>못 찾은 물체 (녹화 수)</th>
+<th>잘못: 중복 / 라벨 / 엉뚱한 자리</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>제안</td>
+<td>우유 (1)</td>
+<td>0 / 0 / 1</td>
+</tr>
+<tr>
+<td>FM-Fusion</td>
+<td>식혜 (5), 공룡 인형 (2)</td>
+<td>8 / 16 / <strong>150</strong></td>
+</tr>
+<tr>
+<td>DualMap 공개 설정</td>
+<td>식혜 (5), 초코 (5), 샤프란 (5), 우유 (4), 페브리즈 (3), 머그컵 (3), 곰 인형 (1)</td>
+<td>6 / 4 / 2</td>
+</tr>
+<tr>
+<td>DualMap BGR 수정</td>
+<td>초코 (5), 샤프란 (5), 우유 (4), 식혜 (3), 머그컵 (3), 곰 인형 (1)</td>
+<td>14 / 2 / 2</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>FM-Fusion 의 엉뚱한 자리 150개</strong>를 종류별로 보면 초코 55, 머그컵 28, 페브리즈 25, 공룡 인형 19, 우유 14, 샤프란 6, 곰 인형 3 입니다. 글 문구가 실험실의 다른 상자, 컵, 병에 붙었습니다. 녹화 2·4 는 실험실 한가운데라 주변 물건이 많아 잘못이 49·51개입니다.</li>
+<li><strong>DualMap 의 잘못은 대부분 중복입니다.</strong> 같은 물체가 지도에 둘로 올라갔습니다. 이름 붙은 물체가 적어 엉뚱한 자리는 2개뿐입니다.</li>
+<li><strong>제안 방법의 잘못 1개(녹화 3):</strong> 우유를 기준 위치에서 22.9 cm 떨어진 자리에 올린 것입니다(반경 20 cm 를 조금 넘음, 못 찾은 우유와 같은 물체). 나머지 7개는 기준 위치에서 4~7 cm 안입니다.</li>
+</ul>
+<h2>4. 해석</h2>
+<ul>
+<li><strong>글 문구로 찾는 방법은 "무엇이 그 물체인지"를 등록된 모델 없이 정해야 해서, 실제 공간의 비슷한 물건을 구별하지 못합니다.</strong> FM-Fusion 은 문구에 맞는 것은 거의 다 지도에 올려 재현율은 높지만(33/40) 정밀도가 낮습니다. DualMap 은 검출기 문턱을 넘는 것만 올려 반대로 재현율이 낮습니다. 제안 방법은 등록한 CAD 모델과 비교하고 6D 자세로 한 번 더 검증하므로 배경의 비슷한 물건을 거의 올리지 않았습니다(잘못 1/40).</li>
+<li><strong>YCB-V·ObChange 와 같은 경향이 실 데이터에서도 나옵니다.</strong> 세 데이터 모두 순위가 같습니다(5절).</li>
+<li><strong>처리 조건의 차이:</strong> 제안 방법은 실시간으로 처리할 수 있는 프레임만 썼고(녹화당 인식 프레임 수백 장), 기준 방법들은 오프라인으로 10프레임마다 전부 처리했습니다. 기준 방법에 유리한 조건인데도 결과가 위와 같습니다.</li>
+</ul>
+<h2>5. 세 데이터 비교표 (20·21·23 문서)</h2>
+<h3>5.1 방법</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th><strong>제안 방법</strong></th>
+<th>FM-Fusion (RA-L 2024)</th>
+<th>DualMap (RA-L 2025)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>물체 찾기 (2D)</td>
+<td>FastSAM-x 분할 → ViT-S 특징을 CAD 모델 템플릿과 비교</td>
+<td>GroundingDINO 가 글 문구로 2D 상자 → SAM 분할</td>
+<td>YOLO-World 가 글 문구로 2D 상자 → MobileSAM 분할</td>
+</tr>
+<tr>
+<td>이름 정하기</td>
+<td>등록한 CAD 모델과의 특징 유사도</td>
+<td>검출기 라벨을 확률로 누적</td>
+<td>MobileCLIP 특징</td>
+</tr>
+<tr>
+<td>3D 자세</td>
+<td><strong>PEM 자세 추정기로 6자유도 자세 + 자세 검증</strong></td>
+<td>없음 (복셀 덩어리)</td>
+<td>없음 (점군 덩어리)</td>
+</tr>
+<tr>
+<td>3D 표현</td>
+<td>CAD 모델 또는 관측 점군</td>
+<td>물체별 TSDF 복셀 재구성</td>
+<td>물체별 관측 점군</td>
+</tr>
+<tr>
+<td>지도 기준</td>
+<td><strong>SLAM 키프레임에 고정</strong> (루프 보정 시 함께 이동)</td>
+<td>세계 좌표</td>
+<td>세계 좌표</td>
+</tr>
+<tr>
+<td>물체 삭제·변화 반영</td>
+<td><strong>존재확률(log-odds) + 상태 T/A/L/M/D</strong></td>
+<td>없음 (누적만)</td>
+<td>구체 지도의 수명 상태</td>
+</tr>
+<tr>
+<td>사전 등록</td>
+<td>물체 CAD 모델 필요</td>
+<td>필요 없음 (글 문구)</td>
+<td>필요 없음 (글 문구)</td>
+</tr>
+</tbody>
+</table></div>
+<h3>5.2 결과</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>데이터</th>
+<th>지표</th>
+<th><strong>제안</strong></th>
+<th>FM-Fusion</th>
+<th>DualMap (공개 / BGR 수정)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>YCB-V (영상 12개, 물체 55개, 20 문서)</td>
+<td>F1 (3D IoU 0.25)</td>
+<td><strong>0.800</strong> (CAD 모델) · <strong>0.803</strong> (관측 점군)</td>
+<td>0.296</td>
+<td>0.091 / 0.168</td>
+</tr>
+<tr>
+<td></td>
+<td>mIoU / 표면 거리</td>
+<td><strong>0.629</strong> / 4.3 mm (CAD 모델)</td>
+<td>0.368 / 6.5 mm</td>
+<td>0.388 / 5.3 mm (공개)</td>
+</tr>
+<tr>
+<td>ObChange-Kitchen (방문 2~6, 물체 25개, 21 문서)</td>
+<td>방문별 지도 F1 (중심 5 cm)</td>
+<td><strong>0.667</strong> (관측 점군) · 0.576 (CAD 모델)</td>
+<td>0.248</td>
+<td>0.175 / 0.351</td>
+</tr>
+<tr>
+<td></td>
+<td>연속 지도: 새로 놓은 물체 찾음</td>
+<td><strong>15 / 21</strong></td>
+<td>9 / 21</td>
+<td>5 / 21 · 8 / 21</td>
+</tr>
+<tr>
+<td></td>
+<td>연속 지도: 치운 물체가 지도에 남음</td>
+<td>10 / 11</td>
+<td>9 / 10</td>
+<td>5 / 5 · 6 / 6</td>
+</tr>
+<tr>
+<td><strong>실 데이터 (녹화 5개, 물체 40개, 이 문서)</strong></td>
+<td>최종 지도 맞음 / 잘못</td>
+<td><strong>39 / 1</strong></td>
+<td>33 / 174</td>
+<td>14 / 12 · 19 / 18</td>
+</tr>
+<tr>
+<td></td>
+<td>점수</td>
+<td><strong>95.1%</strong></td>
+<td>15.4%</td>
+<td>26.9% · 32.8%</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>정확도는 세 데이터 모두 제안 방법이 가장 높습니다.</li>
+<li>치운 물체를 지도에서 지우는 것은 세 방법 모두 약합니다(21 문서 4절, P_D 조정이 남은 과제).</li>
+</ul>
+<h2>6. 한계와 남은 확인</h2>
+<ul>
+<li><strong>기준 위치가 제안 방법의 이전 실행에서 나왔습니다.</strong> 물체 정답이 없어 이전 실행들의 중앙값을 기준으로 썼습니다. 반경을 20 cm 로 넉넉히 잡아 위치 표현 차이(CAD 모델 원점 대 관측 점군 중심, 수 cm)는 흡수되지만, 독립 정답은 아닙니다.</li>
+<li><strong>글 문구는 한 번 정한 것만 썼습니다.</strong> 식혜는 "gold drink can" 으로 두 기준 방법 모두 한 번도 찾지 못했습니다. 문구를 바꾸면 기준 방법의 재현율이 오를 수 있습니다. 다만 잘못의 대부분(FM-Fusion 150개)은 문구가 너무 일반적이어서 생긴 것이라, 문구를 넓히면 잘못도 늘어나는 관계입니다.</li>
+<li><strong>처리 조건이 다릅니다:</strong> 제안은 실시간, 기준 방법은 오프라인입니다(2.2절).</li>
+<li><strong>물체를 치운 장면이 없습니다.</strong> 실 데이터 5개 모두 한 번 지나가며 지도를 만드는 장면이라, 변화 반영은 ObChange(21 문서)로만 확인했습니다.</li>
+<li><strong>녹화 4 의 SLAM 오차 구간</strong>(80~95초)은 세 방법 모두 같은 궤적을 받았으므로 비교에는 영향이 없지만, 기준 방법은 이 구간의 프레임을 틀린 자리에 융합합니다. 제안 방법은 키프레임 고정이라 보정 뒤 함께 옮겨집니다.</li>
+</ul></main></body></html>

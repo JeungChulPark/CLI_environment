@@ -1,0 +1,72 @@
+{
+ "A": {
+  "images": 36,
+  "targets": 165,
+  "answers": 125,
+  "correct": 125,
+  "found_pct": 75.8,
+  "wrong_per_image": 0.0,
+  "time_median_ms": 1512.0,
+  "stage_median_ms": {
+   "yolo": 0.0,
+   "ism": 115.0,
+   "pem": 1395.0
+  }
+ },
+ "B": {
+  "images": 36,
+  "targets": 165,
+  "answers": 115,
+  "correct": 114,
+  "found_pct": 69.1,
+  "wrong_per_image": 0.028,
+  "time_median_ms": 1265.0,
+  "stage_median_ms": {
+   "yolo": 13.0,
+   "ism": 87.0,
+   "pem": 1167.0
+  }
+ },
+ "B1": {
+  "images": 36,
+  "targets": 165,
+  "answers": 130,
+  "correct": 128,
+  "found_pct": 77.6,
+  "wrong_per_image": 0.056,
+  "time_median_ms": 1679.0,
+  "stage_median_ms": {
+   "yolo": 13.0,
+   "ism": 81.0,
+   "pem": 1582.0
+  }
+ },
+ "AL": {
+  "images": 36,
+  "targets": 165,
+  "answers": 126,
+  "correct": 125,
+  "found_pct": 75.8,
+  "wrong_per_image": 0.028,
+  "time_median_ms": 1747.0,
+  "stage_median_ms": {
+   "yolo": 0.0,
+   "ism": 274.0,
+   "pem": 1496.0
+  }
+ },
+ "combo_L05_verify": {
+  "images": 36,
+  "targets": 165,
+  "answers": 140,
+  "correct": 139,
+  "found_pct": 84.2,
+  "wrong_per_image": 0.028,
+  "time_median_ms": 2661.0,
+  "stage_median_ms": {
+   "yolo": 0.0,
+   "ism": 886.0,
+   "pem": 1640.0
+  }
+ }
+}

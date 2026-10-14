@@ -1,0 +1,673 @@
+{
+ "pipeline": "B_ours",
+ "gpu": "NVIDIA GeForce RTX 3080 Ti Laptop GPU",
+ "torch": "2.7.1",
+ "objects": [
+  "milk",
+  "choco_hazelnut_high",
+  "Febreze_high",
+  "Mugcup_high",
+  "saffron",
+  "Sikhye_high",
+  "Bear",
+  "Dinosaur"
+ ],
+ "frames": [
+  300,
+  410,
+  521,
+  631,
+  741,
+  852,
+  962,
+  1072,
+  1183,
+  1293,
+  1403,
+  1514,
+  1624,
+  1734,
+  1808,
+  1845,
+  1955,
+  2066,
+  2176,
+  2286,
+  2397,
+  2507,
+  2617,
+  2728,
+  2838,
+  2948,
+  3059,
+  3169,
+  3279,
+  3390,
+  3500
+ ],
+ "warmup_frames": [
+  300,
+  1808,
+  3500
+ ],
+ "total_ms": {
+  "median": 1431.7,
+  "p90": 1928.5,
+  "mean": 1390.0,
+  "min": 66.2,
+  "max": 2317.4,
+  "n": 31
+ },
+ "stage_ms": {
+  "yolo": {
+   "median": 13.0,
+   "p90": 21.0,
+   "mean": 14.5,
+   "min": 11.0,
+   "max": 22.0,
+   "n": 31
+  },
+  "ism": {
+   "median": 87.0,
+   "p90": 107.0,
+   "mean": 88.7,
+   "min": 51.0,
+   "max": 126.0,
+   "n": 31
+  },
+  "pem": {
+   "median": 1335.0,
+   "p90": 1814.0,
+   "mean": 1286.7,
+   "min": 0.0,
+   "max": 2201.0,
+   "n": 31
+  }
+ },
+ "n_ism_accepted_per_frame": {
+  "median": 3.0,
+  "p90": 5.0,
+  "mean": 3.4,
+  "min": 0.0,
+  "max": 6.0,
+  "n": 31
+ },
+ "n_output_per_frame": {
+  "median": 3.0,
+  "p90": 4.0,
+  "mean": 2.3,
+  "min": 0.0,
+  "max": 4.0,
+  "n": 31
+ },
+ "gpu_mem_peak_MiB": {
+  "max_allocated": 5977.4,
+  "max_reserved": 14788.0
+ },
+ "per_frame": [
+  {
+   "frame": 300,
+   "t_ns": 1789449394907477169,
+   "total_ms": 78.41,
+   "core_ms": {
+    "yolo": 12,
+    "ism": 66,
+    "pem": 0,
+    "total": 78
+   },
+   "n_yolo_boxes": 3,
+   "n_ism_accepted": 0,
+   "n_output": 0,
+   "output_objects": []
+  },
+  {
+   "frame": 410,
+   "t_ns": 1789449398574677937,
+   "total_ms": 66.23,
+   "core_ms": {
+    "yolo": 15,
+    "ism": 51,
+    "pem": 0,
+    "total": 66
+   },
+   "n_yolo_boxes": 3,
+   "n_ism_accepted": 0,
+   "n_output": 0,
+   "output_objects": []
+  },
+  {
+   "frame": 521,
+   "t_ns": 1789449402276071089,
+   "total_ms": 1093.04,
+   "core_ms": {
+    "yolo": 14,
+    "ism": 87,
+    "pem": 993,
+    "total": 1093
+   },
+   "n_yolo_boxes": 12,
+   "n_ism_accepted": 3,
+   "n_output": 1,
+   "output_objects": [
+    "Dinosaur"
+   ]
+  },
+  {
+   "frame": 631,
+   "t_ns": 1789449405943648945,
+   "total_ms": 1817.31,
+   "core_ms": {
+    "yolo": 12,
+    "ism": 79,
+    "pem": 1726,
+    "total": 1817
+   },
+   "n_yolo_boxes": 12,
+   "n_ism_accepted": 5,
+   "n_output": 3,
+   "output_objects": [
+    "Dinosaur",
+    "Sikhye_high",
+    "choco_hazelnut_high"
+   ]
+  },
+  {
+   "frame": 741,
+   "t_ns": 1789449409612302769,
+   "total_ms": 1431.67,
+   "core_ms": {
+    "yolo": 13,
+    "ism": 83,
+    "pem": 1335,
+    "total": 1432
+   },
+   "n_yolo_boxes": 13,
+   "n_ism_accepted": 4,
+   "n_output": 3,
+   "output_objects": [
+    "Dinosaur",
+    "Sikhye_high",
+    "choco_hazelnut_high"
+   ]
+  },
+  {
+   "frame": 852,
+   "t_ns": 1789449413312639921,
+   "total_ms": 503.4,
+   "core_ms": {
+    "yolo": 13,
+    "ism": 81,
+    "pem": 409,
+    "total": 503
+   },
+   "n_yolo_boxes": 13,
+   "n_ism_accepted": 2,
+   "n_output": 0,
+   "output_objects": []
+  },
+  {
+   "frame": 962,
+   "t_ns": 1789449416979338161,
+   "total_ms": 502.96,
+   "core_ms": {
+    "yolo": 11,
+    "ism": 76,
+    "pem": 416,
+    "total": 503
+   },
+   "n_yolo_boxes": 14,
+   "n_ism_accepted": 1,
+   "n_output": 1,
+   "output_objects": [
+    "Sikhye_high"
+   ]
+  },
+  {
+   "frame": 1072,
+   "t_ns": 1789449420647253681,
+   "total_ms": 1096.66,
+   "core_ms": {
+    "yolo": 12,
+    "ism": 74,
+    "pem": 1011,
+    "total": 1097
+   },
+   "n_yolo_boxes": 11,
+   "n_ism_accepted": 3,
+   "n_output": 2,
+   "output_objects": [
+    "Dinosaur",
+    "Sikhye_high"
+   ]
+  },
+  {
+   "frame": 1183,
+   "t_ns": 1789449424349073073,
+   "total_ms": 1198.14,
+   "core_ms": {
+    "yolo": 13,
+    "ism": 104,
+    "pem": 1081,
+    "total": 1198
+   },
+   "n_yolo_boxes": 17,
+   "n_ism_accepted": 3,
+   "n_output": 3,
+   "output_objects": [
+    "Dinosaur",
+    "Sikhye_high",
+    "saffron"
+   ]
+  },
+  {
+   "frame": 1293,
+   "t_ns": 1789449428017345201,
+   "total_ms": 1893.8,
+   "core_ms": {
+    "yolo": 12,
+    "ism": 100,
+    "pem": 1782,
+    "total": 1894
+   },
+   "n_yolo_boxes": 18,
+   "n_ism_accepted": 5,
+   "n_output": 4,
+   "output_objects": [
+    "Dinosaur",
+    "Sikhye_high",
+    "milk",
+    "saffron"
+   ]
+  },
+  {
+   "frame": 1403,
+   "t_ns": 1789449431685599921,
+   "total_ms": 2272.42,
+   "core_ms": {
+    "yolo": 13,
+    "ism": 107,
+    "pem": 2152,
+    "total": 2272
+   },
+   "n_yolo_boxes": 19,
+   "n_ism_accepted": 6,
+   "n_output": 4,
+   "output_objects": [
+    "Dinosaur",
+    "Sikhye_high",
+    "choco_hazelnut_high",
+    "saffron"
+   ]
+  },
+  {
+   "frame": 1514,
+   "t_ns": 1789449435386206897,
+   "total_ms": 1847.7,
+   "core_ms": {
+    "yolo": 13,
+    "ism": 90,
+    "pem": 1745,
+    "total": 1848
+   },
+   "n_yolo_boxes": 15,
+   "n_ism_accepted": 5,
+   "n_output": 4,
+   "output_objects": [
+    "Dinosaur",
+    "Sikhye_high",
+    "choco_hazelnut_high",
+    "saffron"
+   ]
+  },
+  {
+   "frame": 1624,
+   "t_ns": 1789449439053777073,
+   "total_ms": 809.69,
+   "core_ms": {
+    "yolo": 13,
+    "ism": 83,
+    "pem": 713,
+    "total": 810
+   },
+   "n_yolo_boxes": 9,
+   "n_ism_accepted": 2,
+   "n_output": 1,
+   "output_objects": [
+    "saffron"
+   ]
+  },
+  {
+   "frame": 1734,
+   "t_ns": 1789449442720761777,
+   "total_ms": 1126.05,
+   "core_ms": {
+    "yolo": 13,
+    "ism": 85,
+    "pem": 1028,
+    "total": 1126
+   },
+   "n_yolo_boxes": 12,
+   "n_ism_accepted": 3,
+   "n_output": 1,
+   "output_objects": [
+    "Febreze_high"
+   ]
+  },
+  {
+   "frame": 1808,
+   "t_ns": 1789449445188381617,
+   "total_ms": 1813.15,
+   "core_ms": {
+    "yolo": 13,
+    "ism": 82,
+    "pem": 1718,
+    "total": 1813
+   },
+   "n_yolo_boxes": 16,
+   "n_ism_accepted": 4,
+   "n_output": 3,
+   "output_objects": [
+    "Febreze_high",
+    "milk",
+    "saffron"
+   ]
+  },
+  {
+   "frame": 1845,
+   "t_ns": 1789449446422414513,
+   "total_ms": 2317.37,
+   "core_ms": {
+    "yolo": 21,
+    "ism": 95,
+    "pem": 2201,
+    "total": 2317
+   },
+   "n_yolo_boxes": 14,
+   "n_ism_accepted": 5,
+   "n_output": 4,
+   "output_objects": [
+    "Dinosaur",
+    "Febreze_high",
+    "milk",
+    "saffron"
+   ]
+  },
+  {
+   "frame": 1955,
+   "t_ns": 1789449450090390961,
+   "total_ms": 888.57,
+   "core_ms": {
+    "yolo": 22,
+    "ism": 74,
+    "pem": 793,
+    "total": 888
+   },
+   "n_yolo_boxes": 5,
+   "n_ism_accepted": 2,
+   "n_output": 2,
+   "output_objects": [
+    "Bear",
+    "milk"
+   ]
+  },
+  {
+   "frame": 2066,
+   "t_ns": 1789449453792664241,
+   "total_ms": 1870.35,
+   "core_ms": {
+    "yolo": 14,
+    "ism": 111,
+    "pem": 1746,
+    "total": 1870
+   },
+   "n_yolo_boxes": 17,
+   "n_ism_accepted": 4,
+   "n_output": 3,
+   "output_objects": [
+    "Bear",
+    "Mugcup_high",
+    "milk"
+   ]
+  },
+  {
+   "frame": 2176,
+   "t_ns": 1789449457460903601,
+   "total_ms": 1268.29,
+   "core_ms": {
+    "yolo": 15,
+    "ism": 96,
+    "pem": 1157,
+    "total": 1268
+   },
+   "n_yolo_boxes": 12,
+   "n_ism_accepted": 3,
+   "n_output": 2,
+   "output_objects": [
+    "Febreze_high",
+    "milk"
+   ]
+  },
+  {
+   "frame": 2286,
+   "t_ns": 1789449461127712177,
+   "total_ms": 1088.41,
+   "core_ms": {
+    "yolo": 18,
+    "ism": 77,
+    "pem": 994,
+    "total": 1088
+   },
+   "n_yolo_boxes": 9,
+   "n_ism_accepted": 3,
+   "n_output": 1,
+   "output_objects": [
+    "Mugcup_high"
+   ]
+  },
+  {
+   "frame": 2397,
+   "t_ns": 1789449464827164849,
+   "total_ms": 1357.9,
+   "core_ms": {
+    "yolo": 22,
+    "ism": 126,
+    "pem": 1211,
+    "total": 1358
+   },
+   "n_yolo_boxes": 18,
+   "n_ism_accepted": 3,
+   "n_output": 3,
+   "output_objects": [
+    "Bear",
+    "Febreze_high",
+    "Mugcup_high"
+   ]
+  },
+  {
+   "frame": 2507,
+   "t_ns": 1789449468493949873,
+   "total_ms": 1928.48,
+   "core_ms": {
+    "yolo": 12,
+    "ism": 102,
+    "pem": 1814,
+    "total": 1928
+   },
+   "n_yolo_boxes": 17,
+   "n_ism_accepted": 4,
+   "n_output": 3,
+   "output_objects": [
+    "Bear",
+    "Febreze_high",
+    "Mugcup_high"
+   ]
+  },
+  {
+   "frame": 2617,
+   "t_ns": 1789449472163378865,
+   "total_ms": 1837.05,
+   "core_ms": {
+    "yolo": 12,
+    "ism": 89,
+    "pem": 1736,
+    "total": 1837
+   },
+   "n_yolo_boxes": 15,
+   "n_ism_accepted": 5,
+   "n_output": 2,
+   "output_objects": [
+    "Febreze_high",
+    "milk"
+   ]
+  },
+  {
+   "frame": 2728,
+   "t_ns": 1789449475864559537,
+   "total_ms": 1451.12,
+   "core_ms": {
+    "yolo": 15,
+    "ism": 83,
+    "pem": 1353,
+    "total": 1451
+   },
+   "n_yolo_boxes": 14,
+   "n_ism_accepted": 3,
+   "n_output": 1,
+   "output_objects": [
+    "saffron"
+   ]
+  },
+  {
+   "frame": 2838,
+   "t_ns": 1789449479531938993,
+   "total_ms": 1737.8,
+   "core_ms": {
+    "yolo": 19,
+    "ism": 96,
+    "pem": 1622,
+    "total": 1738
+   },
+   "n_yolo_boxes": 12,
+   "n_ism_accepted": 4,
+   "n_output": 3,
+   "output_objects": [
+    "Bear",
+    "milk",
+    "saffron"
+   ]
+  },
+  {
+   "frame": 2948,
+   "t_ns": 1789449483198736305,
+   "total_ms": 1994.76,
+   "core_ms": {
+    "yolo": 12,
+    "ism": 102,
+    "pem": 1881,
+    "total": 1995
+   },
+   "n_yolo_boxes": 14,
+   "n_ism_accepted": 4,
+   "n_output": 4,
+   "output_objects": [
+    "Bear",
+    "Febreze_high",
+    "Mugcup_high",
+    "milk"
+   ]
+  },
+  {
+   "frame": 3059,
+   "t_ns": 1789449486899805105,
+   "total_ms": 1346.1,
+   "core_ms": {
+    "yolo": 13,
+    "ism": 83,
+    "pem": 1250,
+    "total": 1346
+   },
+   "n_yolo_boxes": 9,
+   "n_ism_accepted": 3,
+   "n_output": 2,
+   "output_objects": [
+    "Bear",
+    "Febreze_high"
+   ]
+  },
+  {
+   "frame": 3169,
+   "t_ns": 1789449490567983793,
+   "total_ms": 1158.73,
+   "core_ms": {
+    "yolo": 13,
+    "ism": 70,
+    "pem": 1076,
+    "total": 1159
+   },
+   "n_yolo_boxes": 13,
+   "n_ism_accepted": 3,
+   "n_output": 1,
+   "output_objects": [
+    "saffron"
+   ]
+  },
+  {
+   "frame": 3279,
+   "t_ns": 1789449494235633585,
+   "total_ms": 1688.67,
+   "core_ms": {
+    "yolo": 12,
+    "ism": 94,
+    "pem": 1582,
+    "total": 1689
+   },
+   "n_yolo_boxes": 14,
+   "n_ism_accepted": 4,
+   "n_output": 3,
+   "output_objects": [
+    "Sikhye_high",
+    "choco_hazelnut_high",
+    "saffron"
+   ]
+  },
+  {
+   "frame": 3390,
+   "t_ns": 1789449497937175729,
+   "total_ms": 1804.42,
+   "core_ms": {
+    "yolo": 17,
+    "ism": 94,
+    "pem": 1693,
+    "total": 1804
+   },
+   "n_yolo_boxes": 18,
+   "n_ism_accepted": 4,
+   "n_output": 3,
+   "output_objects": [
+    "Dinosaur",
+    "Sikhye_high",
+    "saffron"
+   ]
+  },
+  {
+   "frame": 3500,
+   "t_ns": 1789449501605026737,
+   "total_ms": 1800.82,
+   "core_ms": {
+    "yolo": 21,
+    "ism": 111,
+    "pem": 1669,
+    "total": 1801
+   },
+   "n_yolo_boxes": 21,
+   "n_ism_accepted": 4,
+   "n_output": 4,
+   "output_objects": [
+    "Dinosaur",
+    "Sikhye_high",
+    "milk",
+    "saffron"
+   ]
+  }
+ ]
+}

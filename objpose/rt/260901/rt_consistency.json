@@ -1,0 +1,13 @@
+{
+ "rig_RT_vs_via_lidar": {
+  "translation_diff_cm": 0.09,
+  "rotation_diff_deg": 0.05
+ },
+ "slam_arm_vs_gyro_rig": {
+  "translation_diff_cm": 28.97,
+  "rotation_diff_deg": 1.03,
+  "horizontal_diff_cm": 0.11,
+  "vertical_diff_cm": -28.97,
+  "note": "the gyro rig regularises the vertical lever arm to zero (unobservable in planar motion), so only the horizontal figure is a comparison of measurements"
+ }
+}

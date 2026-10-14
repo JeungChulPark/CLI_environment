@@ -1,0 +1,167 @@
+/home/jucpark/anaconda3/envs/sam6d/lib/python3.12/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+xFormers not available
+xFormers not available
+[load] DINOv2 + 템플릿 특징 (8 객체) ...
+[hsv] milk                 ACTIVE proto=(42, 128) thr=0.1214 hue_corr=0ocv ver=555a9576487f
+[templates] milk                 cls=(42, 384) appe=42 tmpl  gate=[2, 9]  prompt='milk carton'
+[hsv] choco_hazelnut_high  ACTIVE proto=(42, 128) thr=0.1214 hue_corr=0ocv ver=a46ec0572227
+[templates] choco_hazelnut_high  cls=(42, 384) appe=42 tmpl  gate=[2, 9]  prompt='maroon box'
+[hsv] Febreze_high         ACTIVE proto=(42, 128) thr=0.1214 hue_corr=0ocv ver=5870e5932a0a
+[templates] Febreze_high         cls=(42, 384) appe=42 tmpl  gate=[2, 9]  prompt='febreze spray bottle'
+[hsv] Mugcup_high          ACTIVE proto=(42, 128) thr=0.1214 hue_corr=12ocv ver=258a0b9d8fcb
+[templates] Mugcup_high          cls=(42, 384) appe=42 tmpl  gate=[2, 9]  prompt='mug cup'
+[hsv] saffron              ACTIVE proto=(42, 128) thr=0.1214 hue_corr=0ocv ver=c96e412807cd
+[templates] saffron              cls=(42, 384) appe=42 tmpl  gate=[2, 9]  prompt='white jug'
+[hsv] Sikhye_high          ACTIVE proto=(42, 128) thr=0.1214 hue_corr=0ocv ver=a03cca3f1d7d
+[templates] Sikhye_high          cls=(42, 384) appe=42 tmpl  gate=[2, 9]  prompt='yellow can'
+[hsv] Bear                 ACTIVE proto=(42, 128) thr=0.1214 hue_corr=0ocv ver=323d325b4441
+[templates] Bear                 cls=(42, 384) appe=42 tmpl  gate=[2, 9]  prompt='brown bear doll'
+[hsv] Dinosaur             ACTIVE proto=(42, 128) thr=0.1214 hue_corr=9ocv ver=54477c0d50c8
+[templates] Dinosaur             cls=(42, 384) appe=42 tmpl  gate=[2, 9]  prompt='green dinosaur doll'
+WARNING ⚠️ torchvision==0.24 is incompatible with torch==2.7.
+Run 'pip install torchvision==0.22' to fix torchvision or 'pip install -U torch torchvision' to update both.
+For a full compatibility table see https://github.com/pytorch/vision#installation
+[load] YOLO-World imgsz=640 multi_label=True 프롬프트 8개
+[ism] relative_assignment=True cross_object_nms=True hsv_gate=True
+[pem] 기하→Mask→Texture→수렴 300→1 · 후보=300 stride=1 · mask≥0.420998 texture≥0.449562 cluster≤20deg/25mm occupancy≥0.5 publish=False
+load pre-trained checkpoint from: checkpoints/mae_pretrain_vit_base.pth
+[load] PEM 템플릿·모델점 8 객체
+300 78.41 {'yolo': 12, 'ism': 66, 'pem': 0, 'total': 78} 0 0
+410 66.23 {'yolo': 15, 'ism': 51, 'pem': 0, 'total': 66} 0 0
+521 1093.04 {'yolo': 14, 'ism': 87, 'pem': 993, 'total': 1093} 3 1
+631 1817.31 {'yolo': 12, 'ism': 79, 'pem': 1726, 'total': 1817} 5 3
+741 1431.67 {'yolo': 13, 'ism': 83, 'pem': 1335, 'total': 1432} 4 3
+852 503.4 {'yolo': 13, 'ism': 81, 'pem': 409, 'total': 503} 2 0
+962 502.96 {'yolo': 11, 'ism': 76, 'pem': 416, 'total': 503} 1 1
+1072 1096.66 {'yolo': 12, 'ism': 74, 'pem': 1011, 'total': 1097} 3 2
+1183 1198.14 {'yolo': 13, 'ism': 104, 'pem': 1081, 'total': 1198} 3 3
+1293 1893.8 {'yolo': 12, 'ism': 100, 'pem': 1782, 'total': 1894} 5 4
+1403 2272.42 {'yolo': 13, 'ism': 107, 'pem': 2152, 'total': 2272} 6 4
+1514 1847.7 {'yolo': 13, 'ism': 90, 'pem': 1745, 'total': 1848} 5 4
+1624 809.69 {'yolo': 13, 'ism': 83, 'pem': 713, 'total': 810} 2 1
+1734 1126.05 {'yolo': 13, 'ism': 85, 'pem': 1028, 'total': 1126} 3 1
+1808 1813.15 {'yolo': 13, 'ism': 82, 'pem': 1718, 'total': 1813} 4 3
+1845 2317.37 {'yolo': 21, 'ism': 95, 'pem': 2201, 'total': 2317} 5 4
+1955 888.57 {'yolo': 22, 'ism': 74, 'pem': 793, 'total': 888} 2 2
+2066 1870.35 {'yolo': 14, 'ism': 111, 'pem': 1746, 'total': 1870} 4 3
+2176 1268.29 {'yolo': 15, 'ism': 96, 'pem': 1157, 'total': 1268} 3 2
+2286 1088.41 {'yolo': 18, 'ism': 77, 'pem': 994, 'total': 1088} 3 1
+2397 1357.9 {'yolo': 22, 'ism': 126, 'pem': 1211, 'total': 1358} 3 3
+2507 1928.48 {'yolo': 12, 'ism': 102, 'pem': 1814, 'total': 1928} 4 3
+2617 1837.05 {'yolo': 12, 'ism': 89, 'pem': 1736, 'total': 1837} 5 2
+2728 1451.12 {'yolo': 15, 'ism': 83, 'pem': 1353, 'total': 1451} 3 1
+2838 1737.8 {'yolo': 19, 'ism': 96, 'pem': 1622, 'total': 1738} 4 3
+2948 1994.76 {'yolo': 12, 'ism': 102, 'pem': 1881, 'total': 1995} 4 4
+3059 1346.1 {'yolo': 13, 'ism': 83, 'pem': 1250, 'total': 1346} 3 2
+3169 1158.73 {'yolo': 13, 'ism': 70, 'pem': 1076, 'total': 1159} 3 1
+3279 1688.67 {'yolo': 12, 'ism': 94, 'pem': 1582, 'total': 1689} 4 3
+3390 1804.42 {'yolo': 17, 'ism': 94, 'pem': 1693, 'total': 1804} 4 3
+3500 1800.82 {'yolo': 21, 'ism': 111, 'pem': 1669, 'total': 1801} 4 4
+{
+ "pipeline": "B_ours",
+ "gpu": "NVIDIA GeForce RTX 3080 Ti Laptop GPU",
+ "torch": "2.7.1",
+ "objects": [
+  "milk",
+  "choco_hazelnut_high",
+  "Febreze_high",
+  "Mugcup_high",
+  "saffron",
+  "Sikhye_high",
+  "Bear",
+  "Dinosaur"
+ ],
+ "frames": [
+  300,
+  410,
+  521,
+  631,
+  741,
+  852,
+  962,
+  1072,
+  1183,
+  1293,
+  1403,
+  1514,
+  1624,
+  1734,
+  1808,
+  1845,
+  1955,
+  2066,
+  2176,
+  2286,
+  2397,
+  2507,
+  2617,
+  2728,
+  2838,
+  2948,
+  3059,
+  3169,
+  3279,
+  3390,
+  3500
+ ],
+ "warmup_frames": [
+  300,
+  1808,
+  3500
+ ],
+ "total_ms": {
+  "median": 1431.7,
+  "p90": 1928.5,
+  "mean": 1390.0,
+  "min": 66.2,
+  "max": 2317.4,
+  "n": 31
+ },
+ "stage_ms": {
+  "yolo": {
+   "median": 13.0,
+   "p90": 21.0,
+   "mean": 14.5,
+   "min": 11.0,
+   "max": 22.0,
+   "n": 31
+  },
+  "ism": {
+   "median": 87.0,
+   "p90": 107.0,
+   "mean": 88.7,
+   "min": 51.0,
+   "max": 126.0,
+   "n": 31
+  },
+  "pem": {
+   "median": 1335.0,
+   "p90": 1814.0,
+   "mean": 1286.7,
+   "min": 0.0,
+   "max": 2201.0,
+   "n": 31
+  }
+ },
+ "n_ism_accepted_per_frame": {
+  "median": 3.0,
+  "p90": 5.0,
+  "mean": 3.4,
+  "min": 0.0,
+  "max": 6.0,
+  "n": 31
+ },
+ "n_output_per_frame": {
+  "median": 3.0,
+  "p90": 4.0,
+  "mean": 2.3,
+  "min": 0.0,
+  "max": 4.0,
+  "n": 31
+ },
+ "gpu_mem_peak_MiB": {
+  "max_allocated": 5977.4,
+  "max_reserved": 14788.0
+ }
+}

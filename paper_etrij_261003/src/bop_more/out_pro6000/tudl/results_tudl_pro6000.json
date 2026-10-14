@@ -1,0 +1,173 @@
+{
+ "label": "tudl run, RTX PRO 6000 Blackwell (GPU1), 2026-10-08",
+ "protocol": "Per method (prediction JSON from run_orig.py / run_ours.py):\n  correct      ADD-S < 10 % of the object diameter (models_eval/models_info.json),\n               ADD-S over the models_eval vertices\n  Found        visible GT targets with a correct answer / visible GT targets\n               (visible = visib_fract > 0; all 4123 BOP19 targets are)\n  Answers correct   correct answers / all answers\n  Wrong / image     wrong answers / images\n  ADD-S AUC    area under the accuracy-threshold curve, 0-10 cm (PoseCNN VOCap), pooled over\n               all GT targets (missing answer = infinite error); per-object mean also reported\n  BOP AR       official bop_toolkit scripts/eval_bop19_pose.py (VSD, MSSD, MSPD) on BOP CSV\n  Time         median per-image time of the timed region\nBOP CSV files and bop_toolkit output go to OUT/bop; summary -> results.json.",
+ "evaluated": "2026-10-08 16:29:45",
+ "methods": {
+  "ladder_L0": {
+   "images": 600,
+   "visible_gt_targets": 600,
+   "answers": 591,
+   "correct_answers": 507,
+   "found_pct": 84.5,
+   "answers_correct_pct": 85.8,
+   "wrong_per_image": 0.14,
+   "adds_auc": 83.0,
+   "adds_auc_mean_over_objects": 83.2,
+   "time_ms": {
+    "median": 267.0,
+    "p90": 304.1,
+    "mean": 267.1,
+    "n": 600
+   },
+   "per_object": {
+    "tudl_01": {
+     "targets": 200,
+     "found": 163,
+     "found_pct": 81.5,
+     "answers": 199,
+     "correct": 163,
+     "adds_auc": 79.9
+    },
+    "tudl_02": {
+     "targets": 200,
+     "found": 170,
+     "found_pct": 85.0,
+     "answers": 200,
+     "correct": 170,
+     "adds_auc": 84.0
+    },
+    "tudl_03": {
+     "targets": 200,
+     "found": 174,
+     "found_pct": 87.0,
+     "answers": 192,
+     "correct": 174,
+     "adds_auc": 85.6
+    }
+   },
+   "title": "ladder_L0",
+   "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+   "run_label": "tudl run, RTX PRO 6000 Blackwell (GPU1), 2026-10-08",
+   "prediction_file": "/home/jucpark/Dataset/bop/bop_more_out/tudl/pred_ladder_L0.json",
+   "stage_ms": {
+    "proposals": {
+     "median": 8.9,
+     "p90": 9.5,
+     "mean": 9.5,
+     "n": 600
+    },
+    "descriptors": {
+     "median": 190.8,
+     "p90": 224.1,
+     "mean": 191.3,
+     "n": 600
+    },
+    "matching": {
+     "median": 3.9,
+     "p90": 13.7,
+     "mean": 5.9,
+     "n": 600
+    },
+    "pem": {
+     "median": 60.2,
+     "p90": 64.8,
+     "mean": 60.5,
+     "n": 600
+    }
+   },
+   "bop_ar": {
+    "bop19_average_recall": 78.2,
+    "bop19_average_recall_mspd": 80.1,
+    "bop19_average_recall_mssd": 80.0,
+    "bop19_average_recall_vsd": 74.4,
+    "raw": {
+     "bop19_average_recall": 0.7817333333333334,
+     "bop19_average_recall_mspd": 0.8009999999999999,
+     "bop19_average_recall_mssd": 0.7998333333333333,
+     "bop19_average_recall_vsd": 0.7443666666666666,
+     "bop19_average_time_per_image": 0.2675677326565144
+    }
+   }
+  },
+  "ladder_hybS05cf": {
+   "images": 600,
+   "visible_gt_targets": 600,
+   "answers": 371,
+   "correct_answers": 368,
+   "found_pct": 61.3,
+   "answers_correct_pct": 99.2,
+   "wrong_per_image": 0.005,
+   "adds_auc": 59.7,
+   "adds_auc_mean_over_objects": 59.7,
+   "time_ms": {
+    "median": 94.3,
+    "p90": 112.1,
+    "mean": 92.9,
+    "n": 600
+   },
+   "per_object": {
+    "tudl_01": {
+     "targets": 200,
+     "found": 131,
+     "found_pct": 65.5,
+     "answers": 131,
+     "correct": 131,
+     "adds_auc": 63.6
+    },
+    "tudl_02": {
+     "targets": 200,
+     "found": 101,
+     "found_pct": 50.5,
+     "answers": 104,
+     "correct": 101,
+     "adds_auc": 49.7
+    },
+    "tudl_03": {
+     "targets": 200,
+     "found": 136,
+     "found_pct": 68.0,
+     "answers": 136,
+     "correct": 136,
+     "adds_auc": 65.9
+    }
+   },
+   "title": "ladder_hybS05cf",
+   "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+   "run_label": "tudl run, RTX PRO 6000 Blackwell (GPU1), 2026-10-08",
+   "prediction_file": "/home/jucpark/Dataset/bop/bop_more_out/tudl/pred_ladder_hybS05cf.json",
+   "stage_ms": {
+    "yolo": {
+     "median": 0.0,
+     "p90": 0.0,
+     "mean": 0.0,
+     "n": 600
+    },
+    "ism": {
+     "median": 45.0,
+     "p90": 54.1,
+     "mean": 46.2,
+     "n": 600
+    },
+    "pem": {
+     "median": 49.0,
+     "p90": 58.0,
+     "mean": 46.5,
+     "n": 600
+    }
+   },
+   "bop_ar": {
+    "bop19_average_recall": 58.4,
+    "bop19_average_recall_mspd": 59.6,
+    "bop19_average_recall_mssd": 59.6,
+    "bop19_average_recall_vsd": 56.0,
+    "raw": {
+     "bop19_average_recall": 0.5838444444444444,
+     "bop19_average_recall_mspd": 0.5958333333333333,
+     "bop19_average_recall_mssd": 0.5956666666666666,
+     "bop19_average_recall_vsd": 0.5600333333333333,
+     "bop19_average_time_per_image": 0.09735582210242588
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,181 @@
+{
+ "gate_A_G13_noverify": {
+  "total": 165,
+  "found": 80.0,
+  "wrong_answer": 17.0,
+  "no_ism_accept": 3.0,
+  "per_object": {
+   "002_master_chef_can": {
+    "found": 12
+   },
+   "007_tuna_fish_can": {
+    "found": 12
+   },
+   "025_mug": {
+    "found": 5,
+    "wrong_answer": 1
+   },
+   "051_large_clamp": {
+    "wrong_answer": 3,
+    "found": 3
+   },
+   "052_extra_large_clamp": {
+    "found": 4,
+    "wrong_answer": 2
+   },
+   "004_sugar_box": {
+    "found": 12,
+    "wrong_answer": 3
+   },
+   "010_potted_meat_can": {
+    "found": 5,
+    "wrong_answer": 4
+   },
+   "024_bowl": {
+    "no_ism_accept": 2,
+    "found": 3,
+    "wrong_answer": 1
+   },
+   "003_cracker_box": {
+    "found": 3,
+    "wrong_answer": 6
+   },
+   "005_tomato_soup_can": {
+    "wrong_answer": 3,
+    "found": 15
+   },
+   "006_mustard_bottle": {
+    "found": 6
+   },
+   "011_banana": {
+    "found": 6
+   },
+   "035_power_drill": {
+    "found": 11,
+    "wrong_answer": 1
+   },
+   "021_bleach_cleanser": {
+    "found": 11,
+    "no_ism_accept": 1
+   },
+   "037_scissors": {
+    "found": 3
+   },
+   "019_pitcher_base": {
+    "found": 9
+   },
+   "036_wood_block": {
+    "found": 1,
+    "no_ism_accept": 2
+   },
+   "040_large_marker": {
+    "found": 6
+   },
+   "061_foam_brick": {
+    "wrong_answer": 1,
+    "found": 2
+   },
+   "008_pudding_box": {
+    "wrong_answer": 3
+   },
+   "009_gelatin_box": {
+    "found": 3
+   }
+  }
+ },
+ "gate_A_G13": {
+  "total": 165,
+  "found": 67.3,
+  "wrong_answer": 3.0,
+  "pose_verification_reject": 26.7,
+  "no_ism_accept": 3.0,
+  "per_object": {
+   "002_master_chef_can": {
+    "found": 12
+   },
+   "007_tuna_fish_can": {
+    "found": 11,
+    "pose_verification_reject": 1
+   },
+   "025_mug": {
+    "found": 5,
+    "pose_verification_reject": 1
+   },
+   "051_large_clamp": {
+    "wrong_answer": 1,
+    "pose_verification_reject": 2,
+    "found": 3
+   },
+   "052_extra_large_clamp": {
+    "pose_verification_reject": 3,
+    "wrong_answer": 1,
+    "found": 2
+   },
+   "004_sugar_box": {
+    "found": 9,
+    "pose_verification_reject": 6
+   },
+   "010_potted_meat_can": {
+    "found": 5,
+    "wrong_answer": 2,
+    "pose_verification_reject": 2
+   },
+   "024_bowl": {
+    "no_ism_accept": 2,
+    "pose_verification_reject": 3,
+    "found": 1
+   },
+   "003_cracker_box": {
+    "found": 3,
+    "pose_verification_reject": 6
+   },
+   "005_tomato_soup_can": {
+    "pose_verification_reject": 4,
+    "found": 14
+   },
+   "006_mustard_bottle": {
+    "found": 6
+   },
+   "011_banana": {
+    "pose_verification_reject": 1,
+    "found": 5
+   },
+   "035_power_drill": {
+    "pose_verification_reject": 5,
+    "found": 7
+   },
+   "021_bleach_cleanser": {
+    "found": 10,
+    "pose_verification_reject": 1,
+    "no_ism_accept": 1
+   },
+   "037_scissors": {
+    "found": 2,
+    "pose_verification_reject": 1
+   },
+   "019_pitcher_base": {
+    "pose_verification_reject": 1,
+    "found": 8
+   },
+   "036_wood_block": {
+    "found": 1,
+    "no_ism_accept": 2
+   },
+   "040_large_marker": {
+    "pose_verification_reject": 4,
+    "found": 2
+   },
+   "061_foam_brick": {
+    "pose_verification_reject": 1,
+    "found": 2
+   },
+   "008_pudding_box": {
+    "pose_verification_reject": 2,
+    "wrong_answer": 1
+   },
+   "009_gelatin_box": {
+    "found": 3
+   }
+  }
+ }
+}

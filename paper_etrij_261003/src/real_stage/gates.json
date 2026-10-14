@@ -1,0 +1,526 @@
+{
+ "frame_index": 1808,
+ "t_ns": 1789449445188381617,
+ "thresholds": {
+  "yolo_score": 0.02,
+  "1_semantic(DINOv2 cls cos, top-5 mean)": 0.35,
+  "2_appearance(DINOv2 blocks [2, 9] masked patch)": 0.605,
+  "3_color_hsv(HxS hist Bhattacharyya sim)": 0.1214,
+  "color_tiebreak_template_sim": 0.6,
+  "cross_object_nms_iou": 0.9,
+  "box_dedupe_iou": 0.95
+ },
+ "order": [
+  "yolo proposals (multi-label, deduped)",
+  "owner election = argmax semantic over all objects (colour tie-break among template-similar objects)",
+  "1_semantic",
+  "2_appearance",
+  "3_color_hsv",
+  "4 exclusive assignment: one slot per object, best appearance wins",
+  "4b cross-object NMS (IoU>=0.9)"
+ ],
+ "note": "Gate scores are reported for the elected owner object. 'evaluated'=false means the pipeline stops before that gate; the score is still computed here for reference.",
+ "accepted": [
+  "Dinosaur",
+  "Febreze_high",
+  "milk",
+  "saffron"
+ ],
+ "production_recognize_frame_auto_accepted": [
+  "Dinosaur",
+  "Febreze_high",
+  "milk",
+  "saffron"
+ ],
+ "candidates": [
+  {
+   "id": 0,
+   "box": [
+    449,
+    145,
+    508,
+    254
+   ],
+   "yolo_score": 0.20225,
+   "yolo_prompts": [
+    {
+     "prompt": "milk carton",
+     "score": 0.20225
+    },
+    {
+     "prompt": "febreze spray bottle",
+     "score": 0.03546
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.63761,
+    "choco_hazelnut_high": 0.36592,
+    "Sauce_high": 0.33037,
+    "Sikhye_high": 0.29467,
+    "Febreze_high": 0.2587,
+    "saffron": 0.23704,
+    "Mugcup_high": 0.18589,
+    "Dinosaur": 0.09457,
+    "Bear": 0.07989
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.63761,
+   "appearance": 0.79304,
+   "color_hsv": 0.53801,
+   "mask_px": 4773,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.63761,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.79304,
+     "thr": 0.605,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.53801,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": true
+    }
+   ],
+   "rejected_by": null,
+   "exclusive": "slot_winner",
+   "cross_object_nms": "kept",
+   "final_accept": true
+  },
+  {
+   "id": 1,
+   "box": [
+    207,
+    150,
+    226,
+    189
+   ],
+   "yolo_score": 0.03175,
+   "yolo_prompts": [
+    {
+     "prompt": "milk carton",
+     "score": 0.02482
+    },
+    {
+     "prompt": "maroon box",
+     "score": 0.03175
+    },
+    {
+     "prompt": "orange bottle",
+     "score": 0.0218
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.29962,
+    "milk": 0.29566,
+    "Sauce_high": 0.19991,
+    "Mugcup_high": 0.19311,
+    "Sikhye_high": 0.15277,
+    "Febreze_high": 0.14709,
+    "saffron": 0.13441,
+    "Bear": 0.07702,
+    "Dinosaur": 0.04068
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.29962,
+   "appearance": 0.56708,
+   "color_hsv": 0.51292,
+   "mask_px": 563,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.29962,
+     "thr": 0.35,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56708,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": false
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.51292,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "1_semantic",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "id": 2,
+   "box": [
+    70,
+    108,
+    130,
+    203
+   ],
+   "yolo_score": 0.69007,
+   "yolo_prompts": [
+    {
+     "prompt": "milk carton",
+     "score": 0.02312
+    },
+    {
+     "prompt": "febreze spray bottle",
+     "score": 0.32412
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.69007
+    }
+   ],
+   "semantic_all": {
+    "saffron": 0.71507,
+    "Febreze_high": 0.48329,
+    "Sauce_high": 0.36847,
+    "milk": 0.33976,
+    "Sikhye_high": 0.30164,
+    "Mugcup_high": 0.22793,
+    "choco_hazelnut_high": 0.15746,
+    "Bear": 0.11802,
+    "Dinosaur": 0.11079
+   },
+   "semantic_argmax": "saffron",
+   "color_tiebreak_group": [
+    "Febreze_high",
+    "saffron"
+   ],
+   "owner": "saffron",
+   "semantic": 0.71507,
+   "appearance": 0.76653,
+   "color_hsv": 0.67941,
+   "mask_px": 4186,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.71507,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.76653,
+     "thr": 0.605,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.67941,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": true
+    }
+   ],
+   "rejected_by": null,
+   "exclusive": "slot_winner",
+   "cross_object_nms": "kept",
+   "final_accept": true
+  },
+  {
+   "id": 3,
+   "box": [
+    290,
+    189,
+    348,
+    368
+   ],
+   "yolo_score": 0.7786,
+   "yolo_prompts": [
+    {
+     "prompt": "febreze spray bottle",
+     "score": 0.7786
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.54566
+    },
+    {
+     "prompt": "orange bottle",
+     "score": 0.03658
+    }
+   ],
+   "semantic_all": {
+    "Febreze_high": 0.62809,
+    "saffron": 0.52604,
+    "Sauce_high": 0.39525,
+    "milk": 0.31777,
+    "Sikhye_high": 0.30197,
+    "Mugcup_high": 0.19372,
+    "Bear": 0.14048,
+    "Dinosaur": 0.12644,
+    "choco_hazelnut_high": 0.08058
+   },
+   "semantic_argmax": "Febreze_high",
+   "color_tiebreak_group": [
+    "Febreze_high",
+    "saffron",
+    "Sauce_high"
+   ],
+   "owner": "Febreze_high",
+   "semantic": 0.62809,
+   "appearance": 0.73222,
+   "color_hsv": 0.45381,
+   "mask_px": 7279,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.62809,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.73222,
+     "thr": 0.605,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.45381,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": true
+    }
+   ],
+   "rejected_by": null,
+   "exclusive": "slot_winner",
+   "cross_object_nms": "kept",
+   "final_accept": true
+  },
+  {
+   "id": 4,
+   "box": [
+    20,
+    156,
+    46,
+    190
+   ],
+   "yolo_score": 0.32912,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.32912
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.03514
+    },
+    {
+     "prompt": "orange bottle",
+     "score": 0.02005
+    },
+    {
+     "prompt": "yellow can",
+     "score": 0.06611
+    }
+   ],
+   "semantic_all": {
+    "Febreze_high": 0.26133,
+    "saffron": 0.25831,
+    "Sauce_high": 0.24429,
+    "milk": 0.23229,
+    "choco_hazelnut_high": 0.21524,
+    "Sikhye_high": 0.21194,
+    "Mugcup_high": 0.19922,
+    "Dinosaur": 0.13406,
+    "Bear": 0.08533
+   },
+   "semantic_argmax": "Febreze_high",
+   "color_tiebreak_group": [
+    "Febreze_high",
+    "saffron",
+    "Sauce_high"
+   ],
+   "owner": "saffron",
+   "semantic": 0.25831,
+   "appearance": 0.64982,
+   "color_hsv": 0.35967,
+   "mask_px": 688,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.25831,
+     "thr": 0.35,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.64982,
+     "thr": 0.605,
+     "pass": true,
+     "evaluated": false
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.35967,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "1_semantic",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "id": 5,
+   "box": [
+    208,
+    151,
+    223,
+    189
+   ],
+   "yolo_score": 0.08999,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.08999
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.32222,
+    "milk": 0.27909,
+    "Sauce_high": 0.1879,
+    "Mugcup_high": 0.16151,
+    "saffron": 0.13143,
+    "Sikhye_high": 0.13056,
+    "Febreze_high": 0.12711,
+    "Bear": 0.04389,
+    "Dinosaur": 0.01197
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.32222,
+   "appearance": 0.59701,
+   "color_hsv": 0.46672,
+   "mask_px": 553,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.32222,
+     "thr": 0.35,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.59701,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": false
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.46672,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "1_semantic",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "id": 6,
+   "box": [
+    152,
+    147,
+    186,
+    179
+   ],
+   "yolo_score": 0.07529,
+   "yolo_prompts": [
+    {
+     "prompt": "white jug",
+     "score": 0.02814
+    },
+    {
+     "prompt": "brown bear doll",
+     "score": 0.03004
+    },
+    {
+     "prompt": "green dinosaur doll",
+     "score": 0.07529
+    }
+   ],
+   "semantic_all": {
+    "Dinosaur": 0.41779,
+    "Bear": 0.41774,
+    "Mugcup_high": 0.09555,
+    "Febreze_high": 0.09075,
+    "saffron": 0.07389,
+    "milk": 0.07122,
+    "choco_hazelnut_high": 0.03766,
+    "Sauce_high": 0.02521,
+    "Sikhye_high": 0.00861
+   },
+   "semantic_argmax": "Dinosaur",
+   "color_tiebreak_group": [
+    "Bear",
+    "Dinosaur"
+   ],
+   "owner": "Dinosaur",
+   "semantic": 0.41779,
+   "appearance": 0.69902,
+   "color_hsv": 0.26455,
+   "mask_px": 727,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.41779,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.69902,
+     "thr": 0.605,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.26455,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": true
+    }
+   ],
+   "rejected_by": null,
+   "exclusive": "slot_winner",
+   "cross_object_nms": "kept",
+   "final_accept": true
+  }
+ ]
+}

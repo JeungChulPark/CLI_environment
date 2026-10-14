@@ -1,0 +1,28 @@
+--- a/src/LoopClosing.cc
++++ b/src/LoopClosing.cc
+@@ -303,6 +303,16 @@
+                             Eigen::Vector3f mc = mpLoopMatchedKF->GetCameraCenter();
+                             Eigen::Vector3d s3t = mg2oLoopScw.translation();
+                             double gap = (cc - mc).norm();
++                            // Where CorrectLoop() is about to put this keyframe. Scw maps
++                            // world to camera (x_c = s*R*x_w + t), so the corrected camera
++                            // centre is -R^T t / s. The magnitude of s3t on its own is just
++                            // that centre's distance from the map origin, which tracks where
++                            // the MATCHED keyframe sits rather than how far the closure moves
++                            // anything, so it cannot judge a closure. corr_m can.
++                            Eigen::Matrix3d Rcorr = mg2oLoopScw.rotation().toRotationMatrix();
++                            Eigen::Vector3d Ccorr = -(Rcorr.transpose() * s3t) / mg2oLoopScw.scale();
++                            double corr = (Ccorr.cast<float>() - cc).norm();
++                            double resid = (Ccorr.cast<float>() - mc).norm();
+                             std::cout << std::fixed << std::setprecision(6)
+                                       << "LOOP_GAP|cur_id=" << mpCurrentKF->mnId
+                                       << "|matched_id=" << mpLoopMatchedKF->mnId
+@@ -313,6 +323,8 @@
+                                       << "|gap_m=" << gap
+                                       << "|sim3t=" << s3t(0) << "," << s3t(1) << "," << s3t(2)
+                                       << "|sim3_scale=" << mg2oLoopScw.scale()
++                                      << "|corr_m=" << corr
++                                      << "|resid_m=" << resid
+                                       << std::endl;
+                         }
+ 

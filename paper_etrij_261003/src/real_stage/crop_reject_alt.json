@@ -1,0 +1,62 @@
+{
+ "frame": 1812,
+ "id": 5,
+ "box": [
+  222,
+  152,
+  235,
+  189
+ ],
+ "yolo_score": 0.03872,
+ "yolo_prompts": [
+  {
+   "prompt": "mug cup",
+   "score": 0.03872
+  }
+ ],
+ "semantic_all": {
+  "choco_hazelnut_high": 0.39094,
+  "milk": 0.34806,
+  "Sauce_high": 0.26592,
+  "Mugcup_high": 0.24224,
+  "Sikhye_high": 0.15565,
+  "saffron": 0.15262,
+  "Febreze_high": 0.15076,
+  "Bear": 0.05062,
+  "Dinosaur": -0.0068
+ },
+ "semantic_argmax": "choco_hazelnut_high",
+ "color_tiebreak_group": [],
+ "owner": "choco_hazelnut_high",
+ "semantic": 0.39094,
+ "appearance": 0.46235,
+ "color_hsv": 0.342,
+ "mask_px": 501,
+ "gates": [
+  {
+   "gate": "1_semantic",
+   "score": 0.39094,
+   "thr": 0.35,
+   "pass": true,
+   "evaluated": true
+  },
+  {
+   "gate": "2_appearance",
+   "score": 0.46235,
+   "thr": 0.605,
+   "pass": false,
+   "evaluated": true
+  },
+  {
+   "gate": "3_color_hsv",
+   "score": 0.342,
+   "thr": 0.1214,
+   "pass": true,
+   "evaluated": false
+  }
+ ],
+ "rejected_by": "2_appearance",
+ "exclusive": null,
+ "cross_object_nms": null,
+ "final_accept": false
+}

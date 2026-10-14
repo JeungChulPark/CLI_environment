@@ -1,0 +1,4136 @@
+{
+ "range": [
+  1748,
+  1868
+ ],
+ "step": 2,
+ "hits": [
+  {
+   "frame": 1756,
+   "id": 2,
+   "box": [
+    65,
+    155,
+    88,
+    198
+   ],
+   "yolo_score": 0.03183,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.03183
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.40406,
+    "milk": 0.37512,
+    "Sauce_high": 0.20101,
+    "Mugcup_high": 0.14631,
+    "Sikhye_high": 0.13023,
+    "saffron": 0.12895,
+    "Febreze_high": 0.07811,
+    "Bear": 0.04705,
+    "Dinosaur": -0.01197
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.40406,
+   "appearance": 0.58446,
+   "color_hsv": 0.50081,
+   "mask_px": 713,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.40406,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.58446,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.50081,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1756,
+   "id": 3,
+   "box": [
+    599,
+    149,
+    640,
+    252
+   ],
+   "yolo_score": 0.03003,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.03003
+    }
+   ],
+   "semantic_all": {
+    "Bear": 0.50479,
+    "Dinosaur": 0.35866,
+    "Febreze_high": 0.12167,
+    "choco_hazelnut_high": 0.1115,
+    "Mugcup_high": 0.07607,
+    "saffron": 0.07288,
+    "milk": 0.06401,
+    "Sauce_high": 0.06008,
+    "Sikhye_high": 0.0534
+   },
+   "semantic_argmax": "Bear",
+   "color_tiebreak_group": [
+    "Bear",
+    "Dinosaur"
+   ],
+   "owner": "Bear",
+   "semantic": 0.50479,
+   "appearance": 0.5621,
+   "color_hsv": 0.21024,
+   "mask_px": 1684,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.50479,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.5621,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.21024,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1758,
+   "id": 2,
+   "box": [
+    599,
+    148,
+    640,
+    252
+   ],
+   "yolo_score": 0.0536,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.0536
+    }
+   ],
+   "semantic_all": {
+    "Bear": 0.50278,
+    "Dinosaur": 0.36169,
+    "Febreze_high": 0.10492,
+    "choco_hazelnut_high": 0.0883,
+    "Mugcup_high": 0.06973,
+    "milk": 0.05503,
+    "saffron": 0.05183,
+    "Sauce_high": 0.04488,
+    "Sikhye_high": 0.0391
+   },
+   "semantic_argmax": "Bear",
+   "color_tiebreak_group": [
+    "Bear",
+    "Dinosaur"
+   ],
+   "owner": "Bear",
+   "semantic": 0.50278,
+   "appearance": 0.55643,
+   "color_hsv": 0.24157,
+   "mask_px": 1766,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.50278,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55643,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.24157,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1758,
+   "id": 4,
+   "box": [
+    600,
+    150,
+    640,
+    223
+   ],
+   "yolo_score": 0.03341,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.03341
+    }
+   ],
+   "semantic_all": {
+    "Bear": 0.37335,
+    "Dinosaur": 0.23606,
+    "Febreze_high": 0.08926,
+    "choco_hazelnut_high": 0.07814,
+    "Sauce_high": 0.06731,
+    "saffron": 0.05962,
+    "Mugcup_high": 0.05805,
+    "milk": 0.0562,
+    "Sikhye_high": 0.02724
+   },
+   "semantic_argmax": "Bear",
+   "color_tiebreak_group": [
+    "Bear",
+    "Dinosaur"
+   ],
+   "owner": "Bear",
+   "semantic": 0.37335,
+   "appearance": 0.55309,
+   "color_hsv": 0.25501,
+   "mask_px": 1590,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.37335,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55309,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.25501,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1758,
+   "id": 5,
+   "box": [
+    65,
+    154,
+    88,
+    198
+   ],
+   "yolo_score": 0.02667,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.02667
+    },
+    {
+     "prompt": "mug cup",
+     "score": 0.02212
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.3533,
+    "milk": 0.31508,
+    "Sauce_high": 0.17138,
+    "Mugcup_high": 0.11427,
+    "saffron": 0.09877,
+    "Sikhye_high": 0.09571,
+    "Febreze_high": 0.06753,
+    "Bear": 0.04271,
+    "Dinosaur": -0.01328
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.3533,
+   "appearance": 0.5553,
+   "color_hsv": 0.53785,
+   "mask_px": 717,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.3533,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.5553,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.53785,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1760,
+   "id": 2,
+   "box": [
+    67,
+    154,
+    90,
+    198
+   ],
+   "yolo_score": 0.03711,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.03711
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.43544,
+    "milk": 0.39608,
+    "Sauce_high": 0.22535,
+    "Sikhye_high": 0.18346,
+    "saffron": 0.16675,
+    "Mugcup_high": 0.1511,
+    "Febreze_high": 0.10783,
+    "Bear": 0.05569,
+    "Dinosaur": 0.00159
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.43544,
+   "appearance": 0.58874,
+   "color_hsv": 0.55299,
+   "mask_px": 716,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.43544,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.58874,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.55299,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1762,
+   "id": 3,
+   "box": [
+    69,
+    153,
+    93,
+    197
+   ],
+   "yolo_score": 0.04281,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.02796
+    },
+    {
+     "prompt": "mug cup",
+     "score": 0.04281
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.37797,
+    "milk": 0.35332,
+    "Sauce_high": 0.15498,
+    "Mugcup_high": 0.13536,
+    "Sikhye_high": 0.10271,
+    "saffron": 0.08117,
+    "Febreze_high": 0.07437,
+    "Bear": 0.04603,
+    "Dinosaur": -0.00613
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.37797,
+   "appearance": 0.58419,
+   "color_hsv": 0.54933,
+   "mask_px": 707,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.37797,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.58419,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.54933,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1764,
+   "id": 2,
+   "box": [
+    73,
+    154,
+    96,
+    197
+   ],
+   "yolo_score": 0.03555,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.02393
+    },
+    {
+     "prompt": "mug cup",
+     "score": 0.03555
+    },
+    {
+     "prompt": "orange bottle",
+     "score": 0.03049
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.39749,
+    "milk": 0.37801,
+    "Sauce_high": 0.25385,
+    "Sikhye_high": 0.20635,
+    "Mugcup_high": 0.17276,
+    "saffron": 0.16917,
+    "Febreze_high": 0.12548,
+    "Bear": 0.05489,
+    "Dinosaur": 0.01127
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.39749,
+   "appearance": 0.59205,
+   "color_hsv": 0.53444,
+   "mask_px": 678,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.39749,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.59205,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.53444,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1764,
+   "id": 4,
+   "box": [
+    73,
+    153,
+    95,
+    197
+   ],
+   "yolo_score": 0.05941,
+   "yolo_prompts": [
+    {
+     "prompt": "febreze spray bottle",
+     "score": 0.05941
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.40852,
+    "choco_hazelnut_high": 0.38233,
+    "Sauce_high": 0.18791,
+    "saffron": 0.14785,
+    "Sikhye_high": 0.14391,
+    "Febreze_high": 0.13199,
+    "Mugcup_high": 0.12172,
+    "Bear": 0.05626,
+    "Dinosaur": 0.01155
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.40852,
+   "appearance": 0.60368,
+   "color_hsv": 0.23773,
+   "mask_px": 677,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.40852,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.60368,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.23773,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1766,
+   "id": 1,
+   "box": [
+    77,
+    153,
+    100,
+    197
+   ],
+   "yolo_score": 0.02923,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.02923
+    },
+    {
+     "prompt": "mug cup",
+     "score": 0.02703
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.40563,
+    "milk": 0.35985,
+    "Sauce_high": 0.19967,
+    "Mugcup_high": 0.15624,
+    "Sikhye_high": 0.1437,
+    "saffron": 0.12831,
+    "Febreze_high": 0.10065,
+    "Bear": 0.04409,
+    "Dinosaur": -0.01153
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.40563,
+   "appearance": 0.58661,
+   "color_hsv": 0.55928,
+   "mask_px": 694,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.40563,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.58661,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.55928,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1778,
+   "id": 1,
+   "box": [
+    101,
+    152,
+    122,
+    193
+   ],
+   "yolo_score": 0.02152,
+   "yolo_prompts": [
+    {
+     "prompt": "milk carton",
+     "score": 0.02152
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.36887,
+    "milk": 0.33072,
+    "Sauce_high": 0.20332,
+    "Mugcup_high": 0.12565,
+    "Sikhye_high": 0.12435,
+    "saffron": 0.11779,
+    "Febreze_high": 0.07742,
+    "Bear": 0.04737,
+    "Dinosaur": -0.00758
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.36887,
+   "appearance": 0.56563,
+   "color_hsv": 0.5448,
+   "mask_px": 688,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.36887,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56563,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.5448,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1778,
+   "id": 5,
+   "box": [
+    101,
+    153,
+    121,
+    194
+   ],
+   "yolo_score": 0.0225,
+   "yolo_prompts": [
+    {
+     "prompt": "febreze spray bottle",
+     "score": 0.0225
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.35563,
+    "milk": 0.30972,
+    "Sauce_high": 0.28509,
+    "Mugcup_high": 0.1898,
+    "Sikhye_high": 0.1409,
+    "saffron": 0.13662,
+    "Febreze_high": 0.11525,
+    "Bear": 0.03145,
+    "Dinosaur": -0.02299
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.35563,
+   "appearance": 0.59683,
+   "color_hsv": 0.54225,
+   "mask_px": 680,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.35563,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.59683,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.54225,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1784,
+   "id": 7,
+   "box": [
+    113,
+    151,
+    134,
+    192
+   ],
+   "yolo_score": 0.07711,
+   "yolo_prompts": [
+    {
+     "prompt": "febreze spray bottle",
+     "score": 0.02094
+    },
+    {
+     "prompt": "mug cup",
+     "score": 0.07711
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.39956,
+    "milk": 0.36714,
+    "Sauce_high": 0.19606,
+    "Sikhye_high": 0.1304,
+    "saffron": 0.12353,
+    "Mugcup_high": 0.11604,
+    "Febreze_high": 0.09086,
+    "Bear": 0.05667,
+    "Dinosaur": 0.00706
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.39956,
+   "appearance": 0.56698,
+   "color_hsv": 0.52693,
+   "mask_px": 692,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.39956,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56698,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.52693,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1788,
+   "id": 2,
+   "box": [
+    122,
+    152,
+    142,
+    191
+   ],
+   "yolo_score": 0.03136,
+   "yolo_prompts": [
+    {
+     "prompt": "febreze spray bottle",
+     "score": 0.03136
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.36958,
+    "milk": 0.30414,
+    "Sauce_high": 0.17611,
+    "Mugcup_high": 0.11637,
+    "saffron": 0.09995,
+    "Sikhye_high": 0.08926,
+    "Febreze_high": 0.08387,
+    "Bear": 0.05637,
+    "Dinosaur": -0.00752
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.36958,
+   "appearance": 0.58244,
+   "color_hsv": 0.49185,
+   "mask_px": 638,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.36958,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.58244,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.49185,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1798,
+   "id": 3,
+   "box": [
+    159,
+    151,
+    177,
+    190
+   ],
+   "yolo_score": 0.12658,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.12658
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.35275,
+    "milk": 0.31061,
+    "Sauce_high": 0.24288,
+    "Mugcup_high": 0.20471,
+    "Sikhye_high": 0.16383,
+    "saffron": 0.15333,
+    "Febreze_high": 0.1393,
+    "Bear": 0.05456,
+    "Dinosaur": 0.00975
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.35275,
+   "appearance": 0.48124,
+   "color_hsv": 0.42904,
+   "mask_px": 598,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.35275,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.48124,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.42904,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1812,
+   "id": 5,
+   "box": [
+    222,
+    152,
+    235,
+    189
+   ],
+   "yolo_score": 0.03872,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.03872
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.39094,
+    "milk": 0.34806,
+    "Sauce_high": 0.26592,
+    "Mugcup_high": 0.24224,
+    "Sikhye_high": 0.15565,
+    "saffron": 0.15262,
+    "Febreze_high": 0.15076,
+    "Bear": 0.05062,
+    "Dinosaur": -0.0068
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.39094,
+   "appearance": 0.46235,
+   "color_hsv": 0.342,
+   "mask_px": 501,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.39094,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.46235,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.342,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1814,
+   "id": 3,
+   "box": [
+    227,
+    150,
+    246,
+    189
+   ],
+   "yolo_score": 0.02482,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.02482
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.38838,
+    "choco_hazelnut_high": 0.35847,
+    "Sauce_high": 0.21018,
+    "Mugcup_high": 0.17033,
+    "Sikhye_high": 0.15573,
+    "saffron": 0.15176,
+    "Febreze_high": 0.14072,
+    "Bear": 0.06151,
+    "Dinosaur": 0.02751
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.38838,
+   "appearance": 0.56497,
+   "color_hsv": 0.16514,
+   "mask_px": 567,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.38838,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56497,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.16514,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1816,
+   "id": 2,
+   "box": [
+    233,
+    151,
+    251,
+    189
+   ],
+   "yolo_score": 0.02146,
+   "yolo_prompts": [
+    {
+     "prompt": "milk carton",
+     "score": 0.02146
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.35003,
+    "choco_hazelnut_high": 0.34769,
+    "Mugcup_high": 0.19371,
+    "Sauce_high": 0.18126,
+    "Sikhye_high": 0.15795,
+    "Febreze_high": 0.15627,
+    "saffron": 0.15299,
+    "Bear": 0.06455,
+    "Dinosaur": 0.02334
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.35003,
+   "appearance": 0.57405,
+   "color_hsv": 0.17696,
+   "mask_px": 564,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.35003,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.57405,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.17696,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1816,
+   "id": 5,
+   "box": [
+    233,
+    152,
+    251,
+    188
+   ],
+   "yolo_score": 0.28342,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.28342
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.02005
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.40749,
+    "choco_hazelnut_high": 0.33223,
+    "Sauce_high": 0.21253,
+    "Mugcup_high": 0.19352,
+    "saffron": 0.16543,
+    "Febreze_high": 0.15379,
+    "Sikhye_high": 0.14877,
+    "Bear": 0.05191,
+    "Dinosaur": 0.02384
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.40749,
+   "appearance": 0.57751,
+   "color_hsv": 0.17474,
+   "mask_px": 564,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.40749,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.57751,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.17474,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1818,
+   "id": 3,
+   "box": [
+    238,
+    151,
+    256,
+    189
+   ],
+   "yolo_score": 0.09085,
+   "yolo_prompts": [
+    {
+     "prompt": "milk carton",
+     "score": 0.02146
+    },
+    {
+     "prompt": "mug cup",
+     "score": 0.09085
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.36717,
+    "milk": 0.36119,
+    "Mugcup_high": 0.19296,
+    "Sauce_high": 0.18006,
+    "Sikhye_high": 0.14672,
+    "saffron": 0.14094,
+    "Febreze_high": 0.13562,
+    "Bear": 0.07003,
+    "Dinosaur": 0.03091
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.36717,
+   "appearance": 0.55475,
+   "color_hsv": 0.4864,
+   "mask_px": 572,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.36717,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55475,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.4864,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1822,
+   "id": 2,
+   "box": [
+    245,
+    151,
+    264,
+    188
+   ],
+   "yolo_score": 0.12641,
+   "yolo_prompts": [
+    {
+     "prompt": "milk carton",
+     "score": 0.02248
+    },
+    {
+     "prompt": "mug cup",
+     "score": 0.12641
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.50954,
+    "milk": 0.49827,
+    "Sauce_high": 0.20604,
+    "Sikhye_high": 0.17825,
+    "saffron": 0.16459,
+    "Mugcup_high": 0.14737,
+    "Febreze_high": 0.13026,
+    "Bear": 0.09544,
+    "Dinosaur": 0.05445
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.50954,
+   "appearance": 0.56613,
+   "color_hsv": 0.46032,
+   "mask_px": 568,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.50954,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56613,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.46032,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1824,
+   "id": 2,
+   "box": [
+    247,
+    151,
+    266,
+    188
+   ],
+   "yolo_score": 0.03881,
+   "yolo_prompts": [
+    {
+     "prompt": "milk carton",
+     "score": 0.03523
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.03881
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.47776,
+    "choco_hazelnut_high": 0.45277,
+    "Sauce_high": 0.25065,
+    "Mugcup_high": 0.20683,
+    "Sikhye_high": 0.17631,
+    "saffron": 0.17333,
+    "Febreze_high": 0.12808,
+    "Bear": 0.03231,
+    "Dinosaur": 0.00561
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.47776,
+   "appearance": 0.58917,
+   "color_hsv": 0.18231,
+   "mask_px": 606,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.47776,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.58917,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.18231,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1824,
+   "id": 6,
+   "box": [
+    247,
+    152,
+    267,
+    188
+   ],
+   "yolo_score": 0.0291,
+   "yolo_prompts": [
+    {
+     "prompt": "febreze spray bottle",
+     "score": 0.0291
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.46879,
+    "milk": 0.44665,
+    "Sauce_high": 0.20088,
+    "Mugcup_high": 0.16621,
+    "Sikhye_high": 0.16338,
+    "saffron": 0.14659,
+    "Febreze_high": 0.10513,
+    "Bear": 0.06031,
+    "Dinosaur": 0.02937
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.46879,
+   "appearance": 0.55839,
+   "color_hsv": 0.44237,
+   "mask_px": 606,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.46879,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55839,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.44237,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1826,
+   "id": 5,
+   "box": [
+    250,
+    152,
+    264,
+    188
+   ],
+   "yolo_score": 0.14106,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.14106
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.35117,
+    "milk": 0.3438,
+    "Sauce_high": 0.27542,
+    "Mugcup_high": 0.26048,
+    "Sikhye_high": 0.19147,
+    "saffron": 0.13497,
+    "Febreze_high": 0.10424,
+    "Bear": 0.03464,
+    "Dinosaur": -0.00392
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.35117,
+   "appearance": 0.46422,
+   "color_hsv": 0.43743,
+   "mask_px": 583,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.35117,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.46422,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.43743,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1826,
+   "id": 6,
+   "box": [
+    250,
+    151,
+    269,
+    189
+   ],
+   "yolo_score": 0.10976,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.10976
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.41477,
+    "choco_hazelnut_high": 0.35657,
+    "Mugcup_high": 0.25139,
+    "Sauce_high": 0.23096,
+    "Sikhye_high": 0.18502,
+    "Febreze_high": 0.15364,
+    "saffron": 0.14755,
+    "Bear": 0.04904,
+    "Dinosaur": 0.02737
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.41477,
+   "appearance": 0.58291,
+   "color_hsv": 0.18696,
+   "mask_px": 592,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.41477,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.58291,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.18696,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1826,
+   "id": 11,
+   "box": [
+    249,
+    151,
+    269,
+    189
+   ],
+   "yolo_score": 0.02207,
+   "yolo_prompts": [
+    {
+     "prompt": "white jug",
+     "score": 0.02207
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.40432,
+    "milk": 0.38802,
+    "Mugcup_high": 0.23122,
+    "Sauce_high": 0.18028,
+    "Sikhye_high": 0.15091,
+    "saffron": 0.12439,
+    "Febreze_high": 0.10626,
+    "Bear": 0.05906,
+    "Dinosaur": 0.02697
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.40432,
+   "appearance": 0.54933,
+   "color_hsv": 0.4917,
+   "mask_px": 594,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.40432,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.54933,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.4917,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1828,
+   "id": 1,
+   "box": [
+    250,
+    151,
+    270,
+    188
+   ],
+   "yolo_score": 0.02108,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.02108
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.39458,
+    "choco_hazelnut_high": 0.38813,
+    "Mugcup_high": 0.1869,
+    "Sauce_high": 0.17933,
+    "Sikhye_high": 0.13514,
+    "saffron": 0.1231,
+    "Febreze_high": 0.08514,
+    "Bear": 0.0604,
+    "Dinosaur": 0.02264
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.39458,
+   "appearance": 0.57266,
+   "color_hsv": 0.19853,
+   "mask_px": 601,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.39458,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.57266,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.19853,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1828,
+   "id": 8,
+   "box": [
+    250,
+    151,
+    271,
+    189
+   ],
+   "yolo_score": 0.04387,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.04387
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.38135,
+    "milk": 0.37194,
+    "Mugcup_high": 0.19409,
+    "Sauce_high": 0.12552,
+    "Sikhye_high": 0.11309,
+    "Febreze_high": 0.08671,
+    "saffron": 0.08467,
+    "Bear": 0.0764,
+    "Dinosaur": 0.04762
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.38135,
+   "appearance": 0.54296,
+   "color_hsv": 0.46421,
+   "mask_px": 601,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.38135,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.54296,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.46421,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1830,
+   "id": 6,
+   "box": [
+    250,
+    152,
+    270,
+    188
+   ],
+   "yolo_score": 0.08167,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.08167
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.46912,
+    "milk": 0.44122,
+    "Sauce_high": 0.19979,
+    "Mugcup_high": 0.18707,
+    "Sikhye_high": 0.17213,
+    "saffron": 0.12967,
+    "Febreze_high": 0.08683,
+    "Bear": 0.07842,
+    "Dinosaur": 0.04848
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.46912,
+   "appearance": 0.56193,
+   "color_hsv": 0.47199,
+   "mask_px": 608,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.46912,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56193,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.47199,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1830,
+   "id": 8,
+   "box": [
+    250,
+    151,
+    271,
+    188
+   ],
+   "yolo_score": 0.02829,
+   "yolo_prompts": [
+    {
+     "prompt": "white jug",
+     "score": 0.02829
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.40575,
+    "choco_hazelnut_high": 0.39228,
+    "Mugcup_high": 0.17329,
+    "Sauce_high": 0.15639,
+    "Sikhye_high": 0.11978,
+    "saffron": 0.1031,
+    "Febreze_high": 0.08447,
+    "Bear": 0.08243,
+    "Dinosaur": 0.0544
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.40575,
+   "appearance": 0.57067,
+   "color_hsv": 0.19866,
+   "mask_px": 612,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.40575,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.57067,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.19866,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1832,
+   "id": 3,
+   "box": [
+    250,
+    151,
+    270,
+    188
+   ],
+   "yolo_score": 0.07387,
+   "yolo_prompts": [
+    {
+     "prompt": "milk carton",
+     "score": 0.02023
+    },
+    {
+     "prompt": "maroon box",
+     "score": 0.02181
+    },
+    {
+     "prompt": "mug cup",
+     "score": 0.07387
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.02811
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.42737,
+    "milk": 0.4232,
+    "Mugcup_high": 0.24281,
+    "Sauce_high": 0.21986,
+    "Sikhye_high": 0.17223,
+    "saffron": 0.13956,
+    "Febreze_high": 0.10014,
+    "Bear": 0.0521,
+    "Dinosaur": 0.02384
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.42737,
+   "appearance": 0.56765,
+   "color_hsv": 0.46028,
+   "mask_px": 629,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.42737,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56765,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.46028,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1832,
+   "id": 8,
+   "box": [
+    250,
+    152,
+    263,
+    188
+   ],
+   "yolo_score": 0.03294,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.03294
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.36955,
+    "milk": 0.36079,
+    "Sauce_high": 0.21654,
+    "Mugcup_high": 0.20041,
+    "Sikhye_high": 0.11957,
+    "saffron": 0.11449,
+    "Febreze_high": 0.10445,
+    "Bear": 0.05263,
+    "Dinosaur": 0.01453
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.36955,
+   "appearance": 0.47633,
+   "color_hsv": 0.36537,
+   "mask_px": 402,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.36955,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.47633,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.36537,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1834,
+   "id": 7,
+   "box": [
+    249,
+    152,
+    270,
+    188
+   ],
+   "yolo_score": 0.09349,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.09349
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.38173,
+    "choco_hazelnut_high": 0.37008,
+    "Mugcup_high": 0.19251,
+    "Sauce_high": 0.18114,
+    "Sikhye_high": 0.1292,
+    "saffron": 0.12627,
+    "Febreze_high": 0.10672,
+    "Bear": 0.08104,
+    "Dinosaur": 0.06072
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.38173,
+   "appearance": 0.56346,
+   "color_hsv": 0.19426,
+   "mask_px": 628,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.38173,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56346,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.19426,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1836,
+   "id": 3,
+   "box": [
+    248,
+    151,
+    268,
+    188
+   ],
+   "yolo_score": 0.08161,
+   "yolo_prompts": [
+    {
+     "prompt": "milk carton",
+     "score": 0.0227
+    },
+    {
+     "prompt": "maroon box",
+     "score": 0.02563
+    },
+    {
+     "prompt": "mug cup",
+     "score": 0.08161
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.02536
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.3882,
+    "milk": 0.38007,
+    "Mugcup_high": 0.132,
+    "Sauce_high": 0.12087,
+    "saffron": 0.08996,
+    "Sikhye_high": 0.08692,
+    "Bear": 0.07729,
+    "Febreze_high": 0.06908,
+    "Dinosaur": 0.0514
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.3882,
+   "appearance": 0.55381,
+   "color_hsv": 0.4638,
+   "mask_px": 639,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.3882,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55381,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.4638,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1838,
+   "id": 5,
+   "box": [
+    245,
+    151,
+    266,
+    187
+   ],
+   "yolo_score": 0.02473,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.02473
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.45499,
+    "milk": 0.432,
+    "Mugcup_high": 0.16453,
+    "Sauce_high": 0.14926,
+    "saffron": 0.11101,
+    "Sikhye_high": 0.11026,
+    "Bear": 0.09952,
+    "Febreze_high": 0.08006,
+    "Dinosaur": 0.05493
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.45499,
+   "appearance": 0.56841,
+   "color_hsv": 0.49274,
+   "mask_px": 638,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.45499,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56841,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.49274,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1840,
+   "id": 6,
+   "box": [
+    243,
+    151,
+    264,
+    188
+   ],
+   "yolo_score": 0.05017,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.05017
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.04209
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.41243,
+    "milk": 0.3901,
+    "Mugcup_high": 0.19342,
+    "Sauce_high": 0.14183,
+    "Sikhye_high": 0.12824,
+    "saffron": 0.1083,
+    "Febreze_high": 0.09062,
+    "Bear": 0.07325,
+    "Dinosaur": 0.03435
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.41243,
+   "appearance": 0.56371,
+   "color_hsv": 0.5033,
+   "mask_px": 655,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.41243,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56371,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.5033,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1842,
+   "id": 3,
+   "box": [
+    240,
+    151,
+    262,
+    188
+   ],
+   "yolo_score": 0.18523,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.02213
+    },
+    {
+     "prompt": "mug cup",
+     "score": 0.18523
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.03257
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.39875,
+    "milk": 0.38735,
+    "Mugcup_high": 0.20123,
+    "Sauce_high": 0.16519,
+    "Sikhye_high": 0.15088,
+    "saffron": 0.11716,
+    "Bear": 0.08871,
+    "Febreze_high": 0.08353,
+    "Dinosaur": 0.04337
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.39875,
+   "appearance": 0.55676,
+   "color_hsv": 0.48584,
+   "mask_px": 666,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.39875,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55676,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.48584,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1844,
+   "id": 4,
+   "box": [
+    76,
+    154,
+    97,
+    185
+   ],
+   "yolo_score": 0.15761,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.14653
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.04771
+    },
+    {
+     "prompt": "orange bottle",
+     "score": 0.10678
+    },
+    {
+     "prompt": "yellow can",
+     "score": 0.15761
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.38731,
+    "Sauce_high": 0.33541,
+    "Febreze_high": 0.32906,
+    "Sikhye_high": 0.31877,
+    "Mugcup_high": 0.30913,
+    "choco_hazelnut_high": 0.30305,
+    "saffron": 0.29296,
+    "Bear": 0.116,
+    "Dinosaur": 0.10074
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.38731,
+   "appearance": 0.55892,
+   "color_hsv": 0.01698,
+   "mask_px": 514,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.38731,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55892,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.01698,
+     "thr": 0.1214,
+     "pass": false,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1844,
+   "id": 5,
+   "box": [
+    237,
+    151,
+    259,
+    188
+   ],
+   "yolo_score": 0.078,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.078
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.37696,
+    "milk": 0.34895,
+    "Mugcup_high": 0.21084,
+    "Sikhye_high": 0.1453,
+    "Sauce_high": 0.13724,
+    "saffron": 0.11959,
+    "Bear": 0.11705,
+    "Febreze_high": 0.11345,
+    "Dinosaur": 0.0754
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.37696,
+   "appearance": 0.5439,
+   "color_hsv": 0.51098,
+   "mask_px": 685,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.37696,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.5439,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.51098,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1844,
+   "id": 9,
+   "box": [
+    237,
+    150,
+    259,
+    187
+   ],
+   "yolo_score": 0.02532,
+   "yolo_prompts": [
+    {
+     "prompt": "white jug",
+     "score": 0.02532
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.42822,
+    "milk": 0.40631,
+    "Mugcup_high": 0.19303,
+    "Sauce_high": 0.16937,
+    "Sikhye_high": 0.14971,
+    "saffron": 0.13651,
+    "Febreze_high": 0.10395,
+    "Bear": 0.08632,
+    "Dinosaur": 0.04552
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.42822,
+   "appearance": 0.55354,
+   "color_hsv": 0.51421,
+   "mask_px": 686,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.42822,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55354,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.51421,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1846,
+   "id": 2,
+   "box": [
+    233,
+    150,
+    255,
+    187
+   ],
+   "yolo_score": 0.0203,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.0203
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.48479,
+    "milk": 0.4063,
+    "Sauce_high": 0.17071,
+    "Mugcup_high": 0.17004,
+    "saffron": 0.1579,
+    "Sikhye_high": 0.15371,
+    "Febreze_high": 0.11099,
+    "Bear": 0.09065,
+    "Dinosaur": 0.04154
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.48479,
+   "appearance": 0.56685,
+   "color_hsv": 0.50274,
+   "mask_px": 682,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.48479,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56685,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.50274,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1846,
+   "id": 5,
+   "box": [
+    73,
+    154,
+    93,
+    185
+   ],
+   "yolo_score": 0.20009,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.16495
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.03001
+    },
+    {
+     "prompt": "orange bottle",
+     "score": 0.16648
+    },
+    {
+     "prompt": "yellow can",
+     "score": 0.20009
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.37268,
+    "Sikhye_high": 0.35731,
+    "Sauce_high": 0.3115,
+    "Febreze_high": 0.30162,
+    "Mugcup_high": 0.28727,
+    "choco_hazelnut_high": 0.28232,
+    "saffron": 0.27895,
+    "Bear": 0.1216,
+    "Dinosaur": 0.10018
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.37268,
+   "appearance": 0.54954,
+   "color_hsv": 0.03226,
+   "mask_px": 512,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.37268,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.54954,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.03226,
+     "thr": 0.1214,
+     "pass": false,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1846,
+   "id": 6,
+   "box": [
+    234,
+    151,
+    256,
+    187
+   ],
+   "yolo_score": 0.08039,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.08039
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.43857,
+    "milk": 0.36175,
+    "Mugcup_high": 0.16925,
+    "Sikhye_high": 0.14793,
+    "Sauce_high": 0.14478,
+    "saffron": 0.12041,
+    "Febreze_high": 0.10672,
+    "Bear": 0.09728,
+    "Dinosaur": 0.04739
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.43857,
+   "appearance": 0.56208,
+   "color_hsv": 0.50548,
+   "mask_px": 680,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.43857,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56208,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.50548,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1848,
+   "id": 1,
+   "box": [
+    68,
+    154,
+    89,
+    185
+   ],
+   "yolo_score": 0.19336,
+   "yolo_prompts": [
+    {
+     "prompt": "milk carton",
+     "score": 0.03111
+    },
+    {
+     "prompt": "mug cup",
+     "score": 0.19336
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.05218
+    },
+    {
+     "prompt": "orange bottle",
+     "score": 0.10203
+    },
+    {
+     "prompt": "yellow can",
+     "score": 0.13059
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.38184,
+    "Sauce_high": 0.31504,
+    "Sikhye_high": 0.31249,
+    "Febreze_high": 0.30853,
+    "Mugcup_high": 0.27983,
+    "saffron": 0.27472,
+    "choco_hazelnut_high": 0.26911,
+    "Dinosaur": 0.1148,
+    "Bear": 0.10376
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.38184,
+   "appearance": 0.55917,
+   "color_hsv": 0.0149,
+   "mask_px": 513,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.38184,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55917,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.0149,
+     "thr": 0.1214,
+     "pass": false,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1848,
+   "id": 2,
+   "box": [
+    230,
+    151,
+    252,
+    187
+   ],
+   "yolo_score": 0.03228,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.03228
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.45083,
+    "milk": 0.38868,
+    "Mugcup_high": 0.21651,
+    "Sauce_high": 0.20462,
+    "Sikhye_high": 0.19376,
+    "saffron": 0.14644,
+    "Febreze_high": 0.12534,
+    "Bear": 0.09601,
+    "Dinosaur": 0.04739
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.45083,
+   "appearance": 0.56115,
+   "color_hsv": 0.50624,
+   "mask_px": 698,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.45083,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56115,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.50624,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1848,
+   "id": 6,
+   "box": [
+    229,
+    150,
+    253,
+    187
+   ],
+   "yolo_score": 0.04221,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.04221
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.02742
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.55044,
+    "milk": 0.45767,
+    "Sauce_high": 0.18234,
+    "Mugcup_high": 0.1705,
+    "Sikhye_high": 0.15829,
+    "saffron": 0.13546,
+    "Bear": 0.12173,
+    "Febreze_high": 0.10868,
+    "Dinosaur": 0.06561
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.55044,
+   "appearance": 0.55297,
+   "color_hsv": 0.50872,
+   "mask_px": 701,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.55044,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55297,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.50872,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1850,
+   "id": 2,
+   "box": [
+    64,
+    154,
+    86,
+    185
+   ],
+   "yolo_score": 0.34169,
+   "yolo_prompts": [
+    {
+     "prompt": "milk carton",
+     "score": 0.02092
+    },
+    {
+     "prompt": "mug cup",
+     "score": 0.34169
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.05679
+    },
+    {
+     "prompt": "orange bottle",
+     "score": 0.07439
+    },
+    {
+     "prompt": "yellow can",
+     "score": 0.18548
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.40356,
+    "choco_hazelnut_high": 0.3336,
+    "Febreze_high": 0.27707,
+    "Sauce_high": 0.26193,
+    "Sikhye_high": 0.26054,
+    "Mugcup_high": 0.24989,
+    "saffron": 0.24055,
+    "Bear": 0.12929,
+    "Dinosaur": 0.10293
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.40356,
+   "appearance": 0.55362,
+   "color_hsv": 0.0078,
+   "mask_px": 517,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.40356,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55362,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.0078,
+     "thr": 0.1214,
+     "pass": false,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1850,
+   "id": 3,
+   "box": [
+    225,
+    150,
+    249,
+    187
+   ],
+   "yolo_score": 0.0445,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.0445
+    },
+    {
+     "prompt": "mug cup",
+     "score": 0.04423
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.56538,
+    "milk": 0.48848,
+    "Sauce_high": 0.21551,
+    "Mugcup_high": 0.19389,
+    "Sikhye_high": 0.18179,
+    "saffron": 0.16674,
+    "Febreze_high": 0.14341,
+    "Bear": 0.10873,
+    "Dinosaur": 0.06411
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.56538,
+   "appearance": 0.56417,
+   "color_hsv": 0.51552,
+   "mask_px": 728,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.56538,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56417,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.51552,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1852,
+   "id": 3,
+   "box": [
+    221,
+    150,
+    245,
+    187
+   ],
+   "yolo_score": 0.07626,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.04685
+    },
+    {
+     "prompt": "mug cup",
+     "score": 0.07626
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.03088
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.5258,
+    "milk": 0.4117,
+    "Mugcup_high": 0.16759,
+    "Sauce_high": 0.15366,
+    "Sikhye_high": 0.1425,
+    "saffron": 0.11035,
+    "Febreze_high": 0.09505,
+    "Bear": 0.08558,
+    "Dinosaur": 0.03126
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.5258,
+   "appearance": 0.55301,
+   "color_hsv": 0.52281,
+   "mask_px": 745,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.5258,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55301,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.52281,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1852,
+   "id": 5,
+   "box": [
+    60,
+    154,
+    82,
+    185
+   ],
+   "yolo_score": 0.32618,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.32618
+    },
+    {
+     "prompt": "orange bottle",
+     "score": 0.16968
+    },
+    {
+     "prompt": "yellow can",
+     "score": 0.24482
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.41051,
+    "choco_hazelnut_high": 0.33052,
+    "Sauce_high": 0.27097,
+    "Sikhye_high": 0.27064,
+    "Febreze_high": 0.26966,
+    "Mugcup_high": 0.26088,
+    "saffron": 0.22219,
+    "Bear": 0.11787,
+    "Dinosaur": 0.09971
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.41051,
+   "appearance": 0.56658,
+   "color_hsv": 0.00629,
+   "mask_px": 527,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.41051,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56658,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.00629,
+     "thr": 0.1214,
+     "pass": false,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1854,
+   "id": 3,
+   "box": [
+    218,
+    150,
+    242,
+    188
+   ],
+   "yolo_score": 0.03608,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.03608
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.53898,
+    "milk": 0.4957,
+    "Mugcup_high": 0.22236,
+    "Sauce_high": 0.19772,
+    "Sikhye_high": 0.19597,
+    "Febreze_high": 0.1616,
+    "saffron": 0.15956,
+    "Bear": 0.10569,
+    "Dinosaur": 0.06611
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.53898,
+   "appearance": 0.55978,
+   "color_hsv": 0.53653,
+   "mask_px": 764,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.53898,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55978,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.53653,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1854,
+   "id": 4,
+   "box": [
+    56,
+    154,
+    78,
+    185
+   ],
+   "yolo_score": 0.26285,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.19405
+    },
+    {
+     "prompt": "orange bottle",
+     "score": 0.16113
+    },
+    {
+     "prompt": "yellow can",
+     "score": 0.26285
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.36822,
+    "Sikhye_high": 0.35783,
+    "Febreze_high": 0.32553,
+    "Sauce_high": 0.31169,
+    "saffron": 0.27488,
+    "choco_hazelnut_high": 0.27196,
+    "Mugcup_high": 0.27106,
+    "Bear": 0.09834,
+    "Dinosaur": 0.0808
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.36822,
+   "appearance": 0.54912,
+   "color_hsv": 0.00608,
+   "mask_px": 525,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.36822,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.54912,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.00608,
+     "thr": 0.1214,
+     "pass": false,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1854,
+   "id": 6,
+   "box": [
+    217,
+    150,
+    241,
+    188
+   ],
+   "yolo_score": 0.03376,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.03376
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.48609,
+    "milk": 0.41729,
+    "Mugcup_high": 0.20882,
+    "Sauce_high": 0.16763,
+    "Sikhye_high": 0.16343,
+    "saffron": 0.13605,
+    "Febreze_high": 0.12743,
+    "Bear": 0.09455,
+    "Dinosaur": 0.04885
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.48609,
+   "appearance": 0.55538,
+   "color_hsv": 0.53649,
+   "mask_px": 764,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.48609,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55538,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.53649,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1856,
+   "id": 2,
+   "box": [
+    52,
+    154,
+    74,
+    185
+   ],
+   "yolo_score": 0.33688,
+   "yolo_prompts": [
+    {
+     "prompt": "milk carton",
+     "score": 0.02066
+    },
+    {
+     "prompt": "mug cup",
+     "score": 0.33688
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.0324
+    },
+    {
+     "prompt": "orange bottle",
+     "score": 0.1403
+    },
+    {
+     "prompt": "yellow can",
+     "score": 0.25087
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.3636,
+    "Sikhye_high": 0.3186,
+    "Mugcup_high": 0.29347,
+    "Febreze_high": 0.29125,
+    "choco_hazelnut_high": 0.28272,
+    "Sauce_high": 0.2738,
+    "saffron": 0.23036,
+    "Bear": 0.10264,
+    "Dinosaur": 0.07605
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.3636,
+   "appearance": 0.55065,
+   "color_hsv": 0.00875,
+   "mask_px": 529,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.3636,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55065,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.00875,
+     "thr": 0.1214,
+     "pass": false,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1856,
+   "id": 6,
+   "box": [
+    213,
+    150,
+    238,
+    187
+   ],
+   "yolo_score": 0.0894,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.0894
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.41484,
+    "milk": 0.36861,
+    "Mugcup_high": 0.23176,
+    "Sikhye_high": 0.19338,
+    "Sauce_high": 0.18429,
+    "saffron": 0.1275,
+    "Febreze_high": 0.12114,
+    "Bear": 0.07474,
+    "Dinosaur": 0.01796
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.41484,
+   "appearance": 0.5503,
+   "color_hsv": 0.51638,
+   "mask_px": 748,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.41484,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.5503,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.51638,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1858,
+   "id": 7,
+   "box": [
+    48,
+    154,
+    70,
+    185
+   ],
+   "yolo_score": 0.1325,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.1325
+    },
+    {
+     "prompt": "yellow can",
+     "score": 0.03803
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.38083,
+    "Sikhye_high": 0.32695,
+    "Sauce_high": 0.31572,
+    "choco_hazelnut_high": 0.31285,
+    "Febreze_high": 0.31185,
+    "Mugcup_high": 0.27172,
+    "saffron": 0.23662,
+    "Bear": 0.10286,
+    "Dinosaur": 0.06418
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.38083,
+   "appearance": 0.55552,
+   "color_hsv": 0.00724,
+   "mask_px": 534,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.38083,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55552,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.00724,
+     "thr": 0.1214,
+     "pass": false,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1860,
+   "id": 2,
+   "box": [
+    206,
+    150,
+    232,
+    187
+   ],
+   "yolo_score": 0.05962,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.05962
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.02194
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.56852,
+    "milk": 0.49833,
+    "Sauce_high": 0.22625,
+    "Sikhye_high": 0.22043,
+    "Mugcup_high": 0.20984,
+    "saffron": 0.18018,
+    "Febreze_high": 0.1681,
+    "Bear": 0.10482,
+    "Dinosaur": 0.05437
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.56852,
+   "appearance": 0.56471,
+   "color_hsv": 0.52756,
+   "mask_px": 783,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.56852,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56471,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.52756,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1862,
+   "id": 2,
+   "box": [
+    202,
+    150,
+    229,
+    187
+   ],
+   "yolo_score": 0.03958,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.03958
+    },
+    {
+     "prompt": "mug cup",
+     "score": 0.02096
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.03097
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.40522,
+    "milk": 0.37275,
+    "Mugcup_high": 0.24089,
+    "Sauce_high": 0.22346,
+    "Sikhye_high": 0.2176,
+    "saffron": 0.17497,
+    "Febreze_high": 0.17041,
+    "Bear": 0.07141,
+    "Dinosaur": 0.00987
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.40522,
+   "appearance": 0.55463,
+   "color_hsv": 0.52802,
+   "mask_px": 778,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.40522,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55463,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.52802,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1862,
+   "id": 5,
+   "box": [
+    41,
+    153,
+    64,
+    185
+   ],
+   "yolo_score": 0.25038,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.25038
+    },
+    {
+     "prompt": "orange bottle",
+     "score": 0.18955
+    },
+    {
+     "prompt": "yellow can",
+     "score": 0.24713
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.35243,
+    "Sikhye_high": 0.34607,
+    "Mugcup_high": 0.29207,
+    "Sauce_high": 0.28135,
+    "choco_hazelnut_high": 0.27601,
+    "Febreze_high": 0.24775,
+    "saffron": 0.20339,
+    "Bear": 0.07372,
+    "Dinosaur": 0.04348
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.35243,
+   "appearance": 0.5489,
+   "color_hsv": 0.04335,
+   "mask_px": 557,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.35243,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.5489,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.04335,
+     "thr": 0.1214,
+     "pass": false,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1864,
+   "id": 3,
+   "box": [
+    200,
+    151,
+    226,
+    187
+   ],
+   "yolo_score": 0.05249,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.05249
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.47331,
+    "milk": 0.39317,
+    "Mugcup_high": 0.17517,
+    "Sauce_high": 0.15336,
+    "Sikhye_high": 0.14034,
+    "saffron": 0.1065,
+    "Febreze_high": 0.09907,
+    "Bear": 0.07676,
+    "Dinosaur": 0.01305
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.47331,
+   "appearance": 0.5656,
+   "color_hsv": 0.52208,
+   "mask_px": 771,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.47331,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.5656,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.52208,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1864,
+   "id": 8,
+   "box": [
+    201,
+    150,
+    226,
+    187
+   ],
+   "yolo_score": 0.02241,
+   "yolo_prompts": [
+    {
+     "prompt": "mug cup",
+     "score": 0.02241
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.45642,
+    "milk": 0.38576,
+    "Mugcup_high": 0.19597,
+    "Sikhye_high": 0.17788,
+    "Sauce_high": 0.16109,
+    "Febreze_high": 0.1361,
+    "saffron": 0.11554,
+    "Bear": 0.08332,
+    "Dinosaur": 0.02259
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.45642,
+   "appearance": 0.55552,
+   "color_hsv": 0.52209,
+   "mask_px": 770,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.45642,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.55552,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.52209,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1866,
+   "id": 3,
+   "box": [
+    196,
+    151,
+    223,
+    187
+   ],
+   "yolo_score": 0.07526,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.07526
+    },
+    {
+     "prompt": "mug cup",
+     "score": 0.03761
+    },
+    {
+     "prompt": "white jug",
+     "score": 0.03111
+    }
+   ],
+   "semantic_all": {
+    "milk": 0.47222,
+    "choco_hazelnut_high": 0.43457,
+    "Mugcup_high": 0.22777,
+    "Sauce_high": 0.2191,
+    "Sikhye_high": 0.21383,
+    "saffron": 0.16013,
+    "Febreze_high": 0.14384,
+    "Bear": 0.06495,
+    "Dinosaur": 0.02466
+   },
+   "semantic_argmax": "milk",
+   "color_tiebreak_group": [],
+   "owner": "milk",
+   "semantic": 0.47222,
+   "appearance": 0.56503,
+   "color_hsv": 0.19514,
+   "mask_px": 787,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.47222,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56503,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.19514,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  },
+  {
+   "frame": 1868,
+   "id": 3,
+   "box": [
+    194,
+    151,
+    220,
+    187
+   ],
+   "yolo_score": 0.04113,
+   "yolo_prompts": [
+    {
+     "prompt": "maroon box",
+     "score": 0.04113
+    }
+   ],
+   "semantic_all": {
+    "choco_hazelnut_high": 0.48593,
+    "milk": 0.41954,
+    "Mugcup_high": 0.19635,
+    "Sikhye_high": 0.16527,
+    "Sauce_high": 0.16181,
+    "Febreze_high": 0.11695,
+    "saffron": 0.11574,
+    "Bear": 0.08286,
+    "Dinosaur": 0.0228
+   },
+   "semantic_argmax": "choco_hazelnut_high",
+   "color_tiebreak_group": [],
+   "owner": "choco_hazelnut_high",
+   "semantic": 0.48593,
+   "appearance": 0.56063,
+   "color_hsv": 0.52376,
+   "mask_px": 793,
+   "gates": [
+    {
+     "gate": "1_semantic",
+     "score": 0.48593,
+     "thr": 0.35,
+     "pass": true,
+     "evaluated": true
+    },
+    {
+     "gate": "2_appearance",
+     "score": 0.56063,
+     "thr": 0.605,
+     "pass": false,
+     "evaluated": true
+    },
+    {
+     "gate": "3_color_hsv",
+     "score": 0.52376,
+     "thr": 0.1214,
+     "pass": true,
+     "evaluated": false
+    }
+   ],
+   "rejected_by": "2_appearance",
+   "exclusive": null,
+   "cross_object_nms": null,
+   "final_accept": false
+  }
+ ]
+}

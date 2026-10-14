@@ -1,0 +1,604 @@
+{
+ "orig": {
+  "correct": 55,
+  "wrong_absent": 320,
+  "wrong_duplicate": 6,
+  "scene": 55,
+  "wrong_total": 326,
+  "missed_total": 0,
+  "counted_as_missed": 326,
+  "score_pct": 14.4,
+  "absent_top": [
+   [
+    "061_foam_brick",
+    51
+   ],
+   [
+    "037_scissors",
+    47
+   ],
+   [
+    "052_extra_large_clamp",
+    45
+   ],
+   [
+    "051_large_clamp",
+    40
+   ],
+   [
+    "009_gelatin_box",
+    20
+   ],
+   [
+    "036_wood_block",
+    18
+   ]
+  ],
+  "missed_names": []
+ },
+ "orig_th05": {
+  "correct": 54,
+  "wrong_duplicate": 3,
+  "wrong_absent": 26,
+  "scene": 55,
+  "wrong_misplaced": 1,
+  "missed_wrong_only": 1,
+  "wrong_total": 30,
+  "missed_total": 1,
+  "counted_as_missed": 31,
+  "score_pct": 63.5,
+  "absent_top": [
+   [
+    "008_pudding_box",
+    8
+   ],
+   [
+    "061_foam_brick",
+    6
+   ],
+   [
+    "009_gelatin_box",
+    6
+   ],
+   [
+    "005_tomato_soup_can",
+    2
+   ],
+   [
+    "011_banana",
+    1
+   ],
+   [
+    "007_tuna_fish_can",
+    1
+   ]
+  ],
+  "missed_names": [
+   "55:004_sugar_box(wrong only)"
+  ]
+ },
+ "origS_th05": {
+  "correct": 54,
+  "wrong_absent": 130,
+  "wrong_duplicate": 12,
+  "wrong_misplaced": 1,
+  "missed_wrong_only": 1,
+  "scene": 55,
+  "wrong_total": 143,
+  "missed_total": 1,
+  "counted_as_missed": 144,
+  "score_pct": 27.3,
+  "absent_top": [
+   [
+    "061_foam_brick",
+    32
+   ],
+   [
+    "037_scissors",
+    23
+   ],
+   [
+    "052_extra_large_clamp",
+    12
+   ],
+   [
+    "036_wood_block",
+    11
+   ],
+   [
+    "009_gelatin_box",
+    9
+   ],
+   [
+    "008_pudding_box",
+    8
+   ]
+  ],
+  "missed_names": [
+   "48:052_extra_large_clamp(wrong only)"
+  ]
+ },
+ "origS_th06": {
+  "correct": 52,
+  "wrong_duplicate": 1,
+  "wrong_absent": 44,
+  "scene": 55,
+  "missed_never": 2,
+  "wrong_misplaced": 1,
+  "missed_wrong_only": 1,
+  "wrong_total": 46,
+  "missed_total": 3,
+  "counted_as_missed": 49,
+  "score_pct": 51.5,
+  "absent_top": [
+   [
+    "061_foam_brick",
+    14
+   ],
+   [
+    "037_scissors",
+    6
+   ],
+   [
+    "008_pudding_box",
+    6
+   ],
+   [
+    "009_gelatin_box",
+    5
+   ],
+   [
+    "051_large_clamp",
+    3
+   ],
+   [
+    "025_mug",
+    2
+   ]
+  ],
+  "missed_names": [
+   "49:024_bowl",
+   "51:037_scissors(wrong only)",
+   "55:004_sugar_box"
+  ]
+ },
+ "origS_th07": {
+  "correct": 41,
+  "missed_never": 14,
+  "scene": 55,
+  "wrong_absent": 7,
+  "wrong_total": 7,
+  "missed_total": 14,
+  "counted_as_missed": 21,
+  "score_pct": 66.1,
+  "absent_top": [
+   [
+    "009_gelatin_box",
+    3
+   ],
+   [
+    "008_pudding_box",
+    2
+   ],
+   [
+    "007_tuna_fish_can",
+    1
+   ],
+   [
+    "051_large_clamp",
+    1
+   ]
+  ],
+  "missed_names": [
+   "48:051_large_clamp",
+   "48:052_extra_large_clamp",
+   "49:004_sugar_box",
+   "49:024_bowl",
+   "51:037_scissors",
+   "52:019_pitcher_base",
+   "53:010_potted_meat_can",
+   "54:004_sugar_box",
+   "54:051_large_clamp",
+   "55:004_sugar_box",
+   "55:021_bleach_cleanser",
+   "55:036_wood_block",
+   "56:011_banana",
+   "58:008_pudding_box"
+  ]
+ },
+ "v2": {
+  "correct": 39,
+  "wrong_duplicate": 2,
+  "missed_never": 15,
+  "scene": 55,
+  "wrong_absent": 8,
+  "wrong_misplaced": 1,
+  "missed_wrong_only": 1,
+  "wrong_total": 11,
+  "missed_total": 16,
+  "counted_as_missed": 27,
+  "score_pct": 59.1,
+  "absent_top": [
+   [
+    "006_mustard_bottle",
+    4
+   ],
+   [
+    "011_banana",
+    1
+   ],
+   [
+    "010_potted_meat_can",
+    1
+   ],
+   [
+    "051_large_clamp",
+    1
+   ],
+   [
+    "008_pudding_box",
+    1
+   ]
+  ],
+  "missed_names": [
+   "48:007_tuna_fish_can",
+   "48:052_extra_large_clamp",
+   "49:024_bowl",
+   "49:007_tuna_fish_can",
+   "51:021_bleach_cleanser",
+   "52:007_tuna_fish_can",
+   "53:024_bowl",
+   "54:003_cracker_box",
+   "54:021_bleach_cleanser",
+   "55:005_tomato_soup_can",
+   "55:025_mug",
+   "57:040_large_marker",
+   "57:052_extra_large_clamp",
+   "58:008_pudding_box(wrong only)",
+   "59:007_tuna_fish_can",
+   "59:040_large_marker"
+  ]
+ },
+ "m15": {
+  "correct": 40,
+  "wrong_duplicate": 2,
+  "missed_never": 14,
+  "scene": 55,
+  "wrong_absent": 8,
+  "wrong_misplaced": 1,
+  "missed_wrong_only": 1,
+  "wrong_total": 11,
+  "missed_total": 15,
+  "counted_as_missed": 26,
+  "score_pct": 60.6,
+  "absent_top": [
+   [
+    "006_mustard_bottle",
+    4
+   ],
+   [
+    "011_banana",
+    1
+   ],
+   [
+    "025_mug",
+    1
+   ],
+   [
+    "008_pudding_box",
+    1
+   ],
+   [
+    "051_large_clamp",
+    1
+   ]
+  ],
+  "missed_names": [
+   "48:007_tuna_fish_can",
+   "48:052_extra_large_clamp",
+   "49:024_bowl",
+   "49:007_tuna_fish_can",
+   "51:021_bleach_cleanser",
+   "52:007_tuna_fish_can",
+   "54:021_bleach_cleanser",
+   "55:005_tomato_soup_can",
+   "55:025_mug",
+   "56:002_master_chef_can",
+   "57:040_large_marker",
+   "57:052_extra_large_clamp",
+   "58:008_pudding_box(wrong only)",
+   "59:007_tuna_fish_can",
+   "59:040_large_marker"
+  ]
+ },
+ "g13p": {
+  "correct": 49,
+  "wrong_misplaced": 1,
+  "missed_never": 5,
+  "missed_wrong_only": 1,
+  "scene": 55,
+  "wrong_absent": 11,
+  "wrong_total": 12,
+  "missed_total": 6,
+  "counted_as_missed": 18,
+  "score_pct": 73.1,
+  "absent_top": [
+   [
+    "006_mustard_bottle",
+    4
+   ],
+   [
+    "052_extra_large_clamp",
+    2
+   ],
+   [
+    "011_banana",
+    1
+   ],
+   [
+    "009_gelatin_box",
+    1
+   ],
+   [
+    "008_pudding_box",
+    1
+   ],
+   [
+    "051_large_clamp",
+    1
+   ]
+  ],
+  "missed_names": [
+   "48:025_mug",
+   "48:051_large_clamp(wrong only)",
+   "49:024_bowl",
+   "49:007_tuna_fish_can",
+   "53:024_bowl",
+   "55:005_tomato_soup_can"
+  ]
+ },
+ "g13p_nover": {
+  "correct": 50,
+  "wrong_absent": 185,
+  "wrong_misplaced": 4,
+  "wrong_duplicate": 4,
+  "missed_wrong_only": 4,
+  "scene": 55,
+  "missed_never": 1,
+  "wrong_total": 193,
+  "missed_total": 5,
+  "counted_as_missed": 198,
+  "score_pct": 20.2,
+  "absent_top": [
+   [
+    "061_foam_brick",
+    22
+   ],
+   [
+    "025_mug",
+    20
+   ],
+   [
+    "008_pudding_box",
+    17
+   ],
+   [
+    "052_extra_large_clamp",
+    14
+   ],
+   [
+    "003_cracker_box",
+    13
+   ],
+   [
+    "009_gelatin_box",
+    12
+   ]
+  ],
+  "missed_names": [
+   "48:051_large_clamp(wrong only)",
+   "49:007_tuna_fish_can(wrong only)",
+   "51:021_bleach_cleanser(wrong only)",
+   "55:005_tomato_soup_can",
+   "58:009_gelatin_box(wrong only)"
+  ]
+ },
+ "hybL05": {
+  "correct": 52,
+  "wrong_duplicate": 2,
+  "scene": 55,
+  "wrong_absent": 8,
+  "missed_never": 3,
+  "wrong_total": 10,
+  "missed_total": 3,
+  "counted_as_missed": 13,
+  "score_pct": 80.0,
+  "absent_top": [
+   [
+    "008_pudding_box",
+    4
+   ],
+   [
+    "009_gelatin_box",
+    2
+   ],
+   [
+    "052_extra_large_clamp",
+    1
+   ],
+   [
+    "051_large_clamp",
+    1
+   ]
+  ],
+  "missed_names": [
+   "49:024_bowl",
+   "53:024_bowl",
+   "55:004_sugar_box"
+  ]
+ },
+ "hybS05": {
+  "correct": 54,
+  "wrong_duplicate": 1,
+  "wrong_absent": 14,
+  "missed_never": 1,
+  "scene": 55,
+  "wrong_total": 15,
+  "missed_total": 1,
+  "counted_as_missed": 16,
+  "score_pct": 77.1,
+  "absent_top": [
+   [
+    "009_gelatin_box",
+    4
+   ],
+   [
+    "008_pudding_box",
+    3
+   ],
+   [
+    "037_scissors",
+    2
+   ],
+   [
+    "061_foam_brick",
+    2
+   ],
+   [
+    "021_bleach_cleanser",
+    1
+   ],
+   [
+    "052_extra_large_clamp",
+    1
+   ]
+  ],
+  "missed_names": [
+   "48:052_extra_large_clamp"
+  ]
+ },
+ "hybS05_nover": {
+  "correct": 55,
+  "wrong_absent": 154,
+  "wrong_duplicate": 6,
+  "scene": 55,
+  "wrong_total": 160,
+  "missed_total": 0,
+  "counted_as_missed": 160,
+  "score_pct": 25.6,
+  "absent_top": [
+   [
+    "061_foam_brick",
+    33
+   ],
+   [
+    "037_scissors",
+    28
+   ],
+   [
+    "052_extra_large_clamp",
+    21
+   ],
+   [
+    "036_wood_block",
+    12
+   ],
+   [
+    "051_large_clamp",
+    11
+   ],
+   [
+    "009_gelatin_box",
+    9
+   ]
+  ],
+  "missed_names": []
+ },
+ "hybS05_r2": {
+  "correct": 52,
+  "wrong_duplicate": 1,
+  "wrong_absent": 15,
+  "missed_never": 3,
+  "scene": 55,
+  "wrong_total": 16,
+  "missed_total": 3,
+  "counted_as_missed": 19,
+  "score_pct": 73.2,
+  "absent_top": [
+   [
+    "008_pudding_box",
+    4
+   ],
+   [
+    "009_gelatin_box",
+    3
+   ],
+   [
+    "061_foam_brick",
+    2
+   ],
+   [
+    "021_bleach_cleanser",
+    2
+   ],
+   [
+    "037_scissors",
+    1
+   ],
+   [
+    "052_extra_large_clamp",
+    1
+   ]
+  ],
+  "missed_names": [
+   "48:052_extra_large_clamp",
+   "53:024_bowl",
+   "55:004_sugar_box"
+  ]
+ },
+ "gateA": {
+  "correct": 39,
+  "wrong_duplicate": 1,
+  "missed_never": 15,
+  "scene": 55,
+  "wrong_absent": 7,
+  "wrong_misplaced": 1,
+  "missed_wrong_only": 1,
+  "wrong_total": 9,
+  "missed_total": 16,
+  "counted_as_missed": 25,
+  "score_pct": 60.9,
+  "absent_top": [
+   [
+    "006_mustard_bottle",
+    4
+   ],
+   [
+    "061_foam_brick",
+    2
+   ],
+   [
+    "051_large_clamp",
+    1
+   ]
+  ],
+  "missed_names": [
+   "48:007_tuna_fish_can",
+   "48:052_extra_large_clamp",
+   "49:024_bowl",
+   "49:007_tuna_fish_can",
+   "51:021_bleach_cleanser",
+   "52:007_tuna_fish_can",
+   "54:003_cracker_box",
+   "54:021_bleach_cleanser",
+   "55:005_tomato_soup_can",
+   "55:025_mug",
+   "56:002_master_chef_can",
+   "57:040_large_marker",
+   "57:052_extra_large_clamp",
+   "58:008_pudding_box(wrong only)",
+   "59:007_tuna_fish_can",
+   "59:040_large_marker"
+  ]
+ }
+}

@@ -45,7 +45,10 @@ h1 { font-size: 18px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
 .pane-head .legend { margin-left: auto; display: flex; gap: 12px; flex-wrap: wrap; }
 .sw { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: 3px; margin-right: 5px; }
 .video-wrap { position: relative; background: #000; aspect-ratio: 4 / 3; }
-.video-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.video-wrap canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.paused-badge { position: absolute; left: 10px; top: 10px; font-family: var(--mono); font-size: 11.5px;
+                color: var(--interp); border: 1px solid currentColor; border-radius: 4px; padding: 1px 8px;
+                background: rgba(12,16,20,.75); }
 .video-wrap .waiting { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px; text-align: center; padding: 16px; }
 #scene { position: relative; aspect-ratio: 4 / 3; }
 #scene canvas { display: block; width: 100% !important; height: 100% !important; }
@@ -70,6 +73,21 @@ td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numer
 td .sw { width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
 .empty { color: var(--faint); padding: 14px 10px; }
 
+/* run picker: 날짜 > 데이터셋 > 백엔드, each row a set of tabs; the backend tab starts the run */
+.picker { background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; margin-bottom: 12px; }
+.picker-row { display: flex; align-items: center; gap: 8px; padding: 7px 12px; flex-wrap: wrap; border-bottom: 1px solid var(--rule); }
+.picker-row:last-child { border-bottom: 0; }
+.picker-row > .lab { font-size: 11.5px; color: var(--muted); min-width: 124px; }
+.picker-row .note { font-size: 11.5px; color: var(--faint); font-family: var(--mono); margin-left: auto; }
+.tab { font-family: var(--mono); font-size: 12px; padding: 3px 10px; border-radius: 6px; border: 1px solid var(--rule);
+       background: transparent; color: var(--muted); cursor: pointer; }
+.tab:hover:not(:disabled) { color: var(--ink); border-color: var(--faint); }
+.tab[aria-selected="true"] { color: var(--ground); background: var(--accent); border-color: var(--accent); font-weight: 500; }
+.tab:disabled { cursor: not-allowed; opacity: .38; }
+.tab.running { border-style: dashed; }
+.tab .sub { font-size: 10.5px; opacity: .75; margin-left: 5px; }
+.picker .msg { padding: 7px 12px; font-size: 12px; color: var(--interp); border-top: 1px solid var(--rule); }
+
 @media (max-width: 980px) {
   .views { grid-template-columns: 1fr; }
   .strip { grid-template-columns: 1fr; }
@@ -89,10 +107,23 @@ td .sw { width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
   <span class="clock">재생 <b id="clock">0.0</b> / <span id="duration">–</span> s · 화면 프레임 <b id="frame-idx">–</b></span>
 </header>
 
+<div class="picker" id="picker" hidden>
+  <div class="picker-row"><span class="lab">입력데이터 생성 날짜</span><span id="pick-dates"></span>
+    <span class="note" id="pick-mac"></span></div>
+  <div class="picker-row"><span class="lab">입력데이터 이름</span><span id="pick-datasets"></span>
+    <span class="note" id="pick-streams"></span></div>
+  <div class="picker-row"><span class="lab">SLAM 백엔드 (클릭 = 실행)</span><span id="pick-backends"></span>
+    <span class="note" id="pick-note"></span></div>
+  <div class="picker-row"><span class="lab">특징점 수 (클릭 = 재실행)</span><span id="pick-features"></span>
+    <span class="note" id="pick-feat-note"></span></div>
+  <div class="msg" id="pick-msg" hidden></div>
+</div>
+
 <div class="views">
   <section class="pane">
     <div class="pane-head">
       <b>SAM 카메라 영상</b><span>객체 박스 + 객체 3축</span>
+      <button class="tab" id="pause-btn" aria-pressed="false">일시정지</button>
       <span class="legend">
         <span><span class="sw" style="background:var(--x)"></span>X</span>
         <span><span class="sw" style="background:var(--y)"></span>Y</span>
@@ -101,8 +132,9 @@ td .sw { width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
       </span>
     </div>
     <div class="video-wrap">
-      <img id="video" alt="SAM 카메라 영상과 객체 오버레이">
-      <div class="waiting" id="video-wait">SAM-6D와 ORB-SLAM3가 모델을 불러오면 재생이 시작됩니다.</div>
+      <canvas id="video" width="640" height="480" aria-label="SAM 카메라 영상과 객체 오버레이"></canvas>
+      <div class="waiting" id="video-wait">SAM-6D와 SLAM 이 모델을 불러오면 재생이 시작됩니다.</div>
+      <div class="paused-badge" id="paused-badge" hidden>일시정지</div>
     </div>
   </section>
   <section class="pane">
@@ -119,7 +151,7 @@ td .sw { width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
 
 <div class="strip">
   <div class="card">
-    <h2><span id="slam-name">SLAM</span> · 219.113 <span class="tag" id="features">f2000</span></h2>
+    <h2><span id="slam-name">SLAM</span> · 219.111 <span class="tag" id="features">f2000</span></h2>
     <dl class="kv">
       <dt>추적 상태</dt><dd><span class="pill idle" id="slam-state">대기</span></dd>
       <dt>받은 포즈 (OK)</dt><dd id="slam-count">–</dd>
@@ -195,6 +227,11 @@ const world = new THREE.Group();
 world.matrixAutoUpdate = false;
 world.matrix.set(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1);
 // camera SLAM worlds are optical frames (y down, z forward); a LiDAR world is z-up
+const SLAM_NAMES = {
+  orbslam3: "ORB-SLAM3", orbslam3_gyro: "ORB-SLAM3 + IMU", rtabmap: "RTAB-Map",
+  lidar_kiss_icp: "LiDAR KISS-ICP", lidar_hdl_graph_slam: "LiDAR hdl_graph_slam",
+};
+const isLidarSource = (src) => typeof src === "string" && src.startsWith("lidar");
 let WORLD_ZUP = false;
 function toScreen(p) { return WORLD_ZUP ? new THREE.Vector3(p[0], p[2], -p[1]) : new THREE.Vector3(p[0], -p[1], -p[2]); }
 function setWorldConvention(zup) {
@@ -350,8 +387,8 @@ function updatePanels(p) {
   $("duration").textContent = s.duration_s ?? "–";
   $("frame-idx").textContent = p.frame_idx;
   $("features").textContent = `f${s.features}`;
-  $("slam-name").textContent = s.slam_source === "rtabmap" ? "RTAB-Map" : s.slam_source === "lidar_kiss_icp" ? "LiDAR KISS-ICP" : "ORB-SLAM3";
-  $("features").hidden = s.slam_source === "lidar_kiss_icp";
+  $("slam-name").textContent = SLAM_NAMES[s.slam_source] || "ORB-SLAM3";
+  $("features").hidden = isLidarSource(s.slam_source);
 
   const st = s.slam_state;
   pill($("slam-state"), st, st === "OK" || st === "OK_KLT" ? "ok" : st === "NO_DATA" ? "idle" : st.includes("LOST") ? "bad" : "warn");
@@ -393,15 +430,49 @@ function updatePanels(p) {
   }).join("");
 }
 
+// ── video pane ─────────────────────────────────────────────────────────────
+// Assigning a ~40 KB base64 data: URI to an <img> at 15 Hz makes the element blank while the
+// browser parses and decodes it, which reads as a flicker. Decoding to an ImageBitmap off the
+// main thread and blitting it onto a canvas never clears what is already on screen; frames
+// that finish decoding out of order are dropped rather than drawn late.
+const vctx = $("video").getContext("2d", { alpha: false });
+let vseq = 0, vdrawn = 0;
+function showFrame(b64) {
+  const seq = ++vseq;
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  createImageBitmap(new Blob([bytes], { type: "image/jpeg" })).then(bmp => {
+    if (seq < vdrawn) { bmp.close(); return; }          // a newer frame already landed
+    vdrawn = seq;
+    const c = $("video");
+    if (c.width !== bmp.width || c.height !== bmp.height) { c.width = bmp.width; c.height = bmp.height; }
+    vctx.drawImage(bmp, 0, 0);
+    bmp.close();
+    $("video-wait").hidden = true;
+  }).catch(() => {});
+}
+
+// 일시정지 freezes the view only. The replay on the Mac and SAM-6D here keep running — they
+// are paced to the recording's own clock and cannot be held without losing sync — so this is
+// a freeze for looking at a frame, not a pause of the run.
+let paused = false;
+$("pause-btn").onclick = () => {
+  paused = !paused;
+  $("pause-btn").textContent = paused ? "재생" : "일시정지";
+  $("pause-btn").setAttribute("aria-pressed", String(paused));
+  $("paused-badge").hidden = !paused;
+};
+
 // ── stream ─────────────────────────────────────────────────────────────────
 const es = new EventSource("/events");
 es.onmessage = ev => {
   const p = JSON.parse(ev.data);
   if (p.type === "init") { updateTrajectory(p.trajectory); return; }
   if (p.type !== "frame") return;
-  $("video").src = "data:image/jpeg;base64," + p.jpeg;
-  $("video-wait").hidden = true;
-  setWorldConvention(p.stats && p.stats.slam_source === "lidar_kiss_icp");
+  if (paused) return;
+  showFrame(p.jpeg);
+  setWorldConvention(p.stats && isLidarSource(p.stats.slam_source));
   if (p.trajectory) updateTrajectory(p.trajectory);
   setMatrix(camSlam, p.T_w_slam);
   setMatrix(camSam, p.T_w_sam);
@@ -417,6 +488,104 @@ es.onmessage = ev => {
   updatePanels(p);
 };
 es.onerror = () => { $("run-status").textContent = "허브 연결 끊김 — 다시 연결하는 중"; $("live-dot").className = "dot"; };
+
+// ── run picker ─────────────────────────────────────────────────────────────
+// /catalog is 날짜 > 데이터셋 > 백엔드, with each backend already marked runnable or not
+// (the Mac must hold the SLAM source, this PC the SAM stream, and the rig RT must exist).
+// Clicking a runnable backend POSTs /run; the hub then restarts itself onto that
+// dataset/backend, so the stream drops and the EventSource above reconnects on its own.
+let cat = null, pickDate = null, pickSet = null, pickFeat = null, starting = false;
+
+const el = (html) => { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content.firstChild; };
+const datasetsOf = (date) => (cat.dates.find(d => d.date === date) || { datasets: [] }).datasets;
+const currentSet = () => datasetsOf(pickDate).find(s => s.name === pickSet) || datasetsOf(pickDate)[0];
+
+function tab(text, sel, on, { disabled = false, title = "", cls = "" } = {}) {
+  const b = el(`<button class="tab ${cls}" aria-selected="${sel}" ${disabled ? "disabled" : ""}></button>`);
+  b.innerHTML = text;
+  if (title) b.title = title;
+  if (!disabled) b.onclick = on;
+  return b;
+}
+
+function renderPicker() {
+  if (!cat || !cat.dates.length) return;
+  const cur = cat.current || {};
+  $("picker").hidden = false;
+  $("pick-mac").textContent = cat.mac_reachable ? "" : "Mac 목록을 못 읽음 — 이 PC 기준으로만 표시";
+
+  const dates = $("pick-dates"); dates.innerHTML = "";
+  for (const d of cat.dates) {
+    dates.append(tab(d.date, d.date === pickDate, () => { pickDate = d.date; pickSet = null; renderPicker(); }));
+  }
+
+  const sets = $("pick-datasets"); sets.innerHTML = "";
+  const list = datasetsOf(pickDate);
+  for (const s of list) {
+    const sel = s.name === (currentSet() || {}).name;
+    sets.append(tab(`${s.short}${s.duration_s ? `<span class="sub">${s.duration_s}s</span>` : ""}`,
+      sel, () => { pickSet = s.name; renderPicker(); }, { title: s.name }));
+  }
+  const set = currentSet();
+  $("pick-streams").textContent = set ? set.streams.join(" · ") : "";
+
+  const backs = $("pick-backends"); backs.innerHTML = "";
+  let note = "";
+  // the backend this hub is actually replaying, when it is the dataset on screen
+  const live = set && set.name === cur.dataset ? set.backends.find(b => b.id === cur.backend) : null;
+  for (const b of (set ? set.backends : [])) {
+    const running = b === live;
+    if (running && b.extrinsic_provenance === "borrowed") note = "RT 는 같은 날 다른 녹화에서 차용 — 시계 보정값(sam_tau_s)은 이 녹화에서 측정한 값이 아닙니다";
+    backs.append(tab(b.label, running, () => startRun(set.name, b.id, pickFeat), {
+      disabled: !b.runnable || starting,
+      cls: running ? "running" : "",
+      title: b.runnable ? (b.extrinsic_provenance === "borrowed" ? "RT 차용 (같은 날 다른 녹화)" : b.extrinsic || "")
+                        : b.reason,
+    }));
+  }
+  $("pick-note").textContent = note;
+
+  // The feature count belongs to a run, not to a plan: it is live only while a backend that
+  // uses one is replaying, and clicking a size restarts that same run at it.
+  const feats = $("pick-features"); feats.innerHTML = "";
+  const sizeable = !!(live && live.sized);
+  for (const f of (cat.features || [])) {
+    feats.append(tab(`f${f}`, f === pickFeat, () => startRun(cur.dataset, cur.backend, f),
+                     { disabled: !sizeable || starting,
+                       title: sizeable ? `${live.label} 을 f${f} 로 다시 실행` : "" }));
+  }
+  $("pick-feat-note").textContent =
+    sizeable ? `${live.label} 에 적용 중` :
+    live ? `${live.label} — 특징점 수를 쓰지 않는 백엔드` :
+           "ORB-SLAM3 · ORB-SLAM3 + IMU · RTAB-Map 실행 중에만 바꿀 수 있습니다";
+}
+
+function startRun(dataset, backend, features) {
+  starting = true; renderPicker();
+  $("pick-msg").hidden = false;
+  $("pick-msg").textContent = "실행 요청을 보냈습니다 — 허브가 재시작합니다 (SAM-6D 모델 로딩까지 20~40초)";
+  fetch("/run", { method: "POST", headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ dataset, backend, features }) })
+    .then(r => r.json())
+    .then(r => { if (!r.ok) { starting = false; $("pick-msg").textContent = "실행 불가: " + r.message; renderPicker(); } })
+    .catch(() => {});           // the hub exec()s away mid-request; the reconnect below covers it
+}
+
+function loadCatalog(refresh) {
+  return fetch("/catalog" + (refresh ? "?refresh=1" : "")).then(r => r.json()).then(d => {
+    cat = d; starting = false;
+    const cur = d.current || {};
+    if (cur.dataset) { pickDate = (cur.dataset.match(/^\d{6}/) || ["기타"])[0]; pickSet = cur.dataset; }
+    else if (!pickDate) { pickDate = d.dates[0] && d.dates[0].date; }
+    if (cur.features) pickFeat = cur.features;
+    else if (pickFeat == null) pickFeat = (d.features || [])[0] ?? null;
+    $("pick-msg").hidden = true;
+    renderPicker();
+  }).catch(() => {});
+}
+loadCatalog(false);
+// after a restart the page reconnects to a different run, so re-read which tab is active
+es.addEventListener("open", () => loadCatalog(false));
 </script>
 </body>
 </html>

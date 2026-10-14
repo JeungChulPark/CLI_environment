@@ -1,0 +1,51 @@
+"""paper_etrij_261003 문서 묶기: 개별 문서(개별문서/NN_*.md)를 주제별 묶음(A~E) 하나씩의 .md/.html 로 이어 붙이고 index.html 을 만든다.
+내용은 바꾸지 않고 제목 단계만 한 칸 내린다(# → ##). 개별 문서를 고친 뒤 `python3 build_bundles.py` 로 다시 생성."""
+import re, pathlib, markdown, datetime
+ROOT = pathlib.Path(__file__).resolve().parent; SRC = ROOT / "개별문서"
+CSS = (ROOT / "style.css").read_text()
+BUNDLES = [
+ ("A_논문_기획_투고처_비교대상_목차", "논문 기획과 원고 — 투고처 검토, 추가 실험 계획, 비교 대상 논문, 목차, 재시작 메모, 논문 비교표 설계(17), 원고 v0.3 · 상태 전이 수식 작업 기록(19), 다른 장비(4090 · 5090)에서 다시 돌리기 안내(26)",
+  ["00_투고처_검토", "01_추가실험_계획", "02_비교대상_논문", "03_목차_v0.2", "08_재시작_메모", "17_논문_비교표_설계_개선안3_261008", "19_작업기록_원고v0.3_3080반복_261010", "26_다른장비_재현_안내_4090_5090_261011"]),
+ ("B_한장평가_YCB-V_900장", "한 장 평가(YCB-V 900장·36장) — 기준 시스템 비교, 단계별 분해(L0→L4), 4090 확인 실행, 인식 방법 4가지, ViT-S 대 ViT-L, 개선안 3·군집 먼저 900장과 같은 물체끼리 ADD-S(16), 연휴 실험 — 다른 GPU 시간 · 다른 데이터셋 · FoundationPose · 관문 곡선(18)",
+  ["04_비교실험_결과", "06_단계별_분해실험", "09_4090_확인실행_261006", "11_인식방법_비교표_261007", "12_ViT-S_ViT-L_비교표_261007", "16_한장평가_개선안3_군집먼저_900장_261007", "18_연휴실험_261008"]),
+ ("C_실시간_객체지도", "실시간 객체 지도 — 실시간 비교 실험(05), 실시간 비교표(08), 4090 재측정(10), 원본 0.5 대 개선안 전 장면(13), 4090 여섯 구성·검증 수정·군집 먼저(15), 260901 실 데이터 3회 반복 3080(22)",
+  ["05_실시간_지도_비교실험", "08_실시간_비교표", "10_실시간_비교표_261006", "13_실시간_원본_개선안_비교표_261007", "15_실시간_기술조합_4090_261007", "22_260901_반복측정_3080_261010"]),
+ ("D_전체_비교표_07", "전체 비교표(07) — 2026-10-05~07 노트북 실험 모음(한 장 평가 + 실시간 + 마스크·판정·검증 연구). 다른 묶음의 수치 출처",
+  ["07_전체_비교표"]),
+ ("E_기술_설명_원본_대_개선안", "방법 설명 — 원본 SAM-6D 와 우리 기술/개선안의 단계별 차이, 관문·독점 배정·배정 대안·PEM·자세 검증, 개선안 목록, 논문 논리",
+  ["14_기술_상세_원본_대_개선안_261007"]),
+ ("F_공간객체상태지도를_위한_논문_비교", "공간 객체 상태 지도를 위한 논문 비교 — 요약(25), 제안 대 FM-Fusion 대 DualMap: YCB-V(20), ObChange-Kitchen 재방문(21), 실 데이터 녹화 5개(23), 하루 뒤 재실행(24), 제안 방법을 RTX 4090 에서 다시 돌림(27)",
+  ["25_공간객체상태지도_논문비교_요약_261011", "20_객체지도_비교_FMFusion_DualMap_261010", "21_ObChange_상태지도_비교_261010", "23_실데이터_객체지도_비교_261010", "24_실데이터_실시간_재실행_23대비_261011", "27_객체지도_비교_4090_재실행_261012"]),
+]
+def shift(md):
+    out = []; fence = False
+    for line in md.splitlines():
+        if line.startswith("```"): fence = not fence
+        if not fence and re.match(r"^#{1,5} ", line): line = "#" + line
+        out.append(line)
+    return "\n".join(out)
+def html(md, title):
+    body = markdown.markdown(md, extensions=["tables", "fenced_code", "toc"]).replace("<table>", '<div class="tw"><table>').replace("</table>", "</table></div>")
+    return f'<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{title}</title><style>{CSS}</style></head><body><main>{body}</main></body></html>'
+rows = []
+for key, desc, parts in BUNDLES:
+    chapters, toc = [], []
+    for p in parts:
+        f = SRC / f"{p}.md"
+        if not f.exists(): print("missing", f); continue
+        md = f.read_text(); title = md.splitlines()[0].lstrip("# ").strip()
+        toc.append(f"- **{p}** — {title}")
+        chapters.append(f"\n\n---\n\n<a id=\"{p}\"></a>\n\n" + shift(md))
+    head = f"# {key.split('_',1)[1].replace('_',' ')}\n\n> {desc}. 개별 문서 {len(parts)}개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 원문은 `개별문서/` 폴더에 있습니다. 생성 {datetime.date.today()}.\n\n**이 묶음의 장**\n\n" + "\n".join(toc) + "\n\n[TOC]\n"
+    md = head + "".join(chapters)
+    (ROOT / f"{key}.md").write_text(md); (ROOT / f"{key}.html").write_text(html(md, key.replace("_", " ")))
+    rows.append((key, desc, parts)); print("built", key, len(md.splitlines()), "lines")
+li = "".join(f'<li><a href="{k}.html"><b>{k}</b></a> — {d}<br><small>{", ".join(p)}</small></li>' for k, d, p in rows)
+others = sorted(x.name for x in SRC.glob("*.html"))
+idx = f'''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>paper_etrij_261003 문서 색인</title><style>{CSS}</style></head><body><main>
+<h1>ETRI Journal 논문 문서 색인 (paper_etrij_261003)</h1>
+<p>비슷한 실험을 묶은 여섯 문서(A~F)입니다. 개별 문서 원문은 <a href="개별문서/">개별문서/</a> 에 있습니다. 갱신 {datetime.date.today()}.</p>
+<h2>묶음</h2><ul>{li}</ul>
+<h2>개별 문서 (원문)</h2><ul>{"".join(f'<li><a href="개별문서/{n}">{n}</a></li>' for n in others)}</ul>
+<p>원고: <code>etrij/</code>, <code>ko/</code>, <code>manuscript_en.md</code> · 코드·결과: <code>src/</code></p></main></body></html>'''
+(ROOT / "index.html").write_text(idx); print("index.html written")

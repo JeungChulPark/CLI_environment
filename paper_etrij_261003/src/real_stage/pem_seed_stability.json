@@ -1,0 +1,171 @@
+{
+ "ism_accepted": [
+  "Dinosaur",
+  "Febreze_high",
+  "milk",
+  "saffron"
+ ],
+ "figure_seed": 7,
+ "accept_rate": {
+  "Dinosaur": 0.2,
+  "Febreze_high": 1.0,
+  "milk": 0.9,
+  "saffron": 1.0
+ },
+ "runs": [
+  {
+   "seed": 0,
+   "accepted": [
+    "Febreze_high",
+    "milk",
+    "saffron"
+   ],
+   "rejected": [
+    {
+     "object": "Dinosaur",
+     "reason": "final_texture_below_threshold",
+     "mask_iou": 0.81765,
+     "texture_score": 0.43658054
+    }
+   ]
+  },
+  {
+   "seed": 1,
+   "accepted": [
+    "Febreze_high",
+    "milk",
+    "saffron"
+   ],
+   "rejected": [
+    {
+     "object": "Dinosaur",
+     "reason": "final_texture_below_threshold",
+     "mask_iou": 0.814557,
+     "texture_score": 0.44252259
+    }
+   ]
+  },
+  {
+   "seed": 2,
+   "accepted": [
+    "Febreze_high",
+    "milk",
+    "saffron"
+   ],
+   "rejected": [
+    {
+     "object": "Dinosaur",
+     "reason": "final_texture_below_threshold",
+     "mask_iou": 0.798824,
+     "texture_score": 0.43103856
+    }
+   ]
+  },
+  {
+   "seed": 3,
+   "accepted": [
+    "Febreze_high",
+    "milk",
+    "saffron"
+   ],
+   "rejected": [
+    {
+     "object": "Dinosaur",
+     "reason": "final_texture_below_threshold",
+     "mask_iou": 0.781467,
+     "texture_score": 0.43494499
+    }
+   ]
+  },
+  {
+   "seed": 4,
+   "accepted": [
+    "Febreze_high",
+    "milk",
+    "saffron"
+   ],
+   "rejected": [
+    {
+     "object": "Dinosaur",
+     "reason": "final_texture_below_threshold",
+     "mask_iou": 0.817983,
+     "texture_score": 0.44443506
+    }
+   ]
+  },
+  {
+   "seed": 5,
+   "accepted": [
+    "Febreze_high",
+    "milk",
+    "saffron"
+   ],
+   "rejected": [
+    {
+     "object": "Dinosaur",
+     "reason": "final_texture_below_threshold",
+     "mask_iou": 0.815952,
+     "texture_score": 0.44033939
+    }
+   ]
+  },
+  {
+   "seed": 6,
+   "accepted": [
+    "Dinosaur",
+    "Febreze_high",
+    "saffron"
+   ],
+   "rejected": [
+    {
+     "object": "milk",
+     "reason": "convergence_insufficient",
+     "mask_iou": 0.862992,
+     "texture_score": 0.67123681
+    }
+   ]
+  },
+  {
+   "seed": 7,
+   "accepted": [
+    "Dinosaur",
+    "Febreze_high",
+    "milk",
+    "saffron"
+   ],
+   "rejected": []
+  },
+  {
+   "seed": 8,
+   "accepted": [
+    "Febreze_high",
+    "milk",
+    "saffron"
+   ],
+   "rejected": [
+    {
+     "object": "Dinosaur",
+     "reason": "final_texture_below_threshold",
+     "mask_iou": 0.804779,
+     "texture_score": 0.44702628
+    }
+   ]
+  },
+  {
+   "seed": 9,
+   "accepted": [
+    "Febreze_high",
+    "milk",
+    "saffron"
+   ],
+   "rejected": [
+    {
+     "object": "Dinosaur",
+     "reason": "final_texture_below_threshold",
+     "mask_iou": 0.822964,
+     "texture_score": 0.44374719
+    }
+   ]
+  }
+ ]
+}

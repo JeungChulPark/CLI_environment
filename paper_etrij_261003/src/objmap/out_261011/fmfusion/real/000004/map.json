@@ -1,0 +1,429 @@
+{
+ "units": "m",
+ "frame": "world",
+ "method": "FM-Fusion",
+ "dataset": "real",
+ "scene": 4,
+ "objects": [
+  {
+   "id": 0,
+   "label": "milk",
+   "points": "points/0.npy",
+   "score": 1.0,
+   "n_obs": 159
+  },
+  {
+   "id": 1,
+   "label": "choco_hazelnut_high",
+   "points": "points/1.npy",
+   "score": 1.0,
+   "n_obs": 134
+  },
+  {
+   "id": 2,
+   "label": "Dinosaur",
+   "points": "points/2.npy",
+   "score": 1.0,
+   "n_obs": 81
+  },
+  {
+   "id": 3,
+   "label": "choco_hazelnut_high",
+   "points": "points/3.npy",
+   "score": 1.0,
+   "n_obs": 11
+  },
+  {
+   "id": 4,
+   "label": "Dinosaur",
+   "points": "points/4.npy",
+   "score": 1.0,
+   "n_obs": 47
+  },
+  {
+   "id": 5,
+   "label": "choco_hazelnut_high",
+   "points": "points/5.npy",
+   "score": 1.0,
+   "n_obs": 158
+  },
+  {
+   "id": 6,
+   "label": "milk",
+   "points": "points/6.npy",
+   "score": 0.96,
+   "n_obs": 193
+  },
+  {
+   "id": 7,
+   "label": "Dinosaur",
+   "points": "points/7.npy",
+   "score": 1.0,
+   "n_obs": 105
+  },
+  {
+   "id": 8,
+   "label": "saffron",
+   "points": "points/8.npy",
+   "score": 0.98,
+   "n_obs": 109
+  },
+  {
+   "id": 9,
+   "label": "Bear",
+   "points": "points/9.npy",
+   "score": 1.0,
+   "n_obs": 123
+  },
+  {
+   "id": 10,
+   "label": "choco_hazelnut_high",
+   "points": "points/10.npy",
+   "score": 1.0,
+   "n_obs": 5
+  },
+  {
+   "id": 11,
+   "label": "Febreze_high",
+   "points": "points/11.npy",
+   "score": 1.0,
+   "n_obs": 21
+  },
+  {
+   "id": 12,
+   "label": "Mugcup_high",
+   "points": "points/12.npy",
+   "score": 1.0,
+   "n_obs": 22
+  },
+  {
+   "id": 13,
+   "label": "saffron",
+   "points": "points/13.npy",
+   "score": 1.0,
+   "n_obs": 143
+  },
+  {
+   "id": 14,
+   "label": "Febreze_high",
+   "points": "points/14.npy",
+   "score": 1.0,
+   "n_obs": 48
+  },
+  {
+   "id": 15,
+   "label": "choco_hazelnut_high",
+   "points": "points/15.npy",
+   "score": 1.0,
+   "n_obs": 6
+  },
+  {
+   "id": 16,
+   "label": "Dinosaur",
+   "points": "points/16.npy",
+   "score": 0.89,
+   "n_obs": 4
+  },
+  {
+   "id": 17,
+   "label": "Mugcup_high",
+   "points": "points/17.npy",
+   "score": 0.99,
+   "n_obs": 12
+  },
+  {
+   "id": 18,
+   "label": "choco_hazelnut_high",
+   "points": "points/18.npy",
+   "score": 0.89,
+   "n_obs": 7
+  },
+  {
+   "id": 19,
+   "label": "choco_hazelnut_high",
+   "points": "points/19.npy",
+   "score": 1.0,
+   "n_obs": 5
+  },
+  {
+   "id": 20,
+   "label": "Mugcup_high",
+   "points": "points/20.npy",
+   "score": 1.0,
+   "n_obs": 139
+  },
+  {
+   "id": 21,
+   "label": "choco_hazelnut_high",
+   "points": "points/21.npy",
+   "score": 0.81,
+   "n_obs": 10
+  },
+  {
+   "id": 22,
+   "label": "choco_hazelnut_high",
+   "points": "points/22.npy",
+   "score": 1.0,
+   "n_obs": 16
+  },
+  {
+   "id": 23,
+   "label": "Febreze_high",
+   "points": "points/23.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 24,
+   "label": "choco_hazelnut_high",
+   "points": "points/24.npy",
+   "score": 1.0,
+   "n_obs": 9
+  },
+  {
+   "id": 25,
+   "label": "Febreze_high",
+   "points": "points/25.npy",
+   "score": 0.9,
+   "n_obs": 4
+  },
+  {
+   "id": 26,
+   "label": "choco_hazelnut_high",
+   "points": "points/26.npy",
+   "score": 1.0,
+   "n_obs": 5
+  },
+  {
+   "id": 27,
+   "label": "Mugcup_high",
+   "points": "points/27.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 28,
+   "label": "Dinosaur",
+   "points": "points/28.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 29,
+   "label": "Mugcup_high",
+   "points": "points/29.npy",
+   "score": 1.0,
+   "n_obs": 8
+  },
+  {
+   "id": 30,
+   "label": "Febreze_high",
+   "points": "points/30.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 31,
+   "label": "choco_hazelnut_high",
+   "points": "points/31.npy",
+   "score": 1.0,
+   "n_obs": 7
+  },
+  {
+   "id": 32,
+   "label": "Dinosaur",
+   "points": "points/32.npy",
+   "score": 1.0,
+   "n_obs": 3
+  },
+  {
+   "id": 33,
+   "label": "milk",
+   "points": "points/33.npy",
+   "score": 0.84,
+   "n_obs": 4
+  },
+  {
+   "id": 34,
+   "label": "saffron",
+   "points": "points/34.npy",
+   "score": 1.0,
+   "n_obs": 10
+  },
+  {
+   "id": 35,
+   "label": "Mugcup_high",
+   "points": "points/35.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 36,
+   "label": "choco_hazelnut_high",
+   "points": "points/36.npy",
+   "score": 0.98,
+   "n_obs": 6
+  },
+  {
+   "id": 37,
+   "label": "Febreze_high",
+   "points": "points/37.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 38,
+   "label": "Mugcup_high",
+   "points": "points/38.npy",
+   "score": 1.0,
+   "n_obs": 7
+  },
+  {
+   "id": 39,
+   "label": "Febreze_high",
+   "points": "points/39.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 40,
+   "label": "Dinosaur",
+   "points": "points/40.npy",
+   "score": 1.0,
+   "n_obs": 5
+  },
+  {
+   "id": 41,
+   "label": "Febreze_high",
+   "points": "points/41.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 42,
+   "label": "Dinosaur",
+   "points": "points/42.npy",
+   "score": 0.74,
+   "n_obs": 3
+  },
+  {
+   "id": 43,
+   "label": "Mugcup_high",
+   "points": "points/43.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 44,
+   "label": "milk",
+   "points": "points/44.npy",
+   "score": 0.89,
+   "n_obs": 4
+  },
+  {
+   "id": 45,
+   "label": "choco_hazelnut_high",
+   "points": "points/45.npy",
+   "score": 1.0,
+   "n_obs": 8
+  },
+  {
+   "id": 46,
+   "label": "Mugcup_high",
+   "points": "points/46.npy",
+   "score": 1.0,
+   "n_obs": 3
+  },
+  {
+   "id": 47,
+   "label": "Mugcup_high",
+   "points": "points/47.npy",
+   "score": 1.0,
+   "n_obs": 5
+  },
+  {
+   "id": 48,
+   "label": "choco_hazelnut_high",
+   "points": "points/48.npy",
+   "score": 1.0,
+   "n_obs": 9
+  },
+  {
+   "id": 49,
+   "label": "choco_hazelnut_high",
+   "points": "points/49.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 50,
+   "label": "milk",
+   "points": "points/50.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 51,
+   "label": "Mugcup_high",
+   "points": "points/51.npy",
+   "score": 1.0,
+   "n_obs": 5
+  },
+  {
+   "id": 52,
+   "label": "Dinosaur",
+   "points": "points/52.npy",
+   "score": 1.0,
+   "n_obs": 5
+  },
+  {
+   "id": 53,
+   "label": "Mugcup_high",
+   "points": "points/53.npy",
+   "score": 1.0,
+   "n_obs": 11
+  },
+  {
+   "id": 54,
+   "label": "choco_hazelnut_high",
+   "points": "points/54.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 55,
+   "label": "unknown",
+   "points": "points/55.npy",
+   "score": 0.0,
+   "n_obs": 5
+  },
+  {
+   "id": 56,
+   "label": "choco_hazelnut_high",
+   "points": "points/56.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 57,
+   "label": "milk",
+   "points": "points/57.npy",
+   "score": 0.97,
+   "n_obs": 6
+  },
+  {
+   "id": 58,
+   "label": "unknown",
+   "points": "points/58.npy",
+   "score": 0.0,
+   "n_obs": 2
+  },
+  {
+   "id": 59,
+   "label": "Mugcup_high",
+   "points": "points/59.npy",
+   "score": 1.0,
+   "n_obs": 7
+  }
+ ]
+}

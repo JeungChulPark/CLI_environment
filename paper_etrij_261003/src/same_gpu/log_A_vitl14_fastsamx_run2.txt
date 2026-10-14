@@ -1,0 +1,172 @@
+/home/jucpark/anaconda3/envs/sam6d/lib/python3.12/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+xFormers not available
+xFormers not available
+WARNING ⚠️ torchvision==0.24 is incompatible with torch==2.7.
+Run 'pip install torchvision==0.22' to fix torchvision or 'pip install -U torch torchvision' to update both.
+For a full compatibility table see https://github.com/pytorch/vision#installation
+load pre-trained checkpoint from: checkpoints/mae_pretrain_vit_base.pth
+300 {'proposals': 31.5, 'descriptors': 1087.3, 'matching': 34.6, 'pem': 349.0, 'total': 1502.4} 69 44 23 3 3
+410 {'proposals': 33.4, 'descriptors': 929.8, 'matching': 26.8, 'pem': 247.8, 'total': 1237.9} 62 39 19 2 2
+521 {'proposals': 34.6, 'descriptors': 1295.9, 'matching': 32.9, 'pem': 716.8, 'total': 2080.2} 87 61 37 6 6
+631 {'proposals': 34.6, 'descriptors': 1342.7, 'matching': 44.5, 'pem': 987.9, 'total': 2409.7} 83 55 31 8 8
+741 {'proposals': 34.8, 'descriptors': 1693.7, 'matching': 31.1, 'pem': 742.6, 'total': 2502.1} 86 71 37 6 6
+852 {'proposals': 34.2, 'descriptors': 1664.6, 'matching': 40.2, 'pem': 575.3, 'total': 2314.3} 78 71 45 6 4
+962 {'proposals': 32.6, 'descriptors': 1719.5, 'matching': 41.2, 'pem': 907.6, 'total': 2700.9} 92 74 51 8 7
+1072 {'proposals': 34.3, 'descriptors': 1609.0, 'matching': 33.0, 'pem': 852.5, 'total': 2528.7} 79 65 48 7 7
+1183 {'proposals': 37.2, 'descriptors': 2042.3, 'matching': 43.0, 'pem': 701.9, 'total': 2824.3} 127 84 61 7 5
+1293 {'proposals': 33.1, 'descriptors': 1582.3, 'matching': 38.7, 'pem': 792.7, 'total': 2446.8} 94 69 49 7 6
+1403 {'proposals': 34.6, 'descriptors': 1598.2, 'matching': 39.0, 'pem': 631.0, 'total': 2302.9} 98 67 48 6 5
+1514 {'proposals': 34.6, 'descriptors': 1242.4, 'matching': 36.6, 'pem': 853.1, 'total': 2166.7} 79 53 38 7 7
+1624 {'proposals': 31.8, 'descriptors': 1332.6, 'matching': 33.7, 'pem': 626.8, 'total': 2024.9} 70 57 38 6 5
+1734 {'proposals': 33.7, 'descriptors': 1609.2, 'matching': 34.4, 'pem': 392.2, 'total': 2069.5} 77 67 38 4 3
+1808 {'proposals': 33.4, 'descriptors': 1516.5, 'matching': 35.6, 'pem': 486.5, 'total': 2072.0} 74 66 36 5 3
+1845 {'proposals': 35.2, 'descriptors': 1304.1, 'matching': 39.0, 'pem': 612.4, 'total': 1990.6} 83 61 39 7 4
+1955 {'proposals': 33.6, 'descriptors': 1675.4, 'matching': 40.4, 'pem': 501.1, 'total': 2250.5} 99 77 43 6 3
+2066 {'proposals': 31.9, 'descriptors': 1293.0, 'matching': 41.2, 'pem': 711.2, 'total': 2077.1} 67 56 40 6 6
+2176 {'proposals': 35.2, 'descriptors': 1888.0, 'matching': 39.8, 'pem': 700.1, 'total': 2663.1} 109 80 57 7 5
+2286 {'proposals': 32.4, 'descriptors': 1315.7, 'matching': 28.8, 'pem': 648.0, 'total': 2024.9} 74 54 41 6 5
+2397 {'proposals': 35.3, 'descriptors': 1483.4, 'matching': 39.2, 'pem': 601.7, 'total': 2159.5} 83 62 48 5 5
+2507 {'proposals': 34.4, 'descriptors': 1501.4, 'matching': 29.5, 'pem': 614.9, 'total': 2180.2} 78 62 42 5 5
+2617 {'proposals': 35.9, 'descriptors': 1618.2, 'matching': 38.4, 'pem': 630.3, 'total': 2322.8} 84 68 37 7 4
+2728 {'proposals': 36.7, 'descriptors': 1951.9, 'matching': 41.6, 'pem': 523.9, 'total': 2554.2} 101 79 40 5 4
+2838 {'proposals': 34.5, 'descriptors': 1555.7, 'matching': 36.2, 'pem': 642.3, 'total': 2268.6} 83 68 49 6 5
+2948 {'proposals': 33.8, 'descriptors': 1397.7, 'matching': 28.7, 'pem': 508.3, 'total': 1968.4} 75 60 42 5 4
+3059 {'proposals': 35.0, 'descriptors': 1825.3, 'matching': 35.9, 'pem': 766.7, 'total': 2662.9} 104 77 46 7 6
+3169 {'proposals': 33.7, 'descriptors': 1618.9, 'matching': 40.0, 'pem': 779.3, 'total': 2471.9} 86 66 35 7 6
+3279 {'proposals': 36.3, 'descriptors': 1573.1, 'matching': 39.3, 'pem': 608.0, 'total': 2256.7} 103 73 48 6 4
+3390 {'proposals': 36.0, 'descriptors': 1691.8, 'matching': 37.8, 'pem': 702.2, 'total': 2467.8} 103 74 54 7 5
+3500 {'proposals': 35.3, 'descriptors': 1694.7, 'matching': 44.1, 'pem': 824.6, 'total': 2598.8} 108 73 54 7 6
+{
+ "pipeline": "A_original_dinov2_vitl14_fastsamx",
+ "gpu": "NVIDIA GeForce RTX 3080 Ti Laptop GPU",
+ "torch": "2.7.1",
+ "objects": [
+  "milk",
+  "choco_hazelnut_high",
+  "Febreze_high",
+  "Mugcup_high",
+  "saffron",
+  "Sikhye_high",
+  "Bear",
+  "Dinosaur"
+ ],
+ "frames": [
+  300,
+  410,
+  521,
+  631,
+  741,
+  852,
+  962,
+  1072,
+  1183,
+  1293,
+  1403,
+  1514,
+  1624,
+  1734,
+  1808,
+  1845,
+  1955,
+  2066,
+  2176,
+  2286,
+  2397,
+  2507,
+  2617,
+  2728,
+  2838,
+  2948,
+  3059,
+  3169,
+  3279,
+  3390,
+  3500
+ ],
+ "warmup_frames": [
+  300,
+  1808,
+  3500
+ ],
+ "dinov2": "dinov2_vitl14",
+ "fastsam": "x",
+ "total_ms": {
+  "median": 2268.6,
+  "p90": 2662.9,
+  "mean": 2261.3,
+  "min": 1237.8,
+  "max": 2824.3,
+  "n": 31
+ },
+ "stage_ms": {
+  "proposals": {
+   "median": 34.5,
+   "p90": 36.0,
+   "mean": 34.3,
+   "min": 31.5,
+   "max": 37.2,
+   "n": 31
+  },
+  "descriptors": {
+   "median": 1582.3,
+   "p90": 1825.3,
+   "mean": 1537.2,
+   "min": 929.8,
+   "max": 2042.3,
+   "n": 31
+  },
+  "matching": {
+   "median": 38.4,
+   "p90": 41.6,
+   "mean": 36.9,
+   "min": 26.8,
+   "max": 44.5,
+   "n": 31
+  },
+  "pem": {
+   "median": 642.3,
+   "p90": 852.5,
+   "mean": 652.9,
+   "min": 247.8,
+   "max": 987.9,
+   "n": 31
+  }
+ },
+ "n_fastsam_proposals": {
+  "median": 83.0,
+  "p90": 104.0,
+  "mean": 86.9,
+  "min": 62.0,
+  "max": 127.0,
+  "n": 31
+ },
+ "n_proposals_after_small_filter": {
+  "median": 67.0,
+  "p90": 77.0,
+  "mean": 65.6,
+  "min": 39.0,
+  "max": 84.0,
+  "n": 31
+ },
+ "n_objects_with_ism_detection_per_frame": {
+  "median": 6.0,
+  "p90": 7.0,
+  "mean": 6.0,
+  "min": 2.0,
+  "max": 8.0,
+  "n": 31
+ },
+ "n_pose_output_per_frame": {
+  "median": 5.0,
+  "p90": 7.0,
+  "mean": 5.0,
+  "min": 2.0,
+  "max": 8.0,
+  "n": 31
+ },
+ "gpu_mem_peak_MiB": {
+  "max_allocated": 3392.1,
+  "max_reserved": 6206.0
+ }
+}

@@ -1,0 +1,29 @@
+{
+ "scans": 1504,
+ "sensor": "Velodyne VLP-16 (16 rings, 10 Hz, per-point time)",
+ "config": {
+  "min_range": 0.5,
+  "max_range": 30.0,
+  "voxel": 0.1,
+  "deskew": true
+ },
+ "time_ms": {
+  "mean": 20.29,
+  "p99": 56.53,
+  "max": 94.23
+ },
+ "path_length_m": 51.53,
+ "start_to_end_m": 0.128,
+ "extent_m": [
+  1.855,
+  1.264,
+  0.019
+ ],
+ "trajectory_plane_rms_cm": 1.86,
+ "speed_mps": {
+  "median": 0.367,
+  "p99": 0.472,
+  "max": 0.719
+ },
+ "cumulative_yaw_deg": 1459.1
+}

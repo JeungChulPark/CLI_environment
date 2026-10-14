@@ -47,3 +47,15 @@ def test_expected_p_d_fov():
     assert expected_p_d(cam, ahead, K, (640, 480)) > 0.0
     assert expected_p_d(cam, side, K, (640, 480)) == 0.0
     assert expected_p_d(cam, behind, K, (640, 480)) == 0.0
+
+
+def test_expected_p_d_max_range():
+    cam = make_transform(I3, (0.0, 0.0, 0.0))
+    near = make_transform(I3, (0.0, 0.0, 1.0))
+    far = make_transform(I3, (0.0, 0.0, 3.0))
+    K = ((400.0, 0.0, 320.0), (0.0, 400.0, 240.0), (0.0, 0.0, 1.0))
+    # in the image but beyond detection range: a miss there is no evidence
+    assert expected_p_d(cam, far, K, (640, 480), max_range_m=2.0) == 0.0
+    assert expected_p_d(cam, near, K, (640, 480), max_range_m=2.0) > 0.0
+    # default keeps the image test alone
+    assert expected_p_d(cam, far, K, (640, 480)) > 0.0

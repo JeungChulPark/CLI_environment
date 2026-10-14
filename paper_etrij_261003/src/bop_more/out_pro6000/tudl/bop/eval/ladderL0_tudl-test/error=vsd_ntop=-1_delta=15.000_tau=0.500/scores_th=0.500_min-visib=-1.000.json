@@ -1,0 +1,10 @@
+{
+  "gt_count": 600,
+  "mean_obj_recall": 0.84,
+  "mean_scene_recall": 0.84,
+  "obj_recalls": {"1": 0.775, "2": 0.86, "3": 0.885},
+  "recall": 0.84,
+  "scene_recalls": {"1": 0.775, "2": 0.86, "3": 0.885},
+  "targets_count": 600,
+  "tp_count": 504
+}
