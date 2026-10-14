@@ -78,6 +78,11 @@ a{color:var(--acc);word-break:break-all}
 <li><a href="#83">8.3 해석</a></li>
 </ul>
 </li>
+<li><a href="#9-rtx-pro-6000-blackwell-900-2026-10-08">9. RTX PRO 6000 Blackwell 에서 900장 전체 사다리 재실행 (2026-10-08)</a><ul>
+<li><a href="#91-900-blackwell-4090-81">9.1 900장 결과 — Blackwell (이번) 대 4090 (8.1절)</a></li>
+<li><a href="#92">9.2 해석</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#09-rtx-4090-2026-10-06">09. RTX 4090 확인 실행 — 노트북에서 못 끝낸 한 장 평가 (2026-10-06)</a><ul>
@@ -97,6 +102,7 @@ a{color:var(--acc);word-break:break-all}
 <li><a href="#3-ycb-v-36-165-pem">3. 자세까지 — YCB-V 36장, 물체 165개 (PEM + 자세 검증)</a></li>
 <li><a href="#4-l2-900">4. 참고 — 배포 중인 우리 기술과 L2 의 900장 끝까지 수치</a></li>
 <li><a href="#5_1">5. 정리</a></li>
+<li><a href="#4-900-rtx-pro-6000-blackwell41-2026-10-08">4. 후보 영역 단계 비교 — 900장 전체, RTX PRO 6000 Blackwell(.41) (2026-10-08 실행)</a></li>
 </ul>
 </li>
 <li><a href="#12-dinov2-vit-s-vit-l-4-ycb-v-rtx-4090-2026-10-07">12. 특징 모델 비교 — DINOv2 ViT-S 대 ViT-L, 인식 방법 4가지 (YCB-V, RTX 4090, 2026-10-07)</a><ul>
@@ -104,12 +110,19 @@ a{color:var(--acc);word-break:break-all}
 <li><a href="#2-ycb-v-900-4123_1">2. 인식까지 — YCB-V 900장, 정답 물체 4,123개 (자세 추정 없음)</a></li>
 <li><a href="#3-ycb-v-36-165-pem_1">3. 자세까지 — YCB-V 36장, 물체 165개 (PEM + 우리 자세 검증)</a></li>
 <li><a href="#4_2">4. 정리</a></li>
+<li><a href="#5-rtx-pro-6000-blackwell41-2026-10-08">5. RTX PRO 6000 Blackwell(.41) 재실행 (2026-10-08)</a></li>
 </ul>
 </li>
 <li><a href="#16-900-2-3-3-add-s-rtx-4090-2026-10-07">16. 한 장 평가 900장 — 원본 / 개선안 2 / 개선안 3 / 개선안 3 + 군집 먼저 / 배포, 같은 물체끼리 ADD-S (RTX 4090, 2026-10-07)</a><ul>
 <li><a href="#1-900_1">1. 전체 (900장)</a></li>
 <li><a href="#2_2">2. 같은 물체끼리 자세 정확도 (두 방법이 모두 답한 물체만)</a></li>
 <li><a href="#3-3">3. 논문용 수치 요약 (개선안 3 + 군집 먼저 대 원본)</a></li>
+<li><a href="#4-rtx-pro-6000-blackwell41-2026-10-08">4. RTX PRO 6000 Blackwell(.41) 재실행 (2026-10-08)</a></li>
+<li><a href="#5-3-rtx-4090-blackwell">5. 객체 자세 추정 속도 — 개선안 3·배포, RTX 4090 대 Blackwell (한 장 평가 + 실시간)</a><ul>
+<li><a href="#51-ycb-v-900-ms">5.1 한 장 평가 (YCB-V 900장, 장당 ms)</a></li>
+<li><a href="#52-ycb-v-hz">5.2 실시간 (YCB-V 영상, 인식 Hz)</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#18-2026-10-08-10-10-gpu-gpu">18. 연휴 실험 (2026-10-08 ~ 10-10) — 실시간 반복, 관문 곡선, 다른 데이터셋, 같은 GPU 상대, 다른 GPU 시간</a><ul>
@@ -1779,6 +1792,123 @@ $PY eval_live.py --runs '&lt;repo&gt;/objpose/output/ycbv_live_v2_0*[0-9]' --out
 <li><strong>A안(FastSAM 후보 + 우리 관문) 900장:</strong> 검증을 끄면 73.4% / 오답 0.436 으로 36장(68.5% / 0.528)보다 낫고, 검증을 켜면 67.9% / 0.046 입니다. 우리 기술(L4, 60.9% / 0.026)보다 7%p 더 찾지만 오답이 1.8배, 시간이 1.8배(903 ms)입니다. FastSAM 후보 약 40개를 모두 관문·검증에 넣는 비용 때문입니다. "많이 찾고 오답 적게"의 후보로는 개선안(G123 + ① 문구)이 더 유망합니다(900장 결과는 09 문서에 추가 예정).</li>
 <li><strong>L5(① 문구)는 900장에서 L4 대비 +5.2%p, 오답 +0.008 로 노트북과 같습니다.</strong></li>
 </ol>
+<h3 id="9-rtx-pro-6000-blackwell-900-2026-10-08">9. RTX PRO 6000 Blackwell 에서 900장 전체 사다리 재실행 (2026-10-08)</h3>
+<blockquote>
+<p>같은 스크립트·같은 프로토콜(BOP19 900장, 대상 4,123개)을 <strong>10.254.176.41 서버(RTX PRO 6000 Blackwell Max-Q ×4, GPU0 단독)</strong> 에서 다시 돌렸습니다. 템플릿·FastSAM-x·DINOv2 가중치·코드(<code>CLI_env_paper</code>)는 4090 실행분을 그대로 복사해 썼고, 이번에는 L2 와 L4 도 체인 안에서 직접 실행했습니다. 체인 <code>~/Dataset/bop/ycbv_work/run_ladder_blackwell41.sh</code>(41분), 결과 <code>src/ycbv/ladder/results_ladder_41.json</code>, 예측 <code>src/ycbv/out_41/</code>.
+채점 환경 메모: <code>bop_venv</code> 는 anaconda 기본 python 을 가리키므로 3.12 로 재연결이 필요했고, VSD 렌더러는 EGL 이 Mesa 를 잡아 실패 → <code>__EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json</code> 으로 NVIDIA 를 강제해 해결.</p>
+</blockquote>
+<h4 id="91-900-blackwell-4090-81">9.1 900장 결과 — Blackwell (이번) 대 4090 (8.1절)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>단계</th>
+<th>처리 시간 4090 → Blackwell</th>
+<th>찾은 비율</th>
+<th>정답 비율</th>
+<th>오답/장</th>
+<th>ADD-S AUC</th>
+<th>BOP AR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L0 원본 SAM-6D</td>
+<td>530 → 457 ms (1.2배)</td>
+<td>92.4 → 92.2%</td>
+<td>93.2 → 93.0%</td>
+<td>0.308 → 0.319</td>
+<td>91.9 → 91.8</td>
+<td>82.8 → 82.7</td>
+</tr>
+<tr>
+<td>L1 + ViT-S</td>
+<td>374 → 292 ms</td>
+<td>90.6 → 90.3%</td>
+<td>91.2 → 90.9%</td>
+<td>0.399 → 0.412</td>
+<td>90.3 → 90.3</td>
+<td>81.2 → 81.1</td>
+</tr>
+<tr>
+<td>L2 + 문구 상자</td>
+<td>283 → 226 ms</td>
+<td>80.6 → 80.7%</td>
+<td>94.2 → 94.4%</td>
+<td>0.226 → 0.220</td>
+<td>79.9 → 80.0</td>
+<td>73.0 → 73.1</td>
+</tr>
+<tr>
+<td>L3 우리 ISM, 검증 끔</td>
+<td>184 → 103 ms (1.8배)</td>
+<td>63.2 → 63.2%</td>
+<td>96.1 → 96.2%</td>
+<td>0.118 → 0.114</td>
+<td>62.6 → 62.6</td>
+<td>57.9 → 58.0</td>
+</tr>
+<tr>
+<td>L4 우리 기술 전체</td>
+<td><strong>514 → 180 ms (2.9배)</strong></td>
+<td>60.9 → 61.0%</td>
+<td>99.1 → 99.1%</td>
+<td>0.026 → 0.026</td>
+<td>59.7 → 59.9</td>
+<td>56.2 → 56.4</td>
+</tr>
+<tr>
+<td>L5 L4 + ① 문구</td>
+<td>576 → 188 ms (3.1배)</td>
+<td>66.1 → 66.2%</td>
+<td>98.9 → 99.0%</td>
+<td>0.034 → 0.030</td>
+<td>65.0 → 65.0</td>
+<td>61.0 → 61.0</td>
+</tr>
+<tr>
+<td>B: L1 + 기준 0.4</td>
+<td>374 → 291 ms</td>
+<td>90.2 → 90.1%</td>
+<td>91.8 → 91.7%</td>
+<td>0.370 → 0.372</td>
+<td>89.9 → 89.9</td>
+<td>80.9 → 80.8</td>
+</tr>
+<tr>
+<td>B: L1 + 기준 0.5</td>
+<td>327 → 257 ms</td>
+<td>86.9 → 87.0%</td>
+<td>94.5 → 94.6%</td>
+<td>0.232 → 0.228</td>
+<td>86.4 → 86.3</td>
+<td>78.1 → 78.4</td>
+</tr>
+<tr>
+<td>A: 검증 끔</td>
+<td>360 → 175 ms (2.1배)</td>
+<td>73.4 → 73.3%</td>
+<td>88.5 → 88.4%</td>
+<td>0.436 → 0.441</td>
+<td>75.1 → 75.1</td>
+<td>65.1 → 64.8</td>
+</tr>
+<tr>
+<td>A: 검증 켬</td>
+<td><strong>903 → 268 ms (3.4배)</strong></td>
+<td>67.9 → 67.9%</td>
+<td>98.6 → 98.6%</td>
+<td>0.046 → 0.043</td>
+<td>66.7 → 66.7</td>
+<td>61.2 → 61.2</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="92">9.2 해석</h4>
+<ol>
+<li><strong>정확도는 세 번째 GPU 에서도 재현됩니다.</strong> 열 단계 모두 찾은 비율 ±0.3%p, 오답/장 ±0.013, BOP AR ±0.3 안쪽 — 8.3절 1항(노트북 대 4090)보다도 좁습니다. 같은 템플릿·가중치를 복사해 썼기 때문입니다.</li>
+<li><strong>속도 이득은 PEM·자세 검증 비중에 비례합니다.</strong> 검증이 시간의 대부분인 L4(2.9배)·L5(3.1배)·A 검증 켬(3.4배)이 가장 크고, FastSAM 후보 후처리가 남는 L0·L1·B 는 1.2~1.3배에 그칩니다. 8.3절 2항의 "속도 비율은 GPU 에 따라 달라진다"가 한 번 더 확인됐습니다.</li>
+<li><strong>우리 기술(L4)이 원본(L0)보다 빨라졌습니다.</strong> 4090 에서는 514 대 530 ms 로 비슷했지만, Blackwell 에서는 <strong>180 대 457 ms 로 2.5배 빠릅니다</strong>. 검증 포함 전체가 200 ms 아래로 내려오므로, 실시간(10 Hz 공급) 기준으로도 여유가 생깁니다(27 문서의 실시간 재실행과 같은 방향).</li>
+</ol>
 <hr />
 <p><a id="09_4090_확인실행_261006"></a></p>
 <h2 id="09-rtx-4090-2026-10-06">09. RTX 4090 확인 실행 — 노트북에서 못 끝낸 한 장 평가 (2026-10-06)</h2>
@@ -2314,6 +2444,109 @@ $PY eval_live.py --runs '&lt;repo&gt;/objpose/output/ycbv_live_v2_0*[0-9]' --out
 <p>원 데이터: <code>src/ycbv/det_study/out/mask_recog_900_vitl.json</code>(1), <code>mask_recog_900_vits.json</code>·<code>mask_e2e.json</code>(2), <code>decision_900_B.json</code>·<code>decision_900_B1.json</code>·<code>decision_e2e.json</code>(3·4). 코드는 노트북 브랜치 <code>objpose/memory-dup-suppression</code> 커밋 f8946b1·144a2ff 에 있고, 이 PC 의 <code>~/DeepLearning/CLI_env_paper</code> 작업 트리에도 들어왔습니다(결과 json 은 커밋되지 않아 노트북에만 있음).</p>
 </li>
 </ol>
+<h3 id="4-900-rtx-pro-6000-blackwell41-2026-10-08">4. 후보 영역 단계 비교 — 900장 전체, RTX PRO 6000 Blackwell(.41) (2026-10-08 실행)</h3>
+<blockquote>
+<p>뒤 단계를 고정(DINOv2 ViT-S → 원본 판정 → PEM 기하 1위, 검증 없음)하고 <strong>후보 영역을 만드는 방법만</strong> 세 가지로 바꿔 900장 전체를 돌렸습니다: FastSAM-x 마스크 / FastSAM-x 상자(마스크는 MobileSAM 재생성) / YOLO-World 문구 상자(+MobileSAM). 10-07 에 4090 에서 계획했던 실험(<code>run_candidates_4090.sh</code>)이 결과 보존 전에 old 트리와 함께 지워져, 이 .41 실행이 900장 후보 비교의 유일한 기록입니다. 결과 <code>src/ycbv/results_candidates_41.json</code>, <code>results_candidates_th05_41.json</code>.</p>
+</blockquote>
+<p><strong>판정 0.2 (원본 기본)</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>후보</th>
+<th>후보/장</th>
+<th>후보 재현율</th>
+<th>찾은 비율</th>
+<th>정답 비율</th>
+<th>오답/장</th>
+<th>ADD-S AUC</th>
+<th>BOP AR</th>
+<th>장당 시간 (제안/특징/PEM)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FastSAM 마스크</td>
+<td>39</td>
+<td><strong>97.7%</strong></td>
+<td><strong>90.3%</strong></td>
+<td>90.9%</td>
+<td>0.412</td>
+<td>90.3</td>
+<td><strong>81.1</strong></td>
+<td>296 ms (9/27/255)</td>
+</tr>
+<tr>
+<td>FastSAM 상자</td>
+<td>39</td>
+<td>97.7%</td>
+<td>90.3%</td>
+<td>90.9%</td>
+<td>0.414</td>
+<td>90.3</td>
+<td>80.8</td>
+<td>325 ms (46/27/245)</td>
+</tr>
+<tr>
+<td>문구 상자</td>
+<td><strong>5</strong></td>
+<td>82.6%</td>
+<td>80.7%</td>
+<td><strong>94.4%</strong></td>
+<td><strong>0.220</strong></td>
+<td>80.0</td>
+<td>73.1</td>
+<td><strong>226 ms</strong> (18/7/198)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>판정 0.5</strong></p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>후보</th>
+<th>찾은 비율</th>
+<th>정답 비율</th>
+<th>오답/장</th>
+<th>ADD-S AUC</th>
+<th>BOP AR</th>
+<th>장당 시간</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FastSAM 마스크</td>
+<td>87.0%</td>
+<td>94.6%</td>
+<td>0.228</td>
+<td>86.3</td>
+<td>78.4</td>
+<td>257 ms</td>
+</tr>
+<tr>
+<td>FastSAM 상자</td>
+<td>86.9%</td>
+<td>94.1%</td>
+<td>0.248</td>
+<td>86.5</td>
+<td>77.6</td>
+<td>306 ms</td>
+</tr>
+<tr>
+<td>문구 상자</td>
+<td>76.9%</td>
+<td><strong>97.2%</strong></td>
+<td><strong>0.102</strong></td>
+<td>75.9</td>
+<td>69.5</td>
+<td>222 ms</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>후보 재현율이 손실의 상한을 정합니다.</strong> 문구 상자는 후보 자체가 82.6%만 커버해(장당 5개), 뒤 단계가 완벽해도 FastSAM(97.7%)을 못 따라갑니다. 06 문서의 L1→L2 손실(−10.0%p)이 후보 단계에서 온다는 분해와 일치합니다.</li>
+<li><strong>대신 문구 상자는 오답과 시간에서 이깁니다</strong>: 판정 0.5 에서 오답/장 0.102 로 FastSAM 마스크(0.228)의 절반 이하, 시간도 222 ms 로 가장 짧습니다. "많이 찾기"는 FastSAM, "틀리지 않기"는 문구 상자 — 우리 기술이 문구 상자를 고른 이유가 수치로 확인됩니다.</li>
+<li>FastSAM 마스크 대 상자: 정확도는 같고(마스크 재현율이 동일하므로), 상자판은 MobileSAM 재생성 비용(제안 9→46 ms)만 손해입니다.</li>
+</ul>
 <hr />
 <p><a id="12_ViT-S_ViT-L_비교표_261007"></a></p>
 <h2 id="12-dinov2-vit-s-vit-l-4-ycb-v-rtx-4090-2026-10-07">12. 특징 모델 비교 — DINOv2 ViT-S 대 ViT-L, 인식 방법 4가지 (YCB-V, RTX 4090, 2026-10-07)</h2>
@@ -2660,6 +2893,78 @@ $PY eval_live.py --runs '&lt;repo&gt;/objpose/output/ycbv_live_v2_0*[0-9]' --out
 </li>
 <li>이 문서는 <code>src/ycbv/det_study/make_vit_table.py</code> 가 결과 json 에서 생성합니다.</li>
 </ol>
+<h3 id="5-rtx-pro-6000-blackwell41-2026-10-08">5. RTX PRO 6000 Blackwell(.41) 재실행 (2026-10-08)</h3>
+<blockquote>
+<p>여덟 구성(1~4 × ViT-S/L)을 .41 서버(GPU0 단독)에서 같은 스크립트로 재실행했습니다. 체인 <code>run_queue2_41.sh</code>(판정 구간), 결과 <code>src/ycbv/det_study/out_41/decision_900_*.json</code>, <code>decision_e2e_41.json</code>.</p>
+</blockquote>
+<p><strong>인식까지 900장</strong> — 찾은 비율이 여덟 구성 모두 4090 과 ±0.1%p 안에서 같습니다(예: 구성 1 ViT-L 86.6 → 86.6%, 구성 3 ViT-L 43.8 → 43.8%, 구성 4 ViT-S 80.7 → 80.7%). 오답 수도 ±2개 안쪽. 장당 시간(판정까지)은:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th># 구성</th>
+<th>ViT-S 4090 → 41</th>
+<th>ViT-L 4090 → 41</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 FastSAM 전체 → 원본 0.5</td>
+<td>48 → 43 ms</td>
+<td>200 → 203 ms (그대로)</td>
+</tr>
+<tr>
+<td>2 문구 상자 → 원본 0.5</td>
+<td>38 → 34 ms</td>
+<td>72 → 65 ms</td>
+</tr>
+<tr>
+<td>3 관문 + 독점 (1순위)</td>
+<td>57 → <strong>36 ms</strong></td>
+<td>148 → <strong>66 ms</strong></td>
+</tr>
+<tr>
+<td>4 관문 + 독점 (배정 대안)</td>
+<td>55 → <strong>35 ms</strong></td>
+<td>131 → <strong>70 ms</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>자세까지 36장</strong> — 찾은 비율은 ±1.2%p 안에서 재현(구성 3 ViT-L 38.2 → 38.2% 의 붕괴도 그대로), 장당 시간은 2.3~3.3배 단축:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th># 구성</th>
+<th>ViT-S 4090 → 41</th>
+<th>ViT-L 4090 → 41</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>578 → 254 ms</td>
+<td>696 → 384 ms</td>
+</tr>
+<tr>
+<td>2</td>
+<td>494 → 215 ms</td>
+<td>557 → 246 ms</td>
+</tr>
+<tr>
+<td>3</td>
+<td>633 → 191 ms</td>
+<td>374 → 163 ms</td>
+</tr>
+<tr>
+<td>4</td>
+<td>659 → 226 ms</td>
+<td>479 → 175 ms</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>2절의 결론이 그대로 섭니다: 원본 판정에서는 ViT-L 이 +1.3%p·오답 2/3 의 이득, <strong>우리 관문(3·4)에서는 ViT-L 이 찾은 비율을 반토막</strong> 냅니다. 세 번째 GPU 에서도 동일.</li>
+<li>속도에서 눈에 띄는 점 둘: (1) 구성 1 ViT-L 의 특징 계산(202 ms)은 Blackwell 에서도 안 줄었습니다 — FastSAM 후보 41개의 큰 배치가 메모리 대역폭에 묶인 것으로, 06 문서 9절의 L0 와 같은 현상입니다. (2) 관문 구성(3·4)의 ViT-L 은 148 → 66 ms 로 절반 이하 — 후보가 7개뿐이라 연산이 작고 GPU 개선을 그대로 받습니다.</li>
+</ul>
 <hr />
 <p><a id="16_한장평가_개선안3_군집먼저_900장_261007"></a></p>
 <h2 id="16-900-2-3-3-add-s-rtx-4090-2026-10-07">16. 한 장 평가 900장 — 원본 / 개선안 2 / 개선안 3 / 개선안 3 + 군집 먼저 / 배포, 같은 물체끼리 ADD-S (RTX 4090, 2026-10-07)</h2>
@@ -2730,12 +3035,7 @@ $PY eval_live.py --runs '&lt;repo&gt;/objpose/output/ycbv_live_v2_0*[0-9]' --out
 <ul>
 <li><strong>자세 검증의 효과(개선안 2 → 3, 같은 앞단):</strong> 오답 0.232 → 0.049/장(−79%), 정답 비율 94.5 → 98.7%, 찾은 비율 86.9 → 80.8%(−6.1%p). 검증이 버린 414개 답 가운데 165개가 오답, 249개가 맞는 답이었습니다.</li>
 <li><strong>군집 먼저:</strong> 개선안 3 과 찾은 수·오답이 같고(3,334 대 3,332, 46 대 44) 장당 시간은 342 → 240 ms(−30%). 자세 단계 274 → 180 ms.</li>
-<li>
-<p><strong>원본 대비(개선안 3 + 군집 먼저):</strong> 찾은 비율 −11.5%p, 오답 6분의 1, 정답 비율 +5.4%p, 시간 55%. 전체 ADD-S AUC 는 찾은 비율에 끌려 낮아 보이므로(놓친 물체는 0), 자세 자체의 정확도는 2절처럼 같은 물체끼리 비교해야 합니다.</p>
-</li>
-<li>
-<p><strong>BOP AR (공식 bop_toolkit, 2026-10-08 채점):</strong> 원본 L0 82.8, 개선안 2 78.1, 개선안 3 74.1, 개선안 3 + 군집 먼저 74.1. 재현율 지표라 찾은 비율과 같이 내려갑니다(17 문서 표 1·2).</p>
-</li>
+<li><strong>원본 대비(개선안 3 + 군집 먼저):</strong> 찾은 비율 −11.5%p, 오답 6분의 1, 정답 비율 +5.4%p, 시간 55%. 전체 ADD-S AUC 는 찾은 비율에 끌려 낮아 보이므로(놓친 물체는 0), 자세 자체의 정확도는 2절처럼 같은 물체끼리 비교해야 합니다.</li>
 </ul>
 <h3 id="2_2">2. 같은 물체끼리 자세 정확도 (두 방법이 모두 답한 물체만)</h3>
 <div class="tw"><table>
@@ -2820,8 +3120,140 @@ $PY eval_live.py --runs '&lt;repo&gt;/objpose/output/ycbv_live_v2_0*[0-9]' --out
 <td>검증 켬/끔 대조</td>
 <td>오답 0.232 → 0.051, 찾은 비율 86.9 → 80.9%</td>
 </tr>
+<tr>
+<td>- <strong>BOP AR (공식 bop_toolkit, 2026-10-08 채점):</strong> 원본 L0 82.8, 개선안 2 78.1, 개선안 3 74.1, 개선안 3 + 군집 먼저 74.1. 재현율 지표라 찾은 비율과 같이 내려갑니다(17 문서 표 1·2).</td>
+<td></td>
+</tr>
 </tbody>
 </table></div>
+<h3 id="4-rtx-pro-6000-blackwell41-2026-10-08">4. RTX PRO 6000 Blackwell(.41) 재실행 (2026-10-08)</h3>
+<blockquote>
+<p>같은 코드(<code>CLI_env_paper</code>)·같은 프로토콜을 10.254.176.41 서버(RTX PRO 6000 Blackwell Max-Q, GPU0 단독)에서 재실행했습니다. 체인 <code>run_main900_41.sh</code>, 결과 <code>src/ycbv/out_41/results_main_41.json</code>, <code>same_object_adds_41.json</code>. 원본·개선안 2·배포 수치는 같은 날 사다리 재실행(06 문서 9절)에서 가져왔습니다.</p>
+</blockquote>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>장당 시간 4090 → Blackwell</th>
+<th>찾은 비율</th>
+<th>정답 비율</th>
+<th>오답/장</th>
+<th>ADD-S AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 (L0)</td>
+<td>530 → 457 ms</td>
+<td>92.4 → 92.2%</td>
+<td>93.2 → 93.0%</td>
+<td>0.308 → 0.319</td>
+<td>91.9 → 91.8</td>
+</tr>
+<tr>
+<td>개선안 2</td>
+<td>327 → 257 ms</td>
+<td>86.9 → 87.0%</td>
+<td>94.5 → 94.6%</td>
+<td>0.232 → 0.228</td>
+<td>86.4 → 86.3</td>
+</tr>
+<tr>
+<td>개선안 3</td>
+<td>342 → <strong>238 ms</strong></td>
+<td>80.8 → 81.0%</td>
+<td>98.7 → 98.7%</td>
+<td>0.049 → 0.050</td>
+<td>79.2 → 79.4</td>
+</tr>
+<tr>
+<td>개선안 3 + 군집 먼저</td>
+<td>240 → <strong>173 ms</strong></td>
+<td>80.9 → 81.0%</td>
+<td>98.6 → 98.6%</td>
+<td>0.051 → 0.051</td>
+<td>79.3 → 79.4</td>
+</tr>
+<tr>
+<td>배포 (L4)</td>
+<td>513 → 180 ms</td>
+<td>60.9 → 61.0%</td>
+<td>99.1 → 99.1%</td>
+<td>0.026 → 0.026</td>
+<td>59.7 → 59.9</td>
+</tr>
+</tbody>
+</table></div>
+<p>같은 물체끼리(두 방법이 모두 답한 물체만, <code>same_object_adds_41.json</code>): 원본 → 개선안 3 은 공통 3,383개에서 ADD-S AUC 94.6 → 96.7, 오차 중앙값 1.79 → 1.72 mm — 4090(3,374개, 94.6 → 96.8, 1.79 → 1.73)과 같습니다. 군집 먼저는 이번에도 개선안 3 과 같은 답(3,385 대 3,384)을 냅니다.</p>
+<ul>
+<li><strong>정확도 지표는 소수점 한 자리까지 재현</strong>됩니다(찾은 비율 ±0.2%p, 오답/장 ±0.001). 1절의 결론(검증의 손익, 군집 먼저의 무손실 가속)이 세 번째 GPU 에서 그대로 섭니다.</li>
+<li><strong>속도</strong>: 개선안 3 342 → 238 ms(1.4배), 군집 먼저 240 → 173 ms(1.4배). 06 문서 9절에서 본 것처럼 ViT-S/FastSAM 앞단이 남아 검증 중심 구성(배포 2.9배)보다는 이득이 작습니다. 군집 먼저 173 ms 는 <strong>원본 457 ms 의 38%</strong> 입니다.</li>
+</ul>
+<h3 id="5-3-rtx-4090-blackwell">5. 객체 자세 추정 속도 — 개선안 3·배포, RTX 4090 대 Blackwell (한 장 평가 + 실시간)</h3>
+<blockquote>
+<p>개선안 3 과 배포(L4)의 자세 추정 속도를 두 GPU 로 나눠 정리했습니다. 한 장 평가는 장당 처리 시간 중앙값(이 문서 4절·06 §9), 실시간은 YCB-V 영상 인식 처리율(15 §7 의 3회 평균, 높을수록 빠름)입니다.</p>
+</blockquote>
+<h4 id="51-ycb-v-900-ms">5.1 한 장 평가 (YCB-V 900장, 장당 ms)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>RTX 4090</th>
+<th>Blackwell (.41)</th>
+<th>배속</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>개선안 3 (검증 켬)</td>
+<td>342</td>
+<td><strong>238</strong></td>
+<td>1.4×</td>
+</tr>
+<tr>
+<td>개선안 3 + 군집 먼저</td>
+<td>240</td>
+<td><strong>173</strong></td>
+<td>1.4×</td>
+</tr>
+<tr>
+<td>배포 (L4)</td>
+<td>513</td>
+<td><strong>180</strong></td>
+<td><strong>2.9×</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="52-ycb-v-hz">5.2 실시간 (YCB-V 영상, 인식 Hz)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>RTX 4090</th>
+<th>Blackwell (.41)</th>
+<th>배속</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>개선안 3 (+ 군집 먼저)</td>
+<td>2.28</td>
+<td><strong>4.38</strong> (3회 평균)</td>
+<td>1.9×</td>
+</tr>
+<tr>
+<td>배포</td>
+<td>1.49</td>
+<td><strong>4.54</strong> (27 §2, 1회)</td>
+<td>3.0×</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>배포가 Blackwell 에서 가장 크게 빨라집니다</strong>(한 장 2.9×, 실시간 3.0×). 배포는 시간의 거의 전부가 PEM·자세 검증 같은 GPU 집약 연산이라 GPU 세대 효과를 그대로 받습니다.</li>
+<li><strong>개선안 3 은 1.4~1.9×로 이득이 작습니다.</strong> FastSAM·ViT-S 앞단(원본 판정 경로)이 남아 그 부분은 GPU 개선 효과가 작습니다.</li>
+<li>그 결과 관계가 역전됐습니다: 4090 에서는 배포(513 ms)가 개선안 3(342 ms)보다 <strong>느렸는데</strong>, Blackwell 에서는 배포(180 ms)가 개선안 3(238 ms)보다 <strong>빠릅니다</strong>. 검증 포함 전체가 200 ms 아래로 내려와 실시간 여유가 커집니다.</li>
+</ul>
 <hr />
 <p><a id="18_연휴실험_261008"></a></p>
 <h2 id="18-2026-10-08-10-10-gpu-gpu">18. 연휴 실험 (2026-10-08 ~ 10-10) — 실시간 반복, 관문 곡선, 다른 데이터셋, 같은 GPU 상대, 다른 GPU 시간</h2>

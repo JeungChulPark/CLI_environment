@@ -1,0 +1,228 @@
+{
+ "processed": "1508 / 20738",
+ "on_screen_match": 90.3,
+ "wrong_boxes_per_frame": 2.863,
+ "registered": "55 / 55",
+ "duplicates": 0,
+ "pos_err_mm": {
+  "median": 8.8,
+  "p90": 32.9,
+  "max": 541.7
+ },
+ "adds_auc_map": 86.7,
+ "time_to_map": {
+  "scene_objects": 55,
+  "found_by_end_pct": 98.2,
+  "median_s": 2.0,
+  "p90_s": 4.0,
+  "found_by_2s_pct": 34.5,
+  "found_by_5s_pct": 89.1,
+  "found_by_10s_pct": 92.7,
+  "found_by_20s_pct": 92.7,
+  "found_by_30s_pct": 96.4
+ },
+ "wrong_map_objects": 44,
+ "map_objects": 95,
+ "rate_hz": 2.18,
+ "per_scene": {
+  "48": {
+   "frames": 2243,
+   "processed": 171,
+   "match": 77.7,
+   "wrong_per_frame": 3.641,
+   "t_first_s": {
+    "002_master_chef_can": 1.8,
+    "007_tuna_fish_can": 1.8,
+    "025_mug": 1.8,
+    "051_large_clamp": null,
+    "052_extra_large_clamp": 4.2
+   },
+   "wrong_map_objects": 7,
+   "reg": 5,
+   "gt": 5,
+   "pos_med_mm": 15.7
+  },
+  "49": {
+   "frames": 2401,
+   "processed": 241,
+   "match": 81.5,
+   "wrong_per_frame": 3.404,
+   "t_first_s": {
+    "004_sugar_box": 1.8,
+    "007_tuna_fish_can": 1.8,
+    "010_potted_meat_can": 1.8,
+    "024_bowl": 59.9
+   },
+   "wrong_map_objects": 5,
+   "reg": 4,
+   "gt": 4,
+   "pos_med_mm": 10.9
+  },
+  "50": {
+   "frames": 1916,
+   "processed": 85,
+   "match": 96.3,
+   "wrong_per_frame": 3.536,
+   "t_first_s": {
+    "003_cracker_box": 2.7,
+    "005_tomato_soup_can": 2.7,
+    "006_mustard_bottle": 2.7,
+    "011_banana": 2.7,
+    "035_power_drill": 2.7
+   },
+   "wrong_map_objects": 4,
+   "reg": 5,
+   "gt": 5,
+   "pos_med_mm": 4.7
+  },
+  "51": {
+   "frames": 2008,
+   "processed": 83,
+   "match": 95.5,
+   "wrong_per_frame": 5.56,
+   "t_first_s": {
+    "002_master_chef_can": 2.7,
+    "004_sugar_box": 2.7,
+    "005_tomato_soup_can": 2.7,
+    "021_bleach_cleanser": 2.7,
+    "037_scissors": 2.7
+   },
+   "wrong_map_objects": 6,
+   "reg": 5,
+   "gt": 5,
+   "pos_med_mm": 9.0
+  },
+  "52": {
+   "frames": 899,
+   "processed": 94,
+   "match": 96.0,
+   "wrong_per_frame": 1.362,
+   "t_first_s": {
+    "006_mustard_bottle": 1.4,
+    "007_tuna_fish_can": 1.4,
+    "019_pitcher_base": 1.4
+   },
+   "wrong_map_objects": 2,
+   "reg": 3,
+   "gt": 3,
+   "pos_med_mm": 6.0
+  },
+  "53": {
+   "frames": 836,
+   "processed": 89,
+   "match": 95.6,
+   "wrong_per_frame": 0.0,
+   "t_first_s": {
+    "005_tomato_soup_can": 1.6,
+    "010_potted_meat_can": 1.6,
+    "024_bowl": 1.6
+   },
+   "wrong_map_objects": 0,
+   "reg": 3,
+   "gt": 3,
+   "pos_med_mm": 5.5
+  },
+  "54": {
+   "frames": 1928,
+   "processed": 127,
+   "match": 97.3,
+   "wrong_per_frame": 3.582,
+   "t_first_s": {
+    "003_cracker_box": 2.0,
+    "004_sugar_box": 2.0,
+    "021_bleach_cleanser": 2.0,
+    "035_power_drill": 2.0,
+    "051_large_clamp": 2.0
+   },
+   "wrong_map_objects": 4,
+   "reg": 5,
+   "gt": 5,
+   "pos_med_mm": 4.7
+  },
+  "55": {
+   "frames": 1829,
+   "processed": 134,
+   "match": 85.2,
+   "wrong_per_frame": 2.421,
+   "t_first_s": {
+    "002_master_chef_can": 2.0,
+    "004_sugar_box": 3.4,
+    "005_tomato_soup_can": 2.0,
+    "021_bleach_cleanser": 27.6,
+    "025_mug": 2.0,
+    "036_wood_block": 2.0
+   },
+   "wrong_map_objects": 3,
+   "reg": 6,
+   "gt": 6,
+   "pos_med_mm": 8.9
+  },
+  "56": {
+   "frames": 1225,
+   "processed": 113,
+   "match": 86.7,
+   "wrong_per_frame": 0.885,
+   "t_first_s": {
+    "002_master_chef_can": 1.4,
+    "011_banana": 1.4,
+    "019_pitcher_base": 1.4,
+    "035_power_drill": 21.4
+   },
+   "wrong_map_objects": 1,
+   "reg": 4,
+   "gt": 4,
+   "pos_med_mm": 9.6
+  },
+  "57": {
+   "frames": 1871,
+   "processed": 128,
+   "match": 95.6,
+   "wrong_per_frame": 3.757,
+   "t_first_s": {
+    "005_tomato_soup_can": 2.0,
+    "021_bleach_cleanser": 2.0,
+    "040_large_marker": 2.0,
+    "052_extra_large_clamp": 7.4,
+    "061_foam_brick": 2.0
+   },
+   "wrong_map_objects": 5,
+   "reg": 5,
+   "gt": 5,
+   "pos_med_mm": 19.6
+  },
+  "58": {
+   "frames": 1719,
+   "processed": 133,
+   "match": 97.3,
+   "wrong_per_frame": 0.743,
+   "t_first_s": {
+    "004_sugar_box": 1.8,
+    "008_pudding_box": 1.8,
+    "009_gelatin_box": 1.8,
+    "019_pitcher_base": 1.8
+   },
+   "wrong_map_objects": 2,
+   "reg": 4,
+   "gt": 4,
+   "pos_med_mm": 12.1
+  },
+  "59": {
+   "frames": 1863,
+   "processed": 110,
+   "match": 89.7,
+   "wrong_per_frame": 2.213,
+   "t_first_s": {
+    "003_cracker_box": 2.0,
+    "005_tomato_soup_can": 2.0,
+    "007_tuna_fish_can": 2.0,
+    "010_potted_meat_can": 8.0,
+    "035_power_drill": 2.0,
+    "040_large_marker": 2.0
+   },
+   "wrong_map_objects": 5,
+   "reg": 6,
+   "gt": 6,
+   "pos_med_mm": 7.0
+  }
+ }
+}

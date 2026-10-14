@@ -321,4 +321,62 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>제안 방법 존재확률 민감도:</strong> 메모리는 기록된 인식 결과를 재생해 지도를 만드는 구조라, GPU 없이 P_D·c 만 바꿔 같은 입력으로 연속 지도를 다시 만들 수 있습니다. 9월 19일 전 값(0.15 / 0.03)이나 더 큰 P_D 에서 치운 물체가 지워지는지, 대신 시야 밖 물체를 잘못 지우지 않는지 확인.</li>
 <li><strong>DualMap 전체 설정(추상 지도 포함)</strong> 으로 연속 지도를 다시 돌려 변화 반영이 동작하는지 확인.</li>
 <li>RTX 5090 에서 최종 실행(인식 빈도가 오르면 방문당 인식 프레임이 늘어 제안 방법의 변화 반영도 달라질 수 있음).</li>
-</ol></main></body></html>
+</ol>
+<h2>4. RTX PRO 6000 Blackwell(.41) 재실행 (2026-10-12)</h2>
+<blockquote>
+<p>제안 방법의 ObChange-Kitchen 객체 지도를 .41(GT 궤적 + 개선안 3 + 군집 먼저)에서 방문별 단독(2~6)과 연속(1..6) 모두 다시 만들고, FM-Fusion·DualMap 지도(주말 노트북 산출물)와 같은 채점기로 비교했습니다. 결과 <code>src/objmap/out/obchange_scores.json</code>. ObChange 는 물체가 바뀌는 장면이라 3절처럼 중심 5 cm 짝짓기를 주 지표로 봅니다.</p>
+</blockquote>
+<p><strong>중심 5 cm, 방문 단독(obchange_kitchen), <code>--clean</code></strong> — 괄호는 노트북(3절)</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>TP</th>
+<th>FP</th>
+<th>FN</th>
+<th>F1 (.41 → 노트북)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>제안 ours_obs</strong></td>
+<td>22</td>
+<td>41</td>
+<td>3</td>
+<td><strong>0.500 → 0.667</strong></td>
+</tr>
+<tr>
+<td><strong>제안 ours_cad</strong></td>
+<td>21</td>
+<td>43</td>
+<td>4</td>
+<td><strong>0.472 → 0.576</strong></td>
+</tr>
+<tr>
+<td>FM-Fusion</td>
+<td>13</td>
+<td>67</td>
+<td>12</td>
+<td>0.248 → 0.248</td>
+</tr>
+<tr>
+<td>DualMap BGR</td>
+<td>10</td>
+<td>22</td>
+<td>15</td>
+<td>0.351 → 0.351</td>
+</tr>
+<tr>
+<td>DualMap 공개</td>
+<td>5</td>
+<td>27</td>
+<td>20</td>
+<td>0.175 → 0.175</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>기준 방법(FM-Fusion·DualMap)은 노트북과 정확히 일치</strong>합니다(같은 지도 재사용). 제안 방법만 Blackwell 로 새로 만들었습니다.</li>
+<li><strong>순위는 그대로</strong>입니다: 제안 ours_obs 0.50 &gt; DualMap BGR 0.35 &gt; FM-Fusion 0.25 &gt; DualMap 공개 0.18. 제안이 물체를 거의 다 찾고(TP 22, 재현율 0.88 수준) 오탐이 상대적으로 적은 점은 유지됩니다.</li>
+<li><strong>노트북 대비 차이는 20 문서 §7 과 같은 FP 증가</strong>입니다: ours_obs 의 TP 는 22 로 동일한데 FP 가 19 → 41 로 늘어 F1 이 0.67 → 0.50 으로 내려갔습니다. 처리 프레임이 늘어 그럴듯한 오탐이 더 등록된 것으로, 존재확률·중복억제 문턱을 프레임 수에 맞춰 조정하면 줄어드는 성격입니다(후속 조정 대상). 맞게 찾은 물체(TP)·재현율은 보존됩니다.</li>
+</ul></main></body></html>

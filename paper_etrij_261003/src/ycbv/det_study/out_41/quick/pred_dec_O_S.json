@@ -1,0 +1,7131 @@
+{
+ "method": "ours_text",
+ "label": "rerun, RTX PRO 6000 Blackwell (.41 GPU0), 2026-10-08",
+ "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+ "torch": "2.7.1",
+ "started": "2026-10-08 15:21:00",
+ "dataset": "/home/jucpark/Dataset/bop/ycbv",
+ "targets": "test_targets_bop19.json",
+ "pipeline": "Sam6DCore.process (deployed)",
+ "config": "/home/jucpark/Dataset/bop/ycbv_work/ycbv_objects.yaml",
+ "verify": {
+  "enabled": true,
+  "mask_iou_min": 0.420998,
+  "texture_min_score": 0.449562,
+  "cluster_rotation_deg": 20,
+  "cluster_translation_mm": 25,
+  "cluster_min_occupancy": 0.3
+ },
+ "det_score_thresh": 0.2,
+ "warmup_images": 2,
+ "proposals": "YOLO-World text prompts",
+ "proposer_spec": null,
+ "orig_ism": {
+  "thresh": 0.5,
+  "desc": "dinov2_vits14",
+  "seg": "fastsam_full"
+ },
+ "verify_cost": {
+  "candidates": null,
+  "topk": 0,
+  "stride": 0,
+  "precision": null
+ },
+ "gate_study": {
+  "assign_fallback": false,
+  "size_gate": 0.0,
+  "gate_sem": 0.0,
+  "gate_appe": 0.0,
+  "gate_hsv": -1.0
+ },
+ "prompts": {
+  "ycbv_01": "blue coffee can",
+  "ycbv_02": "red cracker box",
+  "ycbv_03": "yellow sugar box",
+  "ycbv_04": "tomato soup can",
+  "ycbv_05": "yellow mustard bottle",
+  "ycbv_06": "small tuna can",
+  "ycbv_07": "small brown box",
+  "ycbv_08": "small red box",
+  "ycbv_09": "small blue can",
+  "ycbv_10": "banana",
+  "ycbv_11": "blue plastic pitcher",
+  "ycbv_12": "white cleanser bottle",
+  "ycbv_13": "red bowl",
+  "ycbv_14": "red mug",
+  "ycbv_15": "power drill",
+  "ycbv_16": "wooden block",
+  "ycbv_17": "scissors",
+  "ycbv_18": "marker pen",
+  "ycbv_19": "black spring clamp",
+  "ycbv_20": "large black clamp",
+  "ycbv_21": "red brick"
+ },
+ "images": [
+  {
+   "scene_id": 48,
+   "im_id": 1,
+   "targets": [
+    1,
+    6,
+    14,
+    19,
+    20
+   ],
+   "time_ms": 221.35,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 43,
+    "pem": 179,
+    "total": 221
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_01",
+    "ycbv_06",
+    "ycbv_14",
+    "ycbv_19"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 1,
+     "R": [
+      [
+       0.720477,
+       -0.69347,
+       -0.003648
+      ],
+      [
+       -0.158528,
+       -0.159577,
+       -0.974374
+      ],
+      [
+       0.675117,
+       0.702591,
+       -0.224906
+      ]
+     ],
+     "t_mm": [
+      -31.3989,
+      -6.213,
+      870.3408
+     ],
+     "score": 1.0,
+     "time_ms": 221.35,
+     "bbox": [
+      210,
+      142,
+      334,
+      330
+     ],
+     "ism": {
+      "best_sem": 0.77134,
+      "masked_appe": 0.77134,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.790711,
+     "texture_score": 0.67631876,
+     "cluster_occupancy": 0.84252,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 6,
+     "R": [
+      [
+       -0.87369,
+       0.483652,
+       -0.052409
+      ],
+      [
+       0.132094,
+       0.132168,
+       -0.982387
+      ],
+      [
+       -0.468207,
+       -0.865224,
+       -0.179361
+      ]
+     ],
+     "t_mm": [
+      20.6436,
+      58.8969,
+      811.2891
+     ],
+     "score": 0.99463,
+     "time_ms": 221.35,
+     "bbox": [
+      282,
+      282,
+      393,
+      354
+     ],
+     "ism": {
+      "best_sem": 0.69208,
+      "masked_appe": 0.69208,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.916118,
+     "texture_score": 0.59901136,
+     "cluster_occupancy": 0.834906,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 14,
+     "R": [
+      [
+       0.982456,
+       -0.185251,
+       -0.021483
+      ],
+      [
+       -0.064862,
+       -0.231421,
+       -0.970689
+      ],
+      [
+       0.174849,
+       0.955053,
+       -0.239377
+      ]
+     ],
+     "t_mm": [
+      -21.0691,
+      -109.8307,
+      841.4038
+     ],
+     "score": 0.99805,
+     "time_ms": 221.35,
+     "bbox": [
+      214,
+      46,
+      346,
+      158
+     ],
+     "ism": {
+      "best_sem": 0.76953,
+      "masked_appe": 0.76953,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.844645,
+     "texture_score": 0.51306564,
+     "cluster_occupancy": 0.574359,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 19,
+     "R": [
+      [
+       0.022898,
+       -0.999021,
+       -0.037834
+      ],
+      [
+       0.365888,
+       -0.026844,
+       0.930272
+      ],
+      [
+       -0.930377,
+       -0.035144,
+       0.364915
+      ]
+     ],
+     "t_mm": [
+      -16.7162,
+      91.2057,
+      679.632
+     ],
+     "score": 0.88623,
+     "time_ms": 221.35,
+     "bbox": [
+      94,
+      330,
+      440,
+      453
+     ],
+     "ism": {
+      "best_sem": 0.62172,
+      "masked_appe": 0.62172,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.750493,
+     "texture_score": 0.5513376,
+     "cluster_occupancy": 0.502463,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 48,
+   "im_id": 1132,
+   "targets": [
+    1,
+    6,
+    14,
+    19,
+    20
+   ],
+   "time_ms": 238.28,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 51,
+    "pem": 187,
+    "total": 238
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_01",
+    "ycbv_06",
+    "ycbv_14",
+    "ycbv_19",
+    "ycbv_20"
+   ],
+   "pose_rejected": [
+    {
+     "object": "ycbv_19",
+     "mask_iou": 0.565139,
+     "texture_score": 0.44410646,
+     "cluster_occupancy": 0.333333,
+     "rejection_reason": "final_texture_below_threshold"
+    },
+    {
+     "object": "ycbv_20",
+     "mask_iou": 0.35675,
+     "texture_score": 0.23661941,
+     "cluster_occupancy": 0.0,
+     "rejection_reason": "texture_filter_empty"
+    }
+   ],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 1,
+     "R": [
+      [
+       0.999307,
+       -0.036821,
+       -0.005508
+      ],
+      [
+       -0.013321,
+       -0.21547,
+       -0.97642
+      ],
+      [
+       0.034766,
+       0.975816,
+       -0.215811
+      ]
+     ],
+     "t_mm": [
+      92.0958,
+      19.04,
+      1076.6122
+     ],
+     "score": 0.99902,
+     "time_ms": 238.28,
+     "bbox": [
+      354,
+      186,
+      450,
+      318
+     ],
+     "ism": {
+      "best_sem": 0.67268,
+      "masked_appe": 0.67268,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.692095,
+     "texture_score": 0.66334641,
+     "cluster_occupancy": 0.814815,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 6,
+     "R": [
+      [
+       -0.952094,
+       -0.299108,
+       -0.063655
+      ],
+      [
+       0.002146,
+       0.201614,
+       -0.979463
+      ],
+      [
+       0.305799,
+       -0.932677,
+       -0.191313
+      ]
+     ],
+     "t_mm": [
+      76.8685,
+      86.9691,
+      1007.0436
+     ],
+     "score": 0.98828,
+     "time_ms": 238.28,
+     "bbox": [
+      350,
+      302,
+      437,
+      361
+     ],
+     "ism": {
+      "best_sem": 0.70899,
+      "masked_appe": 0.70899,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.875168,
+     "texture_score": 0.57035947,
+     "cluster_occupancy": 0.807107,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 14,
+     "R": [
+      [
+       0.962342,
+       0.270011,
+       -0.031485
+      ],
+      [
+       0.037285,
+       -0.245831,
+       -0.968596
+      ],
+      [
+       -0.269272,
+       0.930947,
+       -0.246641
+      ]
+     ],
+     "t_mm": [
+      101.2842,
+      -82.6284,
+      1044.2089
+     ],
+     "score": 0.97803,
+     "time_ms": 238.28,
+     "bbox": [
+      358,
+      110,
+      478,
+      202
+     ],
+     "ism": {
+      "best_sem": 0.78018,
+      "masked_appe": 0.78018,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.802545,
+     "texture_score": 0.50488043,
+     "cluster_occupancy": 0.884259,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 48,
+   "im_id": 1622,
+   "targets": [
+    1,
+    6,
+    14,
+    19,
+    20
+   ],
+   "time_ms": 212.58,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 36,
+    "pem": 176,
+    "total": 213
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_01",
+    "ycbv_06",
+    "ycbv_14",
+    "ycbv_19"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 1,
+     "R": [
+      [
+       -0.903938,
+       -0.417208,
+       0.093985
+      ],
+      [
+       -0.163324,
+       0.133666,
+       -0.977476
+      ],
+      [
+       0.395248,
+       -0.898928,
+       -0.188966
+      ]
+     ],
+     "t_mm": [
+      90.1574,
+      63.5544,
+      1041.6095
+     ],
+     "score": 1.0,
+     "time_ms": 212.58,
+     "bbox": [
+      354,
+      226,
+      438,
+      374
+     ],
+     "ism": {
+      "best_sem": 0.6078,
+      "masked_appe": 0.6078,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.543106,
+     "texture_score": 0.62396586,
+     "cluster_occupancy": 0.757991,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 6,
+     "R": [
+      [
+       -0.876724,
+       -0.45432,
+       0.157955
+      ],
+      [
+       -0.240681,
+       0.130043,
+       -0.961853
+      ],
+      [
+       0.416448,
+       -0.881296,
+       -0.223358
+      ]
+     ],
+     "t_mm": [
+      56.9836,
+      124.0788,
+      972.5463
+     ],
+     "score": 0.99561,
+     "time_ms": 212.58,
+     "bbox": [
+      330,
+      346,
+      422,
+      410
+     ],
+     "ism": {
+      "best_sem": 0.67842,
+      "masked_appe": 0.67842,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.881179,
+     "texture_score": 0.52569401,
+     "cluster_occupancy": 0.870056,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 14,
+     "R": [
+      [
+       0.95893,
+       0.276228,
+       0.064429
+      ],
+      [
+       0.121941,
+       -0.196393,
+       -0.972914
+      ],
+      [
+       -0.256093,
+       0.940813,
+       -0.22201
+      ]
+     ],
+     "t_mm": [
+      107.7797,
+      -39.3692,
+      1013.1849
+     ],
+     "score": 0.98389,
+     "time_ms": 212.58,
+     "bbox": [
+      370,
+      150,
+      486,
+      245
+     ],
+     "ism": {
+      "best_sem": 0.75062,
+      "masked_appe": 0.75062,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.835083,
+     "texture_score": 0.50614965,
+     "cluster_occupancy": 0.913706,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 19,
+     "R": [
+      [
+       0.696805,
+       0.224137,
+       -0.681341
+      ],
+      [
+       -0.204001,
+       0.972621,
+       0.111326
+      ],
+      [
+       0.687638,
+       0.061421,
+       0.723451
+      ]
+     ],
+     "t_mm": [
+      134.4126,
+      72.1263,
+      974.1907
+     ],
+     "score": 0.98486,
+     "time_ms": 212.58,
+     "bbox": [
+      418,
+      226,
+      522,
+      408
+     ],
+     "ism": {
+      "best_sem": 0.58601,
+      "masked_appe": 0.58601,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.869958,
+     "texture_score": 0.60703301,
+     "cluster_occupancy": 0.451327,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 49,
+   "im_id": 1,
+   "targets": [
+    3,
+    6,
+    9,
+    13
+   ],
+   "time_ms": 189.32,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 46,
+    "pem": 144,
+    "total": 189
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_03",
+    "ycbv_06",
+    "ycbv_09"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 3,
+     "R": [
+      [
+       -0.092176,
+       0.940664,
+       0.32658
+      ],
+      [
+       -0.693092,
+       0.174873,
+       -0.699317
+      ],
+      [
+       -0.714932,
+       -0.29081,
+       0.635848
+      ]
+     ],
+     "t_mm": [
+      19.6139,
+      -10.5499,
+      781.3129
+     ],
+     "score": 0.99561,
+     "time_ms": 189.32,
+     "bbox": [
+      234,
+      134,
+      430,
+      342
+     ],
+     "ism": {
+      "best_sem": 0.73686,
+      "masked_appe": 0.73686,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.911335,
+     "texture_score": 0.72328252,
+     "cluster_occupancy": 0.86722,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 6,
+     "R": [
+      [
+       0.550904,
+       0.827318,
+       0.109774
+      ],
+      [
+       -0.570549,
+       0.277354,
+       0.773013
+      ],
+      [
+       0.609081,
+       -0.488487,
+       0.624821
+      ]
+     ],
+     "t_mm": [
+      144.0113,
+      -95.6406,
+      934.4736
+     ],
+     "score": 0.99512,
+     "time_ms": 189.32,
+     "bbox": [
+      434,
+      94,
+      530,
+      176
+     ],
+     "ism": {
+      "best_sem": 0.7706,
+      "masked_appe": 0.7706,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.935658,
+     "texture_score": 0.54405069,
+     "cluster_occupancy": 0.798246,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 9,
+     "R": [
+      [
+       -0.760158,
+       -0.640675,
+       -0.108139
+      ],
+      [
+       -0.342002,
+       0.536056,
+       -0.771801
+      ],
+      [
+       0.552443,
+       -0.549708,
+       -0.6266
+      ]
+     ],
+     "t_mm": [
+      -66.1378,
+      -64.9459,
+      902.7926
+     ],
+     "score": 1.0,
+     "time_ms": 189.32,
+     "bbox": [
+      170,
+      98,
+      290,
+      230
+     ],
+     "ism": {
+      "best_sem": 0.7705,
+      "masked_appe": 0.7705,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.850396,
+     "texture_score": 0.60786611,
+     "cluster_occupancy": 0.897436,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 49,
+   "im_id": 631,
+   "targets": [
+    3,
+    6,
+    9,
+    13
+   ],
+   "time_ms": 178.19,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 36,
+    "pem": 142,
+    "total": 178
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_03",
+    "ycbv_06",
+    "ycbv_09"
+   ],
+   "pose_rejected": [
+    {
+     "object": "ycbv_09",
+     "mask_iou": 0.659894,
+     "texture_score": 0.4428831,
+     "cluster_occupancy": 0.0,
+     "rejection_reason": "texture_filter_empty"
+    }
+   ],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 3,
+     "R": [
+      [
+       0.029482,
+       0.695535,
+       0.717887
+      ],
+      [
+       -0.882866,
+       0.354886,
+       -0.307577
+      ],
+      [
+       -0.468698,
+       -0.62473,
+       0.624527
+      ]
+     ],
+     "t_mm": [
+      -14.6977,
+      14.3504,
+      778.176
+     ],
+     "score": 0.99902,
+     "time_ms": 178.19,
+     "bbox": [
+      158,
+      194,
+      414,
+      342
+     ],
+     "ism": {
+      "best_sem": 0.60274,
+      "masked_appe": 0.60274,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.903921,
+     "texture_score": 0.71136272,
+     "cluster_occupancy": 0.883534,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 6,
+     "R": [
+      [
+       0.903016,
+       0.429295,
+       -0.016346
+      ],
+      [
+       -0.161053,
+       0.373556,
+       0.91352
+      ],
+      [
+       0.398276,
+       -0.82229,
+       0.406466
+      ]
+     ],
+     "t_mm": [
+      167.9136,
+      30.1495,
+      895.8225
+     ],
+     "score": 0.97607,
+     "time_ms": 178.19,
+     "bbox": [
+      462,
+      242,
+      566,
+      322
+     ],
+     "ism": {
+      "best_sem": 0.72987,
+      "masked_appe": 0.72987,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.914108,
+     "texture_score": 0.55772084,
+     "cluster_occupancy": 0.875,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 49,
+   "im_id": 1587,
+   "targets": [
+    3,
+    6,
+    9,
+    13
+   ],
+   "time_ms": 170.14,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 33,
+    "pem": 137,
+    "total": 170
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_03",
+    "ycbv_06",
+    "ycbv_13"
+   ],
+   "pose_rejected": [
+    {
+     "object": "ycbv_13",
+     "mask_iou": 0.661872,
+     "texture_score": 0.50351691,
+     "cluster_occupancy": 0.168421,
+     "rejection_reason": "convergence_insufficient"
+    }
+   ],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 3,
+     "R": [
+      [
+       -0.050018,
+       0.317565,
+       0.946916
+      ],
+      [
+       -0.900892,
+       0.394944,
+       -0.180038
+      ],
+      [
+       -0.431154,
+       -0.862074,
+       0.266337
+      ]
+     ],
+     "t_mm": [
+      -84.4866,
+      7.6209,
+      744.1058
+     ],
+     "score": 1.0,
+     "time_ms": 170.14,
+     "bbox": [
+      58,
+      194,
+      330,
+      318
+     ],
+     "ism": {
+      "best_sem": 0.6013,
+      "masked_appe": 0.6013,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.924986,
+     "texture_score": 0.73804015,
+     "cluster_occupancy": 0.873016,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 6,
+     "R": [
+      [
+       0.999466,
+       -0.031674,
+       -0.008017
+      ],
+      [
+       0.019657,
+       0.386932,
+       0.921898
+      ],
+      [
+       -0.026098,
+       -0.921564,
+       0.387348
+      ]
+     ],
+     "t_mm": [
+      135.6327,
+      52.2618,
+      775.1855
+     ],
+     "score": 0.98975,
+     "time_ms": 170.14,
+     "bbox": [
+      442,
+      274,
+      557,
+      362
+     ],
+     "ism": {
+      "best_sem": 0.71427,
+      "masked_appe": 0.71427,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.929262,
+     "texture_score": 0.5739615,
+     "cluster_occupancy": 0.853503,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 50,
+   "im_id": 620,
+   "targets": [
+    2,
+    4,
+    5,
+    10,
+    15
+   ],
+   "time_ms": 272.58,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 90,
+    "pem": 182,
+    "total": 273
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_02",
+    "ycbv_05",
+    "ycbv_10",
+    "ycbv_15"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 2,
+     "R": [
+      [
+       0.937197,
+       0.043668,
+       0.346057
+      ],
+      [
+       0.114588,
+       0.89852,
+       -0.42371
+      ],
+      [
+       -0.329442,
+       0.436754,
+       0.837087
+      ]
+     ],
+     "t_mm": [
+      54.6025,
+      -81.7302,
+      1034.2555
+     ],
+     "score": 0.9917,
+     "time_ms": 272.58,
+     "bbox": [
+      302,
+      42,
+      422,
+      278
+     ],
+     "ism": {
+      "best_sem": 0.75883,
+      "masked_appe": 0.75883,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.805581,
+     "texture_score": 0.64088309,
+     "cluster_occupancy": 0.808696,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 5,
+     "R": [
+      [
+       -0.528709,
+       -0.847732,
+       -0.042608
+      ],
+      [
+       -0.344827,
+       0.260387,
+       -0.901828
+      ],
+      [
+       0.775603,
+       -0.462113,
+       -0.429991
+      ]
+     ],
+     "t_mm": [
+      91.0497,
+      -6.7381,
+      844.241
+     ],
+     "score": 1.0,
+     "time_ms": 272.58,
+     "bbox": [
+      390,
+      118,
+      466,
+      362
+     ],
+     "ism": {
+      "best_sem": 0.73905,
+      "masked_appe": 0.73905,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.888257,
+     "texture_score": 0.6667645,
+     "cluster_occupancy": 0.790984,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 10,
+     "R": [
+      [
+       0.751055,
+       0.652834,
+       -0.098607
+      ],
+      [
+       -0.106874,
+       0.267591,
+       0.957587
+      ],
+      [
+       0.651532,
+       -0.708662,
+       0.270747
+      ]
+     ],
+     "t_mm": [
+      -10.9237,
+      91.0763,
+      843.1486
+     ],
+     "score": 0.97803,
+     "time_ms": 272.58,
+     "bbox": [
+      206,
+      314,
+      394,
+      410
+     ],
+     "ism": {
+      "best_sem": 0.6663,
+      "masked_appe": 0.6663,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.866402,
+     "texture_score": 0.50495559,
+     "cluster_occupancy": 0.535714,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 15,
+     "R": [
+      [
+       -0.63499,
+       0.770702,
+       0.052957
+      ],
+      [
+       -0.272252,
+       -0.28741,
+       0.9183
+      ],
+      [
+       0.722956,
+       0.568694,
+       0.392327
+      ]
+     ],
+     "t_mm": [
+      -104.4305,
+      41.324,
+      919.3491
+     ],
+     "score": 0.9502,
+     "time_ms": 272.58,
+     "bbox": [
+      62,
+      218,
+      326,
+      366
+     ],
+     "ism": {
+      "best_sem": 0.72687,
+      "masked_appe": 0.72687,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.812795,
+     "texture_score": 0.63030869,
+     "cluster_occupancy": 0.811159,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 50,
+   "im_id": 1044,
+   "targets": [
+    2,
+    4,
+    5,
+    10,
+    15
+   ],
+   "time_ms": 276.2,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 73,
+    "pem": 203,
+    "total": 276
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_02",
+    "ycbv_04",
+    "ycbv_05",
+    "ycbv_10",
+    "ycbv_15"
+   ],
+   "pose_rejected": [
+    {
+     "object": "ycbv_04",
+     "mask_iou": 0.411279,
+     "texture_score": 0.59537542,
+     "cluster_occupancy": 1.0,
+     "rejection_reason": "final_mask_below_threshold"
+    }
+   ],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 2,
+     "R": [
+      [
+       0.987331,
+       0.103097,
+       0.120613
+      ],
+      [
+       -0.039163,
+       0.894967,
+       -0.44441
+      ],
+      [
+       -0.153762,
+       0.434056,
+       0.887667
+      ]
+     ],
+     "t_mm": [
+      64.9989,
+      -85.7807,
+      937.4133
+     ],
+     "score": 1.0,
+     "time_ms": 276.2,
+     "bbox": [
+      338,
+      98,
+      426,
+      274
+     ],
+     "ism": {
+      "best_sem": 0.66047,
+      "masked_appe": 0.66047,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.820178,
+     "texture_score": 0.61832094,
+     "cluster_occupancy": 0.64878,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 5,
+     "R": [
+      [
+       -0.726078,
+       -0.680133,
+       -0.101143
+      ],
+      [
+       -0.252759,
+       0.40079,
+       -0.880614
+      ],
+      [
+       0.639472,
+       -0.613829,
+       -0.462914
+      ]
+     ],
+     "t_mm": [
+      153.1335,
+      -21.1542,
+      765.4986
+     ],
+     "score": 0.99512,
+     "time_ms": 276.2,
+     "bbox": [
+      478,
+      86,
+      582,
+      350
+     ],
+     "ism": {
+      "best_sem": 0.77165,
+      "masked_appe": 0.77165,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.900111,
+     "texture_score": 0.68677306,
+     "cluster_occupancy": 0.915254,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 10,
+     "R": [
+      [
+       0.060617,
+       -0.991044,
+       -0.118988
+      ],
+      [
+       -0.511783,
+       0.071488,
+       -0.856135
+      ],
+      [
+       0.856974,
+       0.112792,
+       -0.502866
+      ]
+     ],
+     "t_mm": [
+      72.2846,
+      87.6155,
+      741.7687
+     ],
+     "score": 0.95898,
+     "time_ms": 276.2,
+     "bbox": [
+      294,
+      338,
+      550,
+      425
+     ],
+     "ism": {
+      "best_sem": 0.67817,
+      "masked_appe": 0.67817,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.877089,
+     "texture_score": 0.58287323,
+     "cluster_occupancy": 0.695312,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 15,
+     "R": [
+      [
+       -0.833356,
+       0.534609,
+       0.140397
+      ],
+      [
+       -0.119317,
+       -0.422008,
+       0.898706
+      ],
+      [
+       0.539705,
+       0.73219,
+       0.415471
+      ]
+     ],
+     "t_mm": [
+      -44.6146,
+      62.9053,
+      794.3196
+     ],
+     "score": 0.98047,
+     "time_ms": 276.2,
+     "bbox": [
+      110,
+      242,
+      406,
+      424
+     ],
+     "ism": {
+      "best_sem": 0.75822,
+      "masked_appe": 0.75822,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.847357,
+     "texture_score": 0.65977037,
+     "cluster_occupancy": 0.869565,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 50,
+   "im_id": 1480,
+   "targets": [
+    2,
+    4,
+    5,
+    10,
+    15
+   ],
+   "time_ms": 294.55,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 78,
+    "pem": 216,
+    "total": 295
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_02",
+    "ycbv_04",
+    "ycbv_05",
+    "ycbv_10",
+    "ycbv_15"
+   ],
+   "pose_rejected": [
+    {
+     "object": "ycbv_10",
+     "mask_iou": 0.87038,
+     "texture_score": 0.54949832,
+     "cluster_occupancy": 0.287081,
+     "rejection_reason": "convergence_insufficient"
+    }
+   ],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 2,
+     "R": [
+      [
+       0.971673,
+       0.050408,
+       -0.230889
+      ],
+      [
+       -0.136928,
+       0.916371,
+       -0.376185
+      ],
+      [
+       0.192618,
+       0.397144,
+       0.897316
+      ]
+     ],
+     "t_mm": [
+      -5.2399,
+      -38.7352,
+      985.2823
+     ],
+     "score": 0.99951,
+     "time_ms": 294.55,
+     "bbox": [
+      242,
+      86,
+      374,
+      318
+     ],
+     "ism": {
+      "best_sem": 0.7225,
+      "masked_appe": 0.7225,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.88865,
+     "texture_score": 0.64583933,
+     "cluster_occupancy": 0.90393,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 4,
+     "R": [
+      [
+       -0.97138,
+       -0.231003,
+       -0.055319
+      ],
+      [
+       -0.041239,
+       0.393359,
+       -0.918459
+      ],
+      [
+       0.233928,
+       -0.889891,
+       -0.391627
+      ]
+     ],
+     "t_mm": [
+      95.2544,
+      0.2571,
+      942.6321
+     ],
+     "score": 0.99023,
+     "time_ms": 294.55,
+     "bbox": [
+      382,
+      178,
+      440,
+      310
+     ],
+     "ism": {
+      "best_sem": 0.69545,
+      "masked_appe": 0.69545,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.669357,
+     "texture_score": 0.66761166,
+     "cluster_occupancy": 0.795122,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 5,
+     "R": [
+      [
+       -0.881186,
+       -0.467541,
+       -0.07012
+      ],
+      [
+       -0.126223,
+       0.375595,
+       -0.918149
+      ],
+      [
+       0.455609,
+       -0.800209,
+       -0.389983
+      ]
+     ],
+     "t_mm": [
+      134.8497,
+      0.1112,
+      833.4712
+     ],
+     "score": 0.9917,
+     "time_ms": 294.55,
+     "bbox": [
+      434,
+      122,
+      540,
+      364
+     ],
+     "ism": {
+      "best_sem": 0.76789,
+      "masked_appe": 0.76789,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.895064,
+     "texture_score": 0.72024262,
+     "cluster_occupancy": 0.817121,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 15,
+     "R": [
+      [
+       -0.944384,
+       0.300845,
+       0.132781
+      ],
+      [
+       0.00911,
+       -0.37969,
+       0.925069
+      ],
+      [
+       0.328718,
+       0.87483,
+       0.355832
+      ]
+     ],
+     "t_mm": [
+      -52.7669,
+      101.8817,
+      807.3832
+     ],
+     "score": 0.99561,
+     "time_ms": 294.55,
+     "bbox": [
+      114,
+      298,
+      378,
+      480
+     ],
+     "ism": {
+      "best_sem": 0.74219,
+      "masked_appe": 0.74219,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.863313,
+     "texture_score": 0.5998221,
+     "cluster_occupancy": 0.890688,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 51,
+   "im_id": 1,
+   "targets": [
+    1,
+    3,
+    4,
+    12,
+    17
+   ],
+   "time_ms": 294.54,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 73,
+    "pem": 221,
+    "total": 294
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_01",
+    "ycbv_03",
+    "ycbv_04",
+    "ycbv_12",
+    "ycbv_17"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 1,
+     "R": [
+      [
+       0.57173,
+       -0.819909,
+       -0.029555
+      ],
+      [
+       -0.371597,
+       -0.226665,
+       -0.900299
+      ],
+      [
+       0.731465,
+       0.52571,
+       -0.434267
+      ]
+     ],
+     "t_mm": [
+      41.9546,
+      -0.9167,
+      1008.8602
+     ],
+     "score": 0.98291,
+     "time_ms": 294.54,
+     "bbox": [
+      302,
+      150,
+      414,
+      326
+     ],
+     "ism": {
+      "best_sem": 0.75143,
+      "masked_appe": 0.75143,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.826738,
+     "texture_score": 0.62567621,
+     "cluster_occupancy": 0.841202,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 3,
+     "R": [
+      [
+       0.083579,
+       0.968737,
+       -0.233588
+      ],
+      [
+       -0.850587,
+       -0.052767,
+       -0.52318
+      ],
+      [
+       -0.519149,
+       0.242414,
+       0.819585
+      ]
+     ],
+     "t_mm": [
+      -43.8148,
+      101.7776,
+      906.2254
+     ],
+     "score": 1.0,
+     "time_ms": 294.54,
+     "bbox": [
+      198,
+      290,
+      338,
+      449
+     ],
+     "ism": {
+      "best_sem": 0.61868,
+      "masked_appe": 0.61868,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.923775,
+     "texture_score": 0.7200771,
+     "cluster_occupancy": 0.892,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 4,
+     "R": [
+      [
+       -0.144145,
+       -0.675376,
+       -0.723249
+      ],
+      [
+       0.932997,
+       0.150798,
+       -0.326766
+      ],
+      [
+       0.329754,
+       -0.721891,
+       0.608387
+      ]
+     ],
+     "t_mm": [
+      111.5389,
+      58.5491,
+      961.7856
+     ],
+     "score": 1.0,
+     "time_ms": 294.54,
+     "bbox": [
+      374,
+      258,
+      502,
+      362
+     ],
+     "ism": {
+      "best_sem": 0.64085,
+      "masked_appe": 0.64085,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.892996,
+     "texture_score": 0.67860866,
+     "cluster_occupancy": 0.894309,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 12,
+     "R": [
+      [
+       0.855379,
+       -0.517847,
+       -0.012709
+      ],
+      [
+       -0.237136,
+       -0.369652,
+       -0.898401
+      ],
+      [
+       0.460536,
+       0.771487,
+       -0.438993
+      ]
+     ],
+     "t_mm": [
+      -51.5313,
+      -74.9145,
+      1029.3296
+     ],
+     "score": 0.99756,
+     "time_ms": 294.54,
+     "bbox": [
+      214,
+      34,
+      310,
+      294
+     ],
+     "ism": {
+      "best_sem": 0.80602,
+      "masked_appe": 0.80602,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.880147,
+     "texture_score": 0.72519672,
+     "cluster_occupancy": 0.850394,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 17,
+     "R": [
+      [
+       0.280553,
+       0.959722,
+       0.014911
+      ],
+      [
+       0.441841,
+       -0.11534,
+       -0.889648
+      ],
+      [
+       -0.852095,
+       0.256182,
+       -0.456404
+      ]
+     ],
+     "t_mm": [
+      -122.1871,
+      94.4703,
+      952.433
+     ],
+     "score": 0.96387,
+     "time_ms": 294.54,
+     "bbox": [
+      66,
+      326,
+      198,
+      384
+     ],
+     "ism": {
+      "best_sem": 0.54488,
+      "masked_appe": 0.54488,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.790647,
+     "texture_score": 0.54003847,
+     "cluster_occupancy": 0.504854,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 51,
+   "im_id": 672,
+   "targets": [
+    1,
+    3,
+    4,
+    12,
+    17
+   ],
+   "time_ms": 253.7,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 81,
+    "pem": 172,
+    "total": 254
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_01",
+    "ycbv_03",
+    "ycbv_12",
+    "ycbv_17"
+   ],
+   "pose_rejected": [
+    {
+     "object": "ycbv_01",
+     "mask_iou": 0.702945,
+     "texture_score": 0.43594092,
+     "cluster_occupancy": 0.545455,
+     "rejection_reason": "final_texture_below_threshold"
+    },
+    {
+     "object": "ycbv_17",
+     "mask_iou": 0.511184,
+     "texture_score": 0.40069366,
+     "cluster_occupancy": 0.0,
+     "rejection_reason": "texture_filter_empty"
+    }
+   ],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 3,
+     "R": [
+      [
+       0.131372,
+       0.959644,
+       0.248646
+      ],
+      [
+       -0.847604,
+       0.238811,
+       -0.473854
+      ],
+      [
+       -0.51411,
+       -0.148502,
+       0.844771
+      ]
+     ],
+     "t_mm": [
+      -44.812,
+      110.0587,
+      928.3
+     ],
+     "score": 0.99902,
+     "time_ms": 253.7,
+     "bbox": [
+      178,
+      286,
+      338,
+      458
+     ],
+     "ism": {
+      "best_sem": 0.68561,
+      "masked_appe": 0.68561,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.830186,
+     "texture_score": 0.65560877,
+     "cluster_occupancy": 0.903614,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 12,
+     "R": [
+      [
+       0.995834,
+       -0.052965,
+       0.074226
+      ],
+      [
+       0.047717,
+       -0.390979,
+       -0.919162
+      ],
+      [
+       0.077704,
+       0.918875,
+       -0.386823
+      ]
+     ],
+     "t_mm": [
+      46.7449,
+      -45.5568,
+      1046.4756
+     ],
+     "score": 0.99805,
+     "time_ms": 253.7,
+     "bbox": [
+      302,
+      70,
+      417,
+      317
+     ],
+     "ism": {
+      "best_sem": 0.8119,
+      "masked_appe": 0.8119,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.749197,
+     "texture_score": 0.68787634,
+     "cluster_occupancy": 0.784232,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 51,
+   "im_id": 1545,
+   "targets": [
+    1,
+    3,
+    4,
+    12,
+    17
+   ],
+   "time_ms": 298.3,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 84,
+    "pem": 215,
+    "total": 298
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_01",
+    "ycbv_03",
+    "ycbv_04",
+    "ycbv_12",
+    "ycbv_17"
+   ],
+   "pose_rejected": [
+    {
+     "object": "ycbv_17",
+     "mask_iou": 0.424457,
+     "texture_score": 0.44083571,
+     "cluster_occupancy": 0.219298,
+     "rejection_reason": "convergence_insufficient"
+    }
+   ],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 1,
+     "R": [
+      [
+       -0.995594,
+       -0.093656,
+       0.004649
+      ],
+      [
+       -0.03214,
+       0.294243,
+       -0.95519
+      ],
+      [
+       0.088092,
+       -0.951131,
+       -0.295957
+      ]
+     ],
+     "t_mm": [
+      90.1482,
+      25.4237,
+      813.6237
+     ],
+     "score": 1.0,
+     "time_ms": 298.3,
+     "bbox": [
+      366,
+      170,
+      506,
+      374
+     ],
+     "ism": {
+      "best_sem": 0.73243,
+      "masked_appe": 0.73243,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.699587,
+     "texture_score": 0.67699552,
+     "cluster_occupancy": 0.642276,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 3,
+     "R": [
+      [
+       0.030576,
+       0.838101,
+       0.544657
+      ],
+      [
+       -0.896416,
+       0.264042,
+       -0.355977
+      ],
+      [
+       -0.442158,
+       -0.477355,
+       0.759361
+      ]
+     ],
+     "t_mm": [
+      -74.4661,
+      76.6837,
+      791.7222
+     ],
+     "score": 1.0,
+     "time_ms": 298.3,
+     "bbox": [
+      86,
+      274,
+      326,
+      438
+     ],
+     "ism": {
+      "best_sem": 0.62562,
+      "masked_appe": 0.62562,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.89019,
+     "texture_score": 0.67535198,
+     "cluster_occupancy": 0.916318,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 4,
+     "R": [
+      [
+       -0.148421,
+       -0.988532,
+       -0.027854
+      ],
+      [
+       0.932052,
+       -0.130416,
+       -0.338039
+      ],
+      [
+       0.330529,
+       -0.076134,
+       0.94072
+      ]
+     ],
+     "t_mm": [
+      89.552,
+      88.0337,
+      733.1308
+     ],
+     "score": 1.0,
+     "time_ms": 298.3,
+     "bbox": [
+      390,
+      302,
+      501,
+      450
+     ],
+     "ism": {
+      "best_sem": 0.77931,
+      "masked_appe": 0.77931,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.910133,
+     "texture_score": 0.64677304,
+     "cluster_occupancy": 0.907631,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 12,
+     "R": [
+      [
+       0.966876,
+       0.254812,
+       0.01488
+      ],
+      [
+       0.086285,
+       -0.27143,
+       -0.958583
+      ],
+      [
+       -0.24022,
+       0.928115,
+       -0.284426
+      ]
+     ],
+     "t_mm": [
+      61.4459,
+      -61.5741,
+      892.938
+     ],
+     "score": 0.99805,
+     "time_ms": 298.3,
+     "bbox": [
+      326,
+      14,
+      448,
+      314
+     ],
+     "ism": {
+      "best_sem": 0.76978,
+      "masked_appe": 0.76978,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.576663,
+     "texture_score": 0.66141951,
+     "cluster_occupancy": 0.830986,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 52,
+   "im_id": 1,
+   "targets": [
+    5,
+    6,
+    11
+   ],
+   "time_ms": 167.12,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 31,
+    "pem": 136,
+    "total": 167
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_05",
+    "ycbv_06",
+    "ycbv_11"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 5,
+     "R": [
+      [
+       0.552728,
+       0.814214,
+       0.177615
+      ],
+      [
+       0.582377,
+       -0.224937,
+       -0.781179
+      ],
+      [
+       -0.596095,
+       0.535218,
+       -0.598508
+      ]
+     ],
+     "t_mm": [
+      69.1595,
+      80.5554,
+      891.9382
+     ],
+     "score": 0.99219,
+     "time_ms": 167.12,
+     "bbox": [
+      342,
+      246,
+      446,
+      450
+     ],
+     "ism": {
+      "best_sem": 0.66893,
+      "masked_appe": 0.66893,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.906623,
+     "texture_score": 0.62413752,
+     "cluster_occupancy": 0.910569,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 6,
+     "R": [
+      [
+       -0.21987,
+       -0.9576,
+       0.18617
+      ],
+      [
+       -0.614411,
+       -0.012298,
+       -0.788891
+      ],
+      [
+       0.757732,
+       -0.287838,
+       -0.585655
+      ]
+     ],
+     "t_mm": [
+      -32.5647,
+      120.7268,
+      938.0428
+     ],
+     "score": 0.98828,
+     "time_ms": 167.12,
+     "bbox": [
+      230,
+      330,
+      326,
+      426
+     ],
+     "ism": {
+      "best_sem": 0.65045,
+      "masked_appe": 0.65045,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.930121,
+     "texture_score": 0.50744057,
+     "cluster_occupancy": 0.625,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 11,
+     "R": [
+      [
+       0.607181,
+       0.776872,
+       0.166737
+      ],
+      [
+       0.568357,
+       -0.278008,
+       -0.774392
+      ],
+      [
+       -0.555249,
+       0.564962,
+       -0.610342
+      ]
+     ],
+     "t_mm": [
+      20.2585,
+      -10.0352,
+      956.921
+     ],
+     "score": 0.99951,
+     "time_ms": 167.12,
+     "bbox": [
+      250,
+      78,
+      458,
+      354
+     ],
+     "ism": {
+      "best_sem": 0.60617,
+      "masked_appe": 0.60617,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.823455,
+     "texture_score": 0.48514301,
+     "cluster_occupancy": 0.944724,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 52,
+   "im_id": 156,
+   "targets": [
+    5,
+    6,
+    11
+   ],
+   "time_ms": 172.02,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 31,
+    "pem": 141,
+    "total": 172
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_05",
+    "ycbv_06",
+    "ycbv_11"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 5,
+     "R": [
+      [
+       0.653286,
+       0.748637,
+       0.112962
+      ],
+      [
+       0.440631,
+       -0.254621,
+       -0.860821
+      ],
+      [
+       -0.615679,
+       0.612137,
+       -0.496213
+      ]
+     ],
+     "t_mm": [
+      -28.2451,
+      38.818,
+      890.7322
+     ],
+     "score": 0.99756,
+     "time_ms": 172.02,
+     "bbox": [
+      234,
+      186,
+      322,
+      406
+     ],
+     "ism": {
+      "best_sem": 0.73483,
+      "masked_appe": 0.73483,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.902928,
+     "texture_score": 0.62928098,
+     "cluster_occupancy": 0.794466,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 6,
+     "R": [
+      [
+       0.398257,
+       -0.914827,
+       -0.066957
+      ],
+      [
+       0.455184,
+       0.133728,
+       0.880298
+      ],
+      [
+       -0.796366,
+       -0.381062,
+       0.469673
+      ]
+     ],
+     "t_mm": [
+      -125.7103,
+      94.5791,
+      927.223
+     ],
+     "score": 0.9624,
+     "time_ms": 172.02,
+     "bbox": [
+      118,
+      306,
+      218,
+      393
+     ],
+     "ism": {
+      "best_sem": 0.66632,
+      "masked_appe": 0.66632,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.888601,
+     "texture_score": 0.50560868,
+     "cluster_occupancy": 0.656,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 11,
+     "R": [
+      [
+       0.703134,
+       0.704706,
+       0.094823
+      ],
+      [
+       0.434943,
+       -0.320758,
+       -0.841391
+      ],
+      [
+       -0.562518,
+       0.632854,
+       -0.532043
+      ]
+     ],
+     "t_mm": [
+      -90.7557,
+      -39.7542,
+      960.8994
+     ],
+     "score": 1.0,
+     "time_ms": 172.02,
+     "bbox": [
+      110,
+      50,
+      322,
+      326
+     ],
+     "ism": {
+      "best_sem": 0.62601,
+      "masked_appe": 0.62601,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.80427,
+     "texture_score": 0.53154063,
+     "cluster_occupancy": 0.875519,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 52,
+   "im_id": 574,
+   "targets": [
+    5,
+    6,
+    11
+   ],
+   "time_ms": 179.68,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 34,
+    "pem": 145,
+    "total": 180
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_05",
+    "ycbv_06",
+    "ycbv_11"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 5,
+     "R": [
+      [
+       0.896071,
+       0.425237,
+       0.127396
+      ],
+      [
+       0.26567,
+       -0.283804,
+       -0.921344
+      ],
+      [
+       -0.355634,
+       0.859435,
+       -0.367281
+      ]
+     ],
+     "t_mm": [
+      11.5229,
+      26.4237,
+      870.3546
+     ],
+     "score": 0.99756,
+     "time_ms": 179.68,
+     "bbox": [
+      266,
+      162,
+      382,
+      396
+     ],
+     "ism": {
+      "best_sem": 0.82177,
+      "masked_appe": 0.82177,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.901201,
+     "texture_score": 0.68718249,
+     "cluster_occupancy": 0.810484,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 6,
+     "R": [
+      [
+       -0.694727,
+       -0.704723,
+       0.143946
+      ],
+      [
+       -0.358102,
+       0.165323,
+       -0.918929
+      ],
+      [
+       0.623793,
+       -0.689953,
+       -0.367217
+      ]
+     ],
+     "t_mm": [
+      -80.656,
+      102.4567,
+      867.0769
+     ],
+     "score": 0.98389,
+     "time_ms": 179.68,
+     "bbox": [
+      162,
+      322,
+      265,
+      410
+     ],
+     "ism": {
+      "best_sem": 0.66341,
+      "masked_appe": 0.66341,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.910453,
+     "texture_score": 0.51882547,
+     "cluster_occupancy": 0.843137,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 11,
+     "R": [
+      [
+       0.92669,
+       0.360152,
+       0.107411
+      ],
+      [
+       0.233647,
+       -0.328226,
+       -0.915247
+      ],
+      [
+       -0.294373,
+       0.873246,
+       -0.388312
+      ]
+     ],
+     "t_mm": [
+      -83.4561,
+      -32.3376,
+      921.1409
+     ],
+     "score": 1.0,
+     "time_ms": 179.68,
+     "bbox": [
+      114,
+      54,
+      310,
+      342
+     ],
+     "ism": {
+      "best_sem": 0.62091,
+      "masked_appe": 0.62091,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.814918,
+     "texture_score": 0.45878685,
+     "cluster_occupancy": 0.988095,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 53,
+   "im_id": 1,
+   "targets": [
+    4,
+    9,
+    13
+   ],
+   "time_ms": 177.8,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 40,
+    "pem": 138,
+    "total": 178
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_04",
+    "ycbv_09",
+    "ycbv_13"
+   ],
+   "pose_rejected": [
+    {
+     "object": "ycbv_13",
+     "mask_iou": 0.876025,
+     "texture_score": 0.58033562,
+     "cluster_occupancy": 0.165138,
+     "rejection_reason": "convergence_insufficient"
+    }
+   ],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 4,
+     "R": [
+      [
+       -0.026286,
+       -0.996226,
+       0.082726
+      ],
+      [
+       -0.671095,
+       -0.043749,
+       -0.740079
+      ],
+      [
+       0.740905,
+       -0.074971,
+       -0.667412
+      ]
+     ],
+     "t_mm": [
+      -28.2209,
+      72.3466,
+      789.26
+     ],
+     "score": 1.0,
+     "time_ms": 177.8,
+     "bbox": [
+      230,
+      258,
+      326,
+      414
+     ],
+     "ism": {
+      "best_sem": 0.76777,
+      "masked_appe": 0.76777,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.924488,
+     "texture_score": 0.64661622,
+     "cluster_occupancy": 0.9,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 9,
+     "R": [
+      [
+       0.892727,
+       -0.442926,
+       0.08279
+      ],
+      [
+       -0.291008,
+       -0.707011,
+       -0.644554
+      ],
+      [
+       0.344023,
+       0.551318,
+       -0.760063
+      ]
+     ],
+     "t_mm": [
+      -40.6053,
+      1.4721,
+      874.9681
+     ],
+     "score": 1.0,
+     "time_ms": 177.8,
+     "bbox": [
+      202,
+      182,
+      334,
+      254
+     ],
+     "ism": {
+      "best_sem": 0.64626,
+      "masked_appe": 0.64626,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.485359,
+     "texture_score": 0.60999382,
+     "cluster_occupancy": 0.79638,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 53,
+   "im_id": 162,
+   "targets": [
+    4,
+    9,
+    13
+   ],
+   "time_ms": 170.62,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 34,
+    "pem": 137,
+    "total": 171
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_04",
+    "ycbv_09",
+    "ycbv_13"
+   ],
+   "pose_rejected": [
+    {
+     "object": "ycbv_13",
+     "mask_iou": 0.887251,
+     "texture_score": 0.5493623,
+     "cluster_occupancy": 0.126214,
+     "rejection_reason": "convergence_insufficient"
+    }
+   ],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 4,
+     "R": [
+      [
+       -0.133992,
+       -0.983464,
+       0.121837
+      ],
+      [
+       -0.549187,
+       -0.028647,
+       -0.835208
+      ],
+      [
+       0.824888,
+       -0.178823,
+       -0.536267
+      ]
+     ],
+     "t_mm": [
+      -88.3133,
+      87.9731,
+      846.4662
+     ],
+     "score": 0.99951,
+     "time_ms": 170.62,
+     "bbox": [
+      158,
+      278,
+      250,
+      422
+     ],
+     "ism": {
+      "best_sem": 0.76282,
+      "masked_appe": 0.76282,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.917414,
+     "texture_score": 0.65070266,
+     "cluster_occupancy": 0.941176,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 9,
+     "R": [
+      [
+       0.830036,
+       -0.53612,
+       0.153675
+      ],
+      [
+       -0.233251,
+       -0.583998,
+       -0.777522
+      ],
+      [
+       0.506591,
+       0.609527,
+       -0.609789
+      ]
+     ],
+     "t_mm": [
+      -110.7091,
+      31.9046,
+      941.0721
+     ],
+     "score": 1.0,
+     "time_ms": 170.62,
+     "bbox": [
+      130,
+      218,
+      249,
+      278
+     ],
+     "ism": {
+      "best_sem": 0.60582,
+      "masked_appe": 0.60582,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.457672,
+     "texture_score": 0.58877456,
+     "cluster_occupancy": 0.80203,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 53,
+   "im_id": 552,
+   "targets": [
+    4,
+    9,
+    13
+   ],
+   "time_ms": 172.33,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 30,
+    "pem": 142,
+    "total": 172
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_04",
+    "ycbv_09",
+    "ycbv_13"
+   ],
+   "pose_rejected": [
+    {
+     "object": "ycbv_13",
+     "mask_iou": 0.800419,
+     "texture_score": 0.50256169,
+     "cluster_occupancy": 0.170732,
+     "rejection_reason": "convergence_insufficient"
+    }
+   ],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 4,
+     "R": [
+      [
+       -0.651468,
+       -0.747453,
+       0.130012
+      ],
+      [
+       -0.368749,
+       0.162194,
+       -0.915268
+      ],
+      [
+       0.663033,
+       -0.64421,
+       -0.381288
+      ]
+     ],
+     "t_mm": [
+      -39.3639,
+      46.3192,
+      800.2067
+     ],
+     "score": 1.0,
+     "time_ms": 172.33,
+     "bbox": [
+      210,
+      222,
+      314,
+      378
+     ],
+     "ism": {
+      "best_sem": 0.82787,
+      "masked_appe": 0.82787,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.887253,
+     "texture_score": 0.69964671,
+     "cluster_occupancy": 0.898785,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 9,
+     "R": [
+      [
+       -0.336691,
+       0.932794,
+       0.128589
+      ],
+      [
+       0.321077,
+       0.242108,
+       -0.915584
+      ],
+      [
+       -0.885183,
+       -0.266982,
+       -0.381014
+      ]
+     ],
+     "t_mm": [
+      -118.6295,
+      18.0406,
+      862.623
+     ],
+     "score": 1.0,
+     "time_ms": 172.33,
+     "bbox": [
+      114,
+      190,
+      222,
+      334
+     ],
+     "ism": {
+      "best_sem": 0.67407,
+      "masked_appe": 0.67407,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.878758,
+     "texture_score": 0.59488797,
+     "cluster_occupancy": 0.92,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 54,
+   "im_id": 1,
+   "targets": [
+    2,
+    3,
+    12,
+    15,
+    19
+   ],
+   "time_ms": 264.22,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 45,
+    "pem": 219,
+    "total": 264
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_02",
+    "ycbv_03",
+    "ycbv_12",
+    "ycbv_15",
+    "ycbv_19"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 2,
+     "R": [
+      [
+       -0.259828,
+       0.963812,
+       0.059617
+      ],
+      [
+       0.483992,
+       0.183402,
+       -0.855638
+      ],
+      [
+       -0.835609,
+       -0.193464,
+       -0.51413
+      ]
+     ],
+     "t_mm": [
+      -122.4916,
+      -89.7127,
+      1026.7351
+     ],
+     "score": 0.99609,
+     "time_ms": 264.22,
+     "bbox": [
+      94,
+      22,
+      278,
+      270
+     ],
+     "ism": {
+      "best_sem": 0.67369,
+      "masked_appe": 0.67369,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.483515,
+     "texture_score": 0.6531707,
+     "cluster_occupancy": 0.966851,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 3,
+     "R": [
+      [
+       -0.032647,
+       -0.174782,
+       0.984066
+      ],
+      [
+       -0.809721,
+       0.581812,
+       0.076473
+      ],
+      [
+       -0.585907,
+       -0.794322,
+       -0.160519
+      ]
+     ],
+     "t_mm": [
+      -31.1887,
+      110.687,
+      893.1636
+     ],
+     "score": 0.99561,
+     "time_ms": 264.22,
+     "bbox": [
+      162,
+      314,
+      386,
+      441
+     ],
+     "ism": {
+      "best_sem": 0.53592,
+      "masked_appe": 0.53592,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.914988,
+     "texture_score": 0.73134524,
+     "cluster_occupancy": 0.905882,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 12,
+     "R": [
+      [
+       -0.966351,
+       -0.254799,
+       0.035265
+      ],
+      [
+       -0.166204,
+       0.513864,
+       -0.841617
+      ],
+      [
+       0.196322,
+       -0.819159,
+       -0.538921
+      ]
+     ],
+     "t_mm": [
+      -118.9017,
+      -46.5143,
+      936.6754
+     ],
+     "score": 0.98047,
+     "time_ms": 264.22,
+     "bbox": [
+      114,
+      50,
+      234,
+      322
+     ],
+     "ism": {
+      "best_sem": 0.78276,
+      "masked_appe": 0.78276,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.899331,
+     "texture_score": 0.68835032,
+     "cluster_occupancy": 0.772549,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 15,
+     "R": [
+      [
+       -0.707599,
+       0.053491,
+       0.704587
+      ],
+      [
+       -0.396948,
+       -0.855017,
+       -0.333734
+      ],
+      [
+       0.584582,
+       -0.515834,
+       0.626242
+      ]
+     ],
+     "t_mm": [
+      23.9385,
+      3.2136,
+      929.9451
+     ],
+     "score": 0.99707,
+     "time_ms": 264.22,
+     "bbox": [
+      258,
+      122,
+      430,
+      338
+     ],
+     "ism": {
+      "best_sem": 0.70112,
+      "masked_appe": 0.70112,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.825074,
+     "texture_score": 0.63289064,
+     "cluster_occupancy": 0.798354,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 19,
+     "R": [
+      [
+       -0.897728,
+       -0.439766,
+       0.026288
+      ],
+      [
+       0.313066,
+       -0.594827,
+       0.740385
+      ],
+      [
+       -0.30996,
+       0.672894,
+       0.671669
+      ]
+     ],
+     "t_mm": [
+      107.5037,
+      68.4512,
+      959.351
+     ],
+     "score": 0.97949,
+     "time_ms": 264.22,
+     "bbox": [
+      342,
+      262,
+      480,
+      402
+     ],
+     "ism": {
+      "best_sem": 0.64958,
+      "masked_appe": 0.64958,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.846773,
+     "texture_score": 0.58473784,
+     "cluster_occupancy": 0.699153,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 54,
+   "im_id": 577,
+   "targets": [
+    2,
+    3,
+    12,
+    15,
+    19
+   ],
+   "time_ms": 256.35,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 45,
+    "pem": 211,
+    "total": 256
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_02",
+    "ycbv_03",
+    "ycbv_12",
+    "ycbv_15",
+    "ycbv_19"
+   ],
+   "pose_rejected": [
+    {
+     "object": "ycbv_02",
+     "mask_iou": 0.41745,
+     "texture_score": 0.6606766,
+     "cluster_occupancy": 0.780952,
+     "rejection_reason": "final_mask_below_threshold"
+    }
+   ],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 3,
+     "R": [
+      [
+       0.029773,
+       -0.557267,
+       0.829799
+      ],
+      [
+       -0.880114,
+       0.378916,
+       0.286046
+      ],
+      [
+       -0.473829,
+       -0.738834,
+       -0.479177
+      ]
+     ],
+     "t_mm": [
+      -6.2404,
+      96.876,
+      833.6256
+     ],
+     "score": 0.98926,
+     "time_ms": 256.35,
+     "bbox": [
+      322,
+      338,
+      430,
+      458
+     ],
+     "ism": {
+      "best_sem": 0.59952,
+      "masked_appe": 0.59952,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.747644,
+     "texture_score": 0.47511718,
+     "cluster_occupancy": 1.0,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 12,
+     "R": [
+      [
+       -0.791772,
+       -0.602822,
+       0.098516
+      ],
+      [
+       -0.329817,
+       0.286174,
+       -0.899625
+      ],
+      [
+       0.514122,
+       -0.744789,
+       -0.425405
+      ]
+     ],
+     "t_mm": [
+      -35.3421,
+      -61.4452,
+      914.5767
+     ],
+     "score": 0.99609,
+     "time_ms": 256.35,
+     "bbox": [
+      206,
+      18,
+      313,
+      310
+     ],
+     "ism": {
+      "best_sem": 0.78799,
+      "masked_appe": 0.78799,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.881484,
+     "texture_score": 0.71325529,
+     "cluster_occupancy": 0.870079,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 15,
+     "R": [
+      [
+       -0.391652,
+       0.109741,
+       0.913546
+      ],
+      [
+       -0.403433,
+       -0.912816,
+       -0.063305
+      ],
+      [
+       0.826953,
+       -0.393348,
+       0.40178
+      ]
+     ],
+     "t_mm": [
+      81.6814,
+      13.73,
+      860.8155
+     ],
+     "score": 0.97168,
+     "time_ms": 256.35,
+     "bbox": [
+      346,
+      122,
+      498,
+      370
+     ],
+     "ism": {
+      "best_sem": 0.5847,
+      "masked_appe": 0.5847,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.739368,
+     "texture_score": 0.57776356,
+     "cluster_occupancy": 0.863436,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 19,
+     "R": [
+      [
+       -0.999105,
+       -0.017908,
+       -0.038323
+      ],
+      [
+       -0.021808,
+       -0.558217,
+       0.829409
+      ],
+      [
+       -0.036245,
+       0.829502,
+       0.557326
+      ]
+     ],
+     "t_mm": [
+      154.8956,
+      104.005,
+      856.2653
+     ],
+     "score": 0.97119,
+     "time_ms": 256.35,
+     "bbox": [
+      422,
+      306,
+      562,
+      449
+     ],
+     "ism": {
+      "best_sem": 0.62838,
+      "masked_appe": 0.62838,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.875497,
+     "texture_score": 0.5521853,
+     "cluster_occupancy": 0.613734,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 54,
+   "im_id": 1106,
+   "targets": [
+    2,
+    3,
+    12,
+    15,
+    19
+   ],
+   "time_ms": 259.8,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 44,
+    "pem": 215,
+    "total": 260
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_02",
+    "ycbv_03",
+    "ycbv_12",
+    "ycbv_15",
+    "ycbv_19"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 2,
+     "R": [
+      [
+       0.017231,
+       0.996443,
+       0.082481
+      ],
+      [
+       0.40541,
+       0.068445,
+       -0.911569
+      ],
+      [
+       -0.913972,
+       0.049145,
+       -0.402789
+      ]
+     ],
+     "t_mm": [
+      -67.0618,
+      -59.1017,
+      969.8231
+     ],
+     "score": 0.97461,
+     "time_ms": 259.8,
+     "bbox": [
+      146,
+      50,
+      346,
+      294
+     ],
+     "ism": {
+      "best_sem": 0.55347,
+      "masked_appe": 0.55347,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.44814,
+     "texture_score": 0.63398969,
+     "cluster_occupancy": 0.883721,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 3,
+     "R": [
+      [
+       0.007111,
+       0.111881,
+       0.993696
+      ],
+      [
+       -0.85983,
+       0.508023,
+       -0.051045
+      ],
+      [
+       -0.510532,
+       -0.854046,
+       0.099811
+      ]
+     ],
+     "t_mm": [
+      76.7719,
+      115.4238,
+      844.4409
+     ],
+     "score": 1.0,
+     "time_ms": 259.8,
+     "bbox": [
+      438,
+      342,
+      538,
+      446
+     ],
+     "ism": {
+      "best_sem": 0.55379,
+      "masked_appe": 0.55379,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.598417,
+     "texture_score": 0.4691613,
+     "cluster_occupancy": 1.0,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 12,
+     "R": [
+      [
+       -0.996531,
+       -0.02183,
+       0.080298
+      ],
+      [
+       -0.082039,
+       0.419189,
+       -0.904185
+      ],
+      [
+       -0.013922,
+       -0.907637,
+       -0.419526
+      ]
+     ],
+     "t_mm": [
+      -36.7533,
+      -27.6831,
+      876.5725
+     ],
+     "score": 0.99268,
+     "time_ms": 259.8,
+     "bbox": [
+      206,
+      54,
+      322,
+      356
+     ],
+     "ism": {
+      "best_sem": 0.78854,
+      "masked_appe": 0.78854,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.921972,
+     "texture_score": 0.68239224,
+     "cluster_occupancy": 0.840467,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 15,
+     "R": [
+      [
+       -0.871704,
+       0.084252,
+       0.482736
+      ],
+      [
+       -0.256543,
+       -0.917787,
+       -0.303072
+      ],
+      [
+       0.417514,
+       -0.388032,
+       0.821653
+      ]
+     ],
+     "t_mm": [
+      108.1596,
+      8.7254,
+      903.0788
+     ],
+     "score": 0.97754,
+     "time_ms": 259.8,
+     "bbox": [
+      306,
+      34,
+      558,
+      342
+     ],
+     "ism": {
+      "best_sem": 0.65088,
+      "masked_appe": 0.65088,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.616675,
+     "texture_score": 0.54954052,
+     "cluster_occupancy": 0.810127,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 19,
+     "R": [
+      [
+       -0.732156,
+       -0.671368,
+       -0.114946
+      ],
+      [
+       0.295504,
+       -0.465129,
+       0.834466
+      ],
+      [
+       -0.613698,
+       0.576992,
+       0.538939
+      ]
+     ],
+     "t_mm": [
+      187.9507,
+      71.9241,
+      949.1942
+     ],
+     "score": 0.93945,
+     "time_ms": 259.8,
+     "bbox": [
+      422,
+      274,
+      596,
+      393
+     ],
+     "ism": {
+      "best_sem": 0.66296,
+      "masked_appe": 0.66296,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.768381,
+     "texture_score": 0.53886926,
+     "cluster_occupancy": 0.374384,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 55,
+   "im_id": 22,
+   "targets": [
+    1,
+    3,
+    4,
+    12,
+    14,
+    16
+   ],
+   "time_ms": 256.23,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 36,
+    "pem": 220,
+    "total": 256
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_01",
+    "ycbv_04",
+    "ycbv_12",
+    "ycbv_14",
+    "ycbv_16"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 1,
+     "R": [
+      [
+       -0.468017,
+       0.883711,
+       -0.003843
+      ],
+      [
+       0.475326,
+       0.248064,
+       -0.844114
+      ],
+      [
+       -0.745,
+       -0.396887,
+       -0.536149
+      ]
+     ],
+     "t_mm": [
+      91.4278,
+      109.8838,
+      918.8047
+     ],
+     "score": 1.0,
+     "time_ms": 256.23,
+     "bbox": [
+      362,
+      270,
+      485,
+      466
+     ],
+     "ism": {
+      "best_sem": 0.77962,
+      "masked_appe": 0.77962,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.896871,
+     "texture_score": 0.66446078,
+     "cluster_occupancy": 0.859574,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 4,
+     "R": [
+      [
+       -0.619691,
+       0.784659,
+       -0.017153
+      ],
+      [
+       0.403771,
+       0.299987,
+       -0.864278
+      ],
+      [
+       -0.673018,
+       -0.542511,
+       -0.502722
+      ]
+     ],
+     "t_mm": [
+      -188.9706,
+      24.7927,
+      1081.3502
+     ],
+     "score": 0.99951,
+     "time_ms": 256.23,
+     "bbox": [
+      90,
+      206,
+      162,
+      322
+     ],
+     "ism": {
+      "best_sem": 0.61086,
+      "masked_appe": 0.61086,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.768039,
+     "texture_score": 0.60896897,
+     "cluster_occupancy": 0.915929,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 12,
+     "R": [
+      [
+       -0.203981,
+       0.977757,
+       0.048833
+      ],
+      [
+       0.357405,
+       0.120815,
+       -0.926102
+      ],
+      [
+       -0.911402,
+       -0.171454,
+       -0.374099
+      ]
+     ],
+     "t_mm": [
+      132.8167,
+      -91.9984,
+      1098.1467
+     ],
+     "score": 0.99951,
+     "time_ms": 256.23,
+     "bbox": [
+      406,
+      46,
+      474,
+      278
+     ],
+     "ism": {
+      "best_sem": 0.52242,
+      "masked_appe": 0.52242,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.729138,
+     "texture_score": 0.50227761,
+     "cluster_occupancy": 0.583815,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 14,
+     "R": [
+      [
+       0.475966,
+       0.879424,
+       0.008398
+      ],
+      [
+       0.500481,
+       -0.262996,
+       -0.824835
+      ],
+      [
+       -0.723171,
+       0.396796,
+       -0.565312
+      ]
+     ],
+     "t_mm": [
+      -103.5511,
+      65.7637,
+      970.1523
+     ],
+     "score": 0.99756,
+     "time_ms": 256.23,
+     "bbox": [
+      142,
+      242,
+      242,
+      361
+     ],
+     "ism": {
+      "best_sem": 0.71949,
+      "masked_appe": 0.71949,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.924595,
+     "texture_score": 0.50792611,
+     "cluster_occupancy": 0.965116,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 16,
+     "R": [
+      [
+       0.126967,
+       0.63728,
+       -0.760102
+      ],
+      [
+       -0.903891,
+       -0.241243,
+       -0.353247
+      ],
+      [
+       -0.408486,
+       0.731899,
+       0.545401
+      ]
+     ],
+     "t_mm": [
+      27.9174,
+      27.7016,
+      1083.9258
+     ],
+     "score": 0.99902,
+     "time_ms": 256.23,
+     "bbox": [
+      254,
+      194,
+      449,
+      342
+     ],
+     "ism": {
+      "best_sem": 0.5856,
+      "masked_appe": 0.5856,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.629228,
+     "texture_score": 0.5261538,
+     "cluster_occupancy": 0.407609,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 55,
+   "im_id": 638,
+   "targets": [
+    1,
+    3,
+    4,
+    12,
+    14,
+    16
+   ],
+   "time_ms": 259.04,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 36,
+    "pem": 223,
+    "total": 259
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_01",
+    "ycbv_04",
+    "ycbv_12",
+    "ycbv_14",
+    "ycbv_16"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 1,
+     "R": [
+      [
+       -0.141183,
+       0.986889,
+       0.078218
+      ],
+      [
+       0.373965,
+       0.12632,
+       -0.9188
+      ],
+      [
+       -0.916634,
+       -0.100468,
+       -0.386896
+      ]
+     ],
+     "t_mm": [
+      95.1624,
+      102.56,
+      1042.2987
+     ],
+     "score": 1.0,
+     "time_ms": 259.04,
+     "bbox": [
+      358,
+      262,
+      470,
+      430
+     ],
+     "ism": {
+      "best_sem": 0.79882,
+      "masked_appe": 0.79882,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.887868,
+     "texture_score": 0.68865466,
+     "cluster_occupancy": 0.882353,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 4,
+     "R": [
+      [
+       -0.367091,
+       0.92789,
+       0.065303
+      ],
+      [
+       0.313411,
+       0.189479,
+       -0.930522
+      ],
+      [
+       -0.875796,
+       -0.32112,
+       -0.360367
+      ]
+     ],
+     "t_mm": [
+      -233.2178,
+      69.3702,
+      1107.0391
+     ],
+     "score": 0.99902,
+     "time_ms": 259.04,
+     "bbox": [
+      54,
+      250,
+      122,
+      366
+     ],
+     "ism": {
+      "best_sem": 0.74497,
+      "masked_appe": 0.74497,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.931379,
+     "texture_score": 0.61940825,
+     "cluster_occupancy": 0.902542,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 12,
+     "R": [
+      [
+       -0.286255,
+       -0.954922,
+       0.078625
+      ],
+      [
+       -0.378194,
+       0.037211,
+       -0.924978
+      ],
+      [
+       0.880356,
+       -0.294516,
+       -0.371798
+      ]
+     ],
+     "t_mm": [
+      45.941,
+      -46.9317,
+      1238.5093
+     ],
+     "score": 0.99365,
+     "time_ms": 259.04,
+     "bbox": [
+      318,
+      90,
+      382,
+      262
+     ],
+     "ism": {
+      "best_sem": 0.57204,
+      "masked_appe": 0.57204,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.792717,
+     "texture_score": 0.51102048,
+     "cluster_occupancy": 0.879464,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 14,
+     "R": [
+      [
+       0.771356,
+       0.632539,
+       0.070037
+      ],
+      [
+       0.307986,
+       -0.274723,
+       -0.910863
+      ],
+      [
+       -0.556915,
+       0.72417,
+       -0.406722
+      ]
+     ],
+     "t_mm": [
+      -109.1418,
+      83.2307,
+      1028.321
+     ],
+     "score": 0.99609,
+     "time_ms": 259.04,
+     "bbox": [
+      146,
+      266,
+      240,
+      378
+     ],
+     "ism": {
+      "best_sem": 0.74514,
+      "masked_appe": 0.74514,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.906323,
+     "texture_score": 0.59719115,
+     "cluster_occupancy": 0.929515,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 16,
+     "R": [
+      [
+       -0.346245,
+       -0.007839,
+       0.938112
+      ],
+      [
+       0.508796,
+       0.838559,
+       0.194798
+      ],
+      [
+       -0.788188,
+       0.544755,
+       -0.286358
+      ]
+     ],
+     "t_mm": [
+      -21.4556,
+      58.9266,
+      1181.1617
+     ],
+     "score": 0.99609,
+     "time_ms": 259.04,
+     "bbox": [
+      206,
+      234,
+      378,
+      358
+     ],
+     "ism": {
+      "best_sem": 0.51607,
+      "masked_appe": 0.51607,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.713101,
+     "texture_score": 0.46021521,
+     "cluster_occupancy": 0.847328,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 55,
+   "im_id": 1132,
+   "targets": [
+    1,
+    3,
+    4,
+    12,
+    14,
+    16
+   ],
+   "time_ms": 305.49,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 39,
+    "pem": 266,
+    "total": 305
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_01",
+    "ycbv_03",
+    "ycbv_04",
+    "ycbv_12",
+    "ycbv_14",
+    "ycbv_16"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 1,
+     "R": [
+      [
+       0.057857,
+       0.993607,
+       0.096943
+      ],
+      [
+       0.398692,
+       0.066029,
+       -0.914705
+      ],
+      [
+       -0.915258,
+       0.091572,
+       -0.392322
+      ]
+     ],
+     "t_mm": [
+      161.3743,
+      59.5849,
+      977.2377
+     ],
+     "score": 1.0,
+     "time_ms": 305.49,
+     "bbox": [
+      426,
+      218,
+      558,
+      396
+     ],
+     "ism": {
+      "best_sem": 0.76377,
+      "masked_appe": 0.76377,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.900432,
+     "texture_score": 0.67461038,
+     "cluster_occupancy": 0.910156,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 3,
+     "R": [
+      [
+       0.089803,
+       0.699643,
+       0.708826
+      ],
+      [
+       -0.867398,
+       0.404694,
+       -0.289557
+      ],
+      [
+       -0.489444,
+       -0.588831,
+       0.643212
+      ]
+     ],
+     "t_mm": [
+      -50.2753,
+      98.2669,
+      963.8247
+     ],
+     "score": 0.98877,
+     "time_ms": 305.49,
+     "bbox": [
+      150,
+      306,
+      358,
+      422
+     ],
+     "ism": {
+      "best_sem": 0.50375,
+      "masked_appe": 0.50375,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.598739,
+     "texture_score": 0.67482853,
+     "cluster_occupancy": 0.89916,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 4,
+     "R": [
+      [
+       -0.254183,
+       0.964936,
+       0.065493
+      ],
+      [
+       0.335335,
+       0.151445,
+       -0.929846
+      ],
+      [
+       -0.907161,
+       -0.21439,
+       -0.362072
+      ]
+     ],
+     "t_mm": [
+      -174.2362,
+      44.9804,
+      982.6188
+     ],
+     "score": 1.0,
+     "time_ms": 305.49,
+     "bbox": [
+      86,
+      226,
+      162,
+      353
+     ],
+     "ism": {
+      "best_sem": 0.74482,
+      "masked_appe": 0.74482,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.934387,
+     "texture_score": 0.63627774,
+     "cluster_occupancy": 0.871369,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 12,
+     "R": [
+      [
+       -0.40141,
+       -0.911142,
+       0.093219
+      ],
+      [
+       -0.348034,
+       0.057597,
+       -0.935711
+      ],
+      [
+       0.847196,
+       -0.408048,
+       -0.340229
+      ]
+     ],
+     "t_mm": [
+      65.5309,
+      -88.7078,
+      1158.2323
+     ],
+     "score": 1.0,
+     "time_ms": 305.49,
+     "bbox": [
+      330,
+      38,
+      406,
+      217
+     ],
+     "ism": {
+      "best_sem": 0.54281,
+      "masked_appe": 0.54281,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.884631,
+     "texture_score": 0.5439887,
+     "cluster_occupancy": 0.864198,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 14,
+     "R": [
+      [
+       0.851987,
+       0.514392,
+       0.097568
+      ],
+      [
+       0.296256,
+       -0.319997,
+       -0.899908
+      ],
+      [
+       -0.431683,
+       0.795615,
+       -0.425024
+      ]
+     ],
+     "t_mm": [
+      -36.3947,
+      54.1225,
+      927.2597
+     ],
+     "score": 0.99951,
+     "time_ms": 305.49,
+     "bbox": [
+      210,
+      238,
+      325,
+      358
+     ],
+     "ism": {
+      "best_sem": 0.70251,
+      "masked_appe": 0.70251,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.901972,
+     "texture_score": 0.59508669,
+     "cluster_occupancy": 0.942222,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 16,
+     "R": [
+      [
+       -0.055309,
+       0.18674,
+       0.980851
+      ],
+      [
+       0.83877,
+       -0.524237,
+       0.147105
+      ],
+      [
+       0.541669,
+       0.830845,
+       -0.127637
+      ]
+     ],
+     "t_mm": [
+      8.1164,
+      21.4216,
+      1095.3474
+     ],
+     "score": 0.99756,
+     "time_ms": 305.49,
+     "bbox": [
+      238,
+      202,
+      426,
+      325
+     ],
+     "ism": {
+      "best_sem": 0.52989,
+      "masked_appe": 0.52989,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.648681,
+     "texture_score": 0.51426375,
+     "cluster_occupancy": 0.570776,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 56,
+   "im_id": 1,
+   "targets": [
+    1,
+    10,
+    11,
+    15
+   ],
+   "time_ms": 233.42,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 44,
+    "pem": 189,
+    "total": 233
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_01",
+    "ycbv_10",
+    "ycbv_11",
+    "ycbv_15"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 1,
+     "R": [
+      [
+       0.17298,
+       0.984856,
+       0.011652
+      ],
+      [
+       0.324777,
+       -0.045867,
+       -0.944678
+      ],
+      [
+       -0.929837,
+       0.167195,
+       -0.327793
+      ]
+     ],
+     "t_mm": [
+      -82.7571,
+      21.5692,
+      835.0762
+     ],
+     "score": 0.99854,
+     "time_ms": 233.42,
+     "bbox": [
+      134,
+      166,
+      282,
+      374
+     ],
+     "ism": {
+      "best_sem": 0.63466,
+      "masked_appe": 0.63466,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.744938,
+     "texture_score": 0.65977657,
+     "cluster_occupancy": 0.870536,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 10,
+     "R": [
+      [
+       0.904427,
+       0.407473,
+       0.1264
+      ],
+      [
+       0.282188,
+       -0.349158,
+       -0.893565
+      ],
+      [
+       -0.31997,
+       0.843833,
+       -0.430773
+      ]
+     ],
+     "t_mm": [
+      -5.1571,
+      92.8995,
+      793.6343
+     ],
+     "score": 0.99658,
+     "time_ms": 233.42,
+     "bbox": [
+      206,
+      314,
+      301,
+      422
+     ],
+     "ism": {
+      "best_sem": 0.50875,
+      "masked_appe": 0.50875,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.850853,
+     "texture_score": 0.49076813,
+     "cluster_occupancy": 0.661088,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 11,
+     "R": [
+      [
+       -0.709987,
+       -0.703973,
+       0.018482
+      ],
+      [
+       -0.251389,
+       0.228846,
+       -0.940443
+      ],
+      [
+       0.657817,
+       -0.672348,
+       -0.339449
+      ]
+     ],
+     "t_mm": [
+      35.9094,
+      7.8787,
+      733.4224
+     ],
+     "score": 0.99219,
+     "time_ms": 233.42,
+     "bbox": [
+      222,
+      70,
+      510,
+      438
+     ],
+     "ism": {
+      "best_sem": 0.75396,
+      "masked_appe": 0.75396,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.860489,
+     "texture_score": 0.62993985,
+     "cluster_occupancy": 0.814961,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 15,
+     "R": [
+      [
+       -0.960454,
+       -0.007745,
+       -0.278328
+      ],
+      [
+       0.125527,
+       -0.904309,
+       -0.408006
+      ],
+      [
+       -0.248535,
+       -0.426809,
+       0.86952
+      ]
+     ],
+     "t_mm": [
+      -97.2151,
+      -37.8492,
+      917.7613
+     ],
+     "score": 1.0,
+     "time_ms": 233.42,
+     "bbox": [
+      82,
+      94,
+      268,
+      170
+     ],
+     "ism": {
+      "best_sem": 0.58938,
+      "masked_appe": 0.58938,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.589273,
+     "texture_score": 0.50791419,
+     "cluster_occupancy": 0.720524,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 56,
+   "im_id": 535,
+   "targets": [
+    1,
+    10,
+    11,
+    15
+   ],
+   "time_ms": 228.9,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 36,
+    "pem": 193,
+    "total": 229
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_01",
+    "ycbv_10",
+    "ycbv_11",
+    "ycbv_15"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 1,
+     "R": [
+      [
+       0.653301,
+       0.756908,
+       0.016944
+      ],
+      [
+       0.269166,
+       -0.211287,
+       -0.939632
+      ],
+      [
+       -0.707635,
+       0.618423,
+       -0.341768
+      ]
+     ],
+     "t_mm": [
+      -64.1124,
+      45.2108,
+      784.6324
+     ],
+     "score": 0.99951,
+     "time_ms": 228.9,
+     "bbox": [
+      150,
+      194,
+      294,
+      417
+     ],
+     "ism": {
+      "best_sem": 0.78212,
+      "masked_appe": 0.78212,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.90476,
+     "texture_score": 0.69276059,
+     "cluster_occupancy": 0.890244,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 10,
+     "R": [
+      [
+       0.988083,
+       -0.105758,
+       -0.111839
+      ],
+      [
+       -0.142753,
+       -0.357868,
+       -0.922796
+      ],
+      [
+       0.05757,
+       0.927764,
+       -0.368701
+      ]
+     ],
+     "t_mm": [
+      34.2726,
+      92.0683,
+      789.6974
+     ],
+     "score": 0.99951,
+     "time_ms": 228.9,
+     "bbox": [
+      286,
+      314,
+      365,
+      454
+     ],
+     "ism": {
+      "best_sem": 0.63793,
+      "masked_appe": 0.63793,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.81808,
+     "texture_score": 0.47277045,
+     "cluster_occupancy": 0.746667,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 11,
+     "R": [
+      [
+       -0.967867,
+       -0.249506,
+       0.03132
+      ],
+      [
+       -0.113654,
+       0.322937,
+       -0.939572
+      ],
+      [
+       0.224314,
+       -0.91294,
+       -0.340917
+      ]
+     ],
+     "t_mm": [
+      84.3866,
+      6.6839,
+      750.2257
+     ],
+     "score": 1.0,
+     "time_ms": 228.9,
+     "bbox": [
+      318,
+      70,
+      558,
+      424
+     ],
+     "ism": {
+      "best_sem": 0.73477,
+      "masked_appe": 0.73477,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.888114,
+     "texture_score": 0.69036007,
+     "cluster_occupancy": 0.841509,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 15,
+     "R": [
+      [
+       -0.708383,
+       -0.022125,
+       -0.705481
+      ],
+      [
+       0.259452,
+       -0.937696,
+       -0.231111
+      ],
+      [
+       -0.656413,
+       -0.346753,
+       0.669989
+      ]
+     ],
+     "t_mm": [
+      -123.7087,
+      -4.6734,
+      843.9136
+     ],
+     "score": 1.0,
+     "time_ms": 228.9,
+     "bbox": [
+      38,
+      114,
+      242,
+      369
+     ],
+     "ism": {
+      "best_sem": 0.72806,
+      "masked_appe": 0.72806,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.74651,
+     "texture_score": 0.58675605,
+     "cluster_occupancy": 0.782443,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 56,
+   "im_id": 1025,
+   "targets": [
+    1,
+    10,
+    11,
+    15
+   ],
+   "time_ms": 224.5,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 34,
+    "pem": 191,
+    "total": 224
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_01",
+    "ycbv_10",
+    "ycbv_11",
+    "ycbv_15"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 1,
+     "R": [
+      [
+       0.937341,
+       0.342027,
+       -0.066401
+      ],
+      [
+       0.074816,
+       -0.383727,
+       -0.920411
+      ],
+      [
+       -0.340285,
+       0.85777,
+       -0.385273
+      ]
+     ],
+     "t_mm": [
+      -50.0178,
+      46.7777,
+      735.5571
+     ],
+     "score": 1.0,
+     "time_ms": 224.5,
+     "bbox": [
+      150,
+      190,
+      312,
+      434
+     ],
+     "ism": {
+      "best_sem": 0.79293,
+      "masked_appe": 0.79293,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.898809,
+     "texture_score": 0.68826574,
+     "cluster_occupancy": 0.878261,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 10,
+     "R": [
+      [
+       0.807875,
+       -0.554368,
+       -0.200037
+      ],
+      [
+       -0.409563,
+       -0.284027,
+       -0.866941
+      ],
+      [
+       0.423789,
+       0.782307,
+       -0.456506
+      ]
+     ],
+     "t_mm": [
+      45.0631,
+      67.6438,
+      779.0189
+     ],
+     "score": 0.95996,
+     "time_ms": 224.5,
+     "bbox": [
+      306,
+      286,
+      426,
+      422
+     ],
+     "ism": {
+      "best_sem": 0.63519,
+      "masked_appe": 0.63519,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.845795,
+     "texture_score": 0.55274719,
+     "cluster_occupancy": 0.642023,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 11,
+     "R": [
+      [
+       -0.975277,
+       0.213621,
+       -0.056581
+      ],
+      [
+       0.132636,
+       0.361052,
+       -0.923065
+      ],
+      [
+       -0.176757,
+       -0.907748,
+       -0.380459
+      ]
+     ],
+     "t_mm": [
+      87.696,
+      -28.6582,
+      755.1621
+     ],
+     "score": 1.0,
+     "time_ms": 224.5,
+     "bbox": [
+      342,
+      18,
+      542,
+      370
+     ],
+     "ism": {
+      "best_sem": 0.64987,
+      "masked_appe": 0.64987,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.919163,
+     "texture_score": 0.64122438,
+     "cluster_occupancy": 0.869388,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 15,
+     "R": [
+      [
+       -0.317923,
+       -0.109448,
+       -0.941778
+      ],
+      [
+       0.418874,
+       -0.907333,
+       -0.035958
+      ],
+      [
+       -0.85057,
+       -0.405918,
+       0.334306
+      ]
+     ],
+     "t_mm": [
+      -139.1136,
+      14.1928,
+      764.929
+     ],
+     "score": 0.99902,
+     "time_ms": 224.5,
+     "bbox": [
+      14,
+      114,
+      174,
+      418
+     ],
+     "ism": {
+      "best_sem": 0.6827,
+      "masked_appe": 0.6827,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.847261,
+     "texture_score": 0.61129206,
+     "cluster_occupancy": 0.876068,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 57,
+   "im_id": 1,
+   "targets": [
+    4,
+    12,
+    18,
+    20,
+    21
+   ],
+   "time_ms": 258.75,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 47,
+    "pem": 212,
+    "total": 259
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_04",
+    "ycbv_12",
+    "ycbv_18",
+    "ycbv_20",
+    "ycbv_21"
+   ],
+   "pose_rejected": [
+    {
+     "object": "ycbv_18",
+     "mask_iou": 0.760135,
+     "texture_score": 0.60160398,
+     "cluster_occupancy": 0.179487,
+     "rejection_reason": "convergence_insufficient"
+    }
+   ],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 4,
+     "R": [
+      [
+       -0.192973,
+       0.974106,
+       0.117808
+      ],
+      [
+       0.548033,
+       0.206593,
+       -0.810543
+      ],
+      [
+       -0.813893,
+       -0.09185,
+       -0.573709
+      ]
+     ],
+     "t_mm": [
+      -34.7725,
+      64.7425,
+      930.5742
+     ],
+     "score": 0.99756,
+     "time_ms": 258.75,
+     "bbox": [
+      230,
+      246,
+      318,
+      382
+     ],
+     "ism": {
+      "best_sem": 0.71244,
+      "masked_appe": 0.71244,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.880305,
+     "texture_score": 0.62766552,
+     "cluster_occupancy": 0.87234,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 12,
+     "R": [
+      [
+       0.870648,
+       0.47095,
+       0.142048
+      ],
+      [
+       0.375511,
+       -0.44979,
+       -0.810358
+      ],
+      [
+       -0.317747,
+       0.758877,
+       -0.568456
+      ]
+     ],
+     "t_mm": [
+      175.7892,
+      -79.1097,
+      1041.9645
+     ],
+     "score": 1.0,
+     "time_ms": 258.75,
+     "bbox": [
+      422,
+      42,
+      562,
+      282
+     ],
+     "ism": {
+      "best_sem": 0.80073,
+      "masked_appe": 0.80073,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.893236,
+     "texture_score": 0.68182904,
+     "cluster_occupancy": 0.836066,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 20,
+     "R": [
+      [
+       0.370457,
+       -0.924149,
+       0.093328
+      ],
+      [
+       -0.545141,
+       -0.297673,
+       -0.783717
+      ],
+      [
+       0.752052,
+       0.239456,
+       -0.614067
+      ]
+     ],
+     "t_mm": [
+      -110.9866,
+      -8.4181,
+      1060.1165
+     ],
+     "score": 0.97754,
+     "time_ms": 258.75,
+     "bbox": [
+      150,
+      166,
+      310,
+      314
+     ],
+     "ism": {
+      "best_sem": 0.67568,
+      "masked_appe": 0.67568,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.828523,
+     "texture_score": 0.59995413,
+     "cluster_occupancy": 0.532189,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 21,
+     "R": [
+      [
+       0.705887,
+       -0.699976,
+       0.10843
+      ],
+      [
+       -0.351538,
+       -0.479097,
+       -0.804294
+      ],
+      [
+       0.614935,
+       0.529623,
+       -0.584256
+      ]
+     ],
+     "t_mm": [
+      61.9748,
+      8.6645,
+      1061.4507
+     ],
+     "score": 0.9751,
+     "time_ms": 258.75,
+     "bbox": [
+      330,
+      206,
+      422,
+      298
+     ],
+     "ism": {
+      "best_sem": 0.65056,
+      "masked_appe": 0.65056,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.734286,
+     "texture_score": 0.59207952,
+     "cluster_occupancy": 0.884444,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 57,
+   "im_id": 610,
+   "targets": [
+    4,
+    12,
+    18,
+    20,
+    21
+   ],
+   "time_ms": 261.33,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 53,
+    "pem": 208,
+    "total": 261
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_04",
+    "ycbv_12",
+    "ycbv_18",
+    "ycbv_20",
+    "ycbv_21"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 4,
+     "R": [
+      [
+       -0.360423,
+       0.930383,
+       0.066953
+      ],
+      [
+       0.455654,
+       0.238238,
+       -0.857684
+      ],
+      [
+       -0.813925,
+       -0.278621,
+       -0.5098
+      ]
+     ],
+     "t_mm": [
+      -121.5151,
+      73.4568,
+      794.4684
+     ],
+     "score": 1.0,
+     "time_ms": 261.33,
+     "bbox": [
+      102,
+      258,
+      198,
+      418
+     ],
+     "ism": {
+      "best_sem": 0.80345,
+      "masked_appe": 0.80345,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.926818,
+     "texture_score": 0.65928161,
+     "cluster_occupancy": 0.915966,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 12,
+     "R": [
+      [
+       0.712094,
+       0.696898,
+       0.085188
+      ],
+      [
+       0.41011,
+       -0.314399,
+       -0.856132
+      ],
+      [
+       -0.569854,
+       0.644583,
+       -0.509686
+      ]
+     ],
+     "t_mm": [
+      136.5261,
+      -30.818,
+      853.4694
+     ],
+     "score": 1.0,
+     "time_ms": 261.33,
+     "bbox": [
+      406,
+      58,
+      558,
+      358
+     ],
+     "ism": {
+      "best_sem": 0.84769,
+      "masked_appe": 0.84769,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.90184,
+     "texture_score": 0.70490968,
+     "cluster_occupancy": 0.820717,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 18,
+     "R": [
+      [
+       0.290068,
+       0.67571,
+       -0.6777
+      ],
+      [
+       0.019578,
+       -0.712188,
+       -0.701716
+      ],
+      [
+       -0.956806,
+       0.190277,
+       -0.219812
+      ]
+     ],
+     "t_mm": [
+      -28.1951,
+      44.6806,
+      864.0607
+     ],
+     "score": 0.9751,
+     "time_ms": 261.33,
+     "bbox": [
+      218,
+      246,
+      329,
+      362
+     ],
+     "ism": {
+      "best_sem": 0.66469,
+      "masked_appe": 0.66469,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.838334,
+     "texture_score": 0.63446838,
+     "cluster_occupancy": 0.344681,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 20,
+     "R": [
+      [
+       0.648931,
+       -0.758617,
+       0.058214
+      ],
+      [
+       -0.380725,
+       -0.390014,
+       -0.838413
+      ],
+      [
+       0.658739,
+       0.521909,
+       -0.541917
+      ]
+     ],
+     "t_mm": [
+      -143.9789,
+      10.2934,
+      945.4856
+     ],
+     "score": 0.93896,
+     "time_ms": 261.33,
+     "bbox": [
+      70,
+      186,
+      290,
+      330
+     ],
+     "ism": {
+      "best_sem": 0.65372,
+      "masked_appe": 0.65372,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.59121,
+     "texture_score": 0.60914826,
+     "cluster_occupancy": 0.674157,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 21,
+     "R": [
+      [
+       -0.889735,
+       0.450181,
+       0.075557
+      ],
+      [
+       0.197622,
+       0.529084,
+       -0.825237
+      ],
+      [
+       -0.411482,
+       -0.71931,
+       -0.55971
+      ]
+     ],
+     "t_mm": [
+      19.6876,
+      47.8102,
+      895.7559
+     ],
+     "score": 0.99316,
+     "time_ms": 261.33,
+     "bbox": [
+      306,
+      246,
+      385,
+      354
+     ],
+     "ism": {
+      "best_sem": 0.66853,
+      "masked_appe": 0.66853,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.73976,
+     "texture_score": 0.57990056,
+     "cluster_occupancy": 0.926267,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 57,
+   "im_id": 1099,
+   "targets": [
+    4,
+    12,
+    18,
+    20,
+    21
+   ],
+   "time_ms": 268.36,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 48,
+    "pem": 221,
+    "total": 268
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_04",
+    "ycbv_12",
+    "ycbv_18",
+    "ycbv_20",
+    "ycbv_21"
+   ],
+   "pose_rejected": [
+    {
+     "object": "ycbv_18",
+     "mask_iou": 0.773788,
+     "texture_score": 0.70387697,
+     "cluster_occupancy": 0.227679,
+     "rejection_reason": "convergence_insufficient"
+    }
+   ],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 4,
+     "R": [
+      [
+       -0.75243,
+       0.657648,
+       -0.036728
+      ],
+      [
+       0.344937,
+       0.34592,
+       -0.872558
+      ],
+      [
+       -0.561132,
+       -0.669208,
+       -0.487127
+      ]
+     ],
+     "t_mm": [
+      -138.4866,
+      54.6268,
+      763.9892
+     ],
+     "score": 1.0,
+     "time_ms": 268.36,
+     "bbox": [
+      66,
+      234,
+      174,
+      398
+     ],
+     "ism": {
+      "best_sem": 0.8384,
+      "masked_appe": 0.8384,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.915047,
+     "texture_score": 0.67793703,
+     "cluster_occupancy": 0.9125,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 12,
+     "R": [
+      [
+       0.206615,
+       0.978094,
+       -0.025334
+      ],
+      [
+       0.476406,
+       -0.123186,
+       -0.870553
+      ],
+      [
+       -0.854603,
+       0.1678,
+       -0.491422
+      ]
+     ],
+     "t_mm": [
+      133.7721,
+      7.6102,
+      688.3753
+     ],
+     "score": 1.0,
+     "time_ms": 268.36,
+     "bbox": [
+      450,
+      70,
+      586,
+      445
+     ],
+     "ism": {
+      "best_sem": 0.73878,
+      "masked_appe": 0.73878,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.902892,
+     "texture_score": 0.66465455,
+     "cluster_occupancy": 0.891129,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 20,
+     "R": [
+      [
+       0.847601,
+       0.529506,
+       0.034583
+      ],
+      [
+       -0.292597,
+       0.412012,
+       0.862921
+      ],
+      [
+       0.442674,
+       -0.741532,
+       0.504154
+      ]
+     ],
+     "t_mm": [
+      -60.2389,
+      12.2689,
+      888.2811
+     ],
+     "score": 0.96387,
+     "time_ms": 268.36,
+     "bbox": [
+      154,
+      186,
+      376,
+      304
+     ],
+     "ism": {
+      "best_sem": 0.59884,
+      "masked_appe": 0.59884,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.854421,
+     "texture_score": 0.57694149,
+     "cluster_occupancy": 0.608108,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 21,
+     "R": [
+      [
+       -0.996515,
+       -0.083105,
+       -0.007118
+      ],
+      [
+       -0.038196,
+       0.530543,
+       -0.846797
+      ],
+      [
+       0.074149,
+       -0.843575,
+       -0.531868
+      ]
+     ],
+     "t_mm": [
+      36.4183,
+      66.1163,
+      782.9973
+     ],
+     "score": 1.0,
+     "time_ms": 268.36,
+     "bbox": [
+      326,
+      278,
+      402,
+      394
+     ],
+     "ism": {
+      "best_sem": 0.56951,
+      "masked_appe": 0.56951,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.889532,
+     "texture_score": 0.56392121,
+     "cluster_occupancy": 0.946903,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 58,
+   "im_id": 30,
+   "targets": [
+    3,
+    7,
+    8,
+    11
+   ],
+   "time_ms": 214.86,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 42,
+    "pem": 173,
+    "total": 215
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_03",
+    "ycbv_07",
+    "ycbv_08",
+    "ycbv_11"
+   ],
+   "pose_rejected": [
+    {
+     "object": "ycbv_07",
+     "mask_iou": 0.258715,
+     "texture_score": 0.49153656,
+     "cluster_occupancy": 0.0,
+     "rejection_reason": "mask_filter_empty"
+    }
+   ],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 3,
+     "R": [
+      [
+       0.395554,
+       0.918147,
+       0.023312
+      ],
+      [
+       0.440136,
+       -0.16722,
+       -0.882224
+      ],
+      [
+       -0.806112,
+       0.359227,
+       -0.470254
+      ]
+     ],
+     "t_mm": [
+      139.9967,
+      27.434,
+      896.1737
+     ],
+     "score": 0.99902,
+     "time_ms": 214.86,
+     "bbox": [
+      422,
+      162,
+      546,
+      298
+     ],
+     "ism": {
+      "best_sem": 0.69312,
+      "masked_appe": 0.69312,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.86331,
+     "texture_score": 0.66187298,
+     "cluster_occupancy": 0.87013,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 8,
+     "R": [
+      [
+       -0.248639,
+       0.873422,
+       0.418704
+      ],
+      [
+       0.899078,
+       0.047304,
+       0.435224
+      ],
+      [
+       0.360328,
+       0.484662,
+       -0.797036
+      ]
+     ],
+     "t_mm": [
+      119.9733,
+      109.1599,
+      844.0173
+     ],
+     "score": 0.99902,
+     "time_ms": 214.86,
+     "bbox": [
+      410,
+      326,
+      522,
+      438
+     ],
+     "ism": {
+      "best_sem": 0.72428,
+      "masked_appe": 0.72428,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.922496,
+     "texture_score": 0.6727066,
+     "cluster_occupancy": 0.888462,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 11,
+     "R": [
+      [
+       -0.998974,
+       -0.011741,
+       0.043734
+      ],
+      [
+       -0.044597,
+       0.422518,
+       -0.905257
+      ],
+      [
+       -0.007849,
+       -0.906279,
+       -0.422608
+      ]
+     ],
+     "t_mm": [
+      -40.9377,
+      26.4636,
+      821.4087
+     ],
+     "score": 1.0,
+     "time_ms": 214.86,
+     "bbox": [
+      158,
+      102,
+      366,
+      430
+     ],
+     "ism": {
+      "best_sem": 0.76037,
+      "masked_appe": 0.76037,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.881575,
+     "texture_score": 0.69576156,
+     "cluster_occupancy": 0.806691,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 58,
+   "im_id": 562,
+   "targets": [
+    3,
+    7,
+    8,
+    11
+   ],
+   "time_ms": 204.68,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 36,
+    "pem": 169,
+    "total": 205
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_03",
+    "ycbv_07",
+    "ycbv_08",
+    "ycbv_11"
+   ],
+   "pose_rejected": [
+    {
+     "object": "ycbv_07",
+     "mask_iou": 0.233677,
+     "texture_score": 0.46236956,
+     "cluster_occupancy": 0.0,
+     "rejection_reason": "mask_filter_empty"
+    }
+   ],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 3,
+     "R": [
+      [
+       -0.142075,
+       0.989749,
+       -0.014554
+      ],
+      [
+       0.365063,
+       0.038725,
+       -0.930178
+      ],
+      [
+       -0.920079,
+       -0.137469,
+       -0.366822
+      ]
+     ],
+     "t_mm": [
+      155.7651,
+      44.7913,
+      881.9968
+     ],
+     "score": 0.99268,
+     "time_ms": 204.68,
+     "bbox": [
+      450,
+      182,
+      570,
+      398
+     ],
+     "ism": {
+      "best_sem": 0.56719,
+      "masked_appe": 0.56719,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.586446,
+     "texture_score": 0.67508709,
+     "cluster_occupancy": 0.860082,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 8,
+     "R": [
+      [
+       -0.254509,
+       0.955175,
+       -0.151216
+      ],
+      [
+       0.887499,
+       0.292807,
+       0.355821
+      ],
+      [
+       0.384148,
+       -0.043644,
+       -0.922239
+      ]
+     ],
+     "t_mm": [
+      87.5356,
+      109.0773,
+      841.9268
+     ],
+     "score": 1.0,
+     "time_ms": 204.68,
+     "bbox": [
+      370,
+      326,
+      486,
+      430
+     ],
+     "ism": {
+      "best_sem": 0.76376,
+      "masked_appe": 0.76376,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.910871,
+     "texture_score": 0.64303523,
+     "cluster_occupancy": 0.859316,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 11,
+     "R": [
+      [
+       -0.811553,
+       -0.582466,
+       0.045993
+      ],
+      [
+       -0.224328,
+       0.237935,
+       -0.945021
+      ],
+      [
+       0.539499,
+       -0.777252,
+       -0.32376
+      ]
+     ],
+     "t_mm": [
+      -35.8032,
+      -5.132,
+      910.0306
+     ],
+     "score": 1.0,
+     "time_ms": 204.68,
+     "bbox": [
+      162,
+      86,
+      382,
+      378
+     ],
+     "ism": {
+      "best_sem": 0.75727,
+      "masked_appe": 0.75727,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.854368,
+     "texture_score": 0.65894842,
+     "cluster_occupancy": 0.875,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 58,
+   "im_id": 1068,
+   "targets": [
+    3,
+    7,
+    8,
+    11
+   ],
+   "time_ms": 253.9,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 53,
+    "pem": 200,
+    "total": 254
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_03",
+    "ycbv_07",
+    "ycbv_08",
+    "ycbv_11"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 3,
+     "R": [
+      [
+       -0.586362,
+       0.809731,
+       -0.022694
+      ],
+      [
+       0.247168,
+       0.152165,
+       -0.95695
+      ],
+      [
+       -0.771419,
+       -0.566729,
+       -0.289364
+      ]
+     ],
+     "t_mm": [
+      143.805,
+      88.2007,
+      774.1711
+     ],
+     "score": 0.99121,
+     "time_ms": 253.9,
+     "bbox": [
+      446,
+      234,
+      590,
+      480
+     ],
+     "ism": {
+      "best_sem": 0.69985,
+      "masked_appe": 0.69985,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.68558,
+     "texture_score": 0.68274856,
+     "cluster_occupancy": 0.852941,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 7,
+     "R": [
+      [
+       0.7189,
+       0.425652,
+       -0.549548
+      ],
+      [
+       0.614329,
+       -0.758971,
+       0.215784
+      ],
+      [
+       -0.325242,
+       -0.49273,
+       -0.807115
+      ]
+     ],
+     "t_mm": [
+      96.1091,
+      129.7265,
+      773.0808
+     ],
+     "score": 0.99658,
+     "time_ms": 253.9,
+     "bbox": [
+      378,
+      342,
+      530,
+      480
+     ],
+     "ism": {
+      "best_sem": 0.68168,
+      "masked_appe": 0.68168,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.616313,
+     "texture_score": 0.59234095,
+     "cluster_occupancy": 0.873913,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 8,
+     "R": [
+      [
+       -0.21983,
+       0.779621,
+       -0.586399
+      ],
+      [
+       0.881141,
+       0.416643,
+       0.223607
+      ],
+      [
+       0.418648,
+       -0.467544,
+       -0.778548
+      ]
+     ],
+     "t_mm": [
+      54.3088,
+      139.5515,
+      766.0314
+     ],
+     "score": 1.0,
+     "time_ms": 253.9,
+     "bbox": [
+      334,
+      370,
+      454,
+      480
+     ],
+     "ism": {
+      "best_sem": 0.76212,
+      "masked_appe": 0.76212,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.967976,
+     "texture_score": 0.65104252,
+     "cluster_occupancy": 0.9,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 11,
+     "R": [
+      [
+       -0.478952,
+       -0.87658,
+       0.047029
+      ],
+      [
+       -0.255764,
+       0.088096,
+       -0.962717
+      ],
+      [
+       0.839755,
+       -0.473124,
+       -0.266392
+      ]
+     ],
+     "t_mm": [
+      -5.6567,
+      16.5772,
+      883.2747
+     ],
+     "score": 1.0,
+     "time_ms": 253.9,
+     "bbox": [
+      198,
+      114,
+      420,
+      418
+     ],
+     "ism": {
+      "best_sem": 0.73768,
+      "masked_appe": 0.73768,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.85895,
+     "texture_score": 0.59541821,
+     "cluster_occupancy": 0.810078,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 59,
+   "im_id": 1,
+   "targets": [
+    2,
+    4,
+    6,
+    9,
+    15,
+    18
+   ],
+   "time_ms": 253.61,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 48,
+    "pem": 206,
+    "total": 254
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_02",
+    "ycbv_04",
+    "ycbv_06",
+    "ycbv_15",
+    "ycbv_18"
+   ],
+   "pose_rejected": [
+    {
+     "object": "ycbv_18",
+     "mask_iou": 0.780275,
+     "texture_score": 0.45509928,
+     "cluster_occupancy": 0.236111,
+     "rejection_reason": "convergence_insufficient"
+    }
+   ],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 2,
+     "R": [
+      [
+       0.648025,
+       0.761119,
+       -0.027583
+      ],
+      [
+       0.308974,
+       -0.295821,
+       -0.903895
+      ],
+      [
+       -0.696131,
+       0.577224,
+       -0.426865
+      ]
+     ],
+     "t_mm": [
+      -82.7066,
+      -61.3165,
+      997.9293
+     ],
+     "score": 0.98486,
+     "time_ms": 253.61,
+     "bbox": [
+      122,
+      46,
+      302,
+      310
+     ],
+     "ism": {
+      "best_sem": 0.64246,
+      "masked_appe": 0.64246,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.556465,
+     "texture_score": 0.64478397,
+     "cluster_occupancy": 0.9,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 4,
+     "R": [
+      [
+       0.099125,
+       0.995068,
+       -0.003921
+      ],
+      [
+       0.440279,
+       -0.047391,
+       -0.89661
+      ],
+      [
+       -0.892373,
+       0.08715,
+       -0.442805
+      ]
+     ],
+     "t_mm": [
+      -59.3177,
+      88.3947,
+      837.7644
+     ],
+     "score": 0.99951,
+     "time_ms": 253.61,
+     "bbox": [
+      190,
+      278,
+      278,
+      430
+     ],
+     "ism": {
+      "best_sem": 0.78962,
+      "masked_appe": 0.78962,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.881842,
+     "texture_score": 0.66302657,
+     "cluster_occupancy": 0.910931,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 6,
+     "R": [
+      [
+       0.127124,
+       -0.988189,
+       0.085563
+      ],
+      [
+       -0.335755,
+       -0.124042,
+       -0.933746
+      ],
+      [
+       0.933332,
+       0.089973,
+       -0.347558
+      ]
+     ],
+     "t_mm": [
+      48.3592,
+      76.1394,
+      937.7567
+     ],
+     "score": 0.99609,
+     "time_ms": 253.61,
+     "bbox": [
+      318,
+      282,
+      414,
+      366
+     ],
+     "ism": {
+      "best_sem": 0.65351,
+      "masked_appe": 0.65351,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.806201,
+     "texture_score": 0.54143679,
+     "cluster_occupancy": 0.807692,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 15,
+     "R": [
+      [
+       0.802839,
+       0.151911,
+       0.576517
+      ],
+      [
+       -0.254087,
+       -0.787598,
+       0.561363
+      ],
+      [
+       0.539341,
+       -0.59717,
+       -0.593716
+      ]
+     ],
+     "t_mm": [
+      -24.2857,
+      -39.0243,
+      987.7859
+     ],
+     "score": 0.97754,
+     "time_ms": 253.61,
+     "bbox": [
+      202,
+      98,
+      378,
+      182
+     ],
+     "ism": {
+      "best_sem": 0.63019,
+      "masked_appe": 0.63019,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.677793,
+     "texture_score": 0.52458251,
+     "cluster_occupancy": 0.338983,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 59,
+   "im_id": 525,
+   "targets": [
+    2,
+    4,
+    6,
+    9,
+    15,
+    18
+   ],
+   "time_ms": 313.14,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 55,
+    "pem": 258,
+    "total": 313
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_02",
+    "ycbv_04",
+    "ycbv_06",
+    "ycbv_09",
+    "ycbv_15",
+    "ycbv_18"
+   ],
+   "pose_rejected": [],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 2,
+     "R": [
+      [
+       -0.409035,
+       0.911351,
+       0.046146
+      ],
+      [
+       0.355908,
+       0.205896,
+       -0.911557
+      ],
+      [
+       -0.84025,
+       -0.356435,
+       -0.408576
+      ]
+     ],
+     "t_mm": [
+      139.1033,
+      -42.3657,
+      881.4877
+     ],
+     "score": 0.98486,
+     "time_ms": 313.14,
+     "bbox": [
+      382,
+      46,
+      601,
+      310
+     ],
+     "ism": {
+      "best_sem": 0.74238,
+      "masked_appe": 0.74238,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.510672,
+     "texture_score": 0.65576124,
+     "cluster_occupancy": 0.859091,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 4,
+     "R": [
+      [
+       -0.803698,
+       0.594938,
+       0.010901
+      ],
+      [
+       0.265013,
+       0.374287,
+       -0.888638
+      ],
+      [
+       -0.532764,
+       -0.711307,
+       -0.45848
+      ]
+     ],
+     "t_mm": [
+      -45.8752,
+      55.8481,
+      815.165
+     ],
+     "score": 1.0,
+     "time_ms": 313.14,
+     "bbox": [
+      206,
+      238,
+      298,
+      389
+     ],
+     "ism": {
+      "best_sem": 0.83512,
+      "masked_appe": 0.83512,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.962651,
+     "texture_score": 0.67087179,
+     "cluster_occupancy": 0.910931,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 6,
+     "R": [
+      [
+       0.967407,
+       -0.253109,
+       0.007763
+      ],
+      [
+       -0.094441,
+       -0.389068,
+       -0.916355
+      ],
+      [
+       0.234958,
+       0.885755,
+       -0.400291
+      ]
+     ],
+     "t_mm": [
+      87.4901,
+      118.8411,
+      782.9771
+     ],
+     "score": 0.99951,
+     "time_ms": 313.14,
+     "bbox": [
+      374,
+      350,
+      494,
+      454
+     ],
+     "ism": {
+      "best_sem": 0.65243,
+      "masked_appe": 0.65243,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.887505,
+     "texture_score": 0.4858073,
+     "cluster_occupancy": 0.616667,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 9,
+     "R": [
+      [
+       -0.981365,
+       0.19211,
+       -0.004143
+      ],
+      [
+       0.092479,
+       0.453293,
+       -0.886551
+      ],
+      [
+       -0.168437,
+       -0.870413,
+       -0.462612
+      ]
+     ],
+     "t_mm": [
+      39.5421,
+      44.7134,
+      857.2023
+     ],
+     "score": 0.99854,
+     "time_ms": 313.14,
+     "bbox": [
+      298,
+      234,
+      430,
+      362
+     ],
+     "ism": {
+      "best_sem": 0.75618,
+      "masked_appe": 0.75618,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.907244,
+     "texture_score": 0.60977685,
+     "cluster_occupancy": 0.853448,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 15,
+     "R": [
+      [
+       0.879549,
+       0.036113,
+       -0.474437
+      ],
+      [
+       0.259574,
+       -0.872084,
+       0.414839
+      ],
+      [
+       -0.398768,
+       -0.488023,
+       -0.776414
+      ]
+     ],
+     "t_mm": [
+      137.532,
+      5.3334,
+      828.4373
+     ],
+     "score": 0.98584,
+     "time_ms": 313.14,
+     "bbox": [
+      390,
+      126,
+      626,
+      378
+     ],
+     "ism": {
+      "best_sem": 0.81255,
+      "masked_appe": 0.81255,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.845747,
+     "texture_score": 0.65445578,
+     "cluster_occupancy": 0.83871,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 18,
+     "R": [
+      [
+       0.544461,
+       0.803634,
+       -0.240282
+      ],
+      [
+       0.002841,
+       -0.28823,
+       -0.957557
+      ],
+      [
+       -0.838782,
+       0.52067,
+       -0.159213
+      ]
+     ],
+     "t_mm": [
+      -25.5495,
+      136.7024,
+      755.2128
+     ],
+     "score": 0.96729,
+     "time_ms": 313.14,
+     "bbox": [
+      198,
+      394,
+      341,
+      480
+     ],
+     "ism": {
+      "best_sem": 0.82293,
+      "masked_appe": 0.82293,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.921913,
+     "texture_score": 0.62317139,
+     "cluster_occupancy": 0.508,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  },
+  {
+   "scene_id": 59,
+   "im_id": 1068,
+   "targets": [
+    2,
+    4,
+    6,
+    9,
+    15,
+    18
+   ],
+   "time_ms": 309.86,
+   "stage_ms": {
+    "yolo": 0,
+    "ism": 49,
+    "pem": 261,
+    "total": 310
+   },
+   "n_boxes": 0,
+   "ism_accepted": [
+    "ycbv_02",
+    "ycbv_04",
+    "ycbv_06",
+    "ycbv_09",
+    "ycbv_15",
+    "ycbv_18"
+   ],
+   "pose_rejected": [
+    {
+     "object": "ycbv_06",
+     "mask_iou": 0.937951,
+     "texture_score": 0.53064668,
+     "cluster_occupancy": 0.220339,
+     "rejection_reason": "convergence_insufficient"
+    }
+   ],
+   "pem_error": null,
+   "preds": [
+    {
+     "obj_id": 2,
+     "R": [
+      [
+       -0.806347,
+       0.589196,
+       0.051497
+      ],
+      [
+       0.236341,
+       0.400811,
+       -0.885152
+      ],
+      [
+       -0.542168,
+       -0.701569,
+       -0.462444
+      ]
+     ],
+     "t_mm": [
+      89.8103,
+      -37.2213,
+      842.4755
+     ],
+     "score": 0.75635,
+     "time_ms": 309.86,
+     "bbox": [
+      338,
+      34,
+      545,
+      390
+     ],
+     "ism": {
+      "best_sem": 0.6502,
+      "masked_appe": 0.6502,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.646716,
+     "texture_score": 0.62584335,
+     "cluster_occupancy": 0.908333,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 4,
+     "R": [
+      [
+       -0.992218,
+       0.124321,
+       -0.006875
+      ],
+      [
+       0.065134,
+       0.471199,
+       -0.879619
+      ],
+      [
+       -0.106116,
+       -0.873222,
+       -0.475629
+      ]
+     ],
+     "t_mm": [
+      -122.5802,
+      18.2093,
+      859.6024
+     ],
+     "score": 1.0,
+     "time_ms": 309.86,
+     "bbox": [
+      114,
+      190,
+      206,
+      334
+     ],
+     "ism": {
+      "best_sem": 0.82125,
+      "masked_appe": 0.82125,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.917774,
+     "texture_score": 0.68043292,
+     "cluster_occupancy": 0.938224,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 9,
+     "R": [
+      [
+       -0.970317,
+       -0.241729,
+       -0.007133
+      ],
+      [
+       -0.112037,
+       0.475475,
+       -0.872566
+      ],
+      [
+       0.214316,
+       -0.845867,
+       -0.488444
+      ]
+     ],
+     "t_mm": [
+      -26.5663,
+      26.1695,
+      864.3133
+     ],
+     "score": 0.99561,
+     "time_ms": 309.86,
+     "bbox": [
+      214,
+      210,
+      342,
+      334
+     ],
+     "ism": {
+      "best_sem": 0.76364,
+      "masked_appe": 0.76364,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.919893,
+     "texture_score": 0.62818134,
+     "cluster_occupancy": 0.852941,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 15,
+     "R": [
+      [
+       0.55748,
+       -0.006939,
+       -0.830162
+      ],
+      [
+       0.421805,
+       -0.858912,
+       0.290434
+      ],
+      [
+       -0.71505,
+       -0.512078,
+       -0.475899
+      ]
+     ],
+     "t_mm": [
+      57.9537,
+      7.2998,
+      797.1647
+     ],
+     "score": 0.98291,
+     "time_ms": 309.86,
+     "bbox": [
+      318,
+      114,
+      502,
+      393
+     ],
+     "ism": {
+      "best_sem": 0.71961,
+      "masked_appe": 0.71961,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.826167,
+     "texture_score": 0.63907671,
+     "cluster_occupancy": 0.869748,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    },
+    {
+     "obj_id": 18,
+     "R": [
+      [
+       0.189337,
+       0.981632,
+       -0.023419
+      ],
+      [
+       0.403954,
+       -0.09961,
+       -0.909339
+      ],
+      [
+       -0.89497,
+       0.162711,
+       -0.415395
+      ]
+     ],
+     "t_mm": [
+      -146.306,
+      99.9225,
+      801.0258
+     ],
+     "score": 0.94189,
+     "time_ms": 309.86,
+     "bbox": [
+      34,
+      354,
+      197,
+      398
+     ],
+     "ism": {
+      "best_sem": 0.68033,
+      "masked_appe": 0.68033,
+      "decision": "detected(orig)"
+     },
+     "mask_iou": 0.921425,
+     "texture_score": 0.62940049,
+     "cluster_occupancy": 0.484444,
+     "verify_method": "geometry_mask_texture_convergence",
+     "cluster_first_reps": null
+    }
+   ]
+  }
+ ],
+ "time_ms": {
+  "median": 253.7,
+  "p90": 296.4,
+  "mean": 237.9,
+  "n": 36
+ },
+ "stage_ms": {
+  "yolo": {
+   "median": 0.0,
+   "p90": 0.0,
+   "mean": 0.0,
+   "n": 36
+  },
+  "ism": {
+   "median": 44.0,
+   "p90": 75.5,
+   "mean": 47.6,
+   "n": 36
+  },
+  "pem": {
+   "median": 192.0,
+   "p90": 222.0,
+   "mean": 190.2,
+   "n": 36
+  }
+ },
+ "finished": "2026-10-08 15:21:08"
+}

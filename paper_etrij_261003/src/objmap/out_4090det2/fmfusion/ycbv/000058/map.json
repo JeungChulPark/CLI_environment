@@ -1,0 +1,100 @@
+{
+ "units": "m",
+ "frame": "world",
+ "method": "FM-Fusion",
+ "dataset": "ycbv",
+ "scene": 58,
+ "objects": [
+  {
+   "id": 0,
+   "label": "019_pitcher_base",
+   "points": "points/0.npy",
+   "score": 1.0,
+   "n_obs": 172
+  },
+  {
+   "id": 1,
+   "label": "004_sugar_box",
+   "points": "points/1.npy",
+   "score": 1.0,
+   "n_obs": 172
+  },
+  {
+   "id": 2,
+   "label": "003_cracker_box",
+   "points": "points/2.npy",
+   "score": 0.85,
+   "n_obs": 172
+  },
+  {
+   "id": 3,
+   "label": "025_mug",
+   "points": "points/3.npy",
+   "score": 1.0,
+   "n_obs": 56
+  },
+  {
+   "id": 4,
+   "label": "021_bleach_cleanser",
+   "points": "points/4.npy",
+   "score": 1.0,
+   "n_obs": 8
+  },
+  {
+   "id": 5,
+   "label": "052_extra_large_clamp",
+   "points": "points/5.npy",
+   "score": 0.74,
+   "n_obs": 17
+  },
+  {
+   "id": 6,
+   "label": "008_pudding_box",
+   "points": "points/6.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 7,
+   "label": "052_extra_large_clamp",
+   "points": "points/7.npy",
+   "score": 0.73,
+   "n_obs": 28
+  },
+  {
+   "id": 8,
+   "label": "008_pudding_box",
+   "points": "points/8.npy",
+   "score": 0.86,
+   "n_obs": 82
+  },
+  {
+   "id": 9,
+   "label": "010_potted_meat_can",
+   "points": "points/9.npy",
+   "score": 0.96,
+   "n_obs": 7
+  },
+  {
+   "id": 10,
+   "label": "021_bleach_cleanser",
+   "points": "points/10.npy",
+   "score": 1.0,
+   "n_obs": 95
+  },
+  {
+   "id": 11,
+   "label": "052_extra_large_clamp",
+   "points": "points/11.npy",
+   "score": 0.74,
+   "n_obs": 21
+  },
+  {
+   "id": 12,
+   "label": "008_pudding_box",
+   "points": "points/12.npy",
+   "score": 0.99,
+   "n_obs": 11
+  }
+ ]
+}

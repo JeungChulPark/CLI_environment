@@ -1,0 +1,375 @@
+{
+ "units": "m",
+ "frame": "world",
+ "dataset": "real",
+ "scene": 2,
+ "kind": "dualmap",
+ "source": "/home/jucpark/DeepLearning/baselines/DualMap/output/real_runs_dualmap_41r/real000002/ycbv_real000002/map",
+ "objects": [
+  {
+   "id": 0,
+   "label": "unknown",
+   "points": "points/0.npy"
+  },
+  {
+   "id": 1,
+   "label": "unknown",
+   "points": "points/1.npy"
+  },
+  {
+   "id": 2,
+   "label": "unknown",
+   "points": "points/2.npy"
+  },
+  {
+   "id": 3,
+   "label": "unknown",
+   "points": "points/3.npy"
+  },
+  {
+   "id": 4,
+   "label": "unknown",
+   "points": "points/4.npy"
+  },
+  {
+   "id": 5,
+   "label": "unknown",
+   "points": "points/5.npy"
+  },
+  {
+   "id": 6,
+   "label": "Febreze_high",
+   "points": "points/6.npy"
+  },
+  {
+   "id": 7,
+   "label": "unknown",
+   "points": "points/7.npy"
+  },
+  {
+   "id": 8,
+   "label": "unknown",
+   "points": "points/8.npy"
+  },
+  {
+   "id": 9,
+   "label": "unknown",
+   "points": "points/9.npy"
+  },
+  {
+   "id": 10,
+   "label": "unknown",
+   "points": "points/10.npy"
+  },
+  {
+   "id": 11,
+   "label": "unknown",
+   "points": "points/11.npy"
+  },
+  {
+   "id": 12,
+   "label": "unknown",
+   "points": "points/12.npy"
+  },
+  {
+   "id": 13,
+   "label": "unknown",
+   "points": "points/13.npy"
+  },
+  {
+   "id": 14,
+   "label": "unknown",
+   "points": "points/14.npy"
+  },
+  {
+   "id": 15,
+   "label": "unknown",
+   "points": "points/15.npy"
+  },
+  {
+   "id": 16,
+   "label": "unknown",
+   "points": "points/16.npy"
+  },
+  {
+   "id": 17,
+   "label": "unknown",
+   "points": "points/17.npy"
+  },
+  {
+   "id": 18,
+   "label": "unknown",
+   "points": "points/18.npy"
+  },
+  {
+   "id": 19,
+   "label": "unknown",
+   "points": "points/19.npy"
+  },
+  {
+   "id": 20,
+   "label": "unknown",
+   "points": "points/20.npy"
+  },
+  {
+   "id": 21,
+   "label": "unknown",
+   "points": "points/21.npy"
+  },
+  {
+   "id": 22,
+   "label": "unknown",
+   "points": "points/22.npy"
+  },
+  {
+   "id": 23,
+   "label": "unknown",
+   "points": "points/23.npy"
+  },
+  {
+   "id": 24,
+   "label": "unknown",
+   "points": "points/24.npy"
+  },
+  {
+   "id": 25,
+   "label": "unknown",
+   "points": "points/25.npy"
+  },
+  {
+   "id": 26,
+   "label": "Bear",
+   "points": "points/26.npy"
+  },
+  {
+   "id": 27,
+   "label": "unknown",
+   "points": "points/27.npy"
+  },
+  {
+   "id": 28,
+   "label": "unknown",
+   "points": "points/28.npy"
+  },
+  {
+   "id": 29,
+   "label": "unknown",
+   "points": "points/29.npy"
+  },
+  {
+   "id": 30,
+   "label": "unknown",
+   "points": "points/30.npy"
+  },
+  {
+   "id": 31,
+   "label": "unknown",
+   "points": "points/31.npy"
+  },
+  {
+   "id": 32,
+   "label": "Bear",
+   "points": "points/32.npy"
+  },
+  {
+   "id": 33,
+   "label": "unknown",
+   "points": "points/33.npy"
+  },
+  {
+   "id": 34,
+   "label": "Febreze_high",
+   "points": "points/34.npy"
+  },
+  {
+   "id": 35,
+   "label": "unknown",
+   "points": "points/35.npy"
+  },
+  {
+   "id": 36,
+   "label": "unknown",
+   "points": "points/36.npy"
+  },
+  {
+   "id": 37,
+   "label": "unknown",
+   "points": "points/37.npy"
+  },
+  {
+   "id": 38,
+   "label": "unknown",
+   "points": "points/38.npy"
+  },
+  {
+   "id": 39,
+   "label": "unknown",
+   "points": "points/39.npy"
+  },
+  {
+   "id": 40,
+   "label": "unknown",
+   "points": "points/40.npy"
+  },
+  {
+   "id": 41,
+   "label": "unknown",
+   "points": "points/41.npy"
+  },
+  {
+   "id": 42,
+   "label": "unknown",
+   "points": "points/42.npy"
+  },
+  {
+   "id": 43,
+   "label": "unknown",
+   "points": "points/43.npy"
+  },
+  {
+   "id": 44,
+   "label": "unknown",
+   "points": "points/44.npy"
+  },
+  {
+   "id": 45,
+   "label": "unknown",
+   "points": "points/45.npy"
+  },
+  {
+   "id": 46,
+   "label": "Febreze_high",
+   "points": "points/46.npy"
+  },
+  {
+   "id": 47,
+   "label": "unknown",
+   "points": "points/47.npy"
+  },
+  {
+   "id": 48,
+   "label": "unknown",
+   "points": "points/48.npy"
+  },
+  {
+   "id": 49,
+   "label": "milk",
+   "points": "points/49.npy"
+  },
+  {
+   "id": 50,
+   "label": "unknown",
+   "points": "points/50.npy"
+  },
+  {
+   "id": 51,
+   "label": "unknown",
+   "points": "points/51.npy"
+  },
+  {
+   "id": 52,
+   "label": "unknown",
+   "points": "points/52.npy"
+  },
+  {
+   "id": 53,
+   "label": "unknown",
+   "points": "points/53.npy"
+  },
+  {
+   "id": 54,
+   "label": "unknown",
+   "points": "points/54.npy"
+  },
+  {
+   "id": 55,
+   "label": "unknown",
+   "points": "points/55.npy"
+  },
+  {
+   "id": 56,
+   "label": "Dinosaur",
+   "points": "points/56.npy"
+  },
+  {
+   "id": 57,
+   "label": "unknown",
+   "points": "points/57.npy"
+  },
+  {
+   "id": 58,
+   "label": "unknown",
+   "points": "points/58.npy"
+  },
+  {
+   "id": 59,
+   "label": "Dinosaur",
+   "points": "points/59.npy"
+  },
+  {
+   "id": 60,
+   "label": "unknown",
+   "points": "points/60.npy"
+  },
+  {
+   "id": 61,
+   "label": "unknown",
+   "points": "points/61.npy"
+  },
+  {
+   "id": 62,
+   "label": "unknown",
+   "points": "points/62.npy"
+  },
+  {
+   "id": 63,
+   "label": "unknown",
+   "points": "points/63.npy"
+  },
+  {
+   "id": 64,
+   "label": "unknown",
+   "points": "points/64.npy"
+  },
+  {
+   "id": 65,
+   "label": "unknown",
+   "points": "points/65.npy"
+  },
+  {
+   "id": 66,
+   "label": "unknown",
+   "points": "points/66.npy"
+  },
+  {
+   "id": 67,
+   "label": "Dinosaur",
+   "points": "points/67.npy"
+  },
+  {
+   "id": 68,
+   "label": "Febreze_high",
+   "points": "points/68.npy"
+  },
+  {
+   "id": 69,
+   "label": "unknown",
+   "points": "points/69.npy"
+  },
+  {
+   "id": 70,
+   "label": "unknown",
+   "points": "points/70.npy"
+  },
+  {
+   "id": 71,
+   "label": "unknown",
+   "points": "points/71.npy"
+  },
+  {
+   "id": 72,
+   "label": "unknown",
+   "points": "points/72.npy"
+  }
+ ]
+}

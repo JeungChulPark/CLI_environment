@@ -2,79 +2,71 @@
  "ours_cad|obchange_kitchen|iou": {
   "visits": 5,
   "tp": 9,
-  "fp": 32,
+  "fp": 55,
   "fn": 16,
-  "precision": 0.21951219512195122,
+  "precision": 0.140625,
   "recall": 0.36,
-  "f1": 0.27272727272727276,
-  "mean_iou": 0.3268295281935823,
-  "mean_sd_mm": 8.778315640353542,
+  "f1": 0.20224719101123595,
+  "mean_iou": 0.32605685386662286,
+  "mean_sd_mm": 8.935866883778578,
   "dont_care": 4,
   "per_visit": [
    {
     "visit": 2,
     "tp": 1,
-    "fp": 7,
+    "fp": 8,
     "fn": 3,
-    "n_pred": 8,
+    "n_pred": 9,
     "dont_care": 1
    },
    {
     "visit": 3,
     "tp": 2,
-    "fp": 7,
+    "fp": 14,
     "fn": 2,
-    "n_pred": 9,
+    "n_pred": 16,
     "dont_care": 1
    },
    {
     "visit": 4,
     "tp": 0,
-    "fp": 7,
+    "fp": 9,
     "fn": 4,
-    "n_pred": 7,
+    "n_pred": 9,
     "dont_care": 0
    },
    {
     "visit": 5,
     "tp": 2,
-    "fp": 7,
+    "fp": 10,
     "fn": 3,
-    "n_pred": 9,
+    "n_pred": 12,
     "dont_care": 1
    },
    {
     "visit": 6,
     "tp": 4,
-    "fp": 4,
+    "fp": 14,
     "fn": 4,
-    "n_pred": 8,
+    "n_pred": 18,
     "dont_care": 1
    }
   ]
  },
  "ours_cad|obchange_kitchen|ctr5cm": {
   "visits": 5,
-  "tp": 19,
-  "fp": 22,
-  "fn": 6,
-  "precision": 0.4634146341463415,
-  "recall": 0.76,
-  "f1": 0.5757575757575758,
-  "mean_iou": 0.23137466690394623,
-  "mean_sd_mm": 11.357191436892718,
+  "tp": 21,
+  "fp": 43,
+  "fn": 4,
+  "precision": 0.328125,
+  "recall": 0.84,
+  "f1": 0.47191011235955066,
+  "mean_iou": 0.21789186794192036,
+  "mean_sd_mm": 11.856119001945107,
   "dont_care": 4,
   "per_visit": [
    {
     "visit": 2,
-    "tp": 3,
-    "fp": 5,
-    "fn": 1,
-    "n_pred": 8,
-    "dont_care": 1
-   },
-   {
-    "visit": 3,
     "tp": 3,
     "fp": 6,
     "fn": 1,
@@ -82,90 +74,98 @@
     "dont_care": 1
    },
    {
+    "visit": 3,
+    "tp": 4,
+    "fp": 12,
+    "fn": 0,
+    "n_pred": 16,
+    "dont_care": 1
+   },
+   {
     "visit": 4,
     "tp": 3,
-    "fp": 4,
+    "fp": 6,
     "fn": 1,
-    "n_pred": 7,
+    "n_pred": 9,
     "dont_care": 0
    },
    {
     "visit": 5,
     "tp": 4,
-    "fp": 5,
+    "fp": 8,
     "fn": 1,
-    "n_pred": 9,
+    "n_pred": 12,
     "dont_care": 1
    },
    {
     "visit": 6,
-    "tp": 6,
-    "fp": 2,
-    "fn": 2,
-    "n_pred": 8,
+    "tp": 7,
+    "fp": 11,
+    "fn": 1,
+    "n_pred": 18,
     "dont_care": 1
    }
   ]
  },
  "ours_cad|obchange_kitchen_all|iou": {
   "visits": 5,
-  "tp": 8,
-  "fp": 73,
-  "fn": 17,
-  "precision": 0.09876543209876543,
-  "recall": 0.32,
-  "f1": 0.1509433962264151,
-  "mean_iou": 0.34517421269700954,
-  "mean_sd_mm": 8.555643000240124,
-  "dont_care": 2,
+  "tp": 7,
+  "fp": 88,
+  "fn": 18,
+  "precision": 0.07368421052631578,
+  "recall": 0.28,
+  "f1": 0.11666666666666665,
+  "mean_iou": 0.3451398530723257,
+  "mean_sd_mm": 8.908059291806783,
+  "dont_care": 6,
   "per_visit": [
    {
     "visit": 2,
     "tp": 1,
-    "fp": 10,
+    "fp": 8,
     "fn": 3,
-    "n_pred": 11,
-    "dont_care": 0
+    "n_pred": 9,
+    "dont_care": 1
    },
    {
     "visit": 3,
     "tp": 2,
-    "fp": 11,
+    "fp": 15,
     "fn": 2,
-    "n_pred": 13,
+    "n_pred": 17,
     "dont_care": 1
    },
    {
     "visit": 4,
     "tp": 0,
-    "fp": 15,
+    "fp": 19,
     "fn": 4,
-    "n_pred": 15,
+    "n_pred": 19,
     "dont_care": 0
    },
    {
     "visit": 5,
     "tp": 1,
-    "fp": 17,
+    "fp": 20,
     "fn": 4,
-    "n_pred": 18,
-    "dont_care": 1
+    "n_pred": 21,
+    "dont_care": 2
    },
    {
     "visit": 6,
-    "tp": 4,
-    "fp": 20,
-    "fn": 4,
-    "n_pred": 24,
-    "dont_care": 0
+    "tp": 3,
+    "fp": 26,
+    "fn": 5,
+    "n_pred": 29,
+    "dont_care": 2
    }
   ],
   "revisit": {
    "removed": 17,
-   "removed_mapped": 11,
-   "removed_still_in_map": 10,
+   "removed_mapped": 13,
+   "removed_still_in_map": 13,
    "added": 21,
-   "added_found": 7,
+   "added_found": 6,
    "per_visit": [
     {
      "visit": 3,
@@ -178,89 +178,89 @@
     {
      "visit": 4,
      "removed": 4,
-     "mapped": 2,
-     "still_in_map": 2,
+     "mapped": 4,
+     "still_in_map": 4,
      "added": 4,
      "added_found": 0
     },
     {
      "visit": 5,
      "removed": 4,
-     "mapped": 2,
-     "still_in_map": 2,
+     "mapped": 3,
+     "still_in_map": 3,
      "added": 5,
      "added_found": 1
     },
     {
      "visit": 6,
      "removed": 5,
-     "mapped": 4,
+     "mapped": 3,
      "still_in_map": 3,
      "added": 8,
-     "added_found": 4
+     "added_found": 3
     }
    ]
   }
  },
  "ours_cad|obchange_kitchen_all|ctr5cm": {
   "visits": 5,
-  "tp": 18,
-  "fp": 63,
-  "fn": 7,
-  "precision": 0.2222222222222222,
-  "recall": 0.72,
-  "f1": 0.33962264150943394,
-  "mean_iou": 0.23651714379920452,
-  "mean_sd_mm": 11.47077132813039,
-  "dont_care": 2,
+  "tp": 19,
+  "fp": 76,
+  "fn": 6,
+  "precision": 0.2,
+  "recall": 0.76,
+  "f1": 0.3166666666666667,
+  "mean_iou": 0.20726611566901842,
+  "mean_sd_mm": 12.803842941250073,
+  "dont_care": 6,
   "per_visit": [
    {
     "visit": 2,
     "tp": 3,
-    "fp": 8,
+    "fp": 6,
     "fn": 1,
-    "n_pred": 11,
-    "dont_care": 0
+    "n_pred": 9,
+    "dont_care": 1
    },
    {
     "visit": 3,
-    "tp": 2,
-    "fp": 11,
-    "fn": 2,
-    "n_pred": 13,
+    "tp": 4,
+    "fp": 13,
+    "fn": 0,
+    "n_pred": 17,
     "dont_care": 1
    },
    {
     "visit": 4,
-    "tp": 2,
-    "fp": 13,
-    "fn": 2,
-    "n_pred": 15,
+    "tp": 3,
+    "fp": 16,
+    "fn": 1,
+    "n_pred": 19,
     "dont_care": 0
    },
    {
     "visit": 5,
-    "tp": 4,
-    "fp": 14,
-    "fn": 1,
-    "n_pred": 18,
-    "dont_care": 1
+    "tp": 3,
+    "fp": 18,
+    "fn": 2,
+    "n_pred": 21,
+    "dont_care": 2
    },
    {
     "visit": 6,
-    "tp": 7,
-    "fp": 17,
-    "fn": 1,
-    "n_pred": 24,
-    "dont_care": 0
+    "tp": 6,
+    "fp": 23,
+    "fn": 2,
+    "n_pred": 29,
+    "dont_care": 2
    }
   ],
   "revisit": {
    "removed": 17,
-   "removed_mapped": 11,
-   "removed_still_in_map": 10,
+   "removed_mapped": 13,
+   "removed_still_in_map": 13,
    "added": 21,
-   "added_found": 15,
+   "added_found": 16,
    "per_visit": [
     {
      "visit": 3,
@@ -268,85 +268,85 @@
      "mapped": 3,
      "still_in_map": 3,
      "added": 4,
-     "added_found": 2
+     "added_found": 4
     },
     {
      "visit": 4,
      "removed": 4,
-     "mapped": 2,
-     "still_in_map": 2,
+     "mapped": 4,
+     "still_in_map": 4,
      "added": 4,
-     "added_found": 2
+     "added_found": 3
     },
     {
      "visit": 5,
      "removed": 4,
-     "mapped": 2,
-     "still_in_map": 2,
+     "mapped": 3,
+     "still_in_map": 3,
      "added": 5,
-     "added_found": 4
+     "added_found": 3
     },
     {
      "visit": 6,
      "removed": 5,
-     "mapped": 4,
+     "mapped": 3,
      "still_in_map": 3,
      "added": 8,
-     "added_found": 7
+     "added_found": 6
     }
    ]
   }
  },
  "ours_obs|obchange_kitchen|iou": {
   "visits": 5,
-  "tp": 8,
-  "fp": 33,
-  "fn": 17,
-  "precision": 0.1951219512195122,
-  "recall": 0.32,
-  "f1": 0.24242424242424243,
-  "mean_iou": 0.3712731685428742,
-  "mean_sd_mm": 3.998053264717208,
-  "dont_care": 4,
+  "tp": 6,
+  "fp": 57,
+  "fn": 19,
+  "precision": 0.09523809523809523,
+  "recall": 0.24,
+  "f1": 0.13636363636363635,
+  "mean_iou": 0.3129598835291541,
+  "mean_sd_mm": 4.552683109303988,
+  "dont_care": 5,
   "per_visit": [
    {
     "visit": 2,
     "tp": 0,
-    "fp": 8,
+    "fp": 9,
     "fn": 4,
-    "n_pred": 8,
+    "n_pred": 9,
     "dont_care": 1
    },
    {
     "visit": 3,
-    "tp": 2,
-    "fp": 7,
-    "fn": 2,
-    "n_pred": 9,
+    "tp": 1,
+    "fp": 15,
+    "fn": 3,
+    "n_pred": 16,
     "dont_care": 1
    },
    {
     "visit": 4,
     "tp": 0,
-    "fp": 7,
+    "fp": 9,
     "fn": 4,
-    "n_pred": 7,
+    "n_pred": 9,
     "dont_care": 0
    },
    {
     "visit": 5,
-    "tp": 3,
-    "fp": 6,
-    "fn": 2,
-    "n_pred": 9,
-    "dont_care": 1
+    "tp": 2,
+    "fp": 9,
+    "fn": 3,
+    "n_pred": 11,
+    "dont_care": 2
    },
    {
     "visit": 6,
     "tp": 3,
-    "fp": 5,
+    "fp": 15,
     "fn": 5,
-    "n_pred": 8,
+    "n_pred": 18,
     "dont_care": 1
    }
   ]
@@ -354,116 +354,116 @@
  "ours_obs|obchange_kitchen|ctr5cm": {
   "visits": 5,
   "tp": 22,
-  "fp": 19,
+  "fp": 41,
   "fn": 3,
-  "precision": 0.5365853658536586,
+  "precision": 0.3492063492063492,
   "recall": 0.88,
-  "f1": 0.6666666666666667,
-  "mean_iou": 0.24790990988988748,
-  "mean_sd_mm": 8.311132066921358,
-  "dont_care": 4,
+  "f1": 0.5,
+  "mean_iou": 0.21814244842051,
+  "mean_sd_mm": 8.19785933525662,
+  "dont_care": 5,
   "per_visit": [
    {
     "visit": 2,
     "tp": 3,
-    "fp": 5,
+    "fp": 6,
     "fn": 1,
-    "n_pred": 8,
+    "n_pred": 9,
     "dont_care": 1
    },
    {
     "visit": 3,
     "tp": 4,
-    "fp": 5,
+    "fp": 12,
     "fn": 0,
-    "n_pred": 9,
+    "n_pred": 16,
     "dont_care": 1
    },
    {
     "visit": 4,
     "tp": 4,
-    "fp": 3,
+    "fp": 5,
     "fn": 0,
-    "n_pred": 7,
+    "n_pred": 9,
     "dont_care": 0
    },
    {
     "visit": 5,
     "tp": 5,
-    "fp": 4,
+    "fp": 6,
     "fn": 0,
-    "n_pred": 9,
-    "dont_care": 1
+    "n_pred": 11,
+    "dont_care": 2
    },
    {
     "visit": 6,
     "tp": 6,
-    "fp": 2,
+    "fp": 12,
     "fn": 2,
-    "n_pred": 8,
+    "n_pred": 18,
     "dont_care": 1
    }
   ]
  },
  "ours_obs|obchange_kitchen_all|iou": {
   "visits": 5,
-  "tp": 9,
-  "fp": 70,
-  "fn": 16,
-  "precision": 0.11392405063291139,
-  "recall": 0.36,
-  "f1": 0.17307692307692307,
-  "mean_iou": 0.3555341339321923,
-  "mean_sd_mm": 4.549683053823013,
+  "tp": 5,
+  "fp": 91,
+  "fn": 20,
+  "precision": 0.052083333333333336,
+  "recall": 0.2,
+  "f1": 0.08264462809917357,
+  "mean_iou": 0.30273254693851387,
+  "mean_sd_mm": 4.815943274209309,
   "dont_care": 4,
   "per_visit": [
    {
     "visit": 2,
-    "tp": 1,
+    "tp": 0,
     "fp": 9,
-    "fn": 3,
-    "n_pred": 10,
+    "fn": 4,
+    "n_pred": 9,
     "dont_care": 1
    },
    {
     "visit": 3,
-    "tp": 2,
-    "fp": 10,
-    "fn": 2,
-    "n_pred": 12,
-    "dont_care": 2
+    "tp": 1,
+    "fp": 16,
+    "fn": 3,
+    "n_pred": 17,
+    "dont_care": 1
    },
    {
     "visit": 4,
     "tp": 0,
-    "fp": 15,
+    "fp": 19,
     "fn": 4,
-    "n_pred": 15,
+    "n_pred": 19,
     "dont_care": 0
    },
    {
     "visit": 5,
     "tp": 2,
-    "fp": 16,
+    "fp": 20,
     "fn": 3,
-    "n_pred": 18,
+    "n_pred": 22,
     "dont_care": 1
    },
    {
     "visit": 6,
-    "tp": 4,
-    "fp": 20,
-    "fn": 4,
-    "n_pred": 24,
-    "dont_care": 0
+    "tp": 2,
+    "fp": 27,
+    "fn": 6,
+    "n_pred": 29,
+    "dont_care": 1
    }
   ],
   "revisit": {
    "removed": 17,
-   "removed_mapped": 11,
-   "removed_still_in_map": 10,
+   "removed_mapped": 15,
+   "removed_still_in_map": 15,
    "added": 21,
-   "added_found": 8,
+   "added_found": 5,
    "per_visit": [
     {
      "visit": 3,
@@ -471,21 +471,21 @@
      "mapped": 3,
      "still_in_map": 3,
      "added": 4,
-     "added_found": 2
+     "added_found": 1
     },
     {
      "visit": 4,
      "removed": 4,
-     "mapped": 2,
-     "still_in_map": 2,
+     "mapped": 4,
+     "still_in_map": 4,
      "added": 4,
      "added_found": 0
     },
     {
      "visit": 5,
      "removed": 4,
-     "mapped": 2,
-     "still_in_map": 2,
+     "mapped": 4,
+     "still_in_map": 4,
      "added": 5,
      "added_found": 2
     },
@@ -493,72 +493,72 @@
      "visit": 6,
      "removed": 5,
      "mapped": 4,
-     "still_in_map": 3,
+     "still_in_map": 4,
      "added": 8,
-     "added_found": 4
+     "added_found": 2
     }
    ]
   }
  },
  "ours_obs|obchange_kitchen_all|ctr5cm": {
   "visits": 5,
-  "tp": 18,
-  "fp": 61,
-  "fn": 7,
-  "precision": 0.22784810126582278,
-  "recall": 0.72,
-  "f1": 0.34615384615384615,
-  "mean_iou": 0.27002296901590706,
-  "mean_sd_mm": 7.450241359210569,
+  "tp": 20,
+  "fp": 76,
+  "fn": 5,
+  "precision": 0.20833333333333334,
+  "recall": 0.8,
+  "f1": 0.3305785123966943,
+  "mean_iou": 0.2038695575877989,
+  "mean_sd_mm": 9.060126289790716,
   "dont_care": 4,
   "per_visit": [
    {
     "visit": 2,
     "tp": 3,
-    "fp": 7,
+    "fp": 6,
     "fn": 1,
-    "n_pred": 10,
+    "n_pred": 9,
     "dont_care": 1
    },
    {
     "visit": 3,
-    "tp": 2,
-    "fp": 10,
-    "fn": 2,
-    "n_pred": 12,
-    "dont_care": 2
+    "tp": 4,
+    "fp": 13,
+    "fn": 0,
+    "n_pred": 17,
+    "dont_care": 1
    },
    {
     "visit": 4,
-    "tp": 2,
-    "fp": 13,
-    "fn": 2,
-    "n_pred": 15,
+    "tp": 4,
+    "fp": 15,
+    "fn": 0,
+    "n_pred": 19,
     "dont_care": 0
    },
    {
     "visit": 5,
     "tp": 4,
-    "fp": 14,
+    "fp": 18,
     "fn": 1,
-    "n_pred": 18,
+    "n_pred": 22,
     "dont_care": 1
    },
    {
     "visit": 6,
-    "tp": 7,
-    "fp": 17,
-    "fn": 1,
-    "n_pred": 24,
-    "dont_care": 0
+    "tp": 5,
+    "fp": 24,
+    "fn": 3,
+    "n_pred": 29,
+    "dont_care": 1
    }
   ],
   "revisit": {
    "removed": 17,
-   "removed_mapped": 11,
-   "removed_still_in_map": 10,
+   "removed_mapped": 15,
+   "removed_still_in_map": 15,
    "added": 21,
-   "added_found": 15,
+   "added_found": 17,
    "per_visit": [
     {
      "visit": 3,
@@ -566,21 +566,21 @@
      "mapped": 3,
      "still_in_map": 3,
      "added": 4,
-     "added_found": 2
+     "added_found": 4
     },
     {
      "visit": 4,
      "removed": 4,
-     "mapped": 2,
-     "still_in_map": 2,
+     "mapped": 4,
+     "still_in_map": 4,
      "added": 4,
-     "added_found": 2
+     "added_found": 4
     },
     {
      "visit": 5,
      "removed": 4,
-     "mapped": 2,
-     "still_in_map": 2,
+     "mapped": 4,
+     "still_in_map": 4,
      "added": 5,
      "added_found": 4
     },
@@ -588,9 +588,9 @@
      "visit": 6,
      "removed": 5,
      "mapped": 4,
-     "still_in_map": 3,
+     "still_in_map": 4,
      "added": 8,
-     "added_found": 7
+     "added_found": 5
     }
    ]
   }

@@ -1,0 +1,156 @@
+{
+ "per_method": {
+  "L0_원본0.2": {
+   "answered": 4088,
+   "correct": 3801,
+   "adds_auc_all_answered": 92.6,
+   "median_err_mm": 1.85
+  },
+  "개선안2_ViTS0.5_검증끔": {
+   "answered": 3790,
+   "correct": 3585,
+   "adds_auc_all_answered": 93.9,
+   "median_err_mm": 1.85
+  },
+  "개선안3": {
+   "answered": 3384,
+   "correct": 3339,
+   "adds_auc_all_answered": 96.7,
+   "median_err_mm": 1.72
+  },
+  "개선안3_군집먼저": {
+   "answered": 3385,
+   "correct": 3339,
+   "adds_auc_all_answered": 96.7,
+   "median_err_mm": 1.72
+  },
+  "L4_배포": {
+   "answered": 2538,
+   "correct": 2515,
+   "adds_auc_all_answered": 97.2,
+   "median_err_mm": 1.71
+  }
+ },
+ "pairs": {
+  "L0_원본0.2 vs 개선안2_ViTS0.5_검증끔": {
+   "common_answered": 3786,
+   "L0_원본0.2": {
+    "adds_auc": 94.1,
+    "median_err_mm": 1.83
+   },
+   "개선안2_ViTS0.5_검증끔": {
+    "adds_auc": 94.0,
+    "median_err_mm": 1.85
+   },
+   "B_better_frac": 0.497
+  },
+  "L0_원본0.2 vs 개선안3": {
+   "common_answered": 3383,
+   "L0_원본0.2": {
+    "adds_auc": 94.6,
+    "median_err_mm": 1.79
+   },
+   "개선안3": {
+    "adds_auc": 96.7,
+    "median_err_mm": 1.72
+   },
+   "B_better_frac": 0.568
+  },
+  "L0_원본0.2 vs 개선안3_군집먼저": {
+   "common_answered": 3384,
+   "L0_원본0.2": {
+    "adds_auc": 94.6,
+    "median_err_mm": 1.8
+   },
+   "개선안3_군집먼저": {
+    "adds_auc": 96.7,
+    "median_err_mm": 1.72
+   },
+   "B_better_frac": 0.568
+  },
+  "L0_원본0.2 vs L4_배포": {
+   "common_answered": 2537,
+   "L0_원본0.2": {
+    "adds_auc": 95.5,
+    "median_err_mm": 1.78
+   },
+   "L4_배포": {
+    "adds_auc": 97.2,
+    "median_err_mm": 1.71
+   },
+   "B_better_frac": 0.568
+  },
+  "개선안2_ViTS0.5_검증끔 vs 개선안3": {
+   "common_answered": 3384,
+   "개선안2_ViTS0.5_검증끔": {
+    "adds_auc": 96.4,
+    "median_err_mm": 1.79
+   },
+   "개선안3": {
+    "adds_auc": 96.7,
+    "median_err_mm": 1.72
+   },
+   "B_better_frac": 0.565
+  },
+  "개선안2_ViTS0.5_검증끔 vs 개선안3_군집먼저": {
+   "common_answered": 3385,
+   "개선안2_ViTS0.5_검증끔": {
+    "adds_auc": 96.3,
+    "median_err_mm": 1.79
+   },
+   "개선안3_군집먼저": {
+    "adds_auc": 96.7,
+    "median_err_mm": 1.72
+   },
+   "B_better_frac": 0.566
+  },
+  "개선안2_ViTS0.5_검증끔 vs L4_배포": {
+   "common_answered": 2452,
+   "개선안2_ViTS0.5_검증끔": {
+    "adds_auc": 95.6,
+    "median_err_mm": 1.77
+   },
+   "L4_배포": {
+    "adds_auc": 97.2,
+    "median_err_mm": 1.7
+   },
+   "B_better_frac": 0.543
+  },
+  "개선안3 vs 개선안3_군집먼저": {
+   "common_answered": 3375,
+   "개선안3": {
+    "adds_auc": 96.7,
+    "median_err_mm": 1.72
+   },
+   "개선안3_군집먼저": {
+    "adds_auc": 96.7,
+    "median_err_mm": 1.72
+   },
+   "B_better_frac": 0.009
+  },
+  "개선안3 vs L4_배포": {
+   "common_answered": 2350,
+   "개선안3": {
+    "adds_auc": 97.4,
+    "median_err_mm": 1.67
+   },
+   "L4_배포": {
+    "adds_auc": 97.3,
+    "median_err_mm": 1.69
+   },
+   "B_better_frac": 0.509
+  },
+  "개선안3_군집먼저 vs L4_배포": {
+   "common_answered": 2353,
+   "개선안3_군집먼저": {
+    "adds_auc": 97.4,
+    "median_err_mm": 1.67
+   },
+   "L4_배포": {
+    "adds_auc": 97.3,
+    "median_err_mm": 1.69
+   },
+   "B_better_frac": 0.509
+  }
+ }
+}

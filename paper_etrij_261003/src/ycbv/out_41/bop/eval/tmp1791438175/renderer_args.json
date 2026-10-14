@@ -1,0 +1,8 @@
+{
+  "bg_color": [0.0, 0.0, 0.0, 0.0],
+  "height": 480,
+  "mode": "depth",
+  "render_type": "vispy",
+  "shading": "phong",
+  "width": 640
+}

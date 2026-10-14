@@ -1,0 +1,697 @@
+{
+ "label": "rerun, RTX PRO 6000 Blackwell (.41 GPU0), 2026-10-08",
+ "protocol": "Per method (prediction JSON from run_orig.py / run_ours.py):\n  correct      ADD-S < 10 % of the object diameter (models_eval/models_info.json),\n               ADD-S over the models_eval vertices\n  Found        visible GT targets with a correct answer / visible GT targets\n               (visible = visib_fract > 0; all 4123 BOP19 targets are)\n  Answers correct   correct answers / all answers\n  Wrong / image     wrong answers / images\n  ADD-S AUC    area under the accuracy-threshold curve, 0-10 cm (PoseCNN VOCap), pooled over\n               all GT targets (missing answer = infinite error); per-object mean also reported\n  BOP AR       official bop_toolkit scripts/eval_bop19_pose.py (VSD, MSSD, MSPD) on BOP CSV\n  Time         median per-image time of the timed region\nBOP CSV files and bop_toolkit output go to OUT/bop; summary -> results.json.",
+ "evaluated": "2026-10-08 17:47:33",
+ "methods": {
+  "ladder_cand_fastsam_mask": {
+   "images": 900,
+   "visible_gt_targets": 4123,
+   "answers": 4094,
+   "correct_answers": 3723,
+   "found_pct": 90.3,
+   "answers_correct_pct": 90.9,
+   "wrong_per_image": 0.412,
+   "adds_auc": 90.3,
+   "adds_auc_mean_over_objects": 87.4,
+   "time_ms": {
+    "median": 295.9,
+    "p90": 350.5,
+    "mean": 281.8,
+    "n": 900
+   },
+   "per_object": {
+    "002_master_chef_can": {
+     "targets": 300,
+     "found": 294,
+     "found_pct": 98.0,
+     "answers": 300,
+     "correct": 294,
+     "adds_auc": 96.4
+    },
+    "003_cracker_box": {
+     "targets": 225,
+     "found": 214,
+     "found_pct": 95.1,
+     "answers": 225,
+     "correct": 214,
+     "adds_auc": 94.5
+    },
+    "004_sugar_box": {
+     "targets": 375,
+     "found": 363,
+     "found_pct": 96.8,
+     "answers": 375,
+     "correct": 363,
+     "adds_auc": 96.9
+    },
+    "005_tomato_soup_can": {
+     "targets": 448,
+     "found": 403,
+     "found_pct": 90.0,
+     "answers": 448,
+     "correct": 403,
+     "adds_auc": 91.2
+    },
+    "006_mustard_bottle": {
+     "targets": 150,
+     "found": 150,
+     "found_pct": 100.0,
+     "answers": 150,
+     "correct": 150,
+     "adds_auc": 98.7
+    },
+    "007_tuna_fish_can": {
+     "targets": 300,
+     "found": 294,
+     "found_pct": 98.0,
+     "answers": 300,
+     "correct": 294,
+     "adds_auc": 96.1
+    },
+    "008_pudding_box": {
+     "targets": 75,
+     "found": 59,
+     "found_pct": 78.7,
+     "answers": 75,
+     "correct": 59,
+     "adds_auc": 83.0
+    },
+    "009_gelatin_box": {
+     "targets": 75,
+     "found": 75,
+     "found_pct": 100.0,
+     "answers": 75,
+     "correct": 75,
+     "adds_auc": 98.8
+    },
+    "010_potted_meat_can": {
+     "targets": 225,
+     "found": 170,
+     "found_pct": 75.6,
+     "answers": 209,
+     "correct": 170,
+     "adds_auc": 78.4
+    },
+    "011_banana": {
+     "targets": 150,
+     "found": 150,
+     "found_pct": 100.0,
+     "answers": 150,
+     "correct": 150,
+     "adds_auc": 97.7
+    },
+    "019_pitcher_base": {
+     "targets": 225,
+     "found": 225,
+     "found_pct": 100.0,
+     "answers": 225,
+     "correct": 225,
+     "adds_auc": 98.2
+    },
+    "021_bleach_cleanser": {
+     "targets": 300,
+     "found": 293,
+     "found_pct": 97.7,
+     "answers": 300,
+     "correct": 293,
+     "adds_auc": 96.2
+    },
+    "024_bowl": {
+     "targets": 150,
+     "found": 149,
+     "found_pct": 99.3,
+     "answers": 150,
+     "correct": 149,
+     "adds_auc": 97.0
+    },
+    "025_mug": {
+     "targets": 150,
+     "found": 145,
+     "found_pct": 96.7,
+     "answers": 150,
+     "correct": 145,
+     "adds_auc": 97.0
+    },
+    "035_power_drill": {
+     "targets": 300,
+     "found": 261,
+     "found_pct": 87.0,
+     "answers": 300,
+     "correct": 261,
+     "adds_auc": 92.4
+    },
+    "036_wood_block": {
+     "targets": 75,
+     "found": 69,
+     "found_pct": 92.0,
+     "answers": 75,
+     "correct": 69,
+     "adds_auc": 88.7
+    },
+    "037_scissors": {
+     "targets": 75,
+     "found": 12,
+     "found_pct": 16.0,
+     "answers": 69,
+     "correct": 12,
+     "adds_auc": 18.6
+    },
+    "040_large_marker": {
+     "targets": 150,
+     "found": 144,
+     "found_pct": 96.0,
+     "answers": 150,
+     "correct": 144,
+     "adds_auc": 94.1
+    },
+    "051_large_clamp": {
+     "targets": 150,
+     "found": 106,
+     "found_pct": 70.7,
+     "answers": 150,
+     "correct": 106,
+     "adds_auc": 69.3
+    },
+    "052_extra_large_clamp": {
+     "targets": 150,
+     "found": 75,
+     "found_pct": 50.0,
+     "answers": 143,
+     "correct": 75,
+     "adds_auc": 56.0
+    },
+    "061_foam_brick": {
+     "targets": 75,
+     "found": 72,
+     "found_pct": 96.0,
+     "answers": 75,
+     "correct": 72,
+     "adds_auc": 96.9
+    }
+   },
+   "title": "ladder_cand_fastsam_mask",
+   "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+   "run_label": "rerun, RTX PRO 6000 Blackwell (.41 GPU0), 2026-10-08",
+   "prediction_file": "/home/jucpark/DeepLearning/CLI_env_paper/paper_etrij_261003/src/ycbv/out_41/pred_ladder_cand_fastsam_mask.json",
+   "stage_ms": {
+    "proposals": {
+     "median": 8.7,
+     "p90": 9.4,
+     "mean": 8.8,
+     "n": 900
+    },
+    "descriptors": {
+     "median": 27.1,
+     "p90": 55.5,
+     "mean": 30.6,
+     "n": 900
+    },
+    "matching": {
+     "median": 5.0,
+     "p90": 7.8,
+     "mean": 5.5,
+     "n": 900
+    },
+    "pem": {
+     "median": 255.2,
+     "p90": 308.2,
+     "mean": 236.9,
+     "n": 900
+    }
+   },
+   "bop_ar": {
+    "bop19_average_recall": 81.1,
+    "bop19_average_recall_mspd": 79.6,
+    "bop19_average_recall_mssd": 83.5,
+    "bop19_average_recall_vsd": 80.2,
+    "raw": {
+     "bop19_average_recall": 0.8110016977928692,
+     "bop19_average_recall_mspd": 0.7964103807906863,
+     "bop19_average_recall_mssd": 0.8348775163715739,
+     "bop19_average_recall_vsd": 0.8017171962163472,
+     "bop19_average_time_per_image": 0.28181313333333335
+    }
+   }
+  },
+  "ladder_cand_fastsam_box": {
+   "images": 900,
+   "visible_gt_targets": 4123,
+   "answers": 4096,
+   "correct_answers": 3723,
+   "found_pct": 90.3,
+   "answers_correct_pct": 90.9,
+   "wrong_per_image": 0.414,
+   "adds_auc": 90.3,
+   "adds_auc_mean_over_objects": 87.8,
+   "time_ms": {
+    "median": 324.9,
+    "p90": 429.4,
+    "mean": 320.5,
+    "n": 900
+   },
+   "per_object": {
+    "002_master_chef_can": {
+     "targets": 300,
+     "found": 289,
+     "found_pct": 96.3,
+     "answers": 300,
+     "correct": 289,
+     "adds_auc": 95.7
+    },
+    "003_cracker_box": {
+     "targets": 225,
+     "found": 192,
+     "found_pct": 85.3,
+     "answers": 225,
+     "correct": 192,
+     "adds_auc": 87.7
+    },
+    "004_sugar_box": {
+     "targets": 375,
+     "found": 366,
+     "found_pct": 97.6,
+     "answers": 374,
+     "correct": 366,
+     "adds_auc": 97.1
+    },
+    "005_tomato_soup_can": {
+     "targets": 448,
+     "found": 404,
+     "found_pct": 90.2,
+     "answers": 447,
+     "correct": 404,
+     "adds_auc": 91.9
+    },
+    "006_mustard_bottle": {
+     "targets": 150,
+     "found": 150,
+     "found_pct": 100.0,
+     "answers": 150,
+     "correct": 150,
+     "adds_auc": 98.7
+    },
+    "007_tuna_fish_can": {
+     "targets": 300,
+     "found": 299,
+     "found_pct": 99.7,
+     "answers": 300,
+     "correct": 299,
+     "adds_auc": 97.5
+    },
+    "008_pudding_box": {
+     "targets": 75,
+     "found": 66,
+     "found_pct": 88.0,
+     "answers": 75,
+     "correct": 66,
+     "adds_auc": 88.4
+    },
+    "009_gelatin_box": {
+     "targets": 75,
+     "found": 75,
+     "found_pct": 100.0,
+     "answers": 75,
+     "correct": 75,
+     "adds_auc": 98.7
+    },
+    "010_potted_meat_can": {
+     "targets": 225,
+     "found": 174,
+     "found_pct": 77.3,
+     "answers": 213,
+     "correct": 174,
+     "adds_auc": 79.7
+    },
+    "011_banana": {
+     "targets": 150,
+     "found": 150,
+     "found_pct": 100.0,
+     "answers": 150,
+     "correct": 150,
+     "adds_auc": 98.0
+    },
+    "019_pitcher_base": {
+     "targets": 225,
+     "found": 225,
+     "found_pct": 100.0,
+     "answers": 225,
+     "correct": 225,
+     "adds_auc": 98.2
+    },
+    "021_bleach_cleanser": {
+     "targets": 300,
+     "found": 295,
+     "found_pct": 98.3,
+     "answers": 300,
+     "correct": 295,
+     "adds_auc": 96.4
+    },
+    "024_bowl": {
+     "targets": 150,
+     "found": 146,
+     "found_pct": 97.3,
+     "answers": 150,
+     "correct": 146,
+     "adds_auc": 96.1
+    },
+    "025_mug": {
+     "targets": 150,
+     "found": 150,
+     "found_pct": 100.0,
+     "answers": 150,
+     "correct": 150,
+     "adds_auc": 97.7
+    },
+    "035_power_drill": {
+     "targets": 300,
+     "found": 253,
+     "found_pct": 84.3,
+     "answers": 300,
+     "correct": 253,
+     "adds_auc": 91.3
+    },
+    "036_wood_block": {
+     "targets": 75,
+     "found": 69,
+     "found_pct": 92.0,
+     "answers": 75,
+     "correct": 69,
+     "adds_auc": 90.0
+    },
+    "037_scissors": {
+     "targets": 75,
+     "found": 14,
+     "found_pct": 18.7,
+     "answers": 70,
+     "correct": 14,
+     "adds_auc": 21.7
+    },
+    "040_large_marker": {
+     "targets": 150,
+     "found": 143,
+     "found_pct": 95.3,
+     "answers": 150,
+     "correct": 143,
+     "adds_auc": 93.5
+    },
+    "051_large_clamp": {
+     "targets": 150,
+     "found": 110,
+     "found_pct": 73.3,
+     "answers": 150,
+     "correct": 110,
+     "adds_auc": 72.8
+    },
+    "052_extra_large_clamp": {
+     "targets": 150,
+     "found": 81,
+     "found_pct": 54.0,
+     "answers": 142,
+     "correct": 81,
+     "adds_auc": 56.6
+    },
+    "061_foam_brick": {
+     "targets": 75,
+     "found": 72,
+     "found_pct": 96.0,
+     "answers": 75,
+     "correct": 72,
+     "adds_auc": 96.8
+    }
+   },
+   "title": "ladder_cand_fastsam_box",
+   "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+   "run_label": "rerun, RTX PRO 6000 Blackwell (.41 GPU0), 2026-10-08",
+   "prediction_file": "/home/jucpark/DeepLearning/CLI_env_paper/paper_etrij_261003/src/ycbv/out_41/pred_ladder_cand_fastsam_box.json",
+   "stage_ms": {
+    "proposals": {
+     "median": 46.4,
+     "p90": 117.4,
+     "mean": 57.8,
+     "n": 900
+    },
+    "descriptors": {
+     "median": 27.4,
+     "p90": 55.6,
+     "mean": 30.6,
+     "n": 900
+    },
+    "matching": {
+     "median": 4.6,
+     "p90": 7.4,
+     "mean": 4.9,
+     "n": 900
+    },
+    "pem": {
+     "median": 244.7,
+     "p90": 295.9,
+     "mean": 227.3,
+     "n": 900
+    }
+   },
+   "bop_ar": {
+    "bop19_average_recall": 80.8,
+    "bop19_average_recall_mspd": 79.1,
+    "bop19_average_recall_mssd": 83.1,
+    "bop19_average_recall_vsd": 80.1,
+    "raw": {
+     "bop19_average_recall": 0.807800145525103,
+     "bop19_average_recall_mspd": 0.7909289352413291,
+     "bop19_average_recall_mssd": 0.8313849138976475,
+     "bop19_average_recall_vsd": 0.8010865874363329,
+     "bop19_average_time_per_image": 0.32047645555555554
+    }
+   }
+  },
+  "ladder_cand_yolo_box": {
+   "images": 900,
+   "visible_gt_targets": 4123,
+   "answers": 3524,
+   "correct_answers": 3326,
+   "found_pct": 80.7,
+   "answers_correct_pct": 94.4,
+   "wrong_per_image": 0.22,
+   "adds_auc": 80.0,
+   "adds_auc_mean_over_objects": 76.3,
+   "time_ms": {
+    "median": 225.6,
+    "p90": 322.8,
+    "mean": 226.7,
+    "n": 900
+   },
+   "per_object": {
+    "002_master_chef_can": {
+     "targets": 300,
+     "found": 294,
+     "found_pct": 98.0,
+     "answers": 300,
+     "correct": 294,
+     "adds_auc": 96.0
+    },
+    "003_cracker_box": {
+     "targets": 225,
+     "found": 197,
+     "found_pct": 87.6,
+     "answers": 203,
+     "correct": 197,
+     "adds_auc": 85.9
+    },
+    "004_sugar_box": {
+     "targets": 375,
+     "found": 247,
+     "found_pct": 65.9,
+     "answers": 276,
+     "correct": 247,
+     "adds_auc": 64.9
+    },
+    "005_tomato_soup_can": {
+     "targets": 448,
+     "found": 385,
+     "found_pct": 85.9,
+     "answers": 402,
+     "correct": 385,
+     "adds_auc": 84.5
+    },
+    "006_mustard_bottle": {
+     "targets": 150,
+     "found": 150,
+     "found_pct": 100.0,
+     "answers": 150,
+     "correct": 150,
+     "adds_auc": 98.7
+    },
+    "007_tuna_fish_can": {
+     "targets": 300,
+     "found": 296,
+     "found_pct": 98.7,
+     "answers": 297,
+     "correct": 296,
+     "adds_auc": 96.5
+    },
+    "008_pudding_box": {
+     "targets": 75,
+     "found": 38,
+     "found_pct": 50.7,
+     "answers": 44,
+     "correct": 38,
+     "adds_auc": 50.6
+    },
+    "009_gelatin_box": {
+     "targets": 75,
+     "found": 75,
+     "found_pct": 100.0,
+     "answers": 75,
+     "correct": 75,
+     "adds_auc": 98.7
+    },
+    "010_potted_meat_can": {
+     "targets": 225,
+     "found": 156,
+     "found_pct": 69.3,
+     "answers": 174,
+     "correct": 156,
+     "adds_auc": 73.0
+    },
+    "011_banana": {
+     "targets": 150,
+     "found": 150,
+     "found_pct": 100.0,
+     "answers": 150,
+     "correct": 150,
+     "adds_auc": 98.0
+    },
+    "019_pitcher_base": {
+     "targets": 225,
+     "found": 225,
+     "found_pct": 100.0,
+     "answers": 225,
+     "correct": 225,
+     "adds_auc": 98.2
+    },
+    "021_bleach_cleanser": {
+     "targets": 300,
+     "found": 279,
+     "found_pct": 93.0,
+     "answers": 290,
+     "correct": 279,
+     "adds_auc": 91.1
+    },
+    "024_bowl": {
+     "targets": 150,
+     "found": 150,
+     "found_pct": 100.0,
+     "answers": 150,
+     "correct": 150,
+     "adds_auc": 97.6
+    },
+    "025_mug": {
+     "targets": 150,
+     "found": 150,
+     "found_pct": 100.0,
+     "answers": 150,
+     "correct": 150,
+     "adds_auc": 97.8
+    },
+    "035_power_drill": {
+     "targets": 300,
+     "found": 189,
+     "found_pct": 63.0,
+     "answers": 222,
+     "correct": 189,
+     "adds_auc": 68.8
+    },
+    "036_wood_block": {
+     "targets": 75,
+     "found": 67,
+     "found_pct": 89.3,
+     "answers": 68,
+     "correct": 67,
+     "adds_auc": 87.4
+    },
+    "037_scissors": {
+     "targets": 75,
+     "found": 36,
+     "found_pct": 48.0,
+     "answers": 62,
+     "correct": 36,
+     "adds_auc": 51.7
+    },
+    "040_large_marker": {
+     "targets": 150,
+     "found": 145,
+     "found_pct": 96.7,
+     "answers": 148,
+     "correct": 145,
+     "adds_auc": 96.4
+    },
+    "051_large_clamp": {
+     "targets": 150,
+     "found": 17,
+     "found_pct": 11.3,
+     "answers": 42,
+     "correct": 17,
+     "adds_auc": 11.1
+    },
+    "052_extra_large_clamp": {
+     "targets": 150,
+     "found": 75,
+     "found_pct": 50.0,
+     "answers": 78,
+     "correct": 75,
+     "adds_auc": 49.2
+    },
+    "061_foam_brick": {
+     "targets": 75,
+     "found": 5,
+     "found_pct": 6.7,
+     "answers": 18,
+     "correct": 5,
+     "adds_auc": 6.6
+    }
+   },
+   "title": "ladder_cand_yolo_box",
+   "gpu": "NVIDIA RTX PRO 6000 Blackwell Max-Q Workstation Edition",
+   "run_label": "rerun, RTX PRO 6000 Blackwell (.41 GPU0), 2026-10-08",
+   "prediction_file": "/home/jucpark/DeepLearning/CLI_env_paper/paper_etrij_261003/src/ycbv/out_41/pred_ladder_cand_yolo_box.json",
+   "stage_ms": {
+    "proposals": {
+     "median": 17.9,
+     "p90": 19.7,
+     "mean": 18.2,
+     "n": 900
+    },
+    "descriptors": {
+     "median": 6.7,
+     "p90": 8.0,
+     "mean": 6.7,
+     "n": 900
+    },
+    "matching": {
+     "median": 2.8,
+     "p90": 3.3,
+     "mean": 2.9,
+     "n": 900
+    },
+    "pem": {
+     "median": 198.3,
+     "p90": 294.2,
+     "mean": 198.9,
+     "n": 900
+    }
+   },
+   "bop_ar": {
+    "bop19_average_recall": 73.1,
+    "bop19_average_recall_mspd": 71.5,
+    "bop19_average_recall_mssd": 75.5,
+    "bop19_average_recall_vsd": 72.3,
+    "raw": {
+     "bop19_average_recall": 0.7308844692376102,
+     "bop19_average_recall_mspd": 0.7153043900072763,
+     "bop19_average_recall_mssd": 0.7545476594712588,
+     "bop19_average_recall_vsd": 0.7228013582342955,
+     "bop19_average_time_per_image": 0.22668914444444446
+    }
+   }
+  }
+ }
+}

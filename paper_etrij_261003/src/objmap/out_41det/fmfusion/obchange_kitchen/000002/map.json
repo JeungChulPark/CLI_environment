@@ -1,0 +1,135 @@
+{
+ "units": "m",
+ "frame": "world",
+ "method": "FM-Fusion",
+ "dataset": "obchange_kitchen",
+ "scene": 2,
+ "objects": [
+  {
+   "id": 0,
+   "label": "004_sugar_box",
+   "points": "points/0.npy",
+   "score": 1.0,
+   "n_obs": 35
+  },
+  {
+   "id": 1,
+   "label": "021_bleach_cleanser",
+   "points": "points/1.npy",
+   "score": 0.93,
+   "n_obs": 52
+  },
+  {
+   "id": 2,
+   "label": "035_power_drill",
+   "points": "points/2.npy",
+   "score": 1.0,
+   "n_obs": 41
+  },
+  {
+   "id": 3,
+   "label": "004_sugar_box",
+   "points": "points/3.npy",
+   "score": 1.0,
+   "n_obs": 17
+  },
+  {
+   "id": 4,
+   "label": "051_large_clamp",
+   "points": "points/4.npy",
+   "score": 0.71,
+   "n_obs": 36
+  },
+  {
+   "id": 5,
+   "label": "010_potted_meat_can",
+   "points": "points/5.npy",
+   "score": 0.9,
+   "n_obs": 55
+  },
+  {
+   "id": 6,
+   "label": "019_pitcher_base",
+   "points": "points/6.npy",
+   "score": 1.0,
+   "n_obs": 60
+  },
+  {
+   "id": 7,
+   "label": "004_sugar_box",
+   "points": "points/7.npy",
+   "score": 0.99,
+   "n_obs": 40
+  },
+  {
+   "id": 8,
+   "label": "003_cracker_box",
+   "points": "points/8.npy",
+   "score": 0.65,
+   "n_obs": 29
+  },
+  {
+   "id": 9,
+   "label": "036_wood_block",
+   "points": "points/9.npy",
+   "score": 1.0,
+   "n_obs": 3
+  },
+  {
+   "id": 10,
+   "label": "021_bleach_cleanser",
+   "points": "points/10.npy",
+   "score": 0.92,
+   "n_obs": 37
+  },
+  {
+   "id": 11,
+   "label": "010_potted_meat_can",
+   "points": "points/11.npy",
+   "score": 1.0,
+   "n_obs": 27
+  },
+  {
+   "id": 12,
+   "label": "052_extra_large_clamp",
+   "points": "points/12.npy",
+   "score": 0.74,
+   "n_obs": 41
+  },
+  {
+   "id": 13,
+   "label": "003_cracker_box",
+   "points": "points/13.npy",
+   "score": 0.86,
+   "n_obs": 37
+  },
+  {
+   "id": 14,
+   "label": "025_mug",
+   "points": "points/14.npy",
+   "score": 1.0,
+   "n_obs": 35
+  },
+  {
+   "id": 15,
+   "label": "019_pitcher_base",
+   "points": "points/15.npy",
+   "score": 1.0,
+   "n_obs": 10
+  },
+  {
+   "id": 16,
+   "label": "004_sugar_box",
+   "points": "points/16.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 17,
+   "label": "004_sugar_box",
+   "points": "points/17.npy",
+   "score": 1.0,
+   "n_obs": 11
+  }
+ ]
+}

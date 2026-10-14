@@ -300,4 +300,106 @@ a{color:var(--acc);word-break:break-all}
 <li>3단계: ObChange-Kitchen 정답 생성과 6회 방문 연속 지도 실험(지도의 변화 반영 비교).</li>
 <li>RTX 5090 에서 최종 실행(FM-Fusion 은 GroundingDINO 를 다시 빌드해야 함). 처리 속도도 그때 같은 GPU 로 잽니다.</li>
 <li>원고 반영: 7장에 "객체 지도 비교" 절과 표 추가(이 문서 2절 표, 4절 각주).</li>
-</ol></main></body></html>
+</ol>
+<h2>7. RTX PRO 6000 Blackwell(.41) 재실행 (2026-10-12)</h2>
+<blockquote>
+<p>제안 방법의 YCB-V 객체 지도를 .41(RTX PRO 6000, GT 궤적 + 개선안 3 + 군집 먼저)에서 12장면 다시 만들고, FM-Fusion·DualMap 지도(주말 노트북 산출물)와 같은 채점기로 비교했습니다. 카메라 궤적은 세 방법 모두 같은 정답(<code>gt/ycbv_vis</code>)이라 지도 생성만 비교됩니다. 결과 <code>src/objmap/out/&lt;method&gt;/metrics_ycbv_vis_iou0.25_vox0.01*.json</code>. 채점기 자체검증(GT copy) F1 1.000 으로 통과.</p>
+</blockquote>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>TP</th>
+<th>FP</th>
+<th>FN</th>
+<th>P</th>
+<th>R</th>
+<th><strong>F1</strong></th>
+<th>mIoU</th>
+<th>SD (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>제안 ours_cad</strong></td>
+<td>54</td>
+<td>43</td>
+<td><strong>1</strong></td>
+<td>0.557</td>
+<td><strong>0.982</strong></td>
+<td><strong>0.711</strong></td>
+<td><strong>0.619</strong></td>
+<td>4.4</td>
+</tr>
+<tr>
+<td><strong>제안 ours_obs <code>--clean</code></strong></td>
+<td>51</td>
+<td>46</td>
+<td>4</td>
+<td>0.526</td>
+<td>0.927</td>
+<td><strong>0.671</strong></td>
+<td>0.425</td>
+<td>4.4</td>
+</tr>
+<tr>
+<td>제안 ours_obs raw</td>
+<td>33</td>
+<td>64</td>
+<td>22</td>
+<td>0.340</td>
+<td>0.600</td>
+<td>0.434</td>
+<td>0.351</td>
+<td>10.1</td>
+</tr>
+<tr>
+<td>FM-Fusion (<code>--clean</code>)</td>
+<td>28</td>
+<td>106</td>
+<td>27</td>
+<td>0.209</td>
+<td>0.509</td>
+<td>0.296</td>
+<td>0.371</td>
+<td>6.1</td>
+</tr>
+<tr>
+<td>DualMap 공개 설정</td>
+<td>5</td>
+<td>50</td>
+<td>50</td>
+<td>0.091</td>
+<td>0.091</td>
+<td>0.091</td>
+<td>0.388</td>
+<td>5.3</td>
+</tr>
+<tr>
+<td>DualMap <code>--clean</code></td>
+<td>6</td>
+<td>49</td>
+<td>49</td>
+<td>0.109</td>
+<td>0.109</td>
+<td>0.109</td>
+<td>0.385</td>
+<td>6.0</td>
+</tr>
+<tr>
+<td>DualMap BGR 수정</td>
+<td>10</td>
+<td>54</td>
+<td>45</td>
+<td>0.156</td>
+<td>0.182</td>
+<td>0.168</td>
+<td>0.372</td>
+<td>6.1</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>순위·결론은 2절(노트북)과 같습니다.</strong> F1 은 제안 0.71, FM-Fusion 0.30, DualMap 0.09~0.17 로, 같은 점군 형태끼리(ours_obs <code>--clean</code> 0.67 대 두 방법) 비교해도 제안이 F1·mIoU·SD 모두 앞섭니다. 재현율은 제안 0.98 로 거의 모든 물체를 찾고, mIoU 0.619 는 CAD 상한(0.738)의 84% 입니다.</li>
+<li><strong>노트북과의 차이는 FP 입니다.</strong> 노트북 ours_cad 는 TP 54 / FP 26(F1 0.80)이었는데, Blackwell 은 TP 54 / FP 43(F1 0.71)으로 오탐이 늘었습니다. 재현율(0.982)·TP(54)·mIoU(0.619)·SD 는 사실상 동일하고, <strong>맞게 찾은 물체는 그대로인데 "장면에 없는 물체"를 더 올렸습니다.</strong> 처리 프레임이 2~4배 늘어(장면당 159~409프레임, 노트북 대비 증가) 그럴듯한 오탐이 지도에 더 등록된 것으로, 06·11 문서에서 본 "프레임 증가 → 오답 소폭 증가"와 같은 방향입니다. 짝짓기 기준(IoU≥0.25)이 같으므로 TP·mIoU 가 보존된 것이 핵심이고, FP 증가는 존재확률·중복억제 문턱을 프레임 수에 맞춰 조정하면 줄어드는 성격입니다(후속 조정 대상).</li>
+</ul></main></body></html>

@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>16_한장평가_개선안3_군집먼저_900장_261007</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>16. 한 장 평가 900장 — 원본 / 개선안 2 / 개선안 3 / 개선안 3 + 군집 먼저 / 배포, 같은 물체끼리 ADD-S (RTX 4090, 2026-10-07)</title><style>
 :root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
 @media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
 *{box-sizing:border-box}
@@ -20,11 +20,11 @@ hr{border:0;border-top:1px solid var(--line);margin:30px 0}
 li{margin:3px 0}
 
 a{color:var(--acc);word-break:break-all}
-</style></head><body><main><h1 id="16-900-2-3-3-add-s-rtx-4090-2026-10-07">16. 한 장 평가 900장 — 원본 / 개선안 2 / 개선안 3 / 개선안 3 + 군집 먼저 / 배포, 같은 물체끼리 ADD-S (RTX 4090, 2026-10-07)</h1>
+</style></head><body><main><h1>16. 한 장 평가 900장 — 원본 / 개선안 2 / 개선안 3 / 개선안 3 + 군집 먼저 / 배포, 같은 물체끼리 ADD-S (RTX 4090, 2026-10-07)</h1>
 <blockquote>
 <p>YCB-V 900장(BOP19 목록, 정답 물체 4,123개). 원본(L0)·개선안 2·배포(L4)는 2026-10-06 4090 사다리 실행(09 문서), 개선안 3 두 가지는 2026-10-07 15:4x GPU1 실행. 코드는 모두 검증 기록 벡터화 뒤의 <code>CLI_env_paper</code>. 채점 <code>evaluate.py</code>(ADD-S &lt; 지름 10%, VOCap 0~10 cm), 같은 물체끼리 비교 <code>ladder/same_object_adds.py</code>. 결과 <code>src/ycbv/out_4090/results_main_4090.json</code>, <code>same_object_adds_4090.json</code>.</p>
 </blockquote>
-<h2 id="1-900">1. 전체 (900장)</h2>
+<h2>1. 전체 (900장)</h2>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -88,14 +88,9 @@ a{color:var(--acc);word-break:break-all}
 <ul>
 <li><strong>자세 검증의 효과(개선안 2 → 3, 같은 앞단):</strong> 오답 0.232 → 0.049/장(−79%), 정답 비율 94.5 → 98.7%, 찾은 비율 86.9 → 80.8%(−6.1%p). 검증이 버린 414개 답 가운데 165개가 오답, 249개가 맞는 답이었습니다.</li>
 <li><strong>군집 먼저:</strong> 개선안 3 과 찾은 수·오답이 같고(3,334 대 3,332, 46 대 44) 장당 시간은 342 → 240 ms(−30%). 자세 단계 274 → 180 ms.</li>
-<li>
-<p><strong>원본 대비(개선안 3 + 군집 먼저):</strong> 찾은 비율 −11.5%p, 오답 6분의 1, 정답 비율 +5.4%p, 시간 55%. 전체 ADD-S AUC 는 찾은 비율에 끌려 낮아 보이므로(놓친 물체는 0), 자세 자체의 정확도는 2절처럼 같은 물체끼리 비교해야 합니다.</p>
-</li>
-<li>
-<p><strong>BOP AR (공식 bop_toolkit, 2026-10-08 채점):</strong> 원본 L0 82.8, 개선안 2 78.1, 개선안 3 74.1, 개선안 3 + 군집 먼저 74.1. 재현율 지표라 찾은 비율과 같이 내려갑니다(17 문서 표 1·2).</p>
-</li>
+<li><strong>원본 대비(개선안 3 + 군집 먼저):</strong> 찾은 비율 −11.5%p, 오답 6분의 1, 정답 비율 +5.4%p, 시간 55%. 전체 ADD-S AUC 는 찾은 비율에 끌려 낮아 보이므로(놓친 물체는 0), 자세 자체의 정확도는 2절처럼 같은 물체끼리 비교해야 합니다.</li>
 </ul>
-<h2 id="2">2. 같은 물체끼리 자세 정확도 (두 방법이 모두 답한 물체만)</h2>
+<h2>2. 같은 물체끼리 자세 정확도 (두 방법이 모두 답한 물체만)</h2>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -149,7 +144,7 @@ a{color:var(--acc);word-break:break-all}
 <li>개선안 2 → 3 비교에서 AUC 가 0.4 만 오르는 것은, 검증이 자세를 조금 고치기보다 <strong>틀린 답을 통째로 빼는</strong> 데서 주로 이득을 얻는다는 뜻입니다(1절의 오답 165개 제거).</li>
 <li>군집 먼저는 99% 의 물체에서 개선안 3 과 같은 자세를 냅니다. 속도만 바뀌고 답은 바뀌지 않습니다.</li>
 </ul>
-<h2 id="3-3">3. 논문용 수치 요약 (개선안 3 + 군집 먼저 대 원본)</h2>
+<h2>3. 논문용 수치 요약 (개선안 3 + 군집 먼저 대 원본)</h2>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -178,5 +173,137 @@ a{color:var(--acc);word-break:break-all}
 <td>검증 켬/끔 대조</td>
 <td>오답 0.232 → 0.051, 찾은 비율 86.9 → 80.9%</td>
 </tr>
+<tr>
+<td>- <strong>BOP AR (공식 bop_toolkit, 2026-10-08 채점):</strong> 원본 L0 82.8, 개선안 2 78.1, 개선안 3 74.1, 개선안 3 + 군집 먼저 74.1. 재현율 지표라 찾은 비율과 같이 내려갑니다(17 문서 표 1·2).</td>
+<td></td>
+</tr>
 </tbody>
-</table></div></main></body></html>
+</table></div>
+<h2>4. RTX PRO 6000 Blackwell(.41) 재실행 (2026-10-08)</h2>
+<blockquote>
+<p>같은 코드(<code>CLI_env_paper</code>)·같은 프로토콜을 10.254.176.41 서버(RTX PRO 6000 Blackwell Max-Q, GPU0 단독)에서 재실행했습니다. 체인 <code>run_main900_41.sh</code>, 결과 <code>src/ycbv/out_41/results_main_41.json</code>, <code>same_object_adds_41.json</code>. 원본·개선안 2·배포 수치는 같은 날 사다리 재실행(06 문서 9절)에서 가져왔습니다.</p>
+</blockquote>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>장당 시간 4090 → Blackwell</th>
+<th>찾은 비율</th>
+<th>정답 비율</th>
+<th>오답/장</th>
+<th>ADD-S AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 (L0)</td>
+<td>530 → 457 ms</td>
+<td>92.4 → 92.2%</td>
+<td>93.2 → 93.0%</td>
+<td>0.308 → 0.319</td>
+<td>91.9 → 91.8</td>
+</tr>
+<tr>
+<td>개선안 2</td>
+<td>327 → 257 ms</td>
+<td>86.9 → 87.0%</td>
+<td>94.5 → 94.6%</td>
+<td>0.232 → 0.228</td>
+<td>86.4 → 86.3</td>
+</tr>
+<tr>
+<td>개선안 3</td>
+<td>342 → <strong>238 ms</strong></td>
+<td>80.8 → 81.0%</td>
+<td>98.7 → 98.7%</td>
+<td>0.049 → 0.050</td>
+<td>79.2 → 79.4</td>
+</tr>
+<tr>
+<td>개선안 3 + 군집 먼저</td>
+<td>240 → <strong>173 ms</strong></td>
+<td>80.9 → 81.0%</td>
+<td>98.6 → 98.6%</td>
+<td>0.051 → 0.051</td>
+<td>79.3 → 79.4</td>
+</tr>
+<tr>
+<td>배포 (L4)</td>
+<td>513 → 180 ms</td>
+<td>60.9 → 61.0%</td>
+<td>99.1 → 99.1%</td>
+<td>0.026 → 0.026</td>
+<td>59.7 → 59.9</td>
+</tr>
+</tbody>
+</table></div>
+<p>같은 물체끼리(두 방법이 모두 답한 물체만, <code>same_object_adds_41.json</code>): 원본 → 개선안 3 은 공통 3,383개에서 ADD-S AUC 94.6 → 96.7, 오차 중앙값 1.79 → 1.72 mm — 4090(3,374개, 94.6 → 96.8, 1.79 → 1.73)과 같습니다. 군집 먼저는 이번에도 개선안 3 과 같은 답(3,385 대 3,384)을 냅니다.</p>
+<ul>
+<li><strong>정확도 지표는 소수점 한 자리까지 재현</strong>됩니다(찾은 비율 ±0.2%p, 오답/장 ±0.001). 1절의 결론(검증의 손익, 군집 먼저의 무손실 가속)이 세 번째 GPU 에서 그대로 섭니다.</li>
+<li><strong>속도</strong>: 개선안 3 342 → 238 ms(1.4배), 군집 먼저 240 → 173 ms(1.4배). 06 문서 9절에서 본 것처럼 ViT-S/FastSAM 앞단이 남아 검증 중심 구성(배포 2.9배)보다는 이득이 작습니다. 군집 먼저 173 ms 는 <strong>원본 457 ms 의 38%</strong> 입니다.</li>
+</ul>
+<h2>5. 객체 자세 추정 속도 — 개선안 3·배포, RTX 4090 대 Blackwell (한 장 평가 + 실시간)</h2>
+<blockquote>
+<p>개선안 3 과 배포(L4)의 자세 추정 속도를 두 GPU 로 나눠 정리했습니다. 한 장 평가는 장당 처리 시간 중앙값(이 문서 4절·06 §9), 실시간은 YCB-V 영상 인식 처리율(15 §7 의 3회 평균, 높을수록 빠름)입니다.</p>
+</blockquote>
+<h3>5.1 한 장 평가 (YCB-V 900장, 장당 ms)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>RTX 4090</th>
+<th>Blackwell (.41)</th>
+<th>배속</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>개선안 3 (검증 켬)</td>
+<td>342</td>
+<td><strong>238</strong></td>
+<td>1.4×</td>
+</tr>
+<tr>
+<td>개선안 3 + 군집 먼저</td>
+<td>240</td>
+<td><strong>173</strong></td>
+<td>1.4×</td>
+</tr>
+<tr>
+<td>배포 (L4)</td>
+<td>513</td>
+<td><strong>180</strong></td>
+<td><strong>2.9×</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3>5.2 실시간 (YCB-V 영상, 인식 Hz)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>RTX 4090</th>
+<th>Blackwell (.41)</th>
+<th>배속</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>개선안 3 (+ 군집 먼저)</td>
+<td>2.28</td>
+<td><strong>4.38</strong> (3회 평균)</td>
+<td>1.9×</td>
+</tr>
+<tr>
+<td>배포</td>
+<td>1.49</td>
+<td><strong>4.54</strong> (27 §2, 1회)</td>
+<td>3.0×</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>배포가 Blackwell 에서 가장 크게 빨라집니다</strong>(한 장 2.9×, 실시간 3.0×). 배포는 시간의 거의 전부가 PEM·자세 검증 같은 GPU 집약 연산이라 GPU 세대 효과를 그대로 받습니다.</li>
+<li><strong>개선안 3 은 1.4~1.9×로 이득이 작습니다.</strong> FastSAM·ViT-S 앞단(원본 판정 경로)이 남아 그 부분은 GPU 개선 효과가 작습니다.</li>
+<li>그 결과 관계가 역전됐습니다: 4090 에서는 배포(513 ms)가 개선안 3(342 ms)보다 <strong>느렸는데</strong>, Blackwell 에서는 배포(180 ms)가 개선안 3(238 ms)보다 <strong>빠릅니다</strong>. 검증 포함 전체가 200 ms 아래로 내려와 실시간 여유가 커집니다.</li>
+</ul></main></body></html>

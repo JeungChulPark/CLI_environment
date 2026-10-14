@@ -22,7 +22,7 @@ li{margin:3px 0}
 a{color:var(--acc);word-break:break-all}
 </style></head><body><main><h1 id="_1">실시간 객체지도</h1>
 <blockquote>
-<p>실시간 객체 지도 — 실시간 비교 실험(05), 실시간 비교표(08), 4090 재측정(10), 원본 0.5 대 개선안 전 장면(13), 4090 여섯 구성·검증 수정·군집 먼저(15), 260901 실 데이터 3회 반복 3080(22). 개별 문서 6개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-14.</p>
+<p>실시간 객체 지도 — 실시간 비교 실험(05), 실시간 비교표(08), 4090 재측정(10), 원본 0.5 대 개선안 전 장면(13), 4090 여섯 구성·검증 수정·군집 먼저(15), 260901 실 데이터 3회 반복 3080(22), 서버·클라이언트 분리 재실행(27). 개별 문서 7개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-14.</p>
 </blockquote>
 <p><strong>이 묶음의 장</strong></p>
 <ul>
@@ -32,6 +32,7 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>13_실시간_원본_개선안_비교표_261007</strong> — 13. 실시간 객체 위치 찾기 비교표 — 원본 0.5 대 개선안(자세 검증 켬), 실제 영상 5개 + YCB-V (2026-10-07 정리)</li>
 <li><strong>15_실시간_기술조합_4090_261007</strong> — 15. 실시간 기술 조합 비교 — 4090, 여섯 구성 + 검증 코드 수정·군집 먼저 (2026-10-07)</li>
 <li><strong>22_260901_반복측정_3080_261010</strong> — 22. 실 데이터 반복 측정 — 260901, 원본 0.5 대 개선안 3 + 군집 먼저, RTX 3080 Ti Laptop (2026-10-10)</li>
+<li><strong>27_실시간_서버클라이언트_41서버_192슬램_261008</strong> — 27. 실시간 기술 조합 — 서버·클라이언트 분리 재실행: .41 인식 서버 + .192 SLAM (2026-10-08)</li>
 </ul>
 <div class="toc">
 <ul>
@@ -127,6 +128,12 @@ a{color:var(--acc);word-break:break-all}
 <li><a href="#4-3-3-260901-05-3-5-16561740">4-3. 반복 측정 3회 — 260901, 원본 0.5 대 개선안 3 + 군집 먼저 (5부, 16:56~17:40)</a></li>
 <li><a href="#4-4-3-ycb-v-12-05-3-5-17401913">4-4. 반복 측정 3회 — YCB-V 12영상, 원본 0.5 대 개선안 3 + 군집 먼저 (5부 후반, 17:40~19:13)</a></li>
 <li><a href="#5_1">5. 남은 측정</a></li>
+<li><a href="#6-2026-10-08-27">6. 서버·클라이언트 분리 재실행 (2026-10-08) — 자세한 내용은 27 문서</a></li>
+<li><a href="#7-rtx-pro-6000-blackwell41-3-2026-10-12-4-34-4">7. RTX PRO 6000 Blackwell(.41) 반복 측정 3회 (2026-10-12) — 4-3·4-4 의 서버·클라이언트판</a><ul>
+<li><a href="#71-260901-8">7.1 260901 실제 영상 (물체 8개)</a></li>
+<li><a href="#72-ycb-v-12-55">7.2 YCB-V 12영상 (물체 55개)</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#22-260901-05-3-rtx-3080-ti-laptop-2026-10-10">22. 실 데이터 반복 측정 — 260901, 원본 0.5 대 개선안 3 + 군집 먼저, RTX 3080 Ti Laptop (2026-10-10)</a><ul>
@@ -135,6 +142,18 @@ a{color:var(--acc);word-break:break-all}
 <li><a href="#2">2. 결과</a></li>
 <li><a href="#3-4090">3. 4090 과의 비교 (같은 녹화, 같은 설정)</a></li>
 <li><a href="#4_1">4. 논문에서의 쓰임</a></li>
+</ul>
+</li>
+<li><a href="#27-41-192-slam-2026-10-08">27. 실시간 기술 조합 — 서버·클라이언트 분리 재실행: .41 인식 서버 + .192 SLAM (2026-10-08)</a><ul>
+<li><a href="#0-15-1">0. 구성 (15 문서 §1 과 동일한 여섯 가지)</a></li>
+<li><a href="#1-260901_cbnu_bigeightcircle-8-5-14">1. 실제 영상 260901_cbnu_bigeightcircle (8객체, 5분 14초)</a></li>
+<li><a href="#2-ycb-v-12-6-gt-55">2. YCB-V 12영상 × 6구성 (GT 55객체)</a></li>
+<li><a href="#3_3">3. 이식하면서 확인된 것 (다음에 다른 머신으로 옮길 때)</a></li>
+<li><a href="#4-41-orb-slam3-2026-10-14">4. .41 한 대로 — 서버와 ORB-SLAM3 를 같은 머신에서 (2026-10-14)</a><ul>
+<li><a href="#41_1">4.1 만든 것</a></li>
+<li><a href="#42-260901_cbnu_eightcircle-3-hybs05">4.2 점검 — 260901_cbnu_eightcircle, 개선안 3 + 군집 먼저 (hybS05)</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -5052,6 +5071,128 @@ a{color:var(--acc);word-break:break-all}
 <ul>
 <li>모두 완료(2026-10-07 19:13). 최종 수치는 RTX 5090 에서 다시 잴 예정(03 목차).</li>
 </ul>
+<h3 id="6-2026-10-08-27">6. 서버·클라이언트 분리 재실행 (2026-10-08) — 자세한 내용은 27 문서</h3>
+<p>같은 여섯 구성을 <strong>인식 서버 10.254.176.41</strong>(RTX PRO 6000, hub.py = SAM-6D+융합)과 <strong>SLAM 클라이언트 10.254.176.192</strong>(이 PC, ORB-SLAM3 f2000, ssh 역터널로 포즈 전송)로 나눠 재실행했습니다(각 1회). 결과 <code>results_real5_lan41.json</code>, <code>results_*_lan41.json</code>.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>260901 최종 지도 (이 문서 → 분리)</th>
+<th>YCB-V 등록 / 오답 지도 객체</th>
+<th>YCB-V 인식 Hz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 원본 0.5</td>
+<td>6/3/2 → 7/2/1</td>
+<td>55/55 → 55/55 · 38 → 44</td>
+<td>1.77 → 2.18</td>
+</tr>
+<tr>
+<td>2 개선안 2</td>
+<td>5/4/3 → 4/5/4</td>
+<td>55/55 → 55/55 · 120 → 131</td>
+<td>2.08 → 2.80</td>
+</tr>
+<tr>
+<td>3 개선안 3</td>
+<td>7/1/1 → 8/0/0</td>
+<td>55/55 → 55/55 · 42 → 47</td>
+<td>2.28 → 3.34</td>
+</tr>
+<tr>
+<td>4 배포</td>
+<td>7/1/1 → 8/0/0</td>
+<td>44/55 → 45/55 · 17 → 22</td>
+<td>1.49 → 4.54</td>
+</tr>
+<tr>
+<td>5 개선안 1</td>
+<td>8/0/0 → 7/1/1</td>
+<td>55/55 → 55/55 · 38 → 62</td>
+<td>0.77 → 2.95</td>
+</tr>
+<tr>
+<td>6 배포 검증 끔</td>
+<td>5/4/3 → 7/2/1</td>
+<td>47/55 → 47/55 · 70 → 74</td>
+<td>3.43 → 6.78</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>구성 간 순위·경향이 그대로 재현됐고, <strong>SLAM 을 네트워크로 분리한 데 따른 열화는 관찰되지 않았습니다</strong>(루프 보정 6.6~20.2 cm 로 동일 수준).</li>
+<li>인식 Hz 는 GPU 교체 효과로 1.2~3.8배 상승(PEM·검증 비중이 큰 구성일수록 큼). 처리 프레임이 늘면서 YCB-V 오답 지도 객체가 소폭 늘었지만 프레임당 오답 상자는 비슷하며, 4-3·4-4절의 실행 간 폭과 겹칩니다.</li>
+</ul>
+<h3 id="7-rtx-pro-6000-blackwell41-3-2026-10-12-4-34-4">7. RTX PRO 6000 Blackwell(.41) 반복 측정 3회 (2026-10-12) — 4-3·4-4 의 서버·클라이언트판</h3>
+<blockquote>
+<p>4-3(260901 실제 영상)·4-4(YCB-V 12영상)와 같은 두 구성(원본 0.5 ViT-L 대 개선안 3 + 군집 먼저)을 .41 인식 서버 + .192 ORB-SLAM3 로 3회씩 다시 측정했습니다. 체인 <code>run_repeats_l41.sh</code>, 결과 <code>src/realdata/results_real5_repeats_l41.json</code>, <code>src/ycbv_live/results_l41/</code>. 각 수치는 3회 평균±표준편차(등록·오답은 3회값 나열).</p>
+</blockquote>
+<h4 id="71-260901-8">7.1 260901 실제 영상 (물체 8개)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>평균 점수 % (3회)</th>
+<th>최종 지도 맞음 (3회)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 0.5 (ViT-L)</td>
+<td>40.8 ± 28.9</td>
+<td>4 / 8 / 6</td>
+</tr>
+<tr>
+<td><strong>개선안 3 + 군집 먼저</strong></td>
+<td><strong>76.6 ± 4.8</strong></td>
+<td><strong>8 / 8 / 7</strong></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>4-3(4090, 3회 모두 개선안 8/0 대 원본 6.7/2.3)의 결론이 그대로 섭니다. <strong>개선안 3 은 반복해도 8객체 중 7~8 을 안정적으로(표준편차 4.8) 맞히고, 원본 0.5 는 4~8 로 크게 흔들립니다(표준편차 28.9).</strong> 원본의 변동은 ViT-L 특징 계산이 느려(실시간 1배속에서 인식 빈도가 낮아) 어느 프레임이 처리되느냐에 결과가 민감하기 때문이며, GPU·런마다 다릅니다.</li>
+</ul>
+<h4 id="72-ycb-v-12-55">7.2 YCB-V 12영상 (물체 55개)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>등록 (3회)</th>
+<th>ADD-S AUC (3회)</th>
+<th>오답 지도 객체 (3회)</th>
+<th>끝점수 %</th>
+<th>인식 Hz</th>
+<th>Hz 4090 → Blackwell</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 0.5 (ViT-L)</td>
+<td>55/55/55</td>
+<td>89.8 ± 1.1</td>
+<td>40 / 45 / 44</td>
+<td>54.1 ± 1.8</td>
+<td>2.2</td>
+<td>1.77 → 2.2</td>
+</tr>
+<tr>
+<td><strong>개선안 3 + 군집 먼저</strong></td>
+<td>55/55/55</td>
+<td>89.8 ± 0.9</td>
+<td>51 / 51 / 54</td>
+<td>53.8 ± 1.1</td>
+<td><strong>4.4</strong></td>
+<td>2.28 → <strong>4.4</strong></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>정확도 지표(등록·ADD-S·끝점수)는 세 번 모두 ±1 안쪽으로 안정</strong>적이고 두 구성이 비슷합니다. 4-4(4090)에서 본 "YCB-V 실시간은 찾은 수·속도·자세는 좋아지고 오답은 원본과 비슷"이 재현됩니다.</li>
+<li><strong>인식 속도는 개선안 3 + 군집 먼저가 4.4 Hz 로 원본(2.2 Hz)의 2배</strong>이고, 4090(2.28 Hz) 대비 1.9배입니다. 배포·검증 중심 구성일수록 Blackwell 이득이 크다는 06·16 문서의 경향과 같습니다.</li>
+<li>개선안 3 의 오답 지도 객체(51~54)가 원본(40~45)보다 약간 많은 것은 처리 프레임이 2배라 그럴듯한 오탐이 더 등록된 것으로, 20·21 문서 §(Blackwell) 과 같은 방향입니다. 프레임당 오답은 비슷합니다.</li>
+</ul>
 <hr />
 <p><a id="22_260901_반복측정_3080_261010"></a></p>
 <h2 id="22-260901-05-3-rtx-3080-ti-laptop-2026-10-10">22. 실 데이터 반복 측정 — 260901, 원본 0.5 대 개선안 3 + 군집 먼저, RTX 3080 Ti Laptop (2026-10-10)</h2>
@@ -5242,4 +5383,245 @@ a{color:var(--acc);word-break:break-all}
 <ul>
 <li>원고 표 6(실시간 객체 지도)의 260901 행은 4090 수치를 유지하고, "노트북 GPU(RTX 3080 Ti Laptop)에서도 개선안 3 + 군집 먼저는 3회 모두 8 / 0, 인식 3.5 Hz(원본 0.9 Hz)"를 본문이나 각주로 덧붙일 수 있습니다. 녹화 실행(7.1·7.2절)의 인식 장치가 이 노트북이라 실제 운용 조건을 보여 주는 의미가 있습니다.</li>
 <li>잘못된 루프 보정 사례(3.10 m)는 7.5절 한계의 근거로 함께 적을 수 있습니다(40회 중 2회에 이어 노트북 6+1회 중 1회).</li>
+</ul>
+<hr />
+<p><a id="27_실시간_서버클라이언트_41서버_192슬램_261008"></a></p>
+<h2 id="27-41-192-slam-2026-10-08">27. 실시간 기술 조합 — 서버·클라이언트 분리 재실행: .41 인식 서버 + .192 SLAM (2026-10-08)</h2>
+<blockquote>
+<p>15 문서(4090 로컬, 2026-10-07)의 실시간 비교 실험을 <strong>두 대로 나눠</strong> 그대로 재실행한 결과입니다.
+<strong>서버 10.254.176.41</strong> (RTX PRO 6000 Blackwell ×4, GPU0 단독): <code>hub.py</code> — SAM 카메라 세션 재생 + SAM-6D 인식 + SLAM 포즈 융합 + 객체 지도.
+<strong>클라이언트 10.254.176.192</strong> (구 4090 워크스테이션, ssh 별칭 <code>slam192</code>): ORB-SLAM3 f2000(<code>~/objpose/run_slam.sh</code>) — 같은 장면의 SLAM 세션을 1배속 재생, 포즈를 TCP로 전송.
+연결은 hub 가 <code>ssh -R 17001</code> 역터널로 원격 SLAM 을 직접 띄우는 방식(기존 Mac 런처 경로 재사용, 코드 수정 없음). 코드 <code>CLI_env_paper</code>(검증 기록 벡터화 뒤 판), 각 1회 측정.
+체인 스크립트: <code>.41:~/Dataset/bop/ycbv_work/run_combo_lan41.sh</code>(실제 영상), <code>run_combo_lan41_ycbv.sh</code> + <code>src/ycbv_live/run_live_lan41.sh</code>(YCB-V). 채점 결과: <code>src/realdata/results_real5_lan41.json</code>, <code>src/ycbv_live/results_*_lan41.json</code>.</p>
+</blockquote>
+<h3 id="0-15-1">0. 구성 (15 문서 §1 과 동일한 여섯 가지)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>#</th>
+<th>이름</th>
+<th>조합</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>원본 0.5</td>
+<td>원본 SAM-6D: FastSAM-x → DINOv2 ViT-L → 판정 0.5 → PEM 기하 1위</td>
+</tr>
+<tr>
+<td>2</td>
+<td>개선안 2 계열</td>
+<td>FastSAM-x → ViT-S → 0.5 → PEM, 자세 검증 끔</td>
+</tr>
+<tr>
+<td>3</td>
+<td>개선안 3 계열</td>
+<td>= 2 + 자세 검증 켬</td>
+</tr>
+<tr>
+<td>4</td>
+<td>배포</td>
+<td>우리 기술(YOLO-World 관문·독점 배정), 검증 켬</td>
+</tr>
+<tr>
+<td>5</td>
+<td>개선안 1</td>
+<td>g13: 문구 상자→관문(새 기준)+배정 대안, 검증 켬 (YCB-V 는 g13p)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>배포 검증 끔</td>
+<td>배포 관문+독점 배정, 검증 끔</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="1-260901_cbnu_bigeightcircle-8-5-14">1. 실제 영상 260901_cbnu_bigeightcircle (8객체, 5분 14초)</h3>
+<p>최종 지도 <strong>맞음/틀림/놓침</strong> 과 평균 점수. 괄호 없는 쪽이 4090 로컬(15 문서), 굵은 쪽이 이번 분리 실행.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>최종 지도 4090 → 분리</th>
+<th>평균점수 %</th>
+<th>지도 중앙시간 s</th>
+<th>인식 Hz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 원본 0.5</td>
+<td>6/3/2 → <strong>7/2/1</strong></td>
+<td>57.9 → 60.0</td>
+<td>67.2 → 67.2</td>
+<td>3.62 → 3.66</td>
+</tr>
+<tr>
+<td>2 개선안 2</td>
+<td>5/4/3 → 4/5/4</td>
+<td>28.7 → 32.6</td>
+<td>49.7 → 49.9</td>
+<td>6.89 → 7.64</td>
+</tr>
+<tr>
+<td>3 개선안 3</td>
+<td>7/1/1 → <strong>8/0/0</strong></td>
+<td>78.6 → 78.8</td>
+<td>69.2 → 68.3</td>
+<td>6.17 → <strong>7.98</strong></td>
+</tr>
+<tr>
+<td>4 배포</td>
+<td>7/1/1 → <strong>8/0/0</strong></td>
+<td>71.1 → <strong>82.5</strong></td>
+<td>68.2 → <strong>49.4</strong></td>
+<td>6.00 → <strong>8.22</strong></td>
+</tr>
+<tr>
+<td>5 개선안 1</td>
+<td>8/0/0 → 7/1/1</td>
+<td>77.0 → 79.9</td>
+<td>68.4 → <strong>49.4</strong></td>
+<td>4.77 → 7.84</td>
+</tr>
+<tr>
+<td>6 배포 검증 끔</td>
+<td>5/4/3 → 7/2/1</td>
+<td>51.7 → 50.8</td>
+<td>28.2 → 28.1</td>
+<td>7.15 → 8.44</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>루프 보정은 6.6~20.2 cm 로 로컬 실행과 같은 수준. 구성 간 ±1 객체 차이는 1회 측정 변동 범위입니다.</li>
+<li>인식이 빨라진 덕(배포 6.0→8.2 Hz)에 개선안 3 과 배포가 이번엔 8객체 전부 맞혔습니다.</li>
+</ul>
+<h3 id="2-ycb-v-12-6-gt-55">2. YCB-V 12영상 × 6구성 (GT 55객체)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>등록</th>
+<th>끝까지 찾음 %</th>
+<th>오답 지도 객체</th>
+<th>ADD-S AUC</th>
+<th>위치오차 중앙 mm</th>
+<th>인식 Hz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 원본 0.5</td>
+<td>55/55 → 55/55</td>
+<td>98.2 → 98.2</td>
+<td>38 → 44</td>
+<td>88.9 → 86.7</td>
+<td>8.2 → 8.8</td>
+<td>1.77 → 2.18</td>
+</tr>
+<tr>
+<td>2 개선안 2</td>
+<td>55/55 → 55/55</td>
+<td>100 → 100</td>
+<td>120 → 131</td>
+<td>86.2 → 85.8</td>
+<td>8.0 → 8.8</td>
+<td>2.08 → 2.80</td>
+</tr>
+<tr>
+<td>3 개선안 3</td>
+<td>55/55 → 55/55</td>
+<td>98.2 → <strong>100</strong></td>
+<td>42 → 47</td>
+<td>92.9 → 89.2</td>
+<td>7.4 → 8.0</td>
+<td>2.28 → 3.34</td>
+</tr>
+<tr>
+<td>4 배포</td>
+<td>44/55 → 45/55</td>
+<td>74.5 → 76.4</td>
+<td><strong>17 → 22</strong></td>
+<td>70.6 → 72.1</td>
+<td>7.0 → 7.9</td>
+<td>1.49 → <strong>4.54</strong></td>
+</tr>
+<tr>
+<td>5 개선안 1 (g13p)</td>
+<td>55/55 → 55/55</td>
+<td>94.5 → 98.2</td>
+<td>38 → 62</td>
+<td>89.7 → 90.1</td>
+<td>8.2 → 7.9</td>
+<td>0.77 → <strong>2.95</strong></td>
+</tr>
+<tr>
+<td>6 배포 검증 끔</td>
+<td>47/55 → 47/55</td>
+<td>80.0 → 80.0</td>
+<td>70 → 74</td>
+<td>68.0 → 69.0</td>
+<td>9.0 → 9.9</td>
+<td>3.43 → 6.78</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>경향 재현</strong>: 검증을 끄면 오답 폭증(개선안 2: 131개), 개선안 3·개선안 1 이 정확도-오답 균형 최상, 배포는 등록을 아끼는 대신 오답 최소(22개). 서버·클라이언트 분리(네트워크 SLAM)로 인한 열화는 관찰되지 않았습니다.</li>
+<li><strong>인식 속도</strong>: PEM·검증 비중이 큰 구성일수록 상승 폭이 큼 — 배포 3.0배, 개선안 1 은 3.8배. 처리 프레임이 2~4배 늘면서 틀린 등록 기회도 늘어 오답 지도 객체 수가 소폭 증가했는데(g13p 38→62), 장당 오답 상자 수는 비슷합니다.</li>
+</ul>
+<h3 id="3_3">3. 이식하면서 확인된 것 (다음에 다른 머신으로 옮길 때)</h3>
+<ol>
+<li><strong>HSV 템플릿 캐시는 머신-로컬</strong>: <code>sam6d_realtime/outputs/.../template_features/*_hsv.npz</code>. 새 머신에서는 <code>tools/build_hsv_template_cache.py --force</code> 로 재생성해야 합니다.</li>
+<li><strong><code>assets/model_points/ycbv_*.npy</code> 는 심볼릭 링크</strong>: 실체는 <code>~/Dataset/bop/ycbv_work/core_repo/assets/</code> 에 있습니다. 코드만 복사하면 링크가 깨져 YCB-V 구성이 전부 "자산이 없다" 로 죽습니다(이번에 g13p 두 장면이 이걸로 재실행됨).</li>
+<li><strong>채점에는 <code>ycbv/models_eval</code> 필요</strong>: <code>eval_live.py</code> 가 <code>models_eval/models_info.json</code> 을 읽습니다. <code>models/</code> 만으로는 안 됩니다.</li>
+<li><strong>뷰어 포트 충돌</strong>: .41 의 8765 를 다른 서비스가 쓰고 있어 이번 실험은 8766 을 썼습니다.</li>
+<li>역터널 방식이라 서버 쪽 방화벽 개방이 필요 없고, ORB vocab 로딩(.192, 첫 회 약 3분)은 파일 캐시가 데워지면 수 초로 줄었습니다.</li>
+</ol>
+<h3 id="4-41-orb-slam3-2026-10-14">4. .41 한 대로 — 서버와 ORB-SLAM3 를 같은 머신에서 (2026-10-14)</h3>
+<blockquote>
+<p>.192 가 GroundingDINO 검출만 띄우면 1~3분 안에 멈추는 일이 10-13·10-14 에 세 번 반복돼(원인 미확정, Xid 미확인), .192 를 고칠 때까지 모든 실험을 .41 에서 하기로 했습니다. 그래서 .41 에도 ORB-SLAM3 호스트를 만들어 <strong>hub 와 SLAM 이 한 머신에서 도는 구성</strong>을 추가했습니다. 스크립트 <code>src/realdata/run_live_41solo.sh</code>(SLAM 호스트만 <code>localhost</code> 인 <code>run_real08_lan41.sh</code> 의 real_run), 결과 <code>src/realdata/results_real_260901_cbnu_eightcircle_41solo.json</code>.</p>
+</blockquote>
+<h4 id="41_1">4.1 만든 것</h4>
+<ul>
+<li>ORB-SLAM3 호스트 <code>.41:~/objpose</code> — 저장소의 <code>objpose/linux_slam/build_host.sh</code> 로 빌드(패치 2개 적용, -march=native, 48코어 약 10분). Pangolin 소스와 ORB 어휘 파일은 .192 의 <code>~/objpose</code> 에서 복사했습니다.</li>
+<li>.41 에는 sudo 가 없어 <code>libsqlite3-dev</code>·<code>nlohmann-json3-dev</code> 를 apt 로 못 깝니다. .192 의 <code>/usr/include/sqlite3*.h</code>, <code>/usr/include/nlohmann/</code> 을 <code>deps/install/include/</code> 에 두고, <code>deps/install/lib/libsqlite3.so</code> 는 시스템 <code>libsqlite3.so.0</code> 링크, <code>lib/cmake/nlohmann_json/nlohmann_jsonConfig.cmake</code> 는 헤더 전용 INTERFACE 타깃으로 손으로 썼습니다. <code>build_host.sh</code> 가 이 상태면 apt 를 건너뛰고 <code>CMAKE_PREFIX_PATH=deps/install</code> 로 찾도록 고쳤습니다(커밋 32dbc801).</li>
+<li>hub 는 SLAM 을 <code>ssh -R</code> 역터널로 띄우므로 자기 자신에 키 로그인만 열면(<code>~/.ssh/id_ed25519.pub</code> → <code>authorized_keys</code>, <code>known_hosts</code> 에 localhost) 코드 수정 없이 <code>--mac-host localhost --mac-runner ~/objpose/run_slam.sh --mac-slam-session ~/DeepLearning/Dataset/data_slam_converted/&lt;녹화&gt;/SLAM</code> 으로 됩니다. 녹화 원본(SLAM db3)은 .41 의 /mnt/nvme1 에 5개 모두 있어 NAS 가 필요 없습니다.</li>
+</ul>
+<h4 id="42-260901_cbnu_eightcircle-3-hybs05">4.2 점검 — 260901_cbnu_eightcircle, 개선안 3 + 군집 먼저 (hybS05)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>최종 지도 맞음 / 잘못</th>
+<th>실행 중 평균 점수</th>
+<th>지도 등록 중앙값</th>
+<th>루프 보정 최대</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.41 hub + .192 ORB-SLAM3 (10-12, 15 문서 §7)</td>
+<td>6.93 Hz</td>
+<td>7 / 1 (우유 못 찾음)</td>
+<td>76.6%</td>
+<td>38.1 s</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>.41 hub + .41 ORB-SLAM3 (10-14)</strong></td>
+<td>6.79 Hz</td>
+<td><strong>8 / 1</strong></td>
+<td>77.1%</td>
+<td>38.0 s</td>
+<td>7.8 cm</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>같은 녹화를 한 머신에서 돌려도 인식 빈도(6.8 대 6.9 Hz), 물체별 지도 등록 시각(8개 모두 ±0.2 s 안), 실행 중 평균 점수(77.1 대 76.6%)가 서버·클라이언트 구성과 같습니다. ORB-SLAM3 는 CPU 작업이라 GPU 서버와 한 머신에 두어도 손해가 없습니다(Threadripper 9960X 24코어).</li>
+<li>최종 지도는 8/1 로, 10-12 실행에서 못 찾았던 우유가 이번엔 들어오고 잘못 1개가 남았습니다(23·24 문서의 녹화 3 경계 사례와 같은 성격). SLAM hello 까지 18 초, 1024 프레임 인식, 151 초 녹화를 1배속으로 완주했습니다.</li>
+<li>이 구성이 .192 를 대신합니다. 문서의 장비 표기는 "RTX PRO 6000 ×1 (.41, hub + ORB-SLAM3 한 머신)" 로 적으면 됩니다.</li>
 </ul></main></body></html>
