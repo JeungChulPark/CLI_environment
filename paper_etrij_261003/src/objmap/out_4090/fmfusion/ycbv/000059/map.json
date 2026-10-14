@@ -17,7 +17,7 @@
    "label": "035_power_drill",
    "points": "points/1.npy",
    "score": 0.98,
-   "n_obs": 209
+   "n_obs": 208
   },
   {
    "id": 2,
@@ -38,7 +38,7 @@
    "label": "040_large_marker",
    "points": "points/4.npy",
    "score": 0.98,
-   "n_obs": 145
+   "n_obs": 144
   },
   {
    "id": 5,

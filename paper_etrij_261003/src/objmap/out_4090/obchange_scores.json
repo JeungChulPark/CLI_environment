@@ -706,11 +706,11 @@
  "fmfusion|obchange_kitchen_all|iou": {
   "visits": 5,
   "tp": 3,
-  "fp": 108,
+  "fp": 114,
   "fn": 22,
-  "precision": 0.02702702702702703,
+  "precision": 0.02564102564102564,
   "recall": 0.12,
-  "f1": 0.04411764705882353,
+  "f1": 0.04225352112676056,
   "mean_iou": 0.35235409623190317,
   "mean_sd_mm": 6.334294153342138,
   "dont_care": 5,
@@ -734,25 +734,25 @@
    {
     "visit": 4,
     "tp": 0,
-    "fp": 20,
+    "fp": 22,
     "fn": 4,
-    "n_pred": 20,
+    "n_pred": 22,
     "dont_care": 0
    },
    {
     "visit": 5,
     "tp": 2,
-    "fp": 24,
+    "fp": 26,
     "fn": 3,
-    "n_pred": 26,
+    "n_pred": 28,
     "dont_care": 0
    },
    {
     "visit": 6,
     "tp": 0,
-    "fp": 30,
+    "fp": 32,
     "fn": 8,
-    "n_pred": 30,
+    "n_pred": 32,
     "dont_care": 2
    }
   ],
@@ -801,11 +801,11 @@
  "fmfusion|obchange_kitchen_all|ctr5cm": {
   "visits": 5,
   "tp": 11,
-  "fp": 100,
+  "fp": 106,
   "fn": 14,
-  "precision": 0.0990990990990991,
+  "precision": 0.09401709401709402,
   "recall": 0.44,
-  "f1": 0.16176470588235292,
+  "f1": 0.1549295774647887,
   "mean_iou": 0.1759600294686732,
   "mean_sd_mm": 11.912432816274098,
   "dont_care": 5,
@@ -829,25 +829,25 @@
    {
     "visit": 4,
     "tp": 2,
-    "fp": 18,
+    "fp": 20,
     "fn": 2,
-    "n_pred": 20,
+    "n_pred": 22,
     "dont_care": 0
    },
    {
     "visit": 5,
     "tp": 3,
-    "fp": 23,
+    "fp": 25,
     "fn": 2,
-    "n_pred": 26,
+    "n_pred": 28,
     "dont_care": 0
    },
    {
     "visit": 6,
     "tp": 1,
-    "fp": 29,
+    "fp": 31,
     "fn": 7,
-    "n_pred": 30,
+    "n_pred": 32,
     "dont_care": 2
    }
   ],

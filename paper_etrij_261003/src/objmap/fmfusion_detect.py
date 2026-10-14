@@ -33,6 +33,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import GroundingDINO.groundingdino.datasets.transforms as T  # noqa: E402
 from GroundingDINO.groundingdino.models import build_model  # noqa: E402
+import GroundingDINO.groundingdino.models.GroundingDINO.ms_deform_attn as msda  # noqa: E402
 from GroundingDINO.groundingdino.util.slconfig import SLConfig  # noqa: E402
 from GroundingDINO.groundingdino.util.utils import clean_state_dict, get_grouped_tokens  # noqa: E402
 from segment_anything import SamPredictor, build_sam  # noqa: E402
@@ -49,6 +50,14 @@ def load_image(path):
                     T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
     image, _ = tf(image_pil, None)
     return image_pil, image
+
+
+def use_pytorch_msda():
+    """Route MSDeformAttn through GroundingDINO's own pure-PyTorch implementation instead of the locally
+    compiled _C kernel (groundingdino/_C*.so). The _C kernel is the only CUDA code this job runs that the
+    sam6d env does not; the 4090 PC froze four times (10-13/14) during this detector, never during SAM-6D."""
+    msda.MultiScaleDeformableAttnFunction.apply = staticmethod(
+        lambda value, shapes, start_idx, loc, attn, step: msda.multi_scale_deformable_attn_pytorch(value, shapes, loc, attn))
 
 
 def load_dino():
@@ -140,7 +149,12 @@ def main():
     ap.add_argument("--scenes", type=int, nargs="*", default=list(range(48, 60)))
     ap.add_argument("--frame-gap", type=int, default=10)
     ap.add_argument("--dataset", default="ycbv", help="see common.seq_cameras")
+    ap.add_argument("--msda", choices=["cuda", "pytorch"], default="cuda",
+                    help="deformable attention: compiled _C kernel (default) or GroundingDINO's PyTorch fallback")
     a = ap.parse_args()
+    if a.msda == "pytorch":
+        use_pytorch_msda()
+    print(f"msda={a.msda}", flush=True)
     dino = load_dino()
     sam = SamPredictor(build_sam(checkpoint=str(WEIGHTS / "sam_vit_h_4b8939.pth")).to(DEVICE))
     log = FMF_DATA / "detect_times.json"
