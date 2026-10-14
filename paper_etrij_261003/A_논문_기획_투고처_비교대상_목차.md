@@ -1148,3 +1148,7 @@ timeout 8 ssh -o BatchMode=yes mac true && echo MAC_OK
 
 - 4090 에서는 원본 0.5 와 개선안 3 이 노트북보다 6~7 점 낮고 개선안은 2 점 높습니다. 27 문서와 같은 원인(인식 프레임이 2~3 배라 없는 물체의 답이 더 많이 통과)으로 보이며, 검증 없음(27.9)과의 차이는 그대로입니다.
 - 실행 시간: 실제 영상 1회 5~12분(NAS 에서 녹화 읽기 2분 포함), YCB-V 1장면 1~2분, 세트 전체 3시간 23분.
+
+### 9. sudo 없는 호스트(.41)에서 ORB-SLAM3 빌드 (2026-10-14 추가)
+
+`objpose/linux_slam/build_host.sh` 는 부족한 apt 패키지를 sudo 로 설치하는데, .41 처럼 sudo 가 없는 계정이면 `libsqlite3-dev`·`nlohmann-json3-dev` 두 개에서 멈춥니다. 다른 머신의 `/usr/include/sqlite3.h`·`sqlite3ext.h`·`nlohmann/` 을 `~/objpose/deps/install/include/` 에 복사하고, `deps/install/lib/libsqlite3.so` 를 시스템 `libsqlite3.so.0` 으로 링크하고, `deps/install/lib/cmake/nlohmann_json/nlohmann_jsonConfig.cmake` 에 헤더 전용 INTERFACE 타깃을 적어 두면 스크립트가 apt 를 건너뛰고 빌드합니다(커밋 32dbc801). Pangolin 소스와 `Vocabulary/ORBvoc.txt` 는 이미 빌드된 머신의 `~/objpose` 에서 복사하면 됩니다. hub 와 SLAM 을 한 머신에서 돌리는 방법은 27 문서(서버·클라이언트) 4절에 있습니다.

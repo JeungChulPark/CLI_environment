@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>26_다른장비_재현_안내_4090_5090_261011</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>26. 다른 장비에서 다시 돌리기 — 주말(10-10 · 10-11) 노트북 실험을 RTX 4090 · RTX 5090(Blackwell)으로 (2026-10-11)</title><style>
 :root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
 @media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
 *{box-sizing:border-box}
@@ -20,11 +20,11 @@ hr{border:0;border-top:1px solid var(--line);margin:30px 0}
 li{margin:3px 0}
 
 a{color:var(--acc);word-break:break-all}
-</style></head><body><main><h1 id="26-10-10-10-11-rtx-4090-rtx-5090blackwell-2026-10-11">26. 다른 장비에서 다시 돌리기 — 주말(10-10 · 10-11) 노트북 실험을 RTX 4090 · RTX 5090(Blackwell)으로 (2026-10-11)</h1>
+</style></head><body><main><h1>26. 다른 장비에서 다시 돌리기 — 주말(10-10 · 10-11) 노트북 실험을 RTX 4090 · RTX 5090(Blackwell)으로 (2026-10-11)</h1>
 <blockquote>
 <p>이번 주말 노트북(RTX 3080 Ti Laptop)에서 한 실험을 4090 과 5090 장비에서 그대로 다시 돌리기 위한 안내입니다. 결과와 해석은 19~25 문서에 있고, 이 문서는 <strong>무엇을 옮기고, 어디를 고치고, 어떤 순서로 돌리는지</strong>만 다룹니다. 논문 최종 수치는 5090 으로 냅니다.</p>
 </blockquote>
-<h2 id="0">0. 요약</h2>
+<h2>0. 요약</h2>
 <ul>
 <li>주말 실험은 다섯 가지입니다. YCB-V 실시간 3회 반복(19), 실데이터 260901 3회 반복(22), 객체 지도 비교 YCB-V(20) · ObChange-Kitchen(21) · 실데이터 5개(23·24).</li>
 <li>코드는 저장소 브랜치 <code>objpose/memory-dup-suppression</code>(0f32112 이후)에 모두 있습니다. 다만 다음은 저장소에 없어 따로 옮겨야 합니다.</li>
@@ -35,7 +35,7 @@ a{color:var(--acc);word-break:break-all}
 <li>실데이터 실시간 실행에는 Mac(ORB-SLAM3)이 필요합니다. YCB-V 실시간은 그 장비의 로컬 ORB-SLAM3 로 돕니다(15 문서와 같은 방식).</li>
 <li>권하는 순서는 4절과 같습니다. 짧은 것(실데이터 5개 실시간, 약 30분)부터 돌려 환경을 확인하고, 긴 것(YCB-V 반복, 기준 방법)은 뒤에 둡니다.</li>
 </ul>
-<h2 id="1">1. 주말 실험과 문서</h2>
+<h2>1. 주말 실험과 문서</h2>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -102,8 +102,8 @@ a{color:var(--acc);word-break:break-all}
 <li>소요 시간은 24 문서 실행 기록(<code>progress.log</code>, <code>out_261011/real_logs/</code>)에서 가져왔습니다. 24 의 기준 방법 40분은 23 의 FM-Fusion 검출 결과를 재사용한 시간입니다. 새 장비에서는 검출을 처음부터 하므로 더 걸립니다(3080 기준 검출한 프레임당 약 1.2초, 20 문서).</li>
 <li>4090 에서 전에 돌린 기록은 09(한 장 평가, 경로) · 15(실시간 여섯 구성 · 반복, 체인 스크립트 <code>~/Dataset/bop/ycbv_work/run_combo_4090.sh</code>)에 있습니다.</li>
 </ul>
-<h2 id="2">2. 준비</h2>
-<h3 id="21">2.1 코드</h3>
+<h2>2. 준비</h2>
+<h3>2.1 코드</h3>
 <pre><code class="language-bash">cd &lt;저장소&gt;              # 4090 은 전에 CLI_env_paper(15 문서), old/CLI_environment(09 문서)를 썼음
 git fetch origin
 git checkout objpose/memory-dup-suppression
@@ -113,7 +113,7 @@ git pull                 # 0f32112 이후
 <li><strong>받기 전에 확인:</strong> 10-10 에 4090 사본(CLI_env_paper)에서 pull 하다가, 커밋 0c539f3 의 자기 참조 링크 3개(<code>sam6d_realtime/template</code>, SAM-6D 두 <code>checkpoints</code>)가 git 에서 무시하던 로컬 폴더를 지운 일이 있습니다. 지금 브랜치 끝에서는 이 링크가 추적되지 않지만, 받기 전에 <code>git diff --stat HEAD..origin/objpose/memory-dup-suppression</code> 으로 링크·폴더 경로를 보고 세 폴더는 먼저 다른 곳에 복사해 둡니다.</li>
 <li><code>sam6d_realtime/</code>(검증 · 배정 대안 · 크기 관문 수정 포함)은 저장소에 들어 있습니다. 09 문서 4절에서 "노트북에만 있다"고 했던 <code>sam6d_core.py</code>, <code>yolo_ism_object_n.py</code>, <code>verify_config.py</code>, <code>Pose_Estimation_Model/utils/model_utils.py</code> 도 지금은 커밋돼 있어 따로 복사하지 않아도 됩니다.</li>
 </ul>
-<h3 id="22">2.2 장비마다 고칠 곳</h3>
+<h3>2.2 장비마다 고칠 곳</h3>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -146,7 +146,7 @@ git pull                 # 0f32112 이후
 </tbody>
 </table></div>
 <p>나머지 스크립트는 <code>$HOME/anaconda3/envs/&lt;이름&gt;/bin/python</code>, <code>$HOME/DeepLearning/Dataset/bop/ycbv_work</code>, <code>$HOME/DeepLearning/baselines</code> 를 씁니다. 장비의 폴더가 다르면 같은 이름으로 심볼릭 링크를 만들어 두는 편이 스크립트를 고치는 것보다 간단합니다. 예: <code>ln -s ~/Dataset ~/DeepLearning/Dataset</code>.</p>
-<h3 id="23-conda">2.3 실행 환경 (conda)</h3>
+<h3>2.3 실행 환경 (conda)</h3>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -173,14 +173,16 @@ git pull                 # 0f32112 이후
 </tr>
 </tbody>
 </table></div>
-<p><strong>5090(Blackwell) 주의:</strong>
-- PyTorch 는 CUDA 12.8 이상 빌드가 필요합니다. 그보다 낮은 빌드에는 Blackwell 용 커널이 없습니다.
-- 직접 빌드하는 CUDA 확장은 그 장비에서 다시 빌드해야 합니다.
-  - GroundingDINO 연산(20 문서 §4에 적어 둠)
-  - SAM-6D 자세 추정의 pointnet2 연산
-- 세 환경 모두 <code>python -c "import torch; print(torch.cuda.get_device_capability())"</code> 가 (12, 0)을 내는지 먼저 봅니다.
-- 5090 에서는 아직 한 번도 돌려 보지 않았습니다. 위 목록은 예상입니다.</p>
-<h3 id="24">2.4 기준 방법 코드 (저장소 밖)</h3>
+<p><strong>5090(Blackwell) 주의:</strong></p>
+<ul>
+<li>PyTorch 는 CUDA 12.8 이상 빌드가 필요합니다. 그보다 낮은 빌드에는 Blackwell 용 커널이 없습니다.</li>
+<li>직접 빌드하는 CUDA 확장은 그 장비에서 다시 빌드해야 합니다.</li>
+<li>GroundingDINO 연산(20 문서 §4에 적어 둠)</li>
+<li>SAM-6D 자세 추정의 pointnet2 연산</li>
+<li>세 환경 모두 <code>python -c "import torch; print(torch.cuda.get_device_capability())"</code> 가 (12, 0)을 내는지 먼저 봅니다.</li>
+<li>5090 에서는 아직 한 번도 돌려 보지 않았습니다. 위 목록은 예상입니다.</li>
+</ul>
+<h3>2.4 기준 방법 코드 (저장소 밖)</h3>
 <p><code>~/DeepLearning/baselines/</code> 아래에 둡니다. 노트북에서 폴더째 복사해도 되고, 새로 받아 아래 수정만 넣어도 됩니다.</p>
 <div class="tw"><table>
 <thead>
@@ -213,7 +215,7 @@ git pull                 # 0f32112 이후
 </tr>
 </tbody>
 </table></div>
-<h3 id="25">2.5 데이터</h3>
+<h3>2.5 데이터</h3>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -277,7 +279,7 @@ git pull                 # 0f32112 이후
 <li>나머지 4개 녹화는 이 파일이 없으면 채점이 멈춥니다.</li>
 <li><strong>노트북 결과와 같은 자리에서 비교하려면</strong> 23 · 24 의 제안 방법 실행 폴더도 옮깁니다. 대상은 <code>objpose/output/real_*_l3080_hyb3cf</code>, <code>real5_260901_l3080_hyb3cf_r2b</code>, <code>live_261011_*</code>, 합계 210 MB 입니다. 수치만 비교한다면 커밋된 결과 JSON 으로 충분합니다.</li>
 </ul>
-<h3 id="26-mac">2.6 Mac 연결 (실데이터 실시간)</h3>
+<h3>2.6 Mac 연결 (실데이터 실시간)</h3>
 <ul>
 <li>새 장비에서 <code>ssh mac</code> 이 비밀번호 없이 돼야 합니다. 스크립트는 <code>BatchMode=yes</code> 로 붙고 Mac 에 <code>caffeinate</code> 를 겁니다.</li>
 <li>그 장비의 공개키를 Mac <code>~/.ssh/authorized_keys</code> 에 넣습니다.</li>
@@ -286,7 +288,7 @@ git pull                 # 0f32112 이후
 <li>허브가 Mac 에 SSH 역방향 터널(<code>-R 17001:127.0.0.1:17001</code>)을 열고 SLAM 결과를 받습니다(실행 폴더의 <code>mac_command.txt</code>). SSH 만 되면 따로 열 포트는 없습니다.</li>
 <li>한 번에 한 장비만 Mac 을 씁니다. 4090 과 5090 이 같은 Mac 에 동시에 붙으면 SLAM 재생이 섞입니다.</li>
 </ul>
-<h2 id="3-10">3. 실행 전 확인 (10분)</h2>
+<h2>3. 실행 전 확인 (10분)</h2>
 <pre><code class="language-bash">cd &lt;저장소&gt;/paper_etrij_261003/src
 PY=$HOME/anaconda3/envs/sam6d/bin/python
 $PY -c &quot;import torch;print(torch.__version__, torch.cuda.get_device_name(0), torch.cuda.get_device_capability())&quot;
@@ -294,7 +296,7 @@ $PY -c &quot;import torch;print(torch.__version__, torch.cuda.get_device_name(0)
 timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 </code></pre>
 <p>가장 짧은 녹화(260915_eightcircle, 128초)를 하나 돌려 보고 <code>summary written</code> 이 나오는지 확인한 뒤 4절로 넘어갑니다.</p>
-<h2 id="4">4. 실행 순서</h2>
+<h2>4. 실행 순서</h2>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -356,7 +358,7 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 <li>각 실행 끝 줄의 <code>max correction so far</code> 를 봅니다. 지금까지 3 m 안팎의 보정이 나온 실행은 버리고 다시 돌렸습니다(15 §2 의 3.6 m, 22 의 3.10 m, 24 의 296.7 cm). 다른 실행은 6~53 cm 였습니다.</li>
 <li>녹화 4(260910_object)는 2 m 넘는 보정이 두 번 모두 나왔고(23 문서 235.5 cm, 24 문서 216.0 cm), 버리지 않고 그대로 썼습니다. 같은 기준을 따릅니다.</li>
 </ul>
-<h2 id="5">5. 결과 정리</h2>
+<h2>5. 결과 정리</h2>
 <ul>
 <li>실행 이름에 장비 태그(<code>l4090</code>, <code>l5090</code>)를 넣었으면 <code>eval_real.py --runs ...</code>, <code>real_score.py</code>, <code>eval_live.py</code>, <code>eval_penalized.py</code> 는 그대로 씁니다.</li>
 <li>노트북 결과와 나란히 놓을 때는 24 의 <code>realdata/compare_live_261011.py</code> 를 복사해 실행 목록만 바꾸면 됩니다.</li>
@@ -365,7 +367,7 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 <li>객체 지도 비교 → F</li>
 <li>장비 확인 실행 → B 또는 C</li>
 </ul>
-<h2 id="6">6. 장비 사이 차이로 결과가 달라질 수 있는 곳</h2>
+<h2>6. 장비 사이 차이로 결과가 달라질 수 있는 곳</h2>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -388,7 +390,7 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 </tr>
 </tbody>
 </table></div>
-<h2 id="7-4090-2026-10-12">7. 4090 에서 실제로 걸린 것 (2026-10-12 추가)</h2>
+<h2>7. 4090 에서 실제로 걸린 것 (2026-10-12 추가)</h2>
 <p>이 PC(RTX 4090 ×4, 드라이버 575 → CUDA 12.9 까지)에서 2절 안내대로 옮겨 돌리다가 걸린 것들입니다. 5090/.41 에서도 같은 일이 생길 수 있어 적어 둡니다.</p>
 <div class="tw"><table>
 <thead>
@@ -412,7 +414,7 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 <tr>
 <td>DualMap 환경</td>
 <td><code>No module named mobileclip</code>, <code>Detector has no attribute yolo</code></td>
-<td>① <code>3rdparty/mobileclip</code> 서브모듈이 사본에 비어 있음 → <code>pip install git+https://github.com/apple/ml-mobileclip</code> ② <code>model/</code> 가중치가 사본에 없음 → <code>mobile_sam.pt</code>(sam6d_realtime 것), <code>FastSAM-s.pt</code>(SAM-6D ISM checkpoints 것) 복사, <code>yolov8l-world.pt</code> 는 ultralytics 가 내려받음(96 MB) ③ <code>scikit-learn</code> 필요</td>
+<td>① <code>3rdparty/mobileclip</code> 서브모듈이 사본에 비어 있음 → <code>pip install git+<a href="https://github.com/apple/ml-mobileclip">https://github.com/apple/ml-mobileclip</a></code> ② <code>model/</code> 가중치가 사본에 없음 → <code>mobile_sam.pt</code>(sam6d_realtime 것), <code>FastSAM-s.pt</code>(SAM-6D ISM checkpoints 것) 복사, <code>yolov8l-world.pt</code> 는 ultralytics 가 내려받음(96 MB) ③ <code>scikit-learn</code> 필요</td>
 </tr>
 <tr>
 <td>conda 환경 복사</td>
@@ -457,7 +459,7 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 </tbody>
 </table></div>
 <p>같은 날 폴더도 정리했습니다. 코드는 <code>~/DeepLearning/server/CLI_environment</code> 하나(옛 <code>CLI_env_paper</code> 는 삭제, 이 문서의 그 경로는 지금의 server/CLI_environment 를 뜻함), 4090 체인 스크립트는 <code>src/run_4090/</code>, 기준 방법 코드는 <code>~/DeepLearning/baselines</code>, 데이터는 NAS <code>/mnt/synology/Dataset/DeepLearning_dataset/</code>(옛 <code>~/DeepLearning/Dataset</code> 경로는 링크로 유지)입니다. 환경 설치 기록은 <code>src/objmap/setup_baselines_4090.sh</code> 입니다.</p>
-<h2 id="8-4090-08-2026-10-12">8. 4090 재현 결과 — 08 문서 세트 (2026-10-12)</h2>
+<h2>8. 4090 재현 결과 — 08 문서 세트 (2026-10-12)</h2>
 <p><code>src/run_4090/run_08_4090.sh</code>(16:06~19:29): 260901 큰 8자 6구성(R1), 실제 영상 4개 × 4구성(R2), YCB-V 12영상 × 6구성. SLAM 은 이 PC 의 ORB-SLAM3(f2000). 결과 <code>src/realdata/results_real5_4090.json</code>, <code>results_real_&lt;녹화&gt;_4090.json</code>, <code>src/ycbv_live/results_penalized_4090.json</code>. 노트북 값은 08 문서(1회 측정, Mac SLAM).</p>
 <p><strong>R1. 260901 큰 8자 (평균 점수 % / 인식 빈도)</strong></p>
 <div class="tw"><table>
@@ -598,4 +600,6 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 <ul>
 <li>4090 에서는 원본 0.5 와 개선안 3 이 노트북보다 6~7 점 낮고 개선안은 2 점 높습니다. 27 문서와 같은 원인(인식 프레임이 2~3 배라 없는 물체의 답이 더 많이 통과)으로 보이며, 검증 없음(27.9)과의 차이는 그대로입니다.</li>
 <li>실행 시간: 실제 영상 1회 5~12분(NAS 에서 녹화 읽기 2분 포함), YCB-V 1장면 1~2분, 세트 전체 3시간 23분.</li>
-</ul></main></body></html>
+</ul>
+<h2>9. sudo 없는 호스트(.41)에서 ORB-SLAM3 빌드 (2026-10-14 추가)</h2>
+<p><code>objpose/linux_slam/build_host.sh</code> 는 부족한 apt 패키지를 sudo 로 설치하는데, .41 처럼 sudo 가 없는 계정이면 <code>libsqlite3-dev</code>·<code>nlohmann-json3-dev</code> 두 개에서 멈춥니다. 다른 머신의 <code>/usr/include/sqlite3.h</code>·<code>sqlite3ext.h</code>·<code>nlohmann/</code> 을 <code>~/objpose/deps/install/include/</code> 에 복사하고, <code>deps/install/lib/libsqlite3.so</code> 를 시스템 <code>libsqlite3.so.0</code> 으로 링크하고, <code>deps/install/lib/cmake/nlohmann_json/nlohmann_jsonConfig.cmake</code> 에 헤더 전용 INTERFACE 타깃을 적어 두면 스크립트가 apt 를 건너뛰고 빌드합니다(커밋 32dbc801). Pangolin 소스와 <code>Vocabulary/ORBvoc.txt</code> 는 이미 빌드된 머신의 <code>~/objpose</code> 에서 복사하면 됩니다. hub 와 SLAM 을 한 머신에서 돌리는 방법은 27 문서(서버·클라이언트) 4절에 있습니다.</p></main></body></html>

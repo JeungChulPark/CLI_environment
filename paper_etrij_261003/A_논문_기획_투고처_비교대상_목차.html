@@ -154,6 +154,7 @@ a{color:var(--acc);word-break:break-all}
 <li><a href="#6_1">6. 장비 사이 차이로 결과가 달라질 수 있는 곳</a></li>
 <li><a href="#7-4090-2026-10-12">7. 4090 에서 실제로 걸린 것 (2026-10-12 추가)</a></li>
 <li><a href="#8-4090-08-2026-10-12">8. 4090 재현 결과 — 08 문서 세트 (2026-10-12)</a></li>
+<li><a href="#9-sudo-41-orb-slam3-2026-10-14">9. sudo 없는 호스트(.41)에서 ORB-SLAM3 빌드 (2026-10-14 추가)</a></li>
 </ul>
 </li>
 </ul>
@@ -3333,4 +3334,6 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 <ul>
 <li>4090 에서는 원본 0.5 와 개선안 3 이 노트북보다 6~7 점 낮고 개선안은 2 점 높습니다. 27 문서와 같은 원인(인식 프레임이 2~3 배라 없는 물체의 답이 더 많이 통과)으로 보이며, 검증 없음(27.9)과의 차이는 그대로입니다.</li>
 <li>실행 시간: 실제 영상 1회 5~12분(NAS 에서 녹화 읽기 2분 포함), YCB-V 1장면 1~2분, 세트 전체 3시간 23분.</li>
-</ul></main></body></html>
+</ul>
+<h3 id="9-sudo-41-orb-slam3-2026-10-14">9. sudo 없는 호스트(.41)에서 ORB-SLAM3 빌드 (2026-10-14 추가)</h3>
+<p><code>objpose/linux_slam/build_host.sh</code> 는 부족한 apt 패키지를 sudo 로 설치하는데, .41 처럼 sudo 가 없는 계정이면 <code>libsqlite3-dev</code>·<code>nlohmann-json3-dev</code> 두 개에서 멈춥니다. 다른 머신의 <code>/usr/include/sqlite3.h</code>·<code>sqlite3ext.h</code>·<code>nlohmann/</code> 을 <code>~/objpose/deps/install/include/</code> 에 복사하고, <code>deps/install/lib/libsqlite3.so</code> 를 시스템 <code>libsqlite3.so.0</code> 으로 링크하고, <code>deps/install/lib/cmake/nlohmann_json/nlohmann_jsonConfig.cmake</code> 에 헤더 전용 INTERFACE 타깃을 적어 두면 스크립트가 apt 를 건너뛰고 빌드합니다(커밋 32dbc801). Pangolin 소스와 <code>Vocabulary/ORBvoc.txt</code> 는 이미 빌드된 머신의 <code>~/objpose</code> 에서 복사하면 됩니다. hub 와 SLAM 을 한 머신에서 돌리는 방법은 27 문서(서버·클라이언트) 4절에 있습니다.</p></main></body></html>

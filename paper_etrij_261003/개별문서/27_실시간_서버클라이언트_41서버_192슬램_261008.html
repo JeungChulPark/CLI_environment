@@ -212,4 +212,50 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>채점에는 <code>ycbv/models_eval</code> 필요</strong>: <code>eval_live.py</code> 가 <code>models_eval/models_info.json</code> 을 읽습니다. <code>models/</code> 만으로는 안 됩니다.</li>
 <li><strong>뷰어 포트 충돌</strong>: .41 의 8765 를 다른 서비스가 쓰고 있어 이번 실험은 8766 을 썼습니다.</li>
 <li>역터널 방식이라 서버 쪽 방화벽 개방이 필요 없고, ORB vocab 로딩(.192, 첫 회 약 3분)은 파일 캐시가 데워지면 수 초로 줄었습니다.</li>
-</ol></main></body></html>
+</ol>
+<h2>4. .41 한 대로 — 서버와 ORB-SLAM3 를 같은 머신에서 (2026-10-14)</h2>
+<blockquote>
+<p>.192 가 GroundingDINO 검출만 띄우면 1~3분 안에 멈추는 일이 10-13·10-14 에 세 번 반복돼(원인 미확정, Xid 미확인), .192 를 고칠 때까지 모든 실험을 .41 에서 하기로 했습니다. 그래서 .41 에도 ORB-SLAM3 호스트를 만들어 <strong>hub 와 SLAM 이 한 머신에서 도는 구성</strong>을 추가했습니다. 스크립트 <code>src/realdata/run_live_41solo.sh</code>(SLAM 호스트만 <code>localhost</code> 인 <code>run_real08_lan41.sh</code> 의 real_run), 결과 <code>src/realdata/results_real_260901_cbnu_eightcircle_41solo.json</code>.</p>
+</blockquote>
+<h3>4.1 만든 것</h3>
+<ul>
+<li>ORB-SLAM3 호스트 <code>.41:~/objpose</code> — 저장소의 <code>objpose/linux_slam/build_host.sh</code> 로 빌드(패치 2개 적용, -march=native, 48코어 약 10분). Pangolin 소스와 ORB 어휘 파일은 .192 의 <code>~/objpose</code> 에서 복사했습니다.</li>
+<li>.41 에는 sudo 가 없어 <code>libsqlite3-dev</code>·<code>nlohmann-json3-dev</code> 를 apt 로 못 깝니다. .192 의 <code>/usr/include/sqlite3*.h</code>, <code>/usr/include/nlohmann/</code> 을 <code>deps/install/include/</code> 에 두고, <code>deps/install/lib/libsqlite3.so</code> 는 시스템 <code>libsqlite3.so.0</code> 링크, <code>lib/cmake/nlohmann_json/nlohmann_jsonConfig.cmake</code> 는 헤더 전용 INTERFACE 타깃으로 손으로 썼습니다. <code>build_host.sh</code> 가 이 상태면 apt 를 건너뛰고 <code>CMAKE_PREFIX_PATH=deps/install</code> 로 찾도록 고쳤습니다(커밋 32dbc801).</li>
+<li>hub 는 SLAM 을 <code>ssh -R</code> 역터널로 띄우므로 자기 자신에 키 로그인만 열면(<code>~/.ssh/id_ed25519.pub</code> → <code>authorized_keys</code>, <code>known_hosts</code> 에 localhost) 코드 수정 없이 <code>--mac-host localhost --mac-runner ~/objpose/run_slam.sh --mac-slam-session ~/DeepLearning/Dataset/data_slam_converted/&lt;녹화&gt;/SLAM</code> 으로 됩니다. 녹화 원본(SLAM db3)은 .41 의 /mnt/nvme1 에 5개 모두 있어 NAS 가 필요 없습니다.</li>
+</ul>
+<h3>4.2 점검 — 260901_cbnu_eightcircle, 개선안 3 + 군집 먼저 (hybS05)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>인식 빈도</th>
+<th>최종 지도 맞음 / 잘못</th>
+<th>실행 중 평균 점수</th>
+<th>지도 등록 중앙값</th>
+<th>루프 보정 최대</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.41 hub + .192 ORB-SLAM3 (10-12, 15 문서 §7)</td>
+<td>6.93 Hz</td>
+<td>7 / 1 (우유 못 찾음)</td>
+<td>76.6%</td>
+<td>38.1 s</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>.41 hub + .41 ORB-SLAM3 (10-14)</strong></td>
+<td>6.79 Hz</td>
+<td><strong>8 / 1</strong></td>
+<td>77.1%</td>
+<td>38.0 s</td>
+<td>7.8 cm</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>같은 녹화를 한 머신에서 돌려도 인식 빈도(6.8 대 6.9 Hz), 물체별 지도 등록 시각(8개 모두 ±0.2 s 안), 실행 중 평균 점수(77.1 대 76.6%)가 서버·클라이언트 구성과 같습니다. ORB-SLAM3 는 CPU 작업이라 GPU 서버와 한 머신에 두어도 손해가 없습니다(Threadripper 9960X 24코어).</li>
+<li>최종 지도는 8/1 로, 10-12 실행에서 못 찾았던 우유가 이번엔 들어오고 잘못 1개가 남았습니다(23·24 문서의 녹화 3 경계 사례와 같은 성격). SLAM hello 까지 18 초, 1024 프레임 인식, 151 초 녹화를 1배속으로 완주했습니다.</li>
+<li>이 구성이 .192 를 대신합니다. 문서의 장비 표기는 "RTX PRO 6000 ×1 (.41, hub + ORB-SLAM3 한 머신)" 로 적으면 됩니다.</li>
+</ul></main></body></html>
