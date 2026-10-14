@@ -1,0 +1,79 @@
+{
+ "units": "m",
+ "frame": "world",
+ "method": "FM-Fusion",
+ "dataset": "ycbv",
+ "scene": 52,
+ "objects": [
+  {
+   "id": 0,
+   "label": "019_pitcher_base",
+   "points": "points/0.npy",
+   "score": 1.0,
+   "n_obs": 90
+  },
+  {
+   "id": 1,
+   "label": "024_bowl",
+   "points": "points/1.npy",
+   "score": 0.89,
+   "n_obs": 7
+  },
+  {
+   "id": 2,
+   "label": "006_mustard_bottle",
+   "points": "points/2.npy",
+   "score": 0.83,
+   "n_obs": 90
+  },
+  {
+   "id": 3,
+   "label": "003_cracker_box",
+   "points": "points/3.npy",
+   "score": 0.94,
+   "n_obs": 30
+  },
+  {
+   "id": 4,
+   "label": "unknown",
+   "points": "points/4.npy",
+   "score": 0.0,
+   "n_obs": 72
+  },
+  {
+   "id": 5,
+   "label": "024_bowl",
+   "points": "points/5.npy",
+   "score": 1.0,
+   "n_obs": 6
+  },
+  {
+   "id": 6,
+   "label": "052_extra_large_clamp",
+   "points": "points/6.npy",
+   "score": 0.76,
+   "n_obs": 4
+  },
+  {
+   "id": 7,
+   "label": "024_bowl",
+   "points": "points/7.npy",
+   "score": 1.0,
+   "n_obs": 7
+  },
+  {
+   "id": 8,
+   "label": "010_potted_meat_can",
+   "points": "points/8.npy",
+   "score": 0.82,
+   "n_obs": 86
+  },
+  {
+   "id": 9,
+   "label": "008_pudding_box",
+   "points": "points/9.npy",
+   "score": 1.0,
+   "n_obs": 4
+  }
+ ]
+}

@@ -1,0 +1,51 @@
+{
+ "units": "m",
+ "frame": "world",
+ "method": "FM-Fusion",
+ "dataset": "ycbv",
+ "scene": 56,
+ "objects": [
+  {
+   "id": 0,
+   "label": "019_pitcher_base",
+   "points": "points/0.npy",
+   "score": 1.0,
+   "n_obs": 123
+  },
+  {
+   "id": 1,
+   "label": "006_mustard_bottle",
+   "points": "points/1.npy",
+   "score": 0.84,
+   "n_obs": 123
+  },
+  {
+   "id": 2,
+   "label": "035_power_drill",
+   "points": "points/2.npy",
+   "score": 0.93,
+   "n_obs": 200
+  },
+  {
+   "id": 3,
+   "label": "010_potted_meat_can",
+   "points": "points/3.npy",
+   "score": 0.82,
+   "n_obs": 89
+  },
+  {
+   "id": 4,
+   "label": "004_sugar_box",
+   "points": "points/4.npy",
+   "score": 0.99,
+   "n_obs": 5
+  },
+  {
+   "id": 5,
+   "label": "021_bleach_cleanser",
+   "points": "points/5.npy",
+   "score": 1.0,
+   "n_obs": 9
+  }
+ ]
+}

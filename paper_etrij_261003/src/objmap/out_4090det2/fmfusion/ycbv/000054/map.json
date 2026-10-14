@@ -1,0 +1,58 @@
+{
+ "units": "m",
+ "frame": "world",
+ "method": "FM-Fusion",
+ "dataset": "ycbv",
+ "scene": 54,
+ "objects": [
+  {
+   "id": 0,
+   "label": "004_sugar_box",
+   "points": "points/0.npy",
+   "score": 1.0,
+   "n_obs": 193
+  },
+  {
+   "id": 1,
+   "label": "021_bleach_cleanser",
+   "points": "points/1.npy",
+   "score": 0.82,
+   "n_obs": 184
+  },
+  {
+   "id": 2,
+   "label": "035_power_drill",
+   "points": "points/2.npy",
+   "score": 0.63,
+   "n_obs": 375
+  },
+  {
+   "id": 3,
+   "label": "010_potted_meat_can",
+   "points": "points/3.npy",
+   "score": 0.96,
+   "n_obs": 14
+  },
+  {
+   "id": 4,
+   "label": "003_cracker_box",
+   "points": "points/4.npy",
+   "score": 0.85,
+   "n_obs": 45
+  },
+  {
+   "id": 5,
+   "label": "025_mug",
+   "points": "points/5.npy",
+   "score": 0.74,
+   "n_obs": 6
+  },
+  {
+   "id": 6,
+   "label": "036_wood_block",
+   "points": "points/6.npy",
+   "score": 1.0,
+   "n_obs": 2
+  }
+ ]
+}
