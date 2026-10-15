@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>25. 공간 객체 상태 지도 논문 비교 — 요약 (2026-10-11)</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>25_공간객체상태지도_논문비교_요약_261011</title><style>
 :root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
 @media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
 *{box-sizing:border-box}
@@ -22,7 +22,7 @@ li{margin:3px 0}
 a{color:var(--acc);word-break:break-all}
 </style></head><body><main><h1 id="25-2026-10-11">25. 공간 객체 상태 지도 논문 비교 — 요약 (2026-10-11)</h1>
 <blockquote>
-<p>F 묶음(공간 객체 상태 지도를 위한 논문 비교)의 첫 장입니다. 공간 객체 상태 지도를 두고 제안 방법과 기존 논문 두 편(FM-Fusion, DualMap)을 세 데이터에서 비교한 개별 문서 20 · 21 · 23 · 24 를 요약하고, 관련된 22 문서(실 데이터 반복 측정, C 묶음)와 19 문서(원고 v0.3 상태 전이 수식, A 묶음)의 내용도 함께 적었습니다. 장비는 모두 노트북 RTX 3080 Ti Laptop 이고 확인용입니다. 최종 수치는 RTX 5090 에서 다시 냅니다. 각 절 끝에 출처 문서를 적었습니다.</p>
+<p>F 묶음(공간 객체 상태 지도를 위한 논문 비교)의 첫 장입니다. 공간 객체 상태 지도를 두고 제안 방법과 기존 논문 두 편(FM-Fusion, DualMap)을 세 데이터에서 비교한 개별 문서 20 · 21 · 23 · 24 를 요약하고, 관련된 22 문서(실 데이터 반복 측정, C 묶음)와 19 문서(원고 v0.3 상태 전이 수식, G 묶음)의 내용도 함께 적었습니다. 장비는 모두 노트북 RTX 3080 Ti Laptop 이고 확인용입니다. 최종 수치는 RTX 5090 에서 다시 냅니다. 각 절 끝에 출처 문서를 적었습니다.</p>
 </blockquote>
 <h2 id="0">0. 한눈에 보기</h2>
 <div class="tw"><table>
@@ -542,7 +542,7 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>속도 이득은 작은 GPU 에서 더 큽니다.</strong> 개선안 / 원본 인식 빈도가 노트북에서 4.0배, 4090 에서 2.1배입니다. 원본의 ViT-L 특징 단계가 GPU 에 민감하기 때문입니다.</li>
 <li>개선안 3 의 2회차는 ORB-SLAM3 의 <strong>3.10 m 잘못된 루프 보정</strong>으로 지도 전체가 틀어져 버리고 다시 돌렸습니다. 인식기가 아니라 SLAM 의 실패이며, 원고 7.5절 한계("키프레임 고정은 잘못된 보정도 따른다")의 사례입니다.</li>
 </ul>
-<h2 id="4-19-a">4. 원고에 반영한 것 (19 문서, A 묶음)</h2>
+<h2 id="4-19-g-10-15-a">4. 원고에 반영한 것 (19 문서, G 묶음 — 10-15 에 A 에서 옮김)</h2>
 <ul>
 <li><strong>원고 v0.3 (영문 8쪽, 국문 10쪽):</strong> 인식기를 개선안 3 + 군집 먼저로 바꿨습니다. 실시간 표를 3회 반복(260901 8/0 ×3 대 6.7/2.3)으로 바꾸고, 한 장 평가 표에 GigaPose · FoundationPose 행과 BOP 데이터셋 3개를 더했습니다. 개선안 3 구조 그림은 새로 그려야 합니다.</li>
 <li><strong>5.1절 객체 상태 지도를 식 (5)~(12)로 전개했습니다.</strong></li>
@@ -646,7 +646,7 @@ a{color:var(--acc);word-break:break-all}
 </tr>
 <tr>
 <td>19_작업기록_원고v0.3_3080반복_261010</td>
-<td>A</td>
+<td>G (10-15 전까지 A)</td>
 <td>원고 v0.3, 5.1절 상태 전이 수식, 저장소 동기화 사고와 복구, 오후 작업 목록</td>
 </tr>
 </tbody>
