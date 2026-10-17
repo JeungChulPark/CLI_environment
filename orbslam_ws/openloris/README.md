@@ -55,6 +55,7 @@ orbslam_ws/openloris/run_openloris.sh ~/Documents/DefenseMeta/Dataset/openloris/
 | `aoe_rmse` | 방향 오차 [deg] |
 | `cr`, `cr_0.1m_5deg` | 공식 correct rate. 포즈가 있는 시간 비율, 그리고 0.1 m·5° 안에 든 시간 비율 |
 | `live` / `final` | 프레임마다 그 순간 돌려준 포즈 / 종료 후 최적화 궤적 |
+| `seg_*` | 맵 구간별 평가(아래 home/corridor 절 참고) |
 
 - office1-1 시험 실행에서 모든 버전의 궤적이 GT보다 일정하게 약 5% 작았다(1/3/5초 구간 이동 거리 비 1.045–1.052).
   D435i depth나 GT 쪽 스케일 문제로 보이며 모든 버전에 똑같이 작용한다. 이 때문에 SE(3) ATE는 약 8 cm,
@@ -90,5 +91,49 @@ AOE 2.18 / 2.08 / 1.84°, CR(0.1 m, 5°) 0.77 / 0.79 / 0.81, 추적 시간 평�
 - 실행 중 `SO3::exp failed! omega: nan` 1회 (3배 office1-5, 530프레임 중 422번째): 원본 `Sim3Solver`의 0/0 → NaN.
 - 둘 다 수정본에서 고친 버그다. 실패한 실행은 위 표의 upstream 평균에서 빠져 있다(2배 n=19, 3배 n=20; 나머지 n=21).
 
-남은 것: 다른 장면(corridor, home 등) 재현, 자이로 효과가 없는 시퀀스의 원인,
+## 결과: home 5개, corridor 5개 시퀀스, 3회 반복 (2026-10-17~18)
+
+GT: home·corridor는 2D 라이다(Hokuyo) Hector SLAM이다. 평면 3자유도이고 오차가 cm 수준이라 office 모션캡처보다 거칠다.
+home1-3에서는 GT 시간을 +0.3 s 옮기면 ATE가 16 → 13 cm로 줄었다. 세 버전에 똑같이 작용하므로 버전 비교는 유효하지만,
+절대값은 office와 직접 비교하지 않는다. 원자료는 `results/{home,corridor}_nf1000{,_x2}.csv`.
+
+### 평가 방식: 맵 구간별 (`seg_*` 열)
+
+두 장면 모두 추적을 잃고 새 맵을 만든다(시퀀스당 1–7개). 새 맵마다 원점이 달라서, 공식 단일 정렬로는 ATE가 수 m,
+AOE가 약 180°로 나와 의미가 없다. 수정본은 루프 임계값이 완화돼 있어 끊긴 맵을 옛 맵에 병합하기도 한다.
+이때 live 포즈가 옛 맵 좌표계로 점프한다.
+그래서 새 맵이 시작될 때와 포즈가 0.25 m 넘게 점프할 때 궤적을 나눈다. 그다음 5초 이상인 조각을 각각 Sim(3)로 정렬하고,
+모든 포즈에 대한 RMSE로 합친다(`seg_ate_sim3`). `seg_cr`은 점수를 매긴 조각이 덮는 시간 비율이다.
+office는 맵이 하나라 이 값이 공식 값과 같다.
+
+### Sim(3) ATE, 맵 구간별 평가 [cm], 5개 시퀀스 평균 (각 3회 평균)
+
+| 장면 | 조건 | 포즈 | upstream | ours | ours_gyro | gyro 효과(ours 대비) | gyro가 나은 시퀀스 |
+|---|---|---|---|---|---|---|---|
+| home | 1배 | live | 13.70* | 12.84 | **11.00** | −14 % | 4/5 |
+| home | 1배 | final | 13.86* | 13.01 | **11.27** | −13 % | 4/5 |
+| home | 2배 | live | 13.66 | 13.31 | **10.57** | −21 % | 5/5 |
+| home | 2배 | final | 13.70 | 13.54 | **10.90** | −20 % | 5/5 |
+| corridor | 1배 | live | 62.7 | 63.8 | **42.5** | −33 % | 4/5 |
+| corridor | 1배 | final | 61.4 | 51.4 | **41.5** | −19 % | 4/5 |
+| corridor | 2배 | live | 55.4 | 52.7 | **42.0** | −20 % | 4/5 |
+| corridor | 2배 | final | 51.1 | 49.7 | **40.5** | −19 % | 4/5 |
+
+\* home1-4 upstream 1배는 3회 모두 크래시했다(Sim3Solver NaN). 그래서 4개 시퀀스 평균이다.
+
+- 자이로 효과는 세 장면 모두에서 같은 방향이다(office −30 %, home −14~21 %, corridor −19~33 %).
+  corridor1-5(150 → 75 cm)와 corridor1-4(43 → 25 cm)처럼 오차가 큰 시퀀스에서 가장 크다.
+- 자이로가 낫지 않은 시퀀스는 home1-4 1배(10.6 vs 11.0)와 corridor1-1(31 vs 31–34)이다.
+- 추적 구간 비율(`seg_cr`, 약 0.90)은 버전 사이에 거의 같다. 자이로는 추적 상실 자체를 막지는 못하고, 추적 중인 구간의 정확도를 높인다.
+- 추적 시간: upstream 7.5–8.0 ms, ours·ours_gyro 4.6–5.1 ms.
+
+### 크래시와 수정
+
+| 원인 | 영향 | 조치 |
+|---|---|---|
+| `MapPoint::ComputeDistinctiveDescriptors`의 N×N 스택 배열. macOS 보조 스레드 스택은 512 KB라 N > 약 360이면 SIGBUS가 난다 | corridor, 세 버전 모두 37회 | 힙으로 옮김. 수정본 소스를 고쳤고 upstream에는 `build.sh` prep()의 이식 수정으로 적용. 해당 실행은 재실행 |
+| upstream `Sim3Solver` 0/0 → NaN (`SO3::exp failed`) | upstream만 7회 (home 4, corridor 3) | 수정본에서 이미 고친 버그. 실패한 실행은 평균에서 제외 |
+| `LocalMapping::Release()`가 대기열 키프레임을 `delete`. RGB-D 초기 KF는 이미 맵에 있어서, 다음 `ResetActiveMap` → `Map::clear()`가 해제된 mutex를 잠근다 | ours corridor1-1 1회 (원본 코드에서 물려받은 버그) | 수정본에서 delete를 제거하고 재실행 |
+
+남은 것: 자이로 효과가 없는 시퀀스의 원인, home GT 시간 오프셋 보정,
 루프 임계값 완화·조기 종료를 원본 값으로 되돌린 분리 실험.

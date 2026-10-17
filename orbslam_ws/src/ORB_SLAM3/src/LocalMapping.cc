@@ -863,8 +863,9 @@ void LocalMapping::Release()
         return;
     mbStopped = false;
     mbStopRequested = false;
-    for(list<KeyFrame*>::iterator lit = mlNewKeyFrames.begin(), lend=mlNewKeyFrames.end(); lit!=lend; lit++)
-        delete *lit;
+    // Drop the queue but do not delete: a queued keyframe can already be in the map (the RGB-D/stereo initial KF is
+    // added by Tracking before it is queued) and Tracking/MapPoints still point to it. Deleting it left a dangling
+    // pointer in Map::mspKeyFrames, and the next ResetActiveMap -> Map::clear() locked a freed mutex (OpenLORIS corridor).
     mlNewKeyFrames.clear();
 
     cout << "Local Mapping RELEASE" << endl;

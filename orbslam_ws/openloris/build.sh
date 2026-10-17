@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build the OpenLORIS runner against two ORB-SLAM3 trees, the same way (flags, deps, OpenMP) for both:
-#   upstream  UZ-SLAMLab/ORB_SLAM3 @ v1.0-release, only the macOS portability fixes below
+#   upstream  UZ-SLAMLab/ORB_SLAM3 @ v1.0-release, only the macOS portability fixes in prep()
 #   ours      orbslam_ws/src/ORB_SLAM3 (this repo), WITH_GYRO
 #
 #   orbslam_ws/openloris/build.sh [WORKDIR]      (default orbslam_ws/output/openloris)
@@ -28,6 +28,10 @@ prep() {   # $1 = destination; copies src/include/Thirdparty from $2 and applies
       "$dst/Thirdparty/g2o/g2o/core/$f"
   done
   sed -i '' 's#stdint-gcc.h#stdint.h#' "$dst/Thirdparty/DBoW2/DBoW2/FORB.cpp" "$dst/src/ORBmatcher.cc"
+  # MapPoint::ComputeDistinctiveDescriptors keeps an N x N float VLA on the stack (N = observations). macOS gives
+  # secondary threads 512 KB, so LocalMapping dies with SIGBUS (___chkstk_darwin) once N > ~360 (corridor scenes).
+  sed -i '' -e 's#float Distances\[N\]\[N\];#std::vector<std::vector<float> > Distances(N, std::vector<float>(N));#' \
+    -e 's#vDists(Distances\[i\],Distances\[i\]+N)#vDists(Distances[i].begin(),Distances[i].end())#' "$dst/src/MapPoint.cc"
 }
 prep "$W/src_upstream" "$W/upstream_src"
 prep "$W/src_ours" "$REPO/orbslam_ws/src/ORB_SLAM3"

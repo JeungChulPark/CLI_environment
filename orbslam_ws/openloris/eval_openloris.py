@@ -9,7 +9,18 @@ extrinsics, aligns the trajectory to the ground truth with SE(3) (no scale: RGB-
                                    computed for "any pose" (no threshold) and for the stricter 0.1 m / 5 deg
 plus ate_max [m] from the same per-pose errors, and ate_rmse_sim3 = the official ATE with --scale (Sim(3)
 alignment). On office1-1 every variant is ~5 % smaller than the ground truth (the D435i depth or the mocap
-scale), which dominates the SE(3) ATE; ate_rmse_sim3 shows the error left once that common factor is removed. Writes <runs>/results.csv and prints a per-variant table.
+scale), which dominates the SE(3) ATE; ate_rmse_sim3 shows the error left once that common factor is removed.
+
+When tracking is lost for good, RGB-D ORB-SLAM3 starts a new map with its own origin, and the official single
+alignment then mixes several frames (home/corridor: ATE of metres, AOE ~180 deg). The seg_* columns split the
+trajectory at every new map (frames.csv: an OK frame after a frame that was neither OK nor RECENTLY_LOST) and at
+every jump of more than SEG_JUMP_M between consecutive poses (a map merge moves the live pose into the older map's
+frame mid-run; the robot moves < 3 cm per frame at 30 Hz), score each piece of at least SEG_MIN_S seconds on its own, and pool them:
+  seg_n                 maps with at least SEG_MIN_S seconds of poses (seg_all = every map)
+  seg_cr                sum of the official CR of those pieces = time covered by a scored pose / sequence time
+  seg_ate_se3/_sim3     RMSE over all their poses, each piece aligned separately (SE(3) / Sim(3))
+For a run that never loses its map (office) these equal the official numbers. Writes <runs>/results.csv and prints a
+per-variant table.
 
     eval_openloris.py RUNS_DIR [--tools orbslam_ws/output/openloris/tools] [--gt DATASET/gt/per-scene]
 """
@@ -21,6 +32,7 @@ import math
 import os
 import re
 import sys
+import tempfile
 from contextlib import redirect_stdout
 from pathlib import Path
 
@@ -36,6 +48,8 @@ a = ap.parse_args()
 sys.path[:0] = [str(HERE / "tf_shim"), f"{a.tools}/benchmark", f"{a.tools}/dataprocess"]
 import evaluate as ol  # noqa: E402  (official evaluator)
 
+SEG_MIN_S = 5.0
+SEG_JUMP_M = 0.25
 SEQ = re.compile(r"^(office|corridor|home|cafe|market)1-(\d+)$")
 
 
@@ -53,6 +67,60 @@ def score(tum: Path, scene: str, seq: int, ate_thr: float, aoe_thr: float, auto_
     s = seqs[seq]
     return {"ate_rmse": s["ate_rmse"], "aoe_rmse": s["aoe_rmse"], "cr": s["cr"],
             "ate_max": max(s["ate"].values()) if s["ate"] else float("nan"), "poses": s["ate_num"]}
+
+
+def segments(run: Path, tum: Path):
+    """Split tum into one text per map, using the tracking states in frames.csv."""
+    states = []
+    with open(run / "frames.csv") as fh:
+        for r in csv.DictReader(fh):
+            states.append((float(r["stamp"]), int(r["state"])))
+    states.sort()
+    seg_of, sid, prev = {}, 0, None
+    for t, st in states:
+        if st == 2 and prev not in (2, 3):
+            sid += 1
+        seg_of[round(t, 4)] = sid
+        prev = st
+    pieces, last_k, last_p = [], None, None
+    for line in tum.read_text().splitlines():
+        if not line.strip() or line.startswith("#"):
+            continue
+        v = line.split()
+        k = seg_of.get(round(float(v[0]), 4))
+        if not k:
+            continue
+        p = [float(x) for x in v[1:4]]
+        if k != last_k or math.dist(p, last_p) > SEG_JUMP_M:
+            pieces.append([])
+        pieces[-1].append(line)
+        last_k, last_p = k, p
+    return pieces
+
+
+def seg_score(run: Path, tum: Path, scene: str, seq: int):
+    pieces = segments(run, tum)
+    out = {"seg_all": len(pieces), "seg_n": 0, "seg_cr": 0.0}
+    sq = {"se3": 0.0, "sim3": 0.0}
+    n = 0
+    with tempfile.TemporaryDirectory() as td:
+        for i, lines in enumerate(pieces):
+            if float(lines[-1].split()[0]) - float(lines[0].split()[0]) < SEG_MIN_S:
+                continue
+            f = Path(td) / f"seg{i}.txt"
+            f.write_text("\n".join(lines) + "\n")
+            r = score(f, scene, seq, math.inf, math.inf)
+            r3 = score(f, scene, seq, math.inf, math.inf, auto_scale=True)
+            if not r:
+                continue
+            out["seg_n"] += 1
+            out["seg_cr"] += r["cr"]
+            sq["se3"] += r["ate_rmse"] ** 2 * r["poses"]
+            sq["sim3"] += r3["ate_rmse"] ** 2 * r3["poses"]
+            n += r["poses"]
+    out["seg_ate_se3"] = math.sqrt(sq["se3"] / n) if n else float("nan")
+    out["seg_ate_sim3"] = math.sqrt(sq["sim3"] / n) if n else float("nan")
+    return out
 
 
 rows = []
@@ -78,12 +146,13 @@ for summ in sorted(Path(a.runs).glob("*/*/rep*/summary.json")):
             row.update({k: r_any[k] for k in ("ate_rmse", "ate_max", "aoe_rmse", "cr", "poses")})
             row["cr_0.1m_5deg"] = r_strict["cr"]
             row["ate_rmse_sim3"] = r_sim3["ate_rmse"]
+            row.update(seg_score(run, f, scene, seq))
         rows.append(row)
 
 if not rows:
     sys.exit(f"no runs under {a.runs}")
 keys = ["variant", "sequence", "rep", "traj", "ate_rmse", "ate_rmse_sim3", "ate_max", "aoe_rmse", "cr", "cr_0.1m_5deg", "poses",
-        "track_mean_ms", "track_p99_ms", "dropped", "ok_ratio", "map_changes"]
+        "seg_all", "seg_n", "seg_cr", "seg_ate_se3", "seg_ate_sim3", "track_mean_ms", "track_p99_ms", "dropped", "ok_ratio", "map_changes"]
 with open(Path(a.runs) / "results.csv", "w", newline="") as fh:
     w = csv.DictWriter(fh, fieldnames=keys, extrasaction="ignore")
     w.writeheader()
