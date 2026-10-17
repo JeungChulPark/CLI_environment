@@ -61,6 +61,8 @@ orbslam_ws/openloris/run_openloris.sh ~/Documents/DefenseMeta/Dataset/openloris/
   D435i depth나 GT 쪽 스케일 문제로 보이며 모든 버전에 똑같이 작용한다. 이 때문에 SE(3) ATE는 약 8 cm,
   Sim(3) ATE는 약 1 cm로 나온다. 시간 오프셋은 원인이 아니다(±0.3 s 범위에서 ATE 변화 1 cm 미만).
 
+전체 실험 보고서(해석, 한계, 그림 포함): [`report_261018.md`](report_261018.md)
+
 ## 결과: office 7개 시퀀스, 3회 반복 (2026-10-17, Mac M4 Pro)
 
 조건: nf1000, 30 Hz 실시간 재생. 2배·3배 = `STRIDE=k RATE=k`(k장마다 1장, 30 Hz) → 프레임 간 움직임 k배.
