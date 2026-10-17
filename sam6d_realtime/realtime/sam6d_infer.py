@@ -73,7 +73,9 @@ def main():
     odir = odir if os.path.isabs(odir) else os.path.join(REPO, odir)
     os.makedirs(odir, exist_ok=True)
     diag = bool(out.get("diagnostics", False))
-    if diag:
+    # OBJPOSE_SAVE_MASKS=1: 통과한 물체의 마스크(값 i+1 = 그 프레임의 i 번째 물체)를 masks/<stamp>.png 로 남긴다(다른 지도 생성 프로그램의 입력)
+    save_masks = os.environ.get("OBJPOSE_SAVE_MASKS", "0") == "1"
+    if diag or save_masks:
         os.makedirs(os.path.join(odir, "masks"), exist_ok=True)
 
     explorer_cfg = dict(out.get("pem_explorer") or {})
@@ -113,12 +115,27 @@ def main():
         explorer_cfg["completion_tolerance_policy"] = (
             "max(sync_slop,5_attested_mean_frame_periods)")
 
-    core = Sam6DCore(cfg.get("ism", {}).get("config", "configs/yolo_ism_objects.yaml"),
+    alt = os.environ.get("OBJPOSE_RECOGNIZER")
+    if alt:      # 비교 실험용: process() 인터페이스가 같은 다른 인식기(LiveCore 클래스가 있는 파이썬 파일)
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("alt_recognizer", alt)
+        mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+        core = mod.LiveCore(cfg)
+    else:
+        core = None
+    core = core or Sam6DCore(cfg.get("ism", {}).get("config", "configs/yolo_ism_objects.yaml"),
                      cfg.get("ism", {}).get("objects", []),
                      rt.get("device", "cuda:0"), rt.get("det_score_thresh", 0.2),
                      appe_rerank=rt.get("appe_rerank"),
                      verify=rt.get("verify", VC.UNSET),
-                     pem_diagnostic=rt.get("pem_diagnostic"))
+                     pem_diagnostic=rt.get("pem_diagnostic"),
+                     # 속도 옵션(opt-in). 키가 없으면 전부 None → 예전 동작 그대로
+                     # (fp32 / 마스크 캐시 off / PEM 예산제 off / base.yaml npoint).
+                     precision=rt.get("precision"),
+                     mask_cache=rt.get("mask_cache"),
+                     pem_schedule=rt.get("pem_schedule"),
+                     coarse_npoint_override=rt.get("coarse_npoint"),
+                     fine_npoint_override=rt.get("fine_npoint"))
     anchor_cfg = cfg.get("anchor", {})
     slam_cfg = cfg.get("slam", {})
     if anchor_cfg.get("enabled", False):
@@ -179,7 +196,7 @@ def main():
             bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
             t_a = time.time()
             rows, ms, n_boxes, lab = core.process(
-                bgr, depth, K, want_mask=(diag or recorder is not None),
+                bgr, depth, K, want_mask=(diag or recorder is not None or save_masks),
                 slam_context=slam_context)
             t_b = time.time()
             n_proc += 1; n_det += len(rows)
@@ -196,8 +213,13 @@ def main():
                                 "pose_source": r.get("pose_source", "sam6d"),
                                 "map_id": r.get("map_id"),
                                 "anchor_state": r.get("anchor_state"),
-                                "rejection_reason": r.get("rejection_reason")}
+                                "rejection_reason": r.get("rejection_reason"),
+                                "mask_iou": r.get("mask_iou"),
+                                "cluster_occupancy": r.get("cluster_occupancy")}
                                for r in rows],
+                      # 검증에서 떨어진 후보(이름 + 상자): 실행 중 지도 설계(objpose/pc/online_designs.py)의 약한 증거
+                      "weak": [{"object": c.get("object"), "bbox": c.get("bbox")}
+                               for c in core.last_frame_diag.get("pem_candidates", []) if c.get("bbox")],
                       "ms": ms, "n_proc": n_proc, "n_det": n_det})
             for r in rows:
                 f_det.write(json.dumps({**r, "stamp_ns": stamp_ns,

@@ -27,7 +27,7 @@
 #include <g2o/robust_kernel_io.hpp>
 
 G2O_USE_OPTIMIZATION_LIBRARY(pcg)
-G2O_USE_OPTIMIZATION_LIBRARY(cholmod)  // be aware of that cholmod brings GPL dependency
+G2O_USE_OPTIMIZATION_LIBRARY(eigen)  // conda-forge g2o has no cholmod solver; eigen + csparse instead
 G2O_USE_OPTIMIZATION_LIBRARY(csparse)  // be aware of that csparse brings LGPL unless it is dynamically linked
 
 namespace g2o {

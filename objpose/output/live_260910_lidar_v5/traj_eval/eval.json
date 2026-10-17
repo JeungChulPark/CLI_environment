@@ -1,0 +1,60 @@
+{
+ "spike_scans": 16,
+ "base": {
+  "accel_cm": {
+   "median": 0.289,
+   "p99": 1.56,
+   "max": 2.62,
+   "at_base_spikes_median": 1.78
+  },
+  "wobble_h_rms_cm": 0.621,
+  "hf_vs_orb_cm": {
+   "rms": 0.505,
+   "at_base_spikes_rms": 2.239,
+   "fast_turn_gt40dps_rms": 0.634
+  },
+  "lowfreq_vs_orb_rmse_cm": 3.29,
+  "object_spread_cm": {
+   "median": 1.135,
+   "p90": 1.679
+  }
+ },
+ "v5_live_final": {
+  "accel_cm": {
+   "median": 0.108,
+   "p99": 0.52,
+   "max": 0.78,
+   "at_base_spikes_median": 0.26
+  },
+  "wobble_h_rms_cm": 0.427,
+  "hf_vs_orb_cm": {
+   "rms": 0.257,
+   "at_base_spikes_rms": 0.455,
+   "fast_turn_gt40dps_rms": 0.309
+  },
+  "lowfreq_vs_orb_rmse_cm": 3.27,
+  "object_spread_cm": {
+   "median": 1.038,
+   "p90": 1.706
+  }
+ },
+ "v5_live_raw": {
+  "accel_cm": {
+   "median": 0.381,
+   "p99": 1.39,
+   "max": 2.93,
+   "at_base_spikes_median": 0.75
+  },
+  "wobble_h_rms_cm": 0.506,
+  "hf_vs_orb_cm": {
+   "rms": 0.346,
+   "at_base_spikes_rms": 0.702,
+   "fast_turn_gt40dps_rms": 0.415
+  },
+  "lowfreq_vs_orb_rmse_cm": 3.27,
+  "object_spread_cm": {
+   "median": 1.03,
+   "p90": 1.673
+  }
+ }
+}

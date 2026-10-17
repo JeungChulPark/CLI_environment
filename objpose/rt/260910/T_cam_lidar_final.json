@@ -1,0 +1,45 @@
+{
+ "T_cam_lidar": [
+  [
+   0.34936817034692497,
+   -0.9366455253860114,
+   -0.025239677549536335,
+   -0.019045784239435613
+  ],
+  [
+   0.04083749181235252,
+   0.04213281363184438,
+   -0.9982770784095669,
+   -0.31456929863016675
+  ],
+  [
+   0.9360951772180636,
+   0.3477355112579486,
+   0.05297011798415334,
+   -0.33278928638274313
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "method": "stage 1 planar hand-eye (tx, ty, yaw, tilt from trajectory planes) + height from LiDAR/depth overlap maximum",
+ "height_along_down_m": -0.3,
+ "height_uncertainty_m": 0.1,
+ "tau_s": 0.004,
+ "stage1": {
+  "pairs": 3122,
+  "tx_m": -0.3463987009610108,
+  "ty_m": -0.008557724091709965,
+  "phi_deg": 20.35496016642813,
+  "residual_median_cm": 1.18,
+  "sd_mm_deg": [
+   0.48,
+   0.53,
+   0.0236
+  ]
+ },
+ "note": "6-DoF depth registration was unstable (thirds disagreed up to 19.5 cm); height does not affect trajectory comparison after rigid alignment"
+}

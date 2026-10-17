@@ -1,0 +1,28 @@
+--- a/src/Tracking.cc
++++ b/src/Tracking.cc
+@@ -2086,7 +2086,11 @@
+             // On a prior map we would rather have NO pose than a fictional one,
+             // so treat unanchored as LOST and keep relocalizing.
+             const bool bUnanchored = mbVO && IsLocalizingOnPriorMap();
+-            if(mState==LOST || bUnanchored)
++            // RECENTLY_LOST has no exit in this branch (only the mapping branch escalates
++            // it to LOST), so a single failed track would stall tracking for the rest of
++            // the session. On a prior map, go straight back to relocalization instead.
++            const bool bRecentlyLostOnPrior = (mState==RECENTLY_LOST) && IsLocalizingOnPriorMap();
++            if(mState==LOST || bUnanchored || bRecentlyLostOnPrior)
+             {
+                 if(mSensor == System::IMU_MONOCULAR || mSensor == System::IMU_STEREO || mSensor == System::IMU_RGBD)
+                     Verbose::PrintMess("IMU. State LOST", Verbose::VERBOSITY_NORMAL);
+@@ -2097,6 +2101,12 @@
+                          << "(VO fallback suppressed); relocalizing..." << endl;
+                 }
+                 bOK = Relocalization();
++                // A successful relocalization IS anchored to the map. Without this the
++                // stale mbVO=true skips TrackLocalMap() below (the only place mbVO is
++                // re-evaluated) and the next frame is declared unanchored again, so the
++                // camera relocalizes from scratch on every frame and never tracks.
++                if(bOK)
++                    mbVO = false;
+             }
+             else
+             {

@@ -1,0 +1,1 @@
+{"n": 2, "d_deg": 0.1, "mad_deg": 0.44, "lidar_yaw_assumed": 1.2171, "lidar_yaw_estimated": 1.2154, "ok": false, "segments": [{"t": 2322.06, "dur_s": 2.07, "dist_m": 0.49, "dir": "fwd", "d_deg": 0.54}, {"t": 2332.26, "dur_s": 2.81, "dist_m": 0.78, "dir": "fwd", "d_deg": -0.34}], "wheel_msgs": 2905, "pose_msgs": 1981, "pose_source": "hdl /odom", "wall": 1791942332.4949095}

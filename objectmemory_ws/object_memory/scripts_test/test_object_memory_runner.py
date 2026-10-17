@@ -204,7 +204,8 @@ def test_out_of_view_absence_preserves_identity():
 def test_reseed_after_prune_gets_new_object_id():
     # poisoned first pose (in view) -> later detections rejected -> existence
     # floor prunes it -> the next detection re-seeds at the correct position.
-    bad, good = (0.3, 0.0, 2.0), (0.0, 0.0, 1.0)
+    # bad stays inside MAX_UPDATE_RANGE_M of the camera (a farther one is not updated from misses at all)
+    bad, good = (0.5, 0.0, 0.8), (0.0, 0.0, 1.0)
     frames = [[("can", bad)]] + [[("can", good)]] * 10   # all rejected (gate)
     frames += [[("can", good)]] * 2                      # after prune: re-seed
     poses, ts, dets = _frames(frames)
@@ -219,22 +220,30 @@ def test_reseed_after_prune_gets_new_object_id():
     assert result.object_ids_by_name["can"] == cans[1].object_id
 
 
+# 6 accepted obs (>= MIN_OBS_LONGTERM) in two episodes (a 3 s gap > EPISODE_GAP_S between them)
+_CAN_TWO_EPISODES = ([[("can", (0.0, 0.0, 1.0)), ("other", (3.0, 0.0, 1.0))]] * 3
+                     + [[("other", (3.0, 0.0, 1.0))]] * 2
+                     + [[("can", (0.0, 0.0, 1.0)), ("other", (3.0, 0.0, 1.0))]] * 3)
+
+
 def test_long_observed_lost_becomes_remembered_not_deleted():
-    # 6 accepted obs (>= MIN_OBS_LONGTERM), then 30 misses -> remembered.
-    frames = [[("can", (0.0, 0.0, 1.0)), ("other", (3.0, 0.0, 1.0))]] * 6
+    # 6 obs in two episodes, then 30 misses -> remembered.
+    frames = list(_CAN_TWO_EPISODES)
     frames += [[("other", (3.0, 0.0, 1.0))]] * 30
     poses, ts, dets = _frames(frames)
     result = run_object_memory(poses, dets, ts)
     lm = result.store.require(result.object_ids_by_name["can"])
     assert lm.status is ObjectStatus.remembered
-    assert lm.missed_count < 30           # retired well before 30 in-view misses
+    # retired well before 30 in-view misses (missed_count keeps counting while remembered, for the miss limit)
+    remembered_at = next(tr.stamp for tr in lm.transition_history if tr.reason == "long_term_memory")
+    assert remembered_at < ts[-1]
     reasons = [tr.reason for oid, tr in result.store.transition_log()
                if oid == lm.object_id]
     assert reasons[-1] == "long_term_memory"
 
 
 def test_remembered_redetected_reactivates_same_id():
-    frames = [[("can", (0.0, 0.0, 1.0)), ("other", (3.0, 0.0, 1.0))]] * 6
+    frames = list(_CAN_TWO_EPISODES)
     frames += [[("other", (3.0, 0.0, 1.0))]] * 30
     frames += [[("can", (0.0, 0.0, 1.0))]]                  # reappears
     poses, ts, dets = _frames(frames)
@@ -245,6 +254,94 @@ def test_remembered_redetected_reactivates_same_id():
     reasons = [tr.reason for oid, tr in result.store.transition_log()
                if oid == lm.object_id]
     assert reasons[-2:] == ["long_term_memory", "redetected"]
+
+
+def test_single_burst_lost_is_deleted_not_remembered():
+    # 6 obs in ONE burst (5 s span, 1 episode), then missed in view: a false positive stuck on
+    # one spot for a few seconds must not earn long-term memory (2026-09-22, GPU box read as milk).
+    frames = [[("can", (0.0, 0.0, 1.0)), ("other", (3.0, 0.0, 1.0))]] * 6
+    frames += [[("other", (3.0, 0.0, 1.0))]] * 30
+    poses, ts, dets = _frames(frames)
+    result = run_object_memory(poses, dets, ts)
+    assert "can" not in result.object_ids_by_name
+    lm = next(lm for lm in result.store.all_landmarks() if lm.object_name == "can")
+    assert lm.status is ObjectStatus.deleted
+    assert lm.episode_count == 1
+    assert lm.transition_history[-1].reason == "low_evidence"
+
+
+def test_remembered_deleted_after_in_view_miss_limit():
+    # remembered no longer decays, but REMEMBERED_MISS_LIMIT in-view misses since the last
+    # detection let it go; the same object is kept while it stays under the limit.
+    from pipeline.object_memory_runner import REMEMBERED_MISS_LIMIT
+    frames = list(_CAN_TWO_EPISODES)
+    frames += [[("other", (3.0, 0.0, 1.0))]] * (REMEMBERED_MISS_LIMIT - 1)
+    poses, ts, dets = _frames(frames)
+    kept = run_object_memory(poses, dets, ts)
+    assert kept.store.require(kept.object_ids_by_name["can"]).status is ObjectStatus.remembered
+    frames += [[("other", (3.0, 0.0, 1.0))]]
+    poses, ts, dets = _frames(frames)
+    gone = run_object_memory(poses, dets, ts)
+    assert "can" not in gone.object_ids_by_name
+    lm = next(lm for lm in gone.store.all_landmarks() if lm.object_name == "can")
+    assert lm.status is ObjectStatus.deleted
+    assert lm.transition_history[-1].reason == "remembered_missed"
+
+
+def test_respawn_inherits_retired_evidence_at_same_spot():
+    # a real object first seen in one short burst is retired (1 episode); seen again at the same spot, the
+    # new instance inherits the retired one's episode and observations and can reach long-term memory.
+    burst = [[("can", (0.0, 0.0, 1.0)), ("other", (3.0, 0.0, 1.0))]] * 3
+    gap = [[("other", (3.0, 0.0, 1.0))]] * 30
+    poses, ts, dets = _frames(burst + gap + burst + gap)
+    result = run_object_memory(poses, dets, ts)
+    cans = sorted((lm for lm in result.store.all_landmarks() if lm.object_name == "can"),
+                  key=lambda lm: lm.object_id)
+    assert len(cans) == 2
+    assert cans[0].status is ObjectStatus.deleted
+    assert cans[0].transition_history[-1].reason == "low_evidence"
+    assert cans[1].episode_count == 2 and cans[1].inherited_obs == 3
+    assert cans[1].status is ObjectStatus.remembered
+
+
+def test_respawn_elsewhere_inherits_nothing():
+    burst = [[("can", (0.0, 0.0, 1.0)), ("other", (3.0, 0.0, 1.0))]] * 3
+    far = [[("can", (1.0, 0.0, 1.0)), ("other", (3.0, 0.0, 1.0))]] * 3
+    gap = [[("other", (3.0, 0.0, 1.0))]] * 30
+    poses, ts, dets = _frames(burst + gap + far + gap)
+    result = run_object_memory(poses, dets, ts)
+    cans = sorted((lm for lm in result.store.all_landmarks() if lm.object_name == "can"),
+                  key=lambda lm: lm.object_id)
+    assert cans[1].episode_count == 1 and cans[1].inherited_obs == 0
+
+
+def test_far_landmark_is_not_updated_from_misses():
+    # a remembered object seen from beyond MAX_UPDATE_RANGE_M keeps its state however long it stays in
+    # view there: SAM-6D does not detect objects that far, so the misses carry no evidence.
+    from pipeline.object_memory_runner import MAX_UPDATE_RANGE_M, REMEMBERED_MISS_LIMIT
+    frames = list(_CAN_TWO_EPISODES) + [[("other", (3.0, 0.0, 1.0))]] * 30
+    poses, ts, dets = _frames(frames)
+    n = len(frames)
+    for i in range(REMEMBERED_MISS_LIMIT + 10):          # camera backs off along -z, can stays centred
+        t = float(n + i)
+        poses.append(SlamCameraPose(stamp=t, frame_id="map", child_frame_id="camera",
+                                    T_map_cam=make_transform(I3, (0.0, 0.0, -(MAX_UPDATE_RANGE_M + 1.0))),
+                                    tracking_status=TrackingStatus.OK, source_slam_id="synthetic"))
+        ts.append(t)
+        dets[n + i] = [_det(t, "other", (3.0, 0.0, 1.0))]
+    result = run_object_memory(poses, dets, ts)
+    lm = result.store.require(result.object_ids_by_name["can"])
+    assert lm.status is ObjectStatus.remembered
+
+
+def test_far_tentative_still_times_out():
+    frames = [[("ghost", (0.0, 0.0, 3.0)), ("real", (0.2, 0.0, 0.8))]]
+    frames += [[("real", (0.2, 0.0, 0.8))]] * 12
+    poses, ts, dets = _frames(frames)
+    result = run_object_memory(poses, dets, ts, tentative_max_age=10)
+    ghost = next(lm for lm in result.store.all_landmarks() if lm.object_name == "ghost")
+    assert ghost.status is ObjectStatus.deleted
+    assert ghost.transition_history[-1].reason == "tentative_timeout"
 
 
 def test_miss_to_lost_and_redetect():

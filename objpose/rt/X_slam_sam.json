@@ -1,0 +1,219 @@
+{
+ "T_slam_sam": [
+  [
+   0.006519470985704199,
+   0.289906997902893,
+   -0.9570326165105338,
+   -0.3452162207629858
+  ],
+  [
+   0.04644744152663271,
+   0.9559322069991745,
+   0.28989006674482226,
+   0.09220517248520062
+  ],
+  [
+   0.9988994602429698,
+   -0.04634164637364005,
+   -0.007233266045424957,
+   -0.37516464269706984
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "source": "offline: trajectory-plane gravity + planar SE(2) hand-eye on ORB-SLAM3 f2000 relative motions + depth floor height",
+ "inputs": {
+  "slam_traj": "objpose/rt/slam_traj_ftime.txt.optimized.txt",
+  "sam_traj": "objpose/rt/sam_traj_ftime.txt.optimized.txt",
+  "windows_s": [
+   0.5,
+   1.0,
+   1.5,
+   2.0,
+   3.0,
+   4.0
+  ]
+ },
+ "down": {
+  "slam": [
+   0.010723119902318319,
+   0.9984751519958227,
+   -0.05415150548672736
+  ],
+  "sam": [
+   -0.007645384294835106,
+   0.960092733098103,
+   0.27957734520378946
+  ],
+  "plane_rms_cm": [
+   0.604,
+   0.196
+  ]
+ },
+ "tau_s": -0.048,
+ "planar_handeye": {
+  "pairs": 14592,
+  "tx_m": -0.3698221665056107,
+  "ty_m": -0.34618649440301236,
+  "phi_deg": -89.52749127192206,
+  "residual_median_cm": 0.412,
+  "residual_p90_cm": 1.105,
+  "sd_tx_mm": 0.18,
+  "sd_ty_mm": 0.12,
+  "sd_phi_deg": 0.0117,
+  "quarters": [
+   {
+    "t_from_s": 0.0,
+    "n": 3648,
+    "d_tx_mm": -6.6,
+    "d_ty_mm": -4.3,
+    "d_phi_deg": 0.032
+   },
+   {
+    "t_from_s": 71.0,
+    "n": 3648,
+    "d_tx_mm": 1.7,
+    "d_ty_mm": 2.9,
+    "d_phi_deg": 0.13
+   },
+   {
+    "t_from_s": 135.5,
+    "n": 3648,
+    "d_tx_mm": 0.2,
+    "d_ty_mm": 0.4,
+    "d_phi_deg": 0.017
+   },
+   {
+    "t_from_s": 208.4,
+    "n": 3648,
+    "d_tx_mm": 0.0,
+    "d_ty_mm": -2.6,
+    "d_phi_deg": -0.145
+   }
+  ]
+ },
+ "floor": {
+  "h_slam_m": 1.1067551199232941,
+  "h_sam_m": 0.9980766110313626,
+  "mad_cm": [
+   2.31,
+   1.22
+  ],
+  "frames_used": [
+   64,
+   209
+  ],
+  "normal_vs_trajectory_deg": [
+   0.468,
+   1.829
+  ]
+ },
+ "compare": {
+  "urdf": {
+   "translation_diff_cm": 3.54,
+   "rotation_diff_deg": 0.54
+  },
+  "previous_axzb": {
+   "translation_diff_cm": 13.76,
+   "rotation_diff_deg": 2.95
+  },
+  "shared_map_loc": {
+   "translation_diff_cm": 4.62,
+   "rotation_diff_deg": 3.18
+  },
+  "shared_map_loc_ftime": {
+   "translation_diff_cm": 7.51,
+   "rotation_diff_deg": 1.05
+  },
+  "offline_assoc_stamps": {
+   "translation_diff_cm": 0.61,
+   "rotation_diff_deg": 0.14
+  }
+ },
+ "object_consistency_check (reference only)": {
+  "per_frame_slam_poses": {
+   "offline_X": {
+    "n": 156,
+    "median_cm": 1.63,
+    "p90_cm": 8.93
+   },
+   "urdf": {
+    "n": 156,
+    "median_cm": 3.17,
+    "p90_cm": 9.97
+   },
+   "previous_axzb": {
+    "n": 156,
+    "median_cm": 3.72,
+    "p90_cm": 8.84
+   },
+   "shared_map_loc": {
+    "n": 156,
+    "median_cm": 3.25,
+    "p90_cm": 8.93
+   },
+   "shared_map_loc_ftime": {
+    "n": 156,
+    "median_cm": 4.42,
+    "p90_cm": 9.48
+   },
+   "offline_assoc_stamps": {
+    "n": 156,
+    "median_cm": 1.69,
+    "p90_cm": 9.43
+   }
+  },
+  "optimized_slam_poses": {
+   "offline_X": {
+    "n": 156,
+    "median_cm": 0.85,
+    "p90_cm": 2.42
+   },
+   "urdf": {
+    "n": 156,
+    "median_cm": 1.82,
+    "p90_cm": 4.94
+   },
+   "previous_axzb": {
+    "n": 156,
+    "median_cm": 2.46,
+    "p90_cm": 5.81
+   },
+   "shared_map_loc": {
+    "n": 156,
+    "median_cm": 1.95,
+    "p90_cm": 5.56
+   },
+   "shared_map_loc_ftime": {
+    "n": 156,
+    "median_cm": 3.06,
+    "p90_cm": 7.8
+   },
+   "offline_assoc_stamps": {
+    "n": 156,
+    "median_cm": 0.88,
+    "p90_cm": 2.42
+   }
+  }
+ },
+ "uncertainty": {
+  "bootstrap_sd_tx_mm": 1.9386362469353937,
+  "bootstrap_sd_ty_mm": 1.6881458881066156,
+  "bootstrap_sd_phi_deg": 0.05225755182075814,
+  "floor_height_se_mm": [
+   2.9,
+   0.8
+  ],
+  "note": "block bootstrap (20 s) of the planar hand-eye; height from depth floor planes"
+ },
+ "clock": "frame clock (colour metadata timestamp; SAM shifted by -18225662057 ns) \u2014 association stamps of the SLAM session drift by up to 3.8 s",
+ "alternatives_rejected": {
+  "floor_normal_down_for_SAM": "object spread 1.06 vs 0.85 cm (optimized poses)",
+  "axzb_two_maps": "ill-posed for yaw-only motion",
+  "shared_map_localization": "inherits map deformation; residual p90 12 cm"
+ }
+}

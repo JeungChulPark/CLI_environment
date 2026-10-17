@@ -27,6 +27,7 @@ def generate_launch_description():
     scan_reg_correspondence_randomness = LaunchConfiguration("scan_reg_correspondence_randomness")
     graph_keyframe_delta_trans = LaunchConfiguration("graph_keyframe_delta_trans")
     graph_keyframe_delta_angle = LaunchConfiguration("graph_keyframe_delta_angle")
+    g2o_solver_type = LaunchConfiguration("g2o_solver_type")
 
     common_params = {
         "use_sim_time": use_sim_time,
@@ -58,6 +59,8 @@ def generate_launch_description():
             # to give the loop detector much to work with.
             DeclareLaunchArgument("graph_keyframe_delta_trans", default_value="2.0"),
             DeclareLaunchArgument("graph_keyframe_delta_angle", default_value="2.0"),
+            # g2o solver: lm_var = csparse (Linux conda g2o); lm_var_eigen when g2o was built without csparse
+            DeclareLaunchArgument("g2o_solver_type", default_value="lm_var"),
             Node(
                 package="tf2_ros",
                 executable="static_transform_publisher",
@@ -142,6 +145,7 @@ def generate_launch_description():
                                                                value_type=float),
                         "keyframe_delta_angle": ParameterValue(graph_keyframe_delta_angle,
                                                                value_type=float),
+                        "g2o_solver_type": g2o_solver_type,
                         "use_const_inf_matrix": True,
                         "publish_map_odom_tf": True,
                         "publish_map_points": True,

@@ -1,0 +1,52 @@
+{
+ "T_slam_sam": [
+  [
+   0.9400522244551668,
+   0.1251857534115479,
+   -0.31722285926407606,
+   -0.1166851511068428
+  ],
+  [
+   0.3396709953339812,
+   -0.2607239782086511,
+   0.903685023731099,
+   0.2922049658519718
+  ],
+  [
+   0.03042088469645719,
+   -0.9572625211141601,
+   -0.28761612514677776,
+   -0.3890692727961489
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "source": "260915_eightcircle LiDAR (velodyne) -> SAM-folder camera: planar hand-eye + overlap height (objpose/lidar/estimate_lidar_cam_rt.py --camera SAM, KISS-ICP base trajectory from objpose/rt/260915/kiss_260915.py)",
+ "slam_sensor": "lidar",
+ "sam_tau_s": -0.0,
+ "clock": "header stamps (converted bags, SAM offset already applied by the converter from the session manifest)",
+ "fit": {
+  "pairs": 2508,
+  "residual_median_cm": 0.49,
+  "height_along_down_m": -0.3861872146118714,
+  "height_uncertainty_m": 0.1
+ },
+ "cross_check": {
+  "vs_260915_dense_same_method": {
+   "translation_cm": 0.94,
+   "rotation_deg": 0.47
+  },
+  "vs_260915_distance_same_method": {
+   "translation_cm": 4.72,
+   "rotation_deg": 0.74
+  },
+  "vs_260910_X_lidar_sam_in_use": {
+   "translation_cm": 0.34,
+   "rotation_deg": 0.61
+  }
+ }
+}

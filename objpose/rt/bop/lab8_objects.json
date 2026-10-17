@@ -1,0 +1,49 @@
+{
+ "dataset": "lab",
+ "models_dir": "",
+ "scenes_dir": "/home/jucpark/DeepLearning/Datasets/lab_sessions_bop/test",
+ "fps": 10.0,
+ "note": "직접 녹화한 8개 세션(extract_lab_bop.py). 실험실 물체 8종(Sauce_high 제외). 정답 자세 없음.",
+ "objects": [
+  {
+   "obj_id": 1,
+   "name": "milk",
+   "ycb": "001_milk"
+  },
+  {
+   "obj_id": 2,
+   "name": "choco_hazelnut_high",
+   "ycb": "002_choco_hazelnut_high"
+  },
+  {
+   "obj_id": 3,
+   "name": "Febreze_high",
+   "ycb": "003_Febreze_high"
+  },
+  {
+   "obj_id": 4,
+   "name": "Mugcup_high",
+   "ycb": "004_Mugcup_high"
+  },
+  {
+   "obj_id": 5,
+   "name": "saffron",
+   "ycb": "005_saffron"
+  },
+  {
+   "obj_id": 6,
+   "name": "Sikhye_high",
+   "ycb": "006_Sikhye_high"
+  },
+  {
+   "obj_id": 7,
+   "name": "Bear",
+   "ycb": "007_Bear"
+  },
+  {
+   "obj_id": 8,
+   "name": "Dinosaur",
+   "ycb": "008_Dinosaur"
+  }
+ ]
+}

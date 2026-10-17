@@ -1,0 +1,35 @@
+# 260915_six_routes/260915_eight_fast — 변환본 SAM bag 을 ros2 bag play(1x, --clock) 로 실시간 재생하고
+# 수신/추론 분리판(sam6d_split.launch.py)이 그것을 구독해 SAM-6D 를 돌리는 설정.
+#   conda activate sam6d && export ROS_DOMAIN_ID=72
+#   ros2 launch realtime/launch/sam6d_split.launch.py config:=realtime/run_split_260915_eight_fast.yaml
+
+topics:
+  rgb: /camera/camera/color/image_raw
+  depth: /camera/camera/aligned_depth_to_color/image_raw
+  caminfo: /camera/camera/color/camera_info
+
+ism:
+  config: configs/yolo_ism_objects.yaml
+  objects: []                 # config 의 활성 객체 전부(9개)
+
+runtime:
+  device: cuda:0
+  use_sim_time: true          # --clock 재생
+  sync_slop: 0.02
+  sync_queue: 30
+  qos_reliability: reliable
+  qos_depth: 30
+  det_score_thresh: 0.2
+  status_period_s: 1.0
+  idle_exit_s: 30             # 재생이 끝나고 30 s 뒤 추론이 스스로 종료
+
+output:
+  dir: output/split_260915_eight_fast
+  diagnostics: true
+
+bag:
+  play: true                  # READY 뒤 launch 가 ros2 bag play <path> --rate 1.0 --clock 실행
+  path: /home/jucpark/DeepLearning/Datasets/data_slam_converted/260915_six_routes/260915_eight_fast/SAM
+  rate: 1.0
+  clock: true
+  ready_timeout: 600

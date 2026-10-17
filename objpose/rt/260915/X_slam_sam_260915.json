@@ -1,0 +1,65 @@
+{
+ "T_slam_sam": [
+  [
+   0.020288300380877332,
+   0.3055094815611844,
+   -0.951972868071287,
+   -0.29770908679758495
+  ],
+  [
+   0.024817958451800112,
+   0.9517215589497575,
+   0.3059577473582389,
+   0.07789471036208732
+  ],
+  [
+   0.9994860948537203,
+   -0.029833385769294705,
+   0.011726691246913064,
+   -0.371076701621572
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "source": "260915_eightcircle offline rig RT (trajectory-plane gravity + planar SE(2) hand-eye on the two ORB-SLAM3 f2000 offline trajectories + depth floor height; objpose/rt/260915/fit_cam_rt_260915.py, same method as objpose/pc/estimate_rt_offline.py with converted-bag sessions)",
+ "sam_tau_s": 0.0,
+ "clock": "header stamps (converted bags, SAM offset already applied by the converter from the session manifest)",
+ "trajectories": {
+  "slam": "objpose/rt/260915/eightcircle_slam_orb_tum.txt.optimized.txt",
+  "sam": "objpose/rt/260915/eightcircle_sam_orb_tum.txt.optimized.txt"
+ },
+ "fit": {
+  "pairs": 7596,
+  "residual_median_cm": 1.04,
+  "residual_p90_cm": 3.21,
+  "rotation_consistency_deg": 0.068,
+  "floor_dz_m": 0.08697122192947004
+ },
+ "cross_check": {
+  "vs_260915_dense_same_method": {
+   "translation_cm": 2.09,
+   "rotation_deg": 0.49
+  },
+  "vs_260915_distance_same_method": {
+   "translation_cm": 4.73,
+   "rotation_deg": 1.28
+  },
+  "vs_260915_eightcircle_composed_from_two_lidar_camera_RTs": {
+   "translation_cm": 4.28,
+   "rotation_deg": 0.04
+  },
+  "vs_260910_rig_RT_in_use": {
+   "translation_cm": 4.98,
+   "rotation_deg": 1.74
+  },
+  "vs_260910_composed_from_two_lidar_camera_RTs": {
+   "translation_cm": 3.15,
+   "rotation_deg": 1.15
+  }
+ },
+ "note": "The LiDAR<->SAM-camera RT reproduces the 260910 one to 0.7-1.7 cm while the LiDAR<->SLAM-camera RT moved 4-5 cm: the SLAM camera shifted on the rig, the SAM camera and the VLP-16 did not."
+}

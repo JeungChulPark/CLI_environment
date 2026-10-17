@@ -1,0 +1,175 @@
+{
+ "T_slam_sam": [
+  [
+   0.009008834345045931,
+   0.28991980995323063,
+   -0.9570085395128018,
+   -0.33918536675182404
+  ],
+  [
+   0.046419727496162605,
+   0.9558943677028832,
+   0.2900192522800636,
+   0.09219518243867517
+  ],
+  [
+   0.9988813992676634,
+   -0.047036811016350016,
+   -0.004846504563770517,
+   -0.37415461062205146
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "source": "offline: trajectory-plane gravity + planar SE(2) hand-eye on ORB-SLAM3 f2000 relative motions + depth floor height",
+ "inputs": {
+  "slam_traj": "/home/jucpark/DeepLearning/CLI_environment/objpose/rt/slam_traj_tum.txt.optimized.txt",
+  "sam_traj": "/home/jucpark/DeepLearning/CLI_environment/objpose/rt/sam_traj_tum.txt.optimized.txt",
+  "windows_s": [
+   0.5,
+   1.0,
+   1.5,
+   2.0,
+   3.0,
+   4.0
+  ]
+ },
+ "down": {
+  "slam": [
+   0.010723119902318319,
+   0.9984751519958227,
+   -0.05415150548672736
+  ],
+  "sam": [
+   -0.007645384294835106,
+   0.960092733098103,
+   0.27957734520378946
+  ],
+  "plane_rms_cm": [
+   0.604,
+   0.196
+  ]
+ },
+ "tau_s": -0.05,
+ "planar_handeye": {
+  "pairs": 11085,
+  "tx_m": -0.3688106502639528,
+  "ty_m": -0.34015588086951476,
+  "phi_deg": -89.38484445947681,
+  "residual_median_cm": 1.268,
+  "residual_p90_cm": 4.019,
+  "sd_tx_mm": 0.64,
+  "sd_ty_mm": 0.67,
+  "sd_phi_deg": 0.0377,
+  "quarters": [
+   {
+    "t_from_s": 0.0,
+    "n": 2772,
+    "d_tx_mm": -4.1,
+    "d_ty_mm": -42.3,
+    "d_phi_deg": 0.055
+   },
+   {
+    "t_from_s": 65.2,
+    "n": 2771,
+    "d_tx_mm": -6.7,
+    "d_ty_mm": 23.6,
+    "d_phi_deg": 0.781
+   },
+   {
+    "t_from_s": 144.0,
+    "n": 2771,
+    "d_tx_mm": 1.8,
+    "d_ty_mm": -16.4,
+    "d_phi_deg": -0.089
+   },
+   {
+    "t_from_s": 219.2,
+    "n": 2771,
+    "d_tx_mm": 1.9,
+    "d_ty_mm": 3.9,
+    "d_phi_deg": -0.495
+   }
+  ]
+ },
+ "floor": {
+  "h_slam_m": 1.1067551199232941,
+  "h_sam_m": 0.9980766110313626,
+  "mad_cm": [
+   2.31,
+   1.22
+  ],
+  "frames_used": [
+   64,
+   209
+  ],
+  "normal_vs_trajectory_deg": [
+   0.468,
+   1.829
+  ]
+ },
+ "compare": {
+  "urdf": {
+   "translation_diff_cm": 3.16,
+   "rotation_diff_deg": 0.54
+  },
+  "previous_axzb": {
+   "translation_diff_cm": 13.8,
+   "rotation_diff_deg": 3.09
+  },
+  "shared_map_loc": {
+   "translation_diff_cm": 4.79,
+   "rotation_diff_deg": 3.32
+  }
+ },
+ "object_consistency_check (reference only)": {
+  "per_frame_slam_poses": {
+   "offline_X": {
+    "n": 156,
+    "median_cm": 5.85,
+    "p90_cm": 18.39
+   },
+   "urdf": {
+    "n": 156,
+    "median_cm": 7.3,
+    "p90_cm": 19.11
+   },
+   "previous_axzb": {
+    "n": 156,
+    "median_cm": 5.77,
+    "p90_cm": 18.61
+   },
+   "shared_map_loc": {
+    "n": 156,
+    "median_cm": 6.0,
+    "p90_cm": 17.7
+   }
+  },
+  "optimized_slam_poses": {
+   "offline_X": {
+    "n": 156,
+    "median_cm": 4.05,
+    "p90_cm": 17.37
+   },
+   "urdf": {
+    "n": 156,
+    "median_cm": 5.13,
+    "p90_cm": 17.31
+   },
+   "previous_axzb": {
+    "n": 156,
+    "median_cm": 4.94,
+    "p90_cm": 17.93
+   },
+   "shared_map_loc": {
+    "n": 156,
+    "median_cm": 4.97,
+    "p90_cm": 16.23
+   }
+  }
+ }
+}

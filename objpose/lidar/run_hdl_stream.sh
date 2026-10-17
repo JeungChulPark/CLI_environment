@@ -5,6 +5,15 @@
 #   ~/objpose/lidar/run_hdl_stream.sh --session <lidar dir> --mode live --connect <hub ip>:17001 --rate 1.0
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# conda env: HDL_ENV, else the first that exists of hdl_graph_slam_jazzy / hdl_graph_slam_humble
+# (the laptop etri-rog builds the same sources with ROS 2 Humble, 2026-09-17)
+if [ -z "${HDL_ENV:-}" ]; then
+  for cand in hdl_graph_slam_jazzy hdl_graph_slam_humble; do
+    for root in "$HOME/anaconda3" "$HOME/miniconda3" "$HOME/micromamba"; do
+      [ -d "$root/envs/$cand" ] && HDL_ENV="$cand" && break 2
+    done
+  done
+fi
 HDL_ENV="${HDL_ENV:-hdl_graph_slam_jazzy}"
 # the workspace: next to objpose/ (CLI_environment/hdlgraphslam_ws), or a deployed copy inside ~/objpose (Mac)
 for cand in "${HDL_WS:-}" "$HERE/../../hdlgraphslam_ws" "$HERE/../hdlgraphslam_ws" "$HERE/hdlgraphslam_ws"; do
@@ -24,4 +33,9 @@ else                                                          # Linux workstatio
 fi
 source "$HDL_WS/install/setup.bash"
 set -u
+# --attach 1 (shared hdl of the Nav2 stack, nav/real/real_up.sh): same RMW and shared-memory profile as that stack
+case " $* " in *" --attach 1 "*)
+  export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+  [ -f "$HERE/../nav/real/fastdds_big_shm.xml" ] && export FASTRTPS_DEFAULT_PROFILES_FILE="$HERE/../nav/real/fastdds_big_shm.xml" ;;
+esac
 exec python -u "$HERE/hdl_stream.py" "$@"

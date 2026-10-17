@@ -1,0 +1,36 @@
+{
+ "T_slam_sam": [
+  [
+   0.9375077512671863,
+   0.12078127537835334,
+   -0.3263297409552516,
+   -0.11623920900591647
+  ],
+  [
+   0.3471708191898039,
+   -0.2613728773396538,
+   0.9006423492676049,
+   0.29560271669268445
+  ],
+  [
+   0.0234869882493197,
+   -0.9576513470512993,
+   -0.28697083279282526,
+   -0.3889847801198812
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "source": "260910 LiDAR (velodyne) -> SAM-folder camera: planar hand-eye + overlap height (objpose/lidar/estimate_lidar_cam_rt.py --camera SAM)",
+ "slam_sensor": "lidar",
+ "sam_tau_s": 0.004,
+ "clock": "header stamps (converted bags)",
+ "cross_check_vs_260826_rig": {
+  "translation_cm": 70.5,
+  "rotation_deg": 177.13
+ }
+}

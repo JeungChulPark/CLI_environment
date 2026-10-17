@@ -1,0 +1,262 @@
+{
+ "dataset": "hope",
+ "models_dir": "/home/jucpark/DeepLearning/Datasets/paper_benchmarks/HOPE/bop/models",
+ "scenes_dir": "/home/jucpark/DeepLearning/Datasets/paper_benchmarks/HOPE/video_bop/test",
+ "fps": 6.0,
+ "world": "gt_camera",
+ "note": "HOPE-Video (10 static scenes, robot-arm D415, ~6 fps keyframes) in BOP form, objects = BOP hope obj_ids; built by objpose/tools/hope_video_to_bop.py",
+ "objects": [
+  {
+   "obj_id": 1,
+   "name": "hope_alphabet_soup",
+   "hope": "AlphabetSoup",
+   "prompt": "soup can",
+   "prompt_candidates": [
+    "soup can"
+   ]
+  },
+  {
+   "obj_id": 2,
+   "name": "hope_b_b_q_sauce",
+   "hope": "BBQSauce",
+   "prompt": "sauce bottle",
+   "prompt_candidates": [
+    "sauce bottle"
+   ]
+  },
+  {
+   "obj_id": 3,
+   "name": "hope_butter",
+   "hope": "Butter",
+   "prompt": "butter box",
+   "prompt_candidates": [
+    "butter box"
+   ]
+  },
+  {
+   "obj_id": 4,
+   "name": "hope_cherries",
+   "hope": "Cherries",
+   "prompt": "cherries can",
+   "prompt_candidates": [
+    "cherries can"
+   ]
+  },
+  {
+   "obj_id": 5,
+   "name": "hope_chocolate_pudding",
+   "hope": "ChocolatePudding",
+   "prompt": "pudding box",
+   "prompt_candidates": [
+    "pudding box"
+   ]
+  },
+  {
+   "obj_id": 6,
+   "name": "hope_cookies",
+   "hope": "Cookies",
+   "prompt": "cookie box",
+   "prompt_candidates": [
+    "cookie box"
+   ]
+  },
+  {
+   "obj_id": 7,
+   "name": "hope_corn",
+   "hope": "Corn",
+   "prompt": "corn can",
+   "prompt_candidates": [
+    "corn can"
+   ]
+  },
+  {
+   "obj_id": 8,
+   "name": "hope_cream_cheese",
+   "hope": "CreamCheese",
+   "prompt": "cream cheese box",
+   "prompt_candidates": [
+    "cream cheese box"
+   ]
+  },
+  {
+   "obj_id": 9,
+   "name": "hope_granola_bars",
+   "hope": "GranolaBars",
+   "prompt": "granola bar box",
+   "prompt_candidates": [
+    "granola bar box"
+   ]
+  },
+  {
+   "obj_id": 10,
+   "name": "hope_green_beans",
+   "hope": "GreenBeans",
+   "prompt": "green beans can",
+   "prompt_candidates": [
+    "green beans can"
+   ]
+  },
+  {
+   "obj_id": 11,
+   "name": "hope_ketchup",
+   "hope": "Ketchup",
+   "prompt": "ketchup bottle",
+   "prompt_candidates": [
+    "ketchup bottle"
+   ]
+  },
+  {
+   "obj_id": 12,
+   "name": "hope_macaroni_and_cheese",
+   "hope": "MacaroniAndCheese",
+   "prompt": "macaroni and cheese box",
+   "prompt_candidates": [
+    "macaroni and cheese box"
+   ]
+  },
+  {
+   "obj_id": 13,
+   "name": "hope_mayo",
+   "hope": "Mayo",
+   "prompt": "mayonnaise bottle",
+   "prompt_candidates": [
+    "mayonnaise bottle"
+   ]
+  },
+  {
+   "obj_id": 14,
+   "name": "hope_milk",
+   "hope": "Milk",
+   "prompt": "milk carton",
+   "prompt_candidates": [
+    "milk carton"
+   ]
+  },
+  {
+   "obj_id": 15,
+   "name": "hope_mushrooms",
+   "hope": "Mushrooms",
+   "prompt": "mushroom can",
+   "prompt_candidates": [
+    "mushroom can"
+   ]
+  },
+  {
+   "obj_id": 16,
+   "name": "hope_mustard",
+   "hope": "Mustard",
+   "prompt": "mustard bottle",
+   "prompt_candidates": [
+    "mustard bottle"
+   ]
+  },
+  {
+   "obj_id": 17,
+   "name": "hope_orange_juice",
+   "hope": "OrangeJuice",
+   "prompt": "orange juice carton",
+   "prompt_candidates": [
+    "orange juice carton"
+   ]
+  },
+  {
+   "obj_id": 18,
+   "name": "hope_parmesan",
+   "hope": "Parmesan",
+   "prompt": "parmesan cheese shaker",
+   "prompt_candidates": [
+    "parmesan cheese shaker"
+   ]
+  },
+  {
+   "obj_id": 19,
+   "name": "hope_peaches",
+   "hope": "Peaches",
+   "prompt": "peaches can",
+   "prompt_candidates": [
+    "peaches can"
+   ]
+  },
+  {
+   "obj_id": 20,
+   "name": "hope_peas_and_carrots",
+   "hope": "PeasAndCarrots",
+   "prompt": "peas and carrots can",
+   "prompt_candidates": [
+    "peas and carrots can"
+   ]
+  },
+  {
+   "obj_id": 21,
+   "name": "hope_pineapple",
+   "hope": "Pineapple",
+   "prompt": "pineapple can",
+   "prompt_candidates": [
+    "pineapple can"
+   ]
+  },
+  {
+   "obj_id": 22,
+   "name": "hope_popcorn",
+   "hope": "Popcorn",
+   "prompt": "popcorn box",
+   "prompt_candidates": [
+    "popcorn box"
+   ]
+  },
+  {
+   "obj_id": 23,
+   "name": "hope_raisins",
+   "hope": "Raisins",
+   "prompt": "raisins box",
+   "prompt_candidates": [
+    "raisins box"
+   ]
+  },
+  {
+   "obj_id": 24,
+   "name": "hope_salad_dressing",
+   "hope": "SaladDressing",
+   "prompt": "salad dressing bottle",
+   "prompt_candidates": [
+    "salad dressing bottle"
+   ]
+  },
+  {
+   "obj_id": 25,
+   "name": "hope_spaghetti",
+   "hope": "Spaghetti",
+   "prompt": "spaghetti box",
+   "prompt_candidates": [
+    "spaghetti box"
+   ]
+  },
+  {
+   "obj_id": 26,
+   "name": "hope_tomato_sauce",
+   "hope": "TomatoSauce",
+   "prompt": "tomato sauce can",
+   "prompt_candidates": [
+    "tomato sauce can"
+   ]
+  },
+  {
+   "obj_id": 27,
+   "name": "hope_tuna",
+   "hope": "Tuna",
+   "prompt": "tuna can",
+   "prompt_candidates": [
+    "tuna can"
+   ]
+  },
+  {
+   "obj_id": 28,
+   "name": "hope_yogurt",
+   "hope": "Yogurt",
+   "prompt": "yogurt cup",
+   "prompt_candidates": [
+    "yogurt cup"
+   ]
+  }
+ ]
+}

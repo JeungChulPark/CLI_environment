@@ -1,0 +1,65 @@
+{
+ "run": "cmp2lane_260915_inlong_middle_260918_214736",
+ "reference_lane": "hdl",
+ "sam6d_frames": 271,
+ "lanes": [
+  {
+   "lane": "ORB-SLAM3",
+   "poses": "2731 / 2731",
+   "lag_s": 0.107,
+   "track_ms": null,
+   "kf": "0 / 0",
+   "maxcorr_cm": 0.0,
+   "memory": {
+    "active": 8,
+    "deleted": 2,
+    "remembered": 1
+   },
+   "align": "kabsch rmse 5.12 cm"
+  },
+  {
+   "lane": "LiDAR hdl_graph_slam",
+   "poses": "888 / 888",
+   "lag_s": 0.023,
+   "track_ms": 4.52,
+   "kf": "59 / 50",
+   "maxcorr_cm": 2.85,
+   "memory": {
+    "active": 8
+   },
+   "align": "reference"
+  }
+ ],
+ "object_distance_cm": {
+  "Bear": 7.8,
+  "Dinosaur": 7.5,
+  "Febreze_high": 15.7,
+  "Mugcup_high": 9.0,
+  "Sikhye_high": 7.2,
+  "choco_hazelnut_high": 2.3,
+  "milk": 8.8,
+  "saffron": 5.8
+ },
+ "spread_median_cm": {
+  "orb": {
+   "milk": 6.23,
+   "saffron": 5.88,
+   "Febreze_high": 8.22,
+   "choco_hazelnut_high": 6.2,
+   "Bear": 4.25,
+   "Sikhye_high": 6.87,
+   "Dinosaur": 4.4,
+   "Mugcup_high": 3.93
+  },
+  "hdl": {
+   "milk": 1.1,
+   "saffron": 1.7,
+   "Febreze_high": 0.81,
+   "choco_hazelnut_high": 1.52,
+   "Bear": 1.51,
+   "Sikhye_high": 1.7,
+   "Dinosaur": 1.27,
+   "Mugcup_high": 1.57
+  }
+ }
+}

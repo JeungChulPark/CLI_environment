@@ -1,0 +1,21 @@
+{
+ "messages": 1504,
+ "unique_header_stamps": 1504,
+ "duplicate_messages": 0,
+ "substream_sizes": [
+  1504,
+  1503
+ ],
+ "stream": "all",
+ "scans_used": 1504,
+ "publisher_offset_ms": 100.86,
+ "dt_ms": {
+  "median": 100.86,
+  "std": 0.167,
+  "min": 99.64,
+  "max": 102.08
+ },
+ "ms_per_scan": 24.24,
+ "path_m": 51.53,
+ "return_error_cm": 12.8
+}

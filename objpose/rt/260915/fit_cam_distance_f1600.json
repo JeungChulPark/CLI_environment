@@ -1,0 +1,102 @@
+{
+ "session": "260915_distance",
+ "slam_traj": "/home/jucpark/DeepLearning/CLI_environment/objpose/rt/260915/distance_slam_orb_tum.txt.optimized.txt",
+ "sam_traj": "/home/jucpark/DeepLearning/CLI_environment/objpose/rt/260915/distance_sam_orb_tum.txt.optimized.txt",
+ "motion": {
+  "n_slam": 5710,
+  "n_sam": 5710,
+  "path_m": 30.82,
+  "bbox_max_m": 2.32,
+  "yaw_range_deg": 192.8,
+  "plane_rms_slam_cm": 0.7,
+  "plane_rms_sam_cm": 0.31
+ },
+ "T_slam_sam": [
+  [
+   0.005078996843899332,
+   0.31049657263369046,
+   -0.9505609302794804,
+   -0.31473027493195993
+  ],
+  [
+   0.04020150838634178,
+   0.9497413208569377,
+   0.3104436537930552,
+   0.04248603452543297
+  ],
+  [
+   0.9991786839772568,
+   -0.039790725548182866,
+   -0.007658697397510515,
+   -0.397454468090802
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "tau_s": 0.002,
+ "rotation_consistency_deg": 0.048,
+ "planar_handeye": {
+  "pairs": 11292,
+  "tx_m": -0.39437501317832596,
+  "ty_m": -0.315881477549689,
+  "phi_deg": -89.33526770298111,
+  "residual_median_cm": 1.07,
+  "residual_p90_cm": 3.4,
+  "sd_mm_mm_deg": [
+   0.36,
+   0.44,
+   0.0132
+  ]
+ },
+ "quarters": [
+  {
+   "t_from_s": 0.0,
+   "n": 2823,
+   "d_tx_mm": 27.5,
+   "d_ty_mm": -57.0,
+   "d_phi_deg": 0.32
+  },
+  {
+   "t_from_s": 47.0,
+   "n": 2823,
+   "d_tx_mm": 3.9,
+   "d_ty_mm": 12.1,
+   "d_phi_deg": 0.317
+  },
+  {
+   "t_from_s": 94.1,
+   "n": 2823,
+   "d_tx_mm": -9.5,
+   "d_ty_mm": 17.5,
+   "d_phi_deg": -0.051
+  },
+  {
+   "t_from_s": 141.1,
+   "n": 2823,
+   "d_tx_mm": -22.9,
+   "d_ty_mm": 21.1,
+   "d_phi_deg": 0.262
+  }
+ ],
+ "floor": {
+  "h_slam_m": 1.061021419822302,
+  "mad_slam_cm": 1.96,
+  "n_slam": 88,
+  "tried_slam": 91,
+  "h_sam_m": 1.001712867189429,
+  "mad_sam_cm": 0.41,
+  "n_sam": 1540,
+  "tried_sam": 1561,
+  "dz_m": 0.059308552632872935,
+  "normal_vs_trajdown_slam_deg": 1.84,
+  "normal_vs_trajdown_sam_deg": 0.9
+ },
+ "vs_260910": {
+  "translation_diff_cm": 6.24,
+  "rotation_diff_deg": 1.288
+ }
+}

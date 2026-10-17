@@ -58,6 +58,7 @@ class Sam6DDetection:
     model_id: Optional[str] = None
     size_extent: Optional[tuple] = None
     class_id: Optional[int] = None
+    weight: float = 1.0        # pose-fusion weight scale (objpose: lower for observations anchored to keyframes that were later corrected)
 
 
 @dataclass
@@ -81,6 +82,12 @@ class ObjectLandmark:
     last_seen_time: float
     observation_count: int = 1
     missed_count: int = 0
+    #: 관측 구간 수. 직전 관측과 episode_gap_s 넘게 떨어진 관측이 새 구간을 연다. 한 번 몰아서 나온
+    #: 오탐(같은 자리를 몇 초 동안 연달아 잘못 본 것)과 여러 번 다시 확인된 객체를 장기 기억 판정에서 가른다.
+    episode_count: int = 1
+    #: 같은 자리에서 먼저 지워진 같은 클래스 객체들에게서 이어받은 관측 수. 장기 기억 판정에만 더한다
+    #: (포즈 융합의 관측 수 observation_count 는 건드리지 않는다). 이어받은 구간 수는 episode_count 에 더해진다.
+    inherited_obs: int = 0
     T_map_obj_smoothed: Optional[Matrix4] = None
     last_detection_id: Optional[int] = None
     last_sam6d_score: Optional[float] = None

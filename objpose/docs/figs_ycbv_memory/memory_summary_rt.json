@@ -1,0 +1,514 @@
+[
+ {
+  "scene": "000048",
+  "gt_objects": 5,
+  "registered": 4,
+  "matched": 4,
+  "duplicates": 0,
+  "wrong_class": 0,
+  "missing": [
+   "ycbv_large_clamp"
+  ],
+  "err_median_mm": 7.259036435406186,
+  "err_max_mm": 81.42993435514983,
+  "slam_ate_rmse_mm": 25.088796172958112,
+  "sam_frames": 172,
+  "objects": [
+   {
+    "name": "ycbv_tuna_fish_can",
+    "status": "active",
+    "n_obs": 172,
+    "err_mm": 3.8191743308416783,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_mug",
+    "status": "active",
+    "n_obs": 170,
+    "err_mm": 5.151598138780504,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_master_chef_can",
+    "status": "remembered",
+    "n_obs": 103,
+    "err_mm": 9.366474732031868,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_extra_large_clamp",
+    "status": "active",
+    "n_obs": 47,
+    "err_mm": 81.42993435514983,
+    "duplicate": false
+   }
+  ]
+ },
+ {
+  "scene": "000049",
+  "gt_objects": 4,
+  "registered": 2,
+  "matched": 2,
+  "duplicates": 0,
+  "wrong_class": 0,
+  "missing": [
+   "ycbv_potted_meat_can",
+   "ycbv_bowl"
+  ],
+  "err_median_mm": 5.051209128158556,
+  "err_max_mm": 8.295096171895988,
+  "slam_ate_rmse_mm": 19.153568689707818,
+  "sam_frames": 324,
+  "objects": [
+   {
+    "name": "ycbv_tuna_fish_can",
+    "status": "active",
+    "n_obs": 243,
+    "err_mm": 1.8073220844211233,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_sugar_box",
+    "status": "active",
+    "n_obs": 215,
+    "err_mm": 8.295096171895988,
+    "duplicate": false
+   }
+  ]
+ },
+ {
+  "scene": "000050",
+  "gt_objects": 5,
+  "registered": 5,
+  "matched": 5,
+  "duplicates": 0,
+  "wrong_class": 0,
+  "missing": [],
+  "err_median_mm": 4.438994664925539,
+  "err_max_mm": 5.394287933360467,
+  "slam_ate_rmse_mm": 12.945654700903278,
+  "sam_frames": 111,
+  "objects": [
+   {
+    "name": "ycbv_mustard_bottle",
+    "status": "active",
+    "n_obs": 95,
+    "err_mm": 5.394287933360467,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_banana",
+    "status": "active",
+    "n_obs": 93,
+    "err_mm": 4.438994664925539,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_cracker_box",
+    "status": "lost",
+    "n_obs": 82,
+    "err_mm": 3.2069935265936085,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_power_drill",
+    "status": "remembered",
+    "n_obs": 81,
+    "err_mm": 2.9745146379435616,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_tomato_soup_can",
+    "status": "active",
+    "n_obs": 66,
+    "err_mm": 4.563833361032781,
+    "duplicate": false
+   }
+  ]
+ },
+ {
+  "scene": "000051",
+  "gt_objects": 5,
+  "registered": 5,
+  "matched": 5,
+  "duplicates": 0,
+  "wrong_class": 0,
+  "missing": [],
+  "err_median_mm": 3.048479031934385,
+  "err_max_mm": 8.16242192774529,
+  "slam_ate_rmse_mm": 14.332962017660059,
+  "sam_frames": 178,
+  "objects": [
+   {
+    "name": "ycbv_master_chef_can",
+    "status": "active",
+    "n_obs": 167,
+    "err_mm": 8.16242192774529,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_bleach_cleanser",
+    "status": "active",
+    "n_obs": 126,
+    "err_mm": 2.1768238845772285,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_scissors",
+    "status": "active",
+    "n_obs": 55,
+    "err_mm": 1.4500927003052941,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_sugar_box",
+    "status": "active",
+    "n_obs": 43,
+    "err_mm": 3.048479031934385,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_tomato_soup_can",
+    "status": "remembered",
+    "n_obs": 9,
+    "err_mm": 5.718591863151991,
+    "duplicate": false
+   }
+  ]
+ },
+ {
+  "scene": "000052",
+  "gt_objects": 3,
+  "registered": 3,
+  "matched": 3,
+  "duplicates": 0,
+  "wrong_class": 0,
+  "missing": [],
+  "err_median_mm": 3.626051705583819,
+  "err_max_mm": 4.213671929391198,
+  "slam_ate_rmse_mm": 15.924898141462041,
+  "sam_frames": 70,
+  "objects": [
+   {
+    "name": "ycbv_mustard_bottle",
+    "status": "active",
+    "n_obs": 70,
+    "err_mm": 4.213671929391198,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_tuna_fish_can",
+    "status": "active",
+    "n_obs": 70,
+    "err_mm": 2.99710232799377,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_pitcher_base",
+    "status": "active",
+    "n_obs": 61,
+    "err_mm": 3.626051705583819,
+    "duplicate": false
+   }
+  ]
+ },
+ {
+  "scene": "000053",
+  "gt_objects": 3,
+  "registered": 2,
+  "matched": 2,
+  "duplicates": 0,
+  "wrong_class": 0,
+  "missing": [
+   "ycbv_potted_meat_can"
+  ],
+  "err_median_mm": 3.7726080117154455,
+  "err_max_mm": 5.305026607794488,
+  "slam_ate_rmse_mm": 16.090427197472366,
+  "sam_frames": 113,
+  "objects": [
+   {
+    "name": "ycbv_tomato_soup_can",
+    "status": "active",
+    "n_obs": 98,
+    "err_mm": 5.305026607794488,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_bowl",
+    "status": "remembered",
+    "n_obs": 6,
+    "err_mm": 2.2401894156364026,
+    "duplicate": false
+   }
+  ]
+ },
+ {
+  "scene": "000054",
+  "gt_objects": 5,
+  "registered": 4,
+  "matched": 4,
+  "duplicates": 0,
+  "wrong_class": 0,
+  "missing": [
+   "ycbv_large_clamp"
+  ],
+  "err_median_mm": 6.0742706814055545,
+  "err_max_mm": 8.184994583197437,
+  "slam_ate_rmse_mm": 24.231914421977585,
+  "sam_frames": 168,
+  "objects": [
+   {
+    "name": "ycbv_bleach_cleanser",
+    "status": "active",
+    "n_obs": 168,
+    "err_mm": 5.341026380117789,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_sugar_box",
+    "status": "active",
+    "n_obs": 147,
+    "err_mm": 8.184994583197437,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_power_drill",
+    "status": "active",
+    "n_obs": 78,
+    "err_mm": 6.378933642857928,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_cracker_box",
+    "status": "active",
+    "n_obs": 24,
+    "err_mm": 5.76960771995318,
+    "duplicate": false
+   }
+  ]
+ },
+ {
+  "scene": "000055",
+  "gt_objects": 6,
+  "registered": 6,
+  "matched": 6,
+  "duplicates": 0,
+  "wrong_class": 0,
+  "missing": [],
+  "err_median_mm": 2.778477042788784,
+  "err_max_mm": 7.358177003557587,
+  "slam_ate_rmse_mm": 18.628684717928632,
+  "sam_frames": 115,
+  "objects": [
+   {
+    "name": "ycbv_mug",
+    "status": "active",
+    "n_obs": 115,
+    "err_mm": 2.058173732787777,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_tomato_soup_can",
+    "status": "active",
+    "n_obs": 114,
+    "err_mm": 2.699744267581569,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_master_chef_can",
+    "status": "active",
+    "n_obs": 84,
+    "err_mm": 7.358177003557587,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_sugar_box",
+    "status": "active",
+    "n_obs": 56,
+    "err_mm": 2.133552463709812,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_bleach_cleanser",
+    "status": "active",
+    "n_obs": 50,
+    "err_mm": 5.591806698999998,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_wood_block",
+    "status": "remembered",
+    "n_obs": 7,
+    "err_mm": 2.8572098179959995,
+    "duplicate": false
+   }
+  ]
+ },
+ {
+  "scene": "000056",
+  "gt_objects": 4,
+  "registered": 4,
+  "matched": 4,
+  "duplicates": 0,
+  "wrong_class": 0,
+  "missing": [],
+  "err_median_mm": 7.954635317988554,
+  "err_max_mm": 13.222415076277649,
+  "slam_ate_rmse_mm": 16.366248636589916,
+  "sam_frames": 85,
+  "objects": [
+   {
+    "name": "ycbv_master_chef_can",
+    "status": "active",
+    "n_obs": 81,
+    "err_mm": 8.877960877400989,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_pitcher_base",
+    "status": "active",
+    "n_obs": 81,
+    "err_mm": 7.031309758576119,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_banana",
+    "status": "active",
+    "n_obs": 72,
+    "err_mm": 13.222415076277649,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_power_drill",
+    "status": "remembered",
+    "n_obs": 34,
+    "err_mm": 5.097457233419289,
+    "duplicate": false
+   }
+  ]
+ },
+ {
+  "scene": "000057",
+  "gt_objects": 5,
+  "registered": 3,
+  "matched": 3,
+  "duplicates": 0,
+  "wrong_class": 0,
+  "missing": [
+   "ycbv_large_marker",
+   "ycbv_foam_brick"
+  ],
+  "err_median_mm": 11.848142387845899,
+  "err_max_mm": 12.17718814843435,
+  "slam_ate_rmse_mm": 20.226256026524958,
+  "sam_frames": 132,
+  "objects": [
+   {
+    "name": "ycbv_bleach_cleanser",
+    "status": "active",
+    "n_obs": 125,
+    "err_mm": 7.401930991633387,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_tomato_soup_can",
+    "status": "active",
+    "n_obs": 125,
+    "err_mm": 12.17718814843435,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_extra_large_clamp",
+    "status": "active",
+    "n_obs": 59,
+    "err_mm": 11.848142387845899,
+    "duplicate": false
+   }
+  ]
+ },
+ {
+  "scene": "000058",
+  "gt_objects": 4,
+  "registered": 2,
+  "matched": 2,
+  "duplicates": 0,
+  "wrong_class": 0,
+  "missing": [
+   "ycbv_pudding_box",
+   "ycbv_gelatin_box"
+  ],
+  "err_median_mm": 4.811426641980553,
+  "err_max_mm": 6.480664139863337,
+  "slam_ate_rmse_mm": 14.973558305770222,
+  "sam_frames": 249,
+  "objects": [
+   {
+    "name": "ycbv_pitcher_base",
+    "status": "active",
+    "n_obs": 249,
+    "err_mm": 6.480664139863337,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_sugar_box",
+    "status": "remembered",
+    "n_obs": 53,
+    "err_mm": 3.14218914409777,
+    "duplicate": false
+   }
+  ]
+ },
+ {
+  "scene": "000059",
+  "gt_objects": 6,
+  "registered": 5,
+  "matched": 5,
+  "duplicates": 0,
+  "wrong_class": 0,
+  "missing": [
+   "ycbv_potted_meat_can"
+  ],
+  "err_median_mm": 6.945505599007202,
+  "err_max_mm": 9.272859028250858,
+  "slam_ate_rmse_mm": 17.038164921684196,
+  "sam_frames": 129,
+  "objects": [
+   {
+    "name": "ycbv_tomato_soup_can",
+    "status": "active",
+    "n_obs": 127,
+    "err_mm": 9.119797184261895,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_tuna_fish_can",
+    "status": "active",
+    "n_obs": 94,
+    "err_mm": 6.597330475497457,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_cracker_box",
+    "status": "active",
+    "n_obs": 66,
+    "err_mm": 6.945505599007202,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_power_drill",
+    "status": "remembered",
+    "n_obs": 22,
+    "err_mm": 9.272859028250858,
+    "duplicate": false
+   },
+   {
+    "name": "ycbv_large_marker",
+    "status": "remembered",
+    "n_obs": 17,
+    "err_mm": 6.669671016463973,
+    "duplicate": false
+   }
+  ]
+ }
+]

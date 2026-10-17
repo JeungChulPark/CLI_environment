@@ -9,10 +9,10 @@ import shutil
 import subprocess
 import sys
 
-SRC = "/home/jucpark/DeepLearning/CLI_environment/orbslam_ws/src/ORB_SLAM3"
+SRC = "/home/jucpark/DeepLearning/CLI_environment_server/orbslam_ws/src/ORB_SLAM3"
 ORIG = "/tmp/orb_a"
 MOD = "/tmp/orb_b"
-OUT = "/home/jucpark/DeepLearning/CLI_environment/orbslam_ws/perf_patches"
+OUT = "/home/jucpark/DeepLearning/CLI_environment_server/orbslam_ws/perf_patches"
 
 FILES = ["src/Frame.cc", "src/ORBmatcher.cc", "src/Tracking.cc",
          "src/ORBextractor.cc", "src/MapPoint.cc",

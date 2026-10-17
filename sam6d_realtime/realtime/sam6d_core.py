@@ -42,11 +42,20 @@ def _sync():
 class Sam6DCore:
     def __init__(self, ism_config, objects=None, device="cuda:0",
                  det_score_thresh=0.2, log=print, appe_rerank=None, verify=UNSET,
-                 pem_diagnostic=None, coarse_npoint_override=None):
+                 pem_diagnostic=None, coarse_npoint_override=None,
+                 mask_cache=None, pem_schedule=None, precision=None,
+                 fine_npoint_override=None):
         self.log = log
+        # 속도 옵션. 전부 기본 off — 지정하지 않으면 원래 동작 그대로다(§26).
+        self.precision = (precision or "fp32").lower()
+        self._mask_cache_cfg = dict(mask_cache or {})
+        self._pem_sched_cfg = dict(pem_schedule or {})
         # coarse_npoint 스윕 실험용. base.yaml 값을 대체한다(None 이면 그대로).
         self.coarse_npoint_override = (int(coarse_npoint_override)
                                        if coarse_npoint_override else None)
+        # fine_npoint 는 관측점 수(=ViTEncoder npoint)다. None 이면 base.yaml 그대로.
+        self.fine_npoint_override = (int(fine_npoint_override)
+                                     if fine_npoint_override else None)
         self.device = device if torch.cuda.is_available() else "cpu"
         self.det_thresh = float(det_score_thresh)
         # 외형 재정렬 옵션(기본 None = 예전 동작). split 모드도 단일 프로세스 모드와
@@ -71,6 +80,13 @@ class Sam6DCore:
         self.anchor_manager = None
         self._load_ism(ism_config, objects or [])
         self._load_pem()
+        from mask_cache import install as _install_mask_cache
+        from pem_scheduler import from_config as _make_pem_scheduler
+        self.mask_cache = None
+        _install_mask_cache(self, self._mask_cache_cfg, self.log)
+        self.pem_scheduler = _make_pem_scheduler(self._pem_sched_cfg, self.log)
+        if self.precision != "fp32":
+            self.log(f"[pem] precision={self.precision}")
 
     def configure_anchors(self, map_id, config=None):
         """Enable session-only Object Anchors; no state is loaded from disk."""
@@ -155,6 +171,14 @@ class Sam6DCore:
             # coarse_point_matching 의 attention 은 N 에 독립이라 재빌드 없이 안전하다.
             self.pcfg.model.coarse_npoint = int(self.coarse_npoint_override)
             self.log(f"[pem] coarse_npoint override → {self.pcfg.model.coarse_npoint}")
+        if self.fine_npoint_override is not None:
+            # ViTEncoder 는 rgb_choose.size(1) == fine_npoint 를 단언한다. rgb_choose 는
+            # test_dataset.n_sample_observed_point 로 뽑히므로 **둘을 같이** 바꿔야 한다.
+            n = int(self.fine_npoint_override)
+            self.pcfg.model.fine_npoint = n
+            self.pcfg.test_dataset.n_sample_observed_point = n
+            self.log(f"[pem] fine_npoint override → {n} "
+                     f"(n_sample_observed_point={n})")
         self.log(describe(self.appe_cfg, self.verify or None))
         MODEL = importlib.import_module(self.pcfg.model_name)
         self.pem = MODEL.Net(self.pcfg.model).to(self.device).eval()
@@ -230,6 +254,14 @@ class Sam6DCore:
 
         hits = [(n, r) for n, r in sorted(results.items())
                 if r.get("accepted") and r.get("mask") is not None]
+        # PEM 예산제: 이번 프레임에 실제로 풀 객체만 남기고, 나머지는 직전 포즈를
+        # 물려받는다. 스케줄러가 없으면 hits 가 그대로여서 원래 동작과 같다.
+        carried = []
+        if self.pem_scheduler is not None and hits:
+            pick = self.pem_scheduler.select([n for n, _ in hits])
+            carried = self.pem_scheduler.carried_rows(
+                [n for n, _ in hits if n not in pick])
+            hits = [(n, r) for n, r in hits if n in pick]
         rows, lab, shadows = [], None, []
         if hits:
             frame = self.ric.prepare_frame(rgb, depth, K)
@@ -288,19 +320,27 @@ class Sam6DCore:
                 used_names = set(names)
                 for d in self.last_frame_diag["pem_candidates"]:
                     d["used_by_pem"] = d["object"] in used_names
-                with torch.inference_mode():
+                import contextlib
+                _amp = (torch.autocast(device_type="cuda",
+                                       dtype=(torch.bfloat16 if self.precision == "bf16"
+                                              else torch.float16))
+                        if self.precision in ("fp16", "bf16") and self.device.startswith("cuda")
+                        else contextlib.nullcontext())
+                with torch.inference_mode(), _amp:
                     inp["dense_po"] = torch.cat([self._tem[n][0] for n in names], 0)
                     inp["dense_fo"] = torch.cat([self._tem[n][1] for n in names], 0)
                     if all(self._tem[n][2] is not None for n in names):
                         inp["dense_co"] = torch.cat([self._tem[n][2] for n in names], 0)
                     inp["obj_names"] = names              # 대칭 선언 조회용
                     out = self.pem(inp)
-                coarse = out["score"].detach().cpu().numpy()
-                pose_s = (out["pred_pose_score"].detach().cpu().numpy()
+                # bf16/fp16 로 돌면 출력이 반정밀도라 .numpy() 가 막힌다.
+                # .float() 는 fp32 경로에서 no-op 이다.
+                coarse = out["score"].detach().float().cpu().numpy()
+                pose_s = (out["pred_pose_score"].detach().float().cpu().numpy()
                           if "pred_pose_score" in out else None)
                 ps = coarse * pose_s if pose_s is not None else coarse
-                Rs = out["pred_R"].detach().cpu().numpy()
-                ts = out["pred_t"].detach().cpu().numpy() * 1000.0
+                Rs = out["pred_R"].detach().float().cpu().numpy()
+                ts = out["pred_t"].detach().float().cpu().numpy() * 1000.0
                 vfs = out.get("verify") or [None] * len(names)
                 explorer_payloads = out.get("pem_explorer") or [None] * len(names)
                 pds = out.get("pem_diagnostic") or [None] * len(names)
@@ -372,7 +412,12 @@ class Sam6DCore:
                         for candidate_diag in self.last_frame_diag["pem_candidates"]:
                             if candidate_diag["object"] == nm:
                                 candidate_diag.update(rejection)
-                        continue
+                        # verify.as_score: keep the (fine-refined geometry-winner) pose with
+                        # verified=False instead of dropping it, so a ranked benchmark (BOP)
+                        # sees every answer; consumers that build the map keep verified only.
+                        if not self.verify.get("as_score"):
+                            continue
+                    verified = bool(verification.get("accepted", False)) or not self.verify.get("enabled")
                     diagnostic = dict(pds[j] or {})
                     # Pointwise evidence already lives in ``verify``. Keeping the same
                     # large array under ``diagnostic`` doubled top-100 dump size without
@@ -413,8 +458,10 @@ class Sam6DCore:
                         "texture_score": ((verification.get("fine") or {}).get(
                             "texture_score")),
                         "cluster_occupancy": verification.get("cluster_occupancy"),
-                        "pose_source": "sam6d",
-                        "rejection_reason": None,
+                        "pose_source": "sam6d" if verified else "sam6d_unverified",
+                        "rejection_reason": None if verified else verification.get(
+                            "rejection_reason", "candidate_verification_failed"),
+                        "verified": verified,
                     })
             except Exception as e:
                 if ((((self.pem_diagnostic or {}).get("score_analysis") or {}).get("enabled"))):
@@ -432,6 +479,9 @@ class Sam6DCore:
                         lab[r["mask"].astype(bool)] |= np.uint16(1 << i)
                     else:
                         lab[r["mask"].astype(bool)] = i + 1
+        if self.pem_scheduler is not None:
+            self.pem_scheduler.remember(rows)
+            rows = rows + carried
         if self.anchor_manager is not None:
             rows = self._apply_anchors(
                 rows, shadows, hits, depth, K, (h, w), slam_context)

@@ -91,6 +91,17 @@ if False:
     from typing import *
 
 
+
+# --- AMP compatibility -------------------------------------------------------
+# Every kernel in _ext_src asserts CHECK_IS_FLOAT, so none of them accept half.
+# Under torch.autocast the tensors arriving here are fp16, which fails with
+# "must be a float tensor". These are coordinate/index kernels operating on
+# 3-vectors and gathers, so running them in fp32 costs almost nothing and keeps
+# indices exact; only the gathered payload is cast back to the caller's dtype.
+def _f32(t):
+    return t.float().contiguous() if t.dtype != torch.float32 else t.contiguous()
+# -----------------------------------------------------------------------------
+
 class RandomDropout(nn.Module):
     def __init__(self, p=0.5, inplace=False):
         super(RandomDropout, self).__init__()
@@ -122,6 +133,7 @@ class FurthestPointSampling(Function):
         torch.Tensor
             (B, npoint) tensor containing the set
         """
+        xyz = _f32(xyz)
         fps_inds = (
             _ext.furthest_point_sampling(xyz, npoint)
             if _ext is not None
@@ -162,9 +174,16 @@ class GatherOperation(Function):
 
         ctx.for_backwards = (idx, C, N)
 
+        # The gather itself is dtype-agnostic in principle, but the kernel only
+        # accepts fp32; restore the caller's dtype so autocast still sees half
+        # downstream.
+        out_dtype = features.dtype
+        features = _f32(features)
         if _ext is not None:
-            return _ext.gather_points(features, idx)
-        return _gather_points_fallback(features, idx)
+            out = _ext.gather_points(features, idx)
+        else:
+            out = _gather_points_fallback(features, idx)
+        return out.to(out_dtype)
 
     @staticmethod
     def backward(ctx, grad_out):
@@ -198,7 +217,7 @@ class ThreeNN(Function):
             (B, n, 3) index of 3 nearest neighbors
         """
         if _ext is not None:
-            dist2, idx = _ext.three_nn(unknown, known)
+            dist2, idx = _ext.three_nn(_f32(unknown), _f32(known))
         else:
             dist2, idx = _three_nn_fallback(unknown, known)
 
@@ -238,7 +257,8 @@ class ThreeInterpolate(Function):
         ctx.three_interpolate_for_backward = (idx, weight, m)
 
         if _ext is not None:
-            return _ext.three_interpolate(features, idx, weight)
+            out_dtype = features.dtype
+        return _ext.three_interpolate(_f32(features), idx, _f32(weight)).to(out_dtype)
         return _three_interpolate_fallback(features, idx, weight)
 
     @staticmethod
@@ -295,7 +315,8 @@ class GroupingOperation(Function):
         ctx.for_backwards = (idx, N)
 
         if _ext is not None:
-            return _ext.group_points(features, idx)
+            out_dtype = features.dtype
+        return _ext.group_points(_f32(features), idx).to(out_dtype)
         return _group_points_fallback(features, idx)
 
     @staticmethod
@@ -346,6 +367,7 @@ class BallQuery(Function):
         torch.Tensor
             (B, npoint, nsample) tensor with the indicies of the features that form the query balls
         """
+        new_xyz, xyz = _f32(new_xyz), _f32(xyz)
         inds = (
             _ext.ball_query(new_xyz, xyz, radius, nsample)
             if _ext is not None

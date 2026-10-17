@@ -1,0 +1,349 @@
+{
+ "run": "/home/jucpark/DeepLearning/CLI_environment/objpose/output/one_260915_distance_orb_f3000_260915_162409",
+ "rts": {
+  "old_260910": {
+   "path": "/home/jucpark/DeepLearning/CLI_environment/objpose/rt/260910/X_slam_sam_260910.json",
+   "objects": 8,
+   "observations": 549,
+   "spread_median_cm": 2.93,
+   "spread_p90_cm": 5.76,
+   "spread_mean_cm": 3.79,
+   "per_object_spread_median_cm": {
+    "Bear": 4.12,
+    "Dinosaur": 2.66,
+    "Febreze_high": 3.57,
+    "Mugcup_high": 1.19,
+    "Sikhye_high": 2.5,
+    "choco_hazelnut_high": 2.82,
+    "milk": 2.17,
+    "saffron": 3.32
+   },
+   "per_object_n": {
+    "Bear": 118,
+    "Dinosaur": 41,
+    "Febreze_high": 76,
+    "Mugcup_high": 37,
+    "Sikhye_high": 50,
+    "choco_hazelnut_high": 80,
+    "milk": 65,
+    "saffron": 82
+   },
+   "neighbour_cm_le3s": [
+    0.93,
+    1.94,
+    499
+   ],
+   "neighbour_cm_3_10s": [
+    5.47,
+    7.48,
+    24
+   ],
+   "neighbour_cm_10_60s": [
+    4.61,
+    6.43,
+    15
+   ]
+  },
+  "old_260910_composed": {
+   "path": "/tmp/claude-1003/-home-jucpark-DeepLearning-old-CLI-environment/d9c9e460-90fa-40fe-a6c1-4560dea458ba/scratchpad/Xc_260910.json",
+   "objects": 8,
+   "observations": 549,
+   "spread_median_cm": 2.83,
+   "spread_p90_cm": 4.91,
+   "spread_mean_cm": 3.47,
+   "per_object_spread_median_cm": {
+    "Bear": 3.71,
+    "Dinosaur": 2.61,
+    "Febreze_high": 3.29,
+    "Mugcup_high": 1.15,
+    "Sikhye_high": 2.28,
+    "choco_hazelnut_high": 2.92,
+    "milk": 2.06,
+    "saffron": 2.89
+   },
+   "per_object_n": {
+    "Bear": 118,
+    "Dinosaur": 41,
+    "Febreze_high": 76,
+    "Mugcup_high": 37,
+    "Sikhye_high": 50,
+    "choco_hazelnut_high": 80,
+    "milk": 65,
+    "saffron": 82
+   },
+   "neighbour_cm_le3s": [
+    0.87,
+    1.87,
+    499
+   ],
+   "neighbour_cm_3_10s": [
+    4.5,
+    6.97,
+    24
+   ],
+   "neighbour_cm_10_60s": [
+    4.22,
+    6.7,
+    15
+   ]
+  },
+  "eightcircle_direct": {
+   "path": "/home/jucpark/DeepLearning/CLI_environment/objpose/rt/260915/fit_cam_eightcircle_f1600.json",
+   "objects": 8,
+   "observations": 549,
+   "spread_median_cm": 2.71,
+   "spread_p90_cm": 4.88,
+   "spread_mean_cm": 3.42,
+   "per_object_spread_median_cm": {
+    "Bear": 3.71,
+    "Dinosaur": 2.71,
+    "Febreze_high": 3.18,
+    "Mugcup_high": 0.98,
+    "Sikhye_high": 2.38,
+    "choco_hazelnut_high": 2.98,
+    "milk": 2.06,
+    "saffron": 2.32
+   },
+   "per_object_n": {
+    "Bear": 118,
+    "Dinosaur": 41,
+    "Febreze_high": 76,
+    "Mugcup_high": 37,
+    "Sikhye_high": 50,
+    "choco_hazelnut_high": 80,
+    "milk": 65,
+    "saffron": 82
+   },
+   "neighbour_cm_le3s": [
+    0.87,
+    1.81,
+    499
+   ],
+   "neighbour_cm_3_10s": [
+    4.34,
+    6.74,
+    24
+   ],
+   "neighbour_cm_10_60s": [
+    3.87,
+    6.85,
+    15
+   ]
+  },
+  "eightcircle_composed": {
+   "path": "/tmp/claude-1003/-home-jucpark-DeepLearning-old-CLI-environment/d9c9e460-90fa-40fe-a6c1-4560dea458ba/scratchpad/Xc_eightcircle.json",
+   "objects": 8,
+   "observations": 549,
+   "spread_median_cm": 2.73,
+   "spread_p90_cm": 4.88,
+   "spread_mean_cm": 3.42,
+   "per_object_spread_median_cm": {
+    "Bear": 3.7,
+    "Dinosaur": 2.72,
+    "Febreze_high": 3.18,
+    "Mugcup_high": 0.98,
+    "Sikhye_high": 2.4,
+    "choco_hazelnut_high": 2.98,
+    "milk": 2.04,
+    "saffron": 2.33
+   },
+   "per_object_n": {
+    "Bear": 118,
+    "Dinosaur": 41,
+    "Febreze_high": 76,
+    "Mugcup_high": 37,
+    "Sikhye_high": 50,
+    "choco_hazelnut_high": 80,
+    "milk": 65,
+    "saffron": 82
+   },
+   "neighbour_cm_le3s": [
+    0.88,
+    1.8,
+    499
+   ],
+   "neighbour_cm_3_10s": [
+    4.32,
+    6.77,
+    24
+   ],
+   "neighbour_cm_10_60s": [
+    3.84,
+    6.85,
+    15
+   ]
+  },
+  "dense_direct": {
+   "path": "/home/jucpark/DeepLearning/CLI_environment/objpose/rt/260915/fit_cam_dense_f1600.json",
+   "objects": 8,
+   "observations": 549,
+   "spread_median_cm": 2.66,
+   "spread_p90_cm": 4.81,
+   "spread_mean_cm": 3.37,
+   "per_object_spread_median_cm": {
+    "Bear": 3.7,
+    "Dinosaur": 2.66,
+    "Febreze_high": 3.25,
+    "Mugcup_high": 0.93,
+    "Sikhye_high": 2.25,
+    "choco_hazelnut_high": 2.93,
+    "milk": 2.02,
+    "saffron": 2.24
+   },
+   "per_object_n": {
+    "Bear": 118,
+    "Dinosaur": 41,
+    "Febreze_high": 76,
+    "Mugcup_high": 37,
+    "Sikhye_high": 50,
+    "choco_hazelnut_high": 80,
+    "milk": 65,
+    "saffron": 82
+   },
+   "neighbour_cm_le3s": [
+    0.87,
+    1.79,
+    499
+   ],
+   "neighbour_cm_3_10s": [
+    4.44,
+    6.69,
+    24
+   ],
+   "neighbour_cm_10_60s": [
+    4.15,
+    6.83,
+    15
+   ]
+  },
+  "dense_composed": {
+   "path": "/tmp/claude-1003/-home-jucpark-DeepLearning-old-CLI-environment/d9c9e460-90fa-40fe-a6c1-4560dea458ba/scratchpad/Xc_dense.json",
+   "objects": 8,
+   "observations": 549,
+   "spread_median_cm": 2.62,
+   "spread_p90_cm": 4.78,
+   "spread_mean_cm": 3.33,
+   "per_object_spread_median_cm": {
+    "Bear": 3.66,
+    "Dinosaur": 2.65,
+    "Febreze_high": 3.24,
+    "Mugcup_high": 0.86,
+    "Sikhye_high": 2.1,
+    "choco_hazelnut_high": 2.86,
+    "milk": 2.05,
+    "saffron": 2.18
+   },
+   "per_object_n": {
+    "Bear": 118,
+    "Dinosaur": 41,
+    "Febreze_high": 76,
+    "Mugcup_high": 37,
+    "Sikhye_high": 50,
+    "choco_hazelnut_high": 80,
+    "milk": 65,
+    "saffron": 82
+   },
+   "neighbour_cm_le3s": [
+    0.87,
+    1.77,
+    499
+   ],
+   "neighbour_cm_3_10s": [
+    4.29,
+    6.69,
+    24
+   ],
+   "neighbour_cm_10_60s": [
+    4.23,
+    6.46,
+    15
+   ]
+  },
+  "distance_direct": {
+   "path": "/home/jucpark/DeepLearning/CLI_environment/objpose/rt/260915/fit_cam_distance_f1600.json",
+   "objects": 8,
+   "observations": 549,
+   "spread_median_cm": 2.56,
+   "spread_p90_cm": 5.01,
+   "spread_mean_cm": 3.41,
+   "per_object_spread_median_cm": {
+    "Bear": 3.5,
+    "Dinosaur": 2.35,
+    "Febreze_high": 2.95,
+    "Mugcup_high": 1.06,
+    "Sikhye_high": 2.1,
+    "choco_hazelnut_high": 2.57,
+    "milk": 2.06,
+    "saffron": 2.81
+   },
+   "per_object_n": {
+    "Bear": 118,
+    "Dinosaur": 41,
+    "Febreze_high": 76,
+    "Mugcup_high": 37,
+    "Sikhye_high": 50,
+    "choco_hazelnut_high": 80,
+    "milk": 65,
+    "saffron": 82
+   },
+   "neighbour_cm_le3s": [
+    0.89,
+    1.85,
+    499
+   ],
+   "neighbour_cm_3_10s": [
+    4.42,
+    6.63,
+    24
+   ],
+   "neighbour_cm_10_60s": [
+    3.26,
+    5.46,
+    15
+   ]
+  },
+  "distance_composed": {
+   "path": "/tmp/claude-1003/-home-jucpark-DeepLearning-old-CLI-environment/d9c9e460-90fa-40fe-a6c1-4560dea458ba/scratchpad/Xc_distance.json",
+   "objects": 8,
+   "observations": 549,
+   "spread_median_cm": 2.56,
+   "spread_p90_cm": 5.11,
+   "spread_mean_cm": 3.44,
+   "per_object_spread_median_cm": {
+    "Bear": 3.63,
+    "Dinosaur": 2.14,
+    "Febreze_high": 2.99,
+    "Mugcup_high": 0.99,
+    "Sikhye_high": 2.02,
+    "choco_hazelnut_high": 2.59,
+    "milk": 2.06,
+    "saffron": 2.81
+   },
+   "per_object_n": {
+    "Bear": 118,
+    "Dinosaur": 41,
+    "Febreze_high": 76,
+    "Mugcup_high": 37,
+    "Sikhye_high": 50,
+    "choco_hazelnut_high": 80,
+    "milk": 65,
+    "saffron": 82
+   },
+   "neighbour_cm_le3s": [
+    0.89,
+    1.87,
+    499
+   ],
+   "neighbour_cm_3_10s": [
+    4.66,
+    6.61,
+    24
+   ],
+   "neighbour_cm_10_60s": [
+    3.42,
+    5.5,
+    15
+   ]
+  }
+ }
+}

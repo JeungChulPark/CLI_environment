@@ -5,7 +5,7 @@ project(hdl_graph_slam)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64")
 else()
   add_compile_options(-msse -msse2 -msse3 -msse4 -msse4.1 -msse4.2)
 endif()
@@ -16,7 +16,8 @@ pkg_check_modules(YAML_PKG_CONFIG REQUIRED IMPORTED_TARGET yaml-0.1)
 find_package(PCL REQUIRED COMPONENTS common filters io registration sample_consensus search)
 list(APPEND CMAKE_MODULE_PATH "${PCL_DIR}/Modules")
 find_package(Eigen3 REQUIRED)
-find_package(Boost REQUIRED COMPONENTS filesystem system date_time iostreams serialization)
+# no `system`: header-only since Boost 1.69 and removed as a component in 1.89 (conda-forge boost 1.90 on the Samsung laptop)
+find_package(Boost REQUIRED COMPONENTS filesystem date_time iostreams serialization)
 find_package(libusb REQUIRED)
 find_package(Qhull REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -112,7 +113,7 @@ set(g2o_libraries
   g2o_types_slam3d
   g2o_types_slam3d_addons
   g2o_solver_pcg
-  g2o_solver_cholmod
+  g2o_solver_eigen
   g2o_solver_csparse
   g2o_csparse_extension
 )

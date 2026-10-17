@@ -1,0 +1,157 @@
+{
+ "runs": {
+  "A": {
+   "dir": "objpose/output/live_260910_lidar_v2",
+   "slam": "lidar_kiss_icp",
+   "slam_poses": 1577,
+   "slam_ok": 1577,
+   "slam_dropped": 0,
+   "track_ms_mean": 32.05,
+   "track_ms_p99": 52.87,
+   "arrival_lag_ms_median": 102.0,
+   "arrival_lag_ms_p99": 137.8,
+   "loop_events": 0,
+   "kf_count": 0,
+   "kf_updates": 0,
+   "kf_max_correction_cm": 0.0,
+   "live_vs_final_traj_cm": {
+    "median": 0.0,
+    "p95": 0.0,
+    "max": 0.0
+   },
+   "sam6d_frames": 736,
+   "objects_unplaced": 0,
+   "observation_spread_cm": {
+    "median": 1.08,
+    "p90": 1.83
+   },
+   "interp_prediction": {
+    "0-3s": {
+     "n": 78,
+     "median_cm": 0.98,
+     "p90_cm": 1.76
+    },
+    "3-10s": {
+     "n": 25,
+     "median_cm": 1.64,
+     "p90_cm": 2.52
+    },
+    "10-60s": {
+     "n": 12,
+     "median_cm": 1.84,
+     "p90_cm": 3.15
+    }
+   },
+   "memory_kept": 8,
+   "memory_classes": 8,
+   "memory_deleted": 1
+  },
+  "B": {
+   "dir": "objpose/output/live_260910_orb_v1",
+   "slam": "orbslam3",
+   "slam_poses": 4772,
+   "slam_ok": 4772,
+   "slam_dropped": 0,
+   "track_ms_mean": 10.63,
+   "track_ms_p99": 15.23,
+   "arrival_lag_ms_median": 18.9,
+   "arrival_lag_ms_p99": 34.3,
+   "loop_events": 2,
+   "kf_count": 208,
+   "kf_updates": 163,
+   "kf_max_correction_cm": 201.68,
+   "live_vs_final_traj_cm": {
+    "median": 0.67,
+    "p95": 15.9,
+    "max": 265.86
+   },
+   "sam6d_frames": 734,
+   "objects_unplaced": 0,
+   "observation_spread_cm": {
+    "median": 3.66,
+    "p90": 10.01
+   },
+   "interp_prediction": {
+    "0-3s": {
+     "n": 97,
+     "median_cm": 2.18,
+     "p90_cm": 4.59
+    },
+    "3-10s": {
+     "n": 16,
+     "median_cm": 6.21,
+     "p90_cm": 10.6
+    },
+    "10-60s": {
+     "n": 12,
+     "median_cm": 10.93,
+     "p90_cm": 17.9
+    }
+   },
+   "memory_kept": 8,
+   "memory_classes": 8,
+   "memory_deleted": 0
+  }
+ },
+ "trajectory_final_B_aligned_to_A_cm": {
+  "n": 1577,
+  "rmse": 5.86,
+  "median": 5.65,
+  "p95": 9.56,
+  "max": 12.71
+ },
+ "trajectory_live_B_aligned_to_A_cm": {
+  "n": 1577,
+  "rmse": 10.91,
+  "median": 7.76,
+  "p95": 14.61,
+  "max": 266.97
+ },
+ "objects_B_in_A_map": {
+  "Bear": {
+   "distance_cm": 7.09,
+   "n_obs_A": 12,
+   "n_obs_B": 10
+  },
+  "Dinosaur": {
+   "distance_cm": 8.13,
+   "n_obs_A": 8,
+   "n_obs_B": 9
+  },
+  "Febreze_high": {
+   "distance_cm": 7.9,
+   "n_obs_A": 6,
+   "n_obs_B": 8
+  },
+  "Mugcup_high": {
+   "distance_cm": 3.48,
+   "n_obs_A": 11,
+   "n_obs_B": 14
+  },
+  "Sikhye_high": {
+   "distance_cm": 1.91,
+   "n_obs_A": 27,
+   "n_obs_B": 26
+  },
+  "choco_hazelnut_high": {
+   "distance_cm": 3.68,
+   "n_obs_A": 22,
+   "n_obs_B": 25
+  },
+  "milk": {
+   "distance_cm": 2.81,
+   "n_obs_A": 23,
+   "n_obs_B": 23
+  },
+  "saffron": {
+   "distance_cm": 6.19,
+   "n_obs_A": 16,
+   "n_obs_B": 21
+  }
+ },
+ "pairwise_object_distance_diff_cm": {
+  "pairs": 28,
+  "median": 3.2,
+  "max": 8.37
+ }
+}

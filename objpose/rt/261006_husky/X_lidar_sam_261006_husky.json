@@ -1,0 +1,50 @@
+{
+ "T_slam_sam": [
+  [
+   -0.28466717832992494,
+   0.24501092853597978,
+   -0.9267870534700062,
+   -0.31311716851149846
+  ],
+  [
+   0.9584675231749558,
+   0.05514323059172785,
+   -0.27981999774636096,
+   -0.058078299502260365
+  ],
+  [
+   -0.017452925271847053,
+   -0.9679508608487546,
+   -0.2505324856812201,
+   -0.4238100499978679
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "source": "261006 Husky mounting, VLP-16 (velodyne) -> SAM camera (D455f on the PC): static LiDAR-to-depth registration, robot not moving (19 revolutions vs the median of 45 depth frames, point-to-plane, global search over yaw/pitch/height). Data and overlays in objpose/rt/261006_husky/",
+ "slam_sensor": "lidar",
+ "sam_tau_s": 0.0,
+ "clock": "live: the hub measures laptop - PC at every start",
+ "fit": {
+  "lidar_points_in_view": 39463,
+  "within_3cm": 18473,
+  "residual_median_cm": 2.03,
+  "subsample_std_cm": [
+   0.03,
+   0.07,
+   0.08
+  ],
+  "weak_direction": "camera lateral axis: +-5 cm shifts keep 91-96 % of the inliers (one static scene)"
+ },
+ "cross_check": {
+  "vs_260915_rig_with_lidar_turned_86deg_about_its_axis": {
+   "translation_cm": 5.32,
+   "rotation_deg": 3.59
+  },
+  "camera_forward_in_base_link_yaw_deg": 88.5
+ }
+}
