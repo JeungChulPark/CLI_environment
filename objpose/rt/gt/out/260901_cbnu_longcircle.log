@@ -1,0 +1,133 @@
+[pseudo_gt] 1341 scans, 113 keyframes, path 46.7 m
+[pseudo_gt] loops {'candidates': 161, 'accepted': 143, 'fwbw_cm_median': 0.69, 'fwbw_deg_median': 0.102, 'corr_cm_median': 1.2, 'corr_cm_max': 7.0}
+  GN round 0: cost 184.5  loop edges w<0.1: 0/143
+  GN round 1: cost 135.4  loop edges w<0.1: 0/143
+  GN round 2: cost 128.8  loop edges w<0.1: 0/143
+  GN round 3: cost 126.0  loop edges w<0.1: 0/143
+[pseudo_gt] checks: held-out loops
+[pseudo_gt] checks: cross-pass planes
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/pseudo_gt.py:408: RuntimeWarning: divide by zero encountered in matmul
+  P_.append(q @ T[k, :3, :3].T + T[k, :3, 3]); Ts_.append(np.full(len(q), t_s[k]))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/pseudo_gt.py:408: RuntimeWarning: overflow encountered in matmul
+  P_.append(q @ T[k, :3, :3].T + T[k, :3, 3]); Ts_.append(np.full(len(q), t_s[k]))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/pseudo_gt.py:408: RuntimeWarning: invalid value encountered in matmul
+  P_.append(q @ T[k, :3, :3].T + T[k, :3, 3]); Ts_.append(np.full(len(q), t_s[k]))
+{
+ "session": "/Users/user/Documents/DefenseMeta/Dataset/260901_cbnu_longcircle",
+ "odometry": {
+  "messages": 1341,
+  "scans": 1341,
+  "deskew": "cv",
+  "ms_per_scan": 94.23
+ },
+ "path_m": 46.67,
+ "duration_s": 135.2,
+ "keyframes": 113,
+ "loops": {
+  "candidates": 161,
+  "accepted": 143,
+  "fwbw_cm_median": 0.69,
+  "fwbw_deg_median": 0.102,
+  "corr_cm_median": 1.2,
+  "corr_cm_max": 7.0,
+  "downweighted": 0
+ },
+ "pgo_minus_odom_cm": {
+  "median": 1.6,
+  "max": 3.5,
+  "end": 1.4
+ },
+ "start_end_gap_cm": {
+  "odom": 44.9,
+  "pgo": 44.6
+ },
+ "heldout_loops": {
+  "pgo_heldout_cm": {
+   "n": 143,
+   "median": 0.69,
+   "rms": 1.04,
+   "p90": 1.53,
+   "max": 3.97
+  },
+  "pgo_heldout_deg": {
+   "n": 143,
+   "median": 0.19,
+   "rms": 0.34,
+   "p90": 0.58,
+   "max": 1.11
+  },
+  "odom_cm": {
+   "n": 143,
+   "median": 1.19,
+   "rms": 2.09,
+   "p90": 3.5,
+   "max": 6.95
+  },
+  "odom_deg": {
+   "n": 143,
+   "median": 0.29,
+   "rms": 0.66,
+   "p90": 1.07,
+   "max": 2.18
+  }
+ },
+ "start_end_heldout_cm": {
+  "edges": 7,
+  "pgo_median": 0.68,
+  "odom_median": 2.79
+ },
+ "planes_odom": {
+  "other_pass": {
+   "n": 12141,
+   "median_cm": 0.99,
+   "p90_cm": 2.69
+  },
+  "same_pass": {
+   "n": 13424,
+   "median_cm": 0.53,
+   "p90_cm": 1.51
+  }
+ },
+ "planes_pgo": {
+  "other_pass": {
+   "n": 12216,
+   "median_cm": 0.99,
+   "p90_cm": 2.61
+  },
+  "same_pass": {
+   "n": 13433,
+   "median_cm": 0.54,
+   "p90_cm": 1.51
+  }
+ },
+ "tilt_vs_gravity": {
+  "odom": {
+   "raw": {
+    "median_deg": 0.665,
+    "p90_deg": 1.175,
+    "max_deg": 1.717
+   },
+   "cal": {
+    "median_deg": 0.556,
+    "p90_deg": 0.993,
+    "max_deg": 1.513
+   },
+   "mount_corr_deg": 0.385
+  },
+  "pgo": {
+   "raw": {
+    "median_deg": 0.631,
+    "p90_deg": 1.119,
+    "max_deg": 1.481
+   },
+   "cal": {
+    "median_deg": 0.496,
+    "p90_deg": 0.906,
+    "max_deg": 1.513
+   },
+   "mount_corr_deg": 0.222
+  },
+  "fitted": false
+ },
+ "wall_s": 52.7
+}
