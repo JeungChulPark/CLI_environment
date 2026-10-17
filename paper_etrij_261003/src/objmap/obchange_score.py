@@ -13,9 +13,10 @@ placement" when they share the class and their centres are within 10 cm:
            visit-k object). The rate that matters is still-in-map / mapped: a method that never mapped an
            object cannot keep it.
   added    an object of visit k with no same placement in visit k-1. It is *found* if it is paired (TP) in visit k.
-Output: out/obchange_scores.json and a printed table.
+Output: out/obchange_scores.json (other rooms: out/obchange_scores_<room>.json) and a printed table.
+Other rooms: --room BigRoom|LivingArea|Office|SmallRoom; the visits are the GT folders gt/obchange_<room>/<k:06d>.
 
-    python obchange_score.py [--methods ours_cad ours_obs fmfusion dualmap dualmap_bgr]
+    python obchange_score.py [--room Kitchen] [--methods ours_cad ours_obs fmfusion dualmap dualmap_bgr]
 """
 import argparse, json
 
@@ -24,12 +25,17 @@ import numpy as np
 from common import GT_DIR, OUT, load_map
 from evaluate import drop_dont_care, iou3d, match, prep, prf, surface_dist
 
-VISITS = [2, 3, 4, 5, 6]
+VISITS = [2, 3, 4, 5, 6]   # Kitchen; main() sets the visits of --room from its GT folders
+ROOM = "kitchen"
 SAME_PLACE, STALE = 0.10, 0.05
 
 
+def gt_visits(room):
+    return sorted(int(p.name) for p in (GT_DIR / f"obchange_{room}").iterdir() if p.name.isdigit() and (p / "map.json").exists())
+
+
 def gt_visit(k):
-    gdir = GT_DIR / "obchange_kitchen" / f"{k:06d}"
+    gdir = GT_DIR / f"obchange_{ROOM}" / f"{k:06d}"
     gm, gt = load_map(gdir)
     return gm, gdir, prep(gt)
 
@@ -89,25 +95,32 @@ def summarize(rows):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--methods", nargs="+", default=["ours_cad", "ours_obs", "fmfusion", "dualmap", "dualmap_bgr"])
+    ap.add_argument("--room", default="Kitchen", help="Kitchen | BigRoom | LivingArea | Office | SmallRoom")
     a = ap.parse_args()
+    global ROOM, VISITS
+    ROOM = a.room.lower()
+    VISITS = gt_visits(ROOM)
+    per, cont = f"obchange_{ROOM}", f"obchange_{ROOM}_all"
+    dst = OUT / ("obchange_scores.json" if ROOM == "kitchen" else f"obchange_scores_{ROOM}.json")
+    print(ROOM, "visits", VISITS)
     res = {}
     fmt = lambda v, n=3: "-" if v is None else f"{v:.{n}f}"
     print(f"{'method':12s} {'mode':10s} {'match':7s} {'TP':>3} {'FP':>3} {'FN':>3} {'P':>6} {'R':>6} {'F1':>6} {'mIoU':>6} {'SD':>6}  still/mapped/removed  added-found/added")
     for m in a.methods:
-        for mode, mname in (("obchange_kitchen", "per-visit"), ("obchange_kitchen_all", "continuous")):
+        for mode, mname in ((per, "per-visit"), (cont, "continuous")):
             for how, thr, tag in (("iou", 0.25, "iou"), ("center", 0.05, "ctr5cm")):
                 clean = m != "ours_cad"
                 rows = {k: score_visit(m, mode, k, how, thr, clean) for k in VISITS}
                 s = summarize(rows)
-                if mode == "obchange_kitchen_all":
+                if mode == cont:
                     s["revisit"] = revisit_counts(rows)
                 res[f"{m}|{mode}|{tag}"] = s
                 rv = s.get("revisit")
                 extra = f"  {rv['removed_still_in_map']:>2}/{rv['removed_mapped']:>2}/{rv['removed']:<2}             {rv['added_found']:>2}/{rv['added']}" if rv else ""
                 print(f"{m:12s} {mname:10s} {tag:7s} {s['tp']:>3} {s['fp']:>3} {s['fn']:>3} {fmt(s['precision']):>6} "
                       f"{fmt(s['recall']):>6} {fmt(s['f1']):>6} {fmt(s['mean_iou']):>6} {fmt(s['mean_sd_mm'], 1):>6}{extra}", flush=True)
-    json.dump(res, open(OUT / "obchange_scores.json", "w"), indent=1)
-    print("->", OUT / "obchange_scores.json")
+    json.dump(res, open(dst, "w"), indent=1)
+    print("->", dst)
 
 
 if __name__ == "__main__":

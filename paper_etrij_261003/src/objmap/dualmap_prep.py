@@ -20,12 +20,21 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from common import classes, seq_cameras
+from common import classes, obchange_room, seq_cameras
 
 ROOT = Path(os.environ.get("DUALMAP_DATA", Path.home() / "DeepLearning/Dataset/bop/ycbv_work/dualmap"))
 
 
-PREFIX = {"ycbv": "ycbv", "obchange_kitchen": "obkv", "obchange_kitchen_all": "obka", "real": "real"}
+PREFIX = {"ycbv": "ycbv", "real": "real"}
+
+
+def prefix(dataset):
+    """ycbv / real, and ob<c>v (each visit alone) / ob<c>a (visits 1..k) for ObChange room <c>... (first letter:
+    k kitchen, b bigroom, l livingarea, o office, s smallroom). No '_': the Replica loader strips it from ids."""
+    if dataset in PREFIX:
+        return PREFIX[dataset]
+    room, cont = obchange_room(dataset)
+    return f"ob{room[0]}{'a' if cont else 'v'}"
 
 
 def prompts_path(dataset):
@@ -33,15 +42,17 @@ def prompts_path(dataset):
 
 
 def scene_id(s, dataset="ycbv"):
-    return f"{PREFIX[dataset]}{s:06d}"   # the Replica loader strips '_' from scene ids
+    return f"{prefix(dataset)}{s:06d}"   # the Replica loader strips '_' from scene ids
 
 
 def prep_scene(s, dataset="ycbv"):
-    """ObChange sequences share one JPEG per global frame id (ROOT/jpg_cache) through symlinks."""
+    """ObChange sequences share one JPEG per global frame id (ROOT/jpg_cache; rooms other than Kitchen:
+    ROOT/jpg_cache_<room>, the global ids restart per room) through symlinks."""
     cams = seq_cameras(dataset, s)
     seq = Path(cams["seq_dir"])
     out = ROOT / "Replica" / scene_id(s, dataset)
-    cache = ROOT / "jpg_cache"
+    ob = obchange_room(dataset)
+    cache = ROOT / ("jpg_cache" if ob is None or ob[0] == "kitchen" else f"jpg_cache_{ob[0]}")
     res = out / "results"
     res.mkdir(parents=True, exist_ok=True)
     with open(out / "traj.txt", "w") as fh:

@@ -144,6 +144,11 @@ def build_ism(model_name="dinov2_vitl14", segmentor=None):
 
 def select_bank(ism, bank, oids, cache):
     key = tuple(oids)
+    # BOP_BANK_CACHE=n keeps at most n target sets on the GPU (HOPE-Video: ~10 targets per image, so nearly every
+    # image is a new set and the unbounded cache filled the 24 GB laptop GPU); unset = unbounded, as before
+    cap = int(os.environ.get("BOP_BANK_CACHE", "0") or 0)
+    if cap and key not in cache and len(cache) >= cap:
+        cache.clear()
     if key not in cache:
         idx = torch.tensor([OIDS.index(o) for o in oids], device=DEV)
         cache[key] = {"descriptors": bank["descriptors"][idx], "appe_descriptors": bank["appe_descriptors"][idx],

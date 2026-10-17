@@ -8,7 +8,7 @@ Speaks the hub's SLAM stream protocol (newline JSON over TCP, as slam_stream / l
 
 Poses are the re-fitted YCB-V cameras of gt/ycbv/<scene>/cameras.json (camera -> world, metres),
 so the hub's world frame is the GT world frame (use the identity extrinsic). Stamps follow
-ycbv_live/make_bags.py: frame n of the sorted sequence is at T0 + n/30 s. Each pose is sent
+ycbv_live/make_bags.py: frame n of the sorted sequence is at T0 + n/fps s (common.fps, 30 by default). Each pose is sent
 when its frame is due on the replay clock, like a SLAM backend with zero tracking time; no
 keyframes, so the hub anchors objects in world coordinates.
 
@@ -19,7 +19,7 @@ import json
 import socket
 import time
 
-from common import seq_cameras
+from common import fps, seq_cameras
 
 T0 = 1_700_000_000_000_000_000      # make_bags.py
 
@@ -32,7 +32,8 @@ def main():
     a = ap.parse_args()
     cams = seq_cameras(a.dataset, a.scene)
     frames = sorted(cams["frames"], key=lambda f: f["id"])
-    stamps = [T0 + int(round(n * 1e9 / 30)) for n in range(len(frames))]
+    rate_fps = fps(cams)
+    stamps = [T0 + int(round(n * 1e9 / rate_fps)) for n in range(len(frames))]
 
     host, port = a.connect.rsplit(":", 1)
     for _ in range(300):
@@ -47,7 +48,7 @@ def main():
     send = lambda o: sock.sendall((json.dumps(o) + "\n").encode())
     send({"type": "hello", "source": "gt_poses", "features": None, "session": f"{a.dataset} {a.scene:06d} GT",
           "first_ns": stamps[0], "last_ns": stamps[-1], "n_frames": len(frames),
-          "time_source": "frame", "time_domain": "make_bags synthetic 30 fps", "kf_updates": False})
+          "time_source": "frame", "time_domain": f"make_bags synthetic {rate_fps:g} fps", "kf_updates": False})
     buf = b""
     while True:
         chunk = sock.recv(65536)

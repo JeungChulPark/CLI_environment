@@ -5,6 +5,7 @@ converted on load.
 """
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -146,6 +147,8 @@ def load_map(map_dir, cad_if_no_points=True):
 # ycbv               YCB-V test video k                                gt/ycbv/<k:06d>/
 # obchange_kitchen   ObChange-Kitchen visit k alone                    gt/obchange_kitchen/seq/all/ (frames of visit k)
 # obchange_kitchen_all  visits 1..k in a row (the map at the end of k)  gt/obchange_kitchen/seq/all/ (visits <= k)
+# obchange_<room>[_all]  the same for the other ObChange rooms (bigroom, livingarea, office, smallroom), from the
+#                    BOP frames at 10 fps (obchange_bop_seq.py)               gt/obchange_<room>/seq/all/
 # The ObChange sequences keep the global frame ids of the continuous sequence, so per-frame work
 # (detections) is shared between them.
 # real               real recording k of REAL_SESSIONS                 gt/real/<k:06d>/ (real_prep.py: frames + the
@@ -177,19 +180,38 @@ def classes(dataset):
     return PROMPTS, YCB_NAMES
 
 
+def obchange_room(dataset):
+    """'obchange_<room>' / 'obchange_<room>_all' -> (room, continuous?), else None. room is lower case."""
+    m = re.match(r"^obchange_([a-z]+?)(_all)?$", dataset)
+    return (m.group(1), bool(m.group(2))) if m else None
+
+
+def obchange_cameras(room):
+    """The full cameras.json of the continuous sequence of an ObChange room (all visits)."""
+    return json.load(open(GT_DIR / f"obchange_{room}" / "seq" / "all" / "cameras.json"))
+
+
+def obchange_last_visit(room):
+    return max(v["visit"] for v in obchange_cameras(room)["visits"])
+
+
 def seq_cameras(dataset, scene):
-    """cameras.json of a sequence: {K, width, height, depth_scale_mm, seq_dir, frames}."""
+    """cameras.json of a sequence: {K, width, height, depth_scale_mm, seq_dir, frames[, fps]}."""
     if dataset in ("ycbv", "real"):
         return json.load(open(GT_DIR / dataset / f"{scene:06d}" / "cameras.json"))
-    cams = json.load(open(GT_DIR / "obchange_kitchen" / "seq" / "all" / "cameras.json"))
-    if dataset == "obchange_kitchen":
-        keep = lambda v: v == scene
-    elif dataset == "obchange_kitchen_all":
-        keep = lambda v: v <= scene
-    else:
+    ob = obchange_room(dataset)
+    if ob is None:
         raise ValueError(dataset)
+    cams = obchange_cameras(ob[0])
+    keep = (lambda v: v <= scene) if ob[1] else (lambda v: v == scene)
     cams["frames"] = [f for f in cams["frames"] if keep(f["visit"])]
     return cams
+
+
+def fps(cams):
+    """Frame rate of a sequence's replay clock (frame n at T0 + n/fps): 30 unless cameras.json says otherwise
+    (the ObChange rooms from the BOP frames, obchange_bop_seq.py, are every 3rd frame = 10 fps)."""
+    return cams.get("fps", 30)
 
 
 def seq_name(dataset, scene):

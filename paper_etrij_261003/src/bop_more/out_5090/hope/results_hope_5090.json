@@ -1,0 +1,499 @@
+{
+ "label": "hope-video run, RTX 5090 Laptop, 2026-10-17",
+ "protocol": "Per method (prediction JSON from run_orig.py / run_ours.py):\n  correct      ADD-S < 10 % of the object diameter (models_eval/models_info.json),\n               ADD-S over the models_eval vertices\n  Found        visible GT targets with a correct answer / visible GT targets\n               (visible = visib_fract > 0; all 4123 BOP19 targets are)\n  Answers correct   correct answers / all answers\n  Wrong / image     wrong answers / images\n  ADD-S AUC    area under the accuracy-threshold curve, 0-10 cm (PoseCNN VOCap), pooled over\n               all GT targets (missing answer = infinite error); per-object mean also reported\n  BOP AR       official bop_toolkit scripts/eval_bop19_pose.py (VSD, MSSD, MSPD) on BOP CSV\n  Time         median per-image time of the timed region\nBOP CSV files and bop_toolkit output go to OUT/bop; summary -> results.json.",
+ "evaluated": "2026-10-17 08:11:01",
+ "methods": {
+  "ladder_L0": {
+   "images": 413,
+   "visible_gt_targets": 3243,
+   "answers": 2910,
+   "correct_answers": 2062,
+   "found_pct": 63.6,
+   "answers_correct_pct": 70.9,
+   "wrong_per_image": 2.053,
+   "adds_auc": 64.7,
+   "adds_auc_mean_over_objects": 65.7,
+   "time_ms": {
+    "median": 856.2,
+    "p90": 1766.3,
+    "mean": 1033.3,
+    "n": 413
+   },
+   "per_object": {
+    "hope_01": {
+     "targets": 178,
+     "found": 92,
+     "found_pct": 51.7,
+     "answers": 159,
+     "correct": 92,
+     "adds_auc": 54.6
+    },
+    "hope_02": {
+     "targets": 123,
+     "found": 87,
+     "found_pct": 70.7,
+     "answers": 120,
+     "correct": 87,
+     "adds_auc": 72.2
+    },
+    "hope_03": {
+     "targets": 58,
+     "found": 49,
+     "found_pct": 84.5,
+     "answers": 58,
+     "correct": 49,
+     "adds_auc": 82.9
+    },
+    "hope_04": {
+     "targets": 129,
+     "found": 36,
+     "found_pct": 27.9,
+     "answers": 85,
+     "correct": 36,
+     "adds_auc": 39.4
+    },
+    "hope_05": {
+     "targets": 113,
+     "found": 64,
+     "found_pct": 56.6,
+     "answers": 113,
+     "correct": 64,
+     "adds_auc": 55.9
+    },
+    "hope_06": {
+     "targets": 246,
+     "found": 203,
+     "found_pct": 82.5,
+     "answers": 236,
+     "correct": 203,
+     "adds_auc": 81.1
+    },
+    "hope_07": {
+     "targets": 31,
+     "found": 15,
+     "found_pct": 48.4,
+     "answers": 29,
+     "correct": 15,
+     "adds_auc": 82.4
+    },
+    "hope_08": {
+     "targets": 160,
+     "found": 102,
+     "found_pct": 63.8,
+     "answers": 157,
+     "correct": 102,
+     "adds_auc": 64.3
+    },
+    "hope_09": {
+     "targets": 51,
+     "found": 48,
+     "found_pct": 94.1,
+     "answers": 51,
+     "correct": 48,
+     "adds_auc": 89.1
+    },
+    "hope_11": {
+     "targets": 172,
+     "found": 142,
+     "found_pct": 82.6,
+     "answers": 167,
+     "correct": 142,
+     "adds_auc": 80.8
+    },
+    "hope_12": {
+     "targets": 196,
+     "found": 122,
+     "found_pct": 62.2,
+     "answers": 179,
+     "correct": 122,
+     "adds_auc": 64.5
+    },
+    "hope_13": {
+     "targets": 124,
+     "found": 94,
+     "found_pct": 75.8,
+     "answers": 123,
+     "correct": 94,
+     "adds_auc": 73.8
+    },
+    "hope_14": {
+     "targets": 226,
+     "found": 109,
+     "found_pct": 48.2,
+     "answers": 152,
+     "correct": 109,
+     "adds_auc": 49.5
+    },
+    "hope_15": {
+     "targets": 111,
+     "found": 59,
+     "found_pct": 53.2,
+     "answers": 110,
+     "correct": 59,
+     "adds_auc": 52.7
+    },
+    "hope_16": {
+     "targets": 180,
+     "found": 151,
+     "found_pct": 83.9,
+     "answers": 178,
+     "correct": 151,
+     "adds_auc": 83.0
+    },
+    "hope_17": {
+     "targets": 198,
+     "found": 167,
+     "found_pct": 84.3,
+     "answers": 187,
+     "correct": 167,
+     "adds_auc": 84.3
+    },
+    "hope_18": {
+     "targets": 167,
+     "found": 114,
+     "found_pct": 68.3,
+     "answers": 147,
+     "correct": 114,
+     "adds_auc": 68.8
+    },
+    "hope_19": {
+     "targets": 23,
+     "found": 9,
+     "found_pct": 39.1,
+     "answers": 23,
+     "correct": 9,
+     "adds_auc": 60.2
+    },
+    "hope_20": {
+     "targets": 90,
+     "found": 35,
+     "found_pct": 38.9,
+     "answers": 81,
+     "correct": 35,
+     "adds_auc": 40.6
+    },
+    "hope_21": {
+     "targets": 123,
+     "found": 51,
+     "found_pct": 41.5,
+     "answers": 92,
+     "correct": 51,
+     "adds_auc": 49.8
+    },
+    "hope_23": {
+     "targets": 88,
+     "found": 51,
+     "found_pct": 58.0,
+     "answers": 87,
+     "correct": 51,
+     "adds_auc": 60.1
+    },
+    "hope_24": {
+     "targets": 123,
+     "found": 78,
+     "found_pct": 63.4,
+     "answers": 113,
+     "correct": 78,
+     "adds_auc": 62.4
+    },
+    "hope_26": {
+     "targets": 208,
+     "found": 117,
+     "found_pct": 56.2,
+     "answers": 154,
+     "correct": 117,
+     "adds_auc": 57.5
+    },
+    "hope_27": {
+     "targets": 34,
+     "found": 17,
+     "found_pct": 50.0,
+     "answers": 34,
+     "correct": 17,
+     "adds_auc": 75.8
+    },
+    "hope_28": {
+     "targets": 91,
+     "found": 50,
+     "found_pct": 54.9,
+     "answers": 75,
+     "correct": 50,
+     "adds_auc": 56.3
+    }
+   },
+   "title": "ladder_L0",
+   "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+   "run_label": "hope-video run, RTX 5090 Laptop, 2026-10-17",
+   "prediction_file": "/home/jucpark/DeepLearning/CLI_environment/paper_etrij_261003/src/bop_more/out_5090/hope/pred_ladder_L0.json",
+   "stage_ms": {
+    "proposals": {
+     "median": 14.8,
+     "p90": 15.8,
+     "mean": 14.8,
+     "n": 413
+    },
+    "descriptors": {
+     "median": 434.7,
+     "p90": 817.3,
+     "mean": 489.2,
+     "n": 413
+    },
+    "matching": {
+     "median": 14.2,
+     "p90": 25.2,
+     "mean": 15.2,
+     "n": 413
+    },
+    "pem": {
+     "median": 397.3,
+     "p90": 938.4,
+     "mean": 514.0,
+     "n": 413
+    }
+   }
+  },
+  "ladder_hybS05cf": {
+   "images": 413,
+   "visible_gt_targets": 3243,
+   "answers": 1958,
+   "correct_answers": 1751,
+   "found_pct": 54.0,
+   "answers_correct_pct": 89.4,
+   "wrong_per_image": 0.501,
+   "adds_auc": 52.8,
+   "adds_auc_mean_over_objects": 52.7,
+   "time_ms": {
+    "median": 376.8,
+    "p90": 861.4,
+    "mean": 476.9,
+    "n": 413
+   },
+   "per_object": {
+    "hope_01": {
+     "targets": 178,
+     "found": 84,
+     "found_pct": 47.2,
+     "answers": 94,
+     "correct": 84,
+     "adds_auc": 45.7
+    },
+    "hope_02": {
+     "targets": 123,
+     "found": 66,
+     "found_pct": 53.7,
+     "answers": 68,
+     "correct": 66,
+     "adds_auc": 51.9
+    },
+    "hope_03": {
+     "targets": 58,
+     "found": 40,
+     "found_pct": 69.0,
+     "answers": 41,
+     "correct": 40,
+     "adds_auc": 65.8
+    },
+    "hope_04": {
+     "targets": 129,
+     "found": 40,
+     "found_pct": 31.0,
+     "answers": 60,
+     "correct": 40,
+     "adds_auc": 38.2
+    },
+    "hope_05": {
+     "targets": 113,
+     "found": 46,
+     "found_pct": 40.7,
+     "answers": 54,
+     "correct": 46,
+     "adds_auc": 40.0
+    },
+    "hope_06": {
+     "targets": 246,
+     "found": 160,
+     "found_pct": 65.0,
+     "answers": 163,
+     "correct": 160,
+     "adds_auc": 61.5
+    },
+    "hope_07": {
+     "targets": 31,
+     "found": 8,
+     "found_pct": 25.8,
+     "answers": 22,
+     "correct": 8,
+     "adds_auc": 64.7
+    },
+    "hope_08": {
+     "targets": 160,
+     "found": 86,
+     "found_pct": 53.8,
+     "answers": 92,
+     "correct": 86,
+     "adds_auc": 52.2
+    },
+    "hope_09": {
+     "targets": 51,
+     "found": 45,
+     "found_pct": 88.2,
+     "answers": 48,
+     "correct": 45,
+     "adds_auc": 81.8
+    },
+    "hope_11": {
+     "targets": 172,
+     "found": 127,
+     "found_pct": 73.8,
+     "answers": 134,
+     "correct": 127,
+     "adds_auc": 71.2
+    },
+    "hope_12": {
+     "targets": 196,
+     "found": 121,
+     "found_pct": 61.7,
+     "answers": 126,
+     "correct": 121,
+     "adds_auc": 58.9
+    },
+    "hope_13": {
+     "targets": 124,
+     "found": 72,
+     "found_pct": 58.1,
+     "answers": 77,
+     "correct": 72,
+     "adds_auc": 54.2
+    },
+    "hope_14": {
+     "targets": 226,
+     "found": 137,
+     "found_pct": 60.6,
+     "answers": 137,
+     "correct": 137,
+     "adds_auc": 57.5
+    },
+    "hope_15": {
+     "targets": 111,
+     "found": 16,
+     "found_pct": 14.4,
+     "answers": 37,
+     "correct": 16,
+     "adds_auc": 14.0
+    },
+    "hope_16": {
+     "targets": 180,
+     "found": 112,
+     "found_pct": 62.2,
+     "answers": 115,
+     "correct": 112,
+     "adds_auc": 60.1
+    },
+    "hope_17": {
+     "targets": 198,
+     "found": 151,
+     "found_pct": 76.3,
+     "answers": 151,
+     "correct": 151,
+     "adds_auc": 72.6
+    },
+    "hope_18": {
+     "targets": 167,
+     "found": 86,
+     "found_pct": 51.5,
+     "answers": 109,
+     "correct": 86,
+     "adds_auc": 49.8
+    },
+    "hope_19": {
+     "targets": 23,
+     "found": 7,
+     "found_pct": 30.4,
+     "answers": 20,
+     "correct": 7,
+     "adds_auc": 40.4
+    },
+    "hope_20": {
+     "targets": 90,
+     "found": 42,
+     "found_pct": 46.7,
+     "answers": 46,
+     "correct": 42,
+     "adds_auc": 46.2
+    },
+    "hope_21": {
+     "targets": 123,
+     "found": 52,
+     "found_pct": 42.3,
+     "answers": 69,
+     "correct": 52,
+     "adds_auc": 48.2
+    },
+    "hope_23": {
+     "targets": 88,
+     "found": 45,
+     "found_pct": 51.1,
+     "answers": 45,
+     "correct": 45,
+     "adds_auc": 48.8
+    },
+    "hope_24": {
+     "targets": 123,
+     "found": 74,
+     "found_pct": 60.2,
+     "answers": 89,
+     "correct": 74,
+     "adds_auc": 58.7
+    },
+    "hope_26": {
+     "targets": 208,
+     "found": 91,
+     "found_pct": 43.8,
+     "answers": 94,
+     "correct": 91,
+     "adds_auc": 42.4
+    },
+    "hope_27": {
+     "targets": 34,
+     "found": 16,
+     "found_pct": 47.1,
+     "answers": 24,
+     "correct": 16,
+     "adds_auc": 61.7
+    },
+    "hope_28": {
+     "targets": 91,
+     "found": 27,
+     "found_pct": 29.7,
+     "answers": 43,
+     "correct": 27,
+     "adds_auc": 31.7
+    }
+   },
+   "title": "ladder_hybS05cf",
+   "gpu": "NVIDIA GeForce RTX 5090 Laptop GPU",
+   "run_label": "hope-video run, RTX 5090 Laptop, 2026-10-17",
+   "prediction_file": "/home/jucpark/DeepLearning/CLI_environment/paper_etrij_261003/src/bop_more/out_5090/hope/pred_ladder_hybS05cf.json",
+   "stage_ms": {
+    "yolo": {
+     "median": 0.0,
+     "p90": 0.0,
+     "mean": 0.0,
+     "n": 413
+    },
+    "ism": {
+     "median": 74.0,
+     "p90": 121.0,
+     "mean": 80.9,
+     "n": 413
+    },
+    "pem": {
+     "median": 302.0,
+     "p90": 745.0,
+     "mean": 395.8,
+     "n": 413
+    }
+   }
+  }
+ }
+}

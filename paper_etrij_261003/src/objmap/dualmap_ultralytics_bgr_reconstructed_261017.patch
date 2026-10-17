@@ -1,0 +1,42 @@
+--- a/utils/object_detector.py	2026-10-17 05:45:03.859833901 +0900
++++ b/utils/object_detector.py	2026-10-17 05:45:03.875833900 +0900
+@@ -414,7 +414,7 @@
+     def process_yolo_results(self, color, obj_classes):
+ 
+         # Perform YOLO prediction
+-        results = self.yolo.predict(color, conf=float(os.environ.get("DM_YOLO_CONF", 0.2)), verbose=False)  # 기본값 0.2 그대로, 실험 때만 환경변수로 바꾼다
++        results = self.yolo.predict(_ul(color), conf=float(os.environ.get("DM_YOLO_CONF", 0.2)), verbose=False)  # 기본값 0.2 그대로, 실험 때만 환경변수로 바꾼다
+ 
+         # Extract confidence scores
+         confidence_tensor = results[0].boxes.conf
+@@ -442,7 +442,7 @@
+ 
+     def process_fastsam_results(self, color):
+         results = self.fastsam(
+-            color,
++            _ul(color),
+             device="cuda",
+             retina_masks=True,
+             imgsz=1024,
+@@ -580,7 +580,7 @@
+             self.curr_detections = None
+             return
+         with timing_context("Segmentation", self):
+-            sam_out = self.sam.predict(color, bboxes=xyxy, verbose=False)
++            sam_out = self.sam.predict(_ul(color), bboxes=xyxy, verbose=False)
+             masks_tensor = sam_out[0].masks.data
+             masks_np = masks_tensor.cpu().numpy()
+             self.masks_np = masks_np
+@@ -1820,6 +1820,12 @@
+         self.xyxy[target, :] = x1, y1, x2, y2
+ 
+ 
++def _ul(color):
++    """[local patch] DualMap hands ultralytics (YOLO-World, MobileSAM, FastSAM) RGB arrays, which ultralytics reads as
++    BGR. DUALMAP_ULTRALYTICS_BGR=1 passes a BGR copy instead; unset = the published behaviour."""
++    return np.ascontiguousarray(color[..., ::-1]) if os.environ.get("DUALMAP_ULTRALYTICS_BGR") else color
++
++
+ def update_bbox(mask):
+     y, x = np.nonzero(mask)
+     if len(x) == 0:  # [local patch 2026-10-05] 겹침을 빼고 나니 빈 마스크 — 원래 코드는 여기서 ValueError 로 죽고 프로세스가 멈춘다
