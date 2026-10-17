@@ -59,7 +59,8 @@ h1{font-size:16px;margin:0;font-weight:650;letter-spacing:.2px}
 #chartWrap{flex:1;min-height:140px}
 #chart{display:block;width:100%;height:100%;position:absolute;inset:0}
 #scene{min-height:420px}
-#scene canvas{display:block;position:absolute;inset:0}  /* out of flow: sizing it must not resize the panel */
+#scene canvas{display:block;position:absolute;inset:0;width:100%;height:100%}  /* out of flow: sizing it must not resize the panel;
+   width/height too: inset alone does not stretch a canvas, which then shows at its device-pixel size (2x on Retina) */
 .tools{position:absolute;top:6px;right:8px;display:flex;gap:6px;z-index:2}
 .tools button{font:12px var(--mono);color:var(--ink-2);background:var(--panel-2);border:1px solid var(--rule);
   border-radius:6px;padding:3px 8px;cursor:pointer}
@@ -84,6 +85,10 @@ h1{font-size:16px;margin:0;font-weight:650;letter-spacing:.2px}
 .act{font:600 12px -apple-system,BlinkMacSystemFont,sans-serif;color:#fff;background:var(--accent);border:0;border-radius:6px;
   padding:5px 12px;cursor:pointer}
 .act.stop{background:var(--bad)}
+.act:disabled{opacity:.45;cursor:not-allowed}
+#bag{font:12px var(--mono);color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-radius:6px;
+     padding:5px 8px;max-width:260px}
+#bag:disabled{opacity:.6}
 #overlay button{margin-left:10px}
 @media (max-width:900px){
   .main{grid-template-columns:1fr}
@@ -107,6 +112,7 @@ function showErr(t){ const b = document.getElementById("err"); if (b){ b.hidden 
   <header>
     <h1 id="title">SLAM 실시간 추론</h1>
     <div class="seg" id="seg" hidden></div>
+    <select id="bag" hidden title="재생할 세션 (bag) — 실행을 누르면 이 세션으로 시작합니다"></select>
     <button class="act" id="b-act" hidden>▶ 실행</button>
     <span class="src" id="src">연결 중…</span>
     <span class="spacer"></span>
@@ -118,13 +124,13 @@ function showErr(t){ const b = document.getElementById("err"); if (b){ b.hidden 
     <div class="kpi"><div class="l">트래커 처리율</div><div class="v" id="k-hz">—<small>Hz</small></div></div>
     <div class="kpi"><div class="l">추론 시간 (현재 / 평균)</div><div class="v" id="k-ms">—</div></div>
     <div class="kpi"><div class="l">추론 시간 P99 / 최대</div><div class="v" id="k-p99">—</div></div>
-    <div class="kpi"><div class="l">33.3 ms 초과</div><div class="v" id="k-over">—</div></div>
+    <div class="kpi"><div class="l" id="l-over">33.3 ms 초과</div><div class="v" id="k-over">—</div></div>
     <div class="kpi"><div class="l">큐 드롭 프레임</div><div class="v" id="k-drop">—</div></div>
     <div class="kpi"><div class="l">입력→포즈 지연</div><div class="v" id="k-e2e">—</div></div>
     <div class="kpi"><div class="l">입력→화면 지연</div><div class="v" id="k-disp">—</div></div>
-    <div class="kpi"><div class="l">추적 특징점 / 맵 포인트</div><div class="v" id="k-pts">—</div></div>
+    <div class="kpi"><div class="l" id="l-pts">추적 특징점 / 맵 포인트</div><div class="v" id="k-pts">—</div></div>
     <div class="kpi"><div class="l">프레임 / 경과</div><div class="v" id="k-frame">—</div></div>
-    <div class="kpi verdict"><div class="l">30 FPS 실시간 판정</div><div class="v" id="k-verdict">—</div></div>
+    <div class="kpi verdict"><div class="l" id="l-verdict">30 FPS 실시간 판정</div><div class="v" id="k-verdict">—</div></div>
   </section>
 
   <section class="main">
@@ -144,13 +150,14 @@ function showErr(t){ const b = document.getElementById("err"); if (b){ b.hidden 
         <select id="speed" disabled><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select>
         <span id="pos">—</span>
       </div>
-      <div class="panel" id="chartWrap"><span class="ptitle">프레임별 추론 시간 (ms) · 빨간 점선 = 33.3 ms 마감</span>
+      <div class="panel" id="chartWrap"><span class="ptitle" id="l-chart">프레임별 추론 시간 (ms) · 빨간 점선 = 33.3 ms 마감</span>
         <canvas id="chart"></canvas></div>
     </div>
     <div class="panel" id="scene">
       <span class="ptitle">3D 맵 + 카메라 위치</span>
       <div class="tools">
-        <button id="b-follow" class="on">따라가기</button>
+        <button id="b-fit" class="on" title="맵 전체가 가운데 오도록 맞추고, 맵이 커지면 계속 따라 맞춥니다">맵 중심</button>
+        <button id="b-follow" title="현재 카메라 위치를 가운데에 둡니다">따라가기</button>
         <button id="b-top">위에서 보기</button>
         <button id="b-reset">시점 초기화</button>
       </div>
@@ -265,14 +272,58 @@ fr.visible = false;
 world.add(fr);
 const camWorld = new THREE.Vector3();
 
-let follow = true;
+// view: "fit" keeps the map centred (default), "follow" keeps the camera centred, "free" leaves it to the mouse
+let view = "fit";
+const follow = () => view === "follow";
 function resetView(){ camera.position.set(0, 4, 5); controls.target.set(0, 0, -2); controls.update(); }
 resetView();
-$("b-follow").onclick = e => { follow = !follow; e.target.classList.toggle("on", follow); };
-$("b-reset").onclick = resetView;
+
+// map framing: centre and size of the map's 3rd-97th percentile box (stray far points do not pull it off),
+// in scene coordinates; a newer map shifts and rescales the view smoothly, so mouse rotation/zoom are kept
+const fit = {c:null, r:0, pend:new THREE.Vector3(), scale:1};
+function mapBounds(pos, n){
+  const step = Math.max(1, Math.floor(n / 6000)), xs = [], ys = [], zs = [];
+  for (let i = 0; i < n; i += step){ xs.push(pos[i*3]); ys.push(-pos[i*3+1]); zs.push(-pos[i*3+2]); }  // world.rotation.x = PI
+  const q = a => { a.sort((u, v) => u - v); return [a[Math.floor(a.length*0.03)], a[Math.floor(a.length*0.97)]]; };
+  const [x0,x1] = q(xs), [y0,y1] = q(ys), [z0,z1] = q(zs);
+  return {c:new THREE.Vector3((x0+x1)/2, (y0+y1)/2, (z0+z1)/2),
+          r:Math.max(1, 0.5*Math.hypot(x1-x0, y1-y0, z1-z0))};
+}
+function fitDistance(r){
+  const v = THREE.MathUtils.degToRad(camera.fov) / 2, h = Math.atan(Math.tan(v) * camera.aspect);
+  return 1.3 * r / Math.sin(Math.min(v, h));     // margin: the near side looks bigger in perspective
+}
+function snapFit(){
+  if (!fit.c) return resetView();
+  const dir = camera.position.clone().sub(controls.target);
+  if (dir.lengthSq() < 1e-9) dir.set(0, 0.8, 0.6);
+  controls.target.copy(fit.c);
+  camera.position.copy(fit.c).addScaledVector(dir.normalize(), fitDistance(fit.r));
+  fit.pend.set(0, 0, 0); fit.scale = 1;
+  controls.update();
+}
+function updateFit(pos, n){
+  if (n < 50) return;
+  const b = mapBounds(pos, n);
+  if (!fit.c){ fit.c = b.c; fit.r = b.r; if (view === "fit") snapFit(); return; }
+  fit.pend.add(b.c.clone().sub(fit.c)); fit.scale *= b.r / fit.r;
+  fit.c = b.c; fit.r = b.r;
+  if (view === "fit" && mode === "replay" && !playing) snapFit();   // a seek jumps straight to its framing
+}
+function setView(v){
+  view = v;
+  $("b-fit").classList.toggle("on", v === "fit");
+  $("b-follow").classList.toggle("on", v === "follow");
+  if (v === "fit") snapFit();
+}
+$("b-fit").onclick = () => setView(view === "fit" ? "free" : "fit");
+$("b-follow").onclick = () => setView(view === "follow" ? "free" : "follow");
+$("b-reset").onclick = () => setView("fit");
 $("b-top").onclick = () => {
-  const t = follow && fr.visible ? camWorld.clone() : controls.target.clone();
-  camera.position.set(t.x, t.y + 14, t.z + 0.01); controls.target.copy(t); controls.update();
+  const t = follow() && fr.visible ? camWorld.clone() : view === "fit" && fit.c ? fit.c.clone() : controls.target.clone();
+  const d = view === "fit" && fit.c ? fitDistance(fit.r) : 14;
+  camera.position.set(t.x, t.y + d, t.z + 0.01); controls.target.copy(t); controls.update();
+  fit.pend.set(0, 0, 0); fit.scale = 1;
 };
 
 let chartDirty = true;
@@ -319,7 +370,14 @@ function drawChart(){
 // ---------------------------------------------------------------- video (colour + depth)
 const bigCtx = $("big").getContext("2d"), pipCtx = $("pip").getContext("2d");
 let swapped = false, bmpColor = null, bmpDepth = null, drawToken = 0, drawnToken = 0, slamName = "SLAM";
+let LIDAR = false;    // a LiDAR backend: the colour image is context, the small picture is the scan from above
 function videoTitle(){
+  if (LIDAR){
+    $("bigTitle").textContent = swapped ? `${slamName} 입력 · LiDAR 스캔 (위에서 본 모습, 위쪽 = 전방, 색 = 높이, ±10 m)`
+      : `같은 시각의 컬러 영상 (참고용 · ${slamName}은 LiDAR만 사용)`;
+    $("pipTag").textContent = (swapped ? "컬러" : "LiDAR 스캔") + " · 클릭해서 전환";
+    return;
+  }
   $("bigTitle").textContent = swapped ? `${slamName} 입력 · 깊이 (가까움 = 빨강, 6 m 이상 = 파랑, 검정 = 깊이 없음)`
     : `${slamName} 입력 · 컬러 (초록 = ${slamName.startsWith("RTAB") ? "오도메트리 인라이어 특징점" : "맵 포인트와 매칭된 특징점"})`;
 }
@@ -330,8 +388,8 @@ function drawVideo(){
 }
 $("pip").onclick = () => {
   swapped = !swapped;
+  if (!LIDAR) $("pipTag").textContent = (swapped ? "컬러" : "깊이") + " · 클릭해서 전환";
   videoTitle();
-  $("pipTag").textContent = (swapped ? "컬러" : "깊이") + " · 클릭해서 전환";
   drawVideo();
 };
 
@@ -406,6 +464,7 @@ function onMap(buf){
   if (mapMat.vertexColors !== rgb){ mapMat.vertexColors = rgb; mapMat.color.set(rgb ? 0xffffff : css("--pts")); mapMat.needsUpdate = true; }
   mapGeo.computeBoundingSphere();
   mapCount = n;
+  updateFit(mapGeo.attributes.position.array, n);
 }
 
 // ---------------------------------------------------------------- replay (after the bag ends)
@@ -457,17 +516,25 @@ function enterReplay(){
 // ---------------------------------------------------------------- stream
 function onText(m){
   if (m.type === "hello"){
-    DEADLINE = m.deadline_ms; RATE = m.rate;
+    DEADLINE = m.deadline_ms; RATE = m.rate; LIDAR = m.sensor === "lidar";
+    $("l-pts").textContent = LIDAR ? "현재 스캔 점 / 맵 점 (0.2 m 복셀)" : "추적 특징점 / 맵 포인트";
+    $("l-over").textContent = `${fmt(DEADLINE)} ms 초과`;
+    $("l-verdict").textContent = `${fmt(RATE, 0)} ${LIDAR ? "Hz 스캔" : "FPS"} 실시간 판정`;
+    $("l-chart").textContent = `${LIDAR ? "스캔별 정합" : "프레임별 추론"} 시간 (ms) · 빨간 점선 = ${fmt(DEADLINE)} ms 마감`;
     if (m.slam){
       $("title").textContent = `${m.slam} 실시간 추론`; document.title = `${m.slam} Live`;
       slamName = m.slam; videoTitle();
       const rtab = m.slam.startsWith("RTAB");
       STATE[4] = [rtab ? "오도메트리 손실" : "추적 손실", "bad"];
-      $("lg-map").lastChild.textContent = rtab ? "맵 (그래프 노드별 RGB 포인트 클라우드)" : "맵 포인트";
-      $("lg-trk").lastChild.textContent = rtab ? "현재 프레임 오도메트리 인라이어" : "현재 프레임 매칭 포인트";
+      $("lg-map").lastChild.textContent = LIDAR ? "맵 (LiDAR 스캔 누적, 색 = 높이)" : rtab ? "맵 (그래프 노드별 RGB 포인트 클라우드)" : "맵 포인트";
+      $("lg-trk").lastChild.textContent = LIDAR ? "현재 스캔" : rtab ? "현재 프레임 오도메트리 인라이어" : "현재 프레임 매칭 포인트";
+      if (LIDAR) STATE[4] = ["추적 손실", "bad"];
     }
-    $("src").textContent = `${m.bag} · ${m.settings} · ${m.width}×${m.height} RGB-D · ${m.rate} Hz 입력 · KEEP_LAST(${m.queue})`;
-    if (!received) $("overlay").textContent = m.status === "loading" ? "Vocabulary 로드 중…" : "카메라 스트림 대기 중…";
+    $("src").textContent = LIDAR ? `${m.bag} · ${m.settings} · VLP-16 LiDAR ${m.rate} Hz 입력`
+      : `${m.bag} · ${m.settings} · ${m.width}×${m.height} RGB-D · ${m.rate} Hz 입력 · KEEP_LAST(${m.queue})`;
+    if (!received) $("overlay").textContent = m.status === "loading" ? (LIDAR ? `${m.slam} 준비 중…` : "Vocabulary 로드 중…")
+      : (LIDAR ? "LiDAR 스캔 대기 중…" : "카메라 스트림 대기 중…");
+    videoTitle();
   } else if (m.type === "history"){
     for (const t of m.traj) H[t[0]] = {s:t[1], ms:t[2], e2e:t[3], p: t.length > 4 ? [t[4],t[5],t[6]] : null};
     mapFrames = m.maps;
@@ -507,9 +574,16 @@ function connect(){
 const STATUS_KO = {idle:"대기", loading:"준비 중", running:"실행 중", finished:"완료", stopped:"중지됨"};
 async function api(path, method = "GET"){
   const r = await fetch(path, {method});
-  if (!r.ok) throw new Error(`${path}: ${r.status}`);
+  if (!r.ok){
+    let msg = `${path}: ${r.status}`;
+    try { msg = (await r.json()).error || msg; } catch (e) {}
+    if (method === "POST") alert(msg);
+    throw new Error(msg);
+  }
   return r.json();
 }
+// a LiDAR SLAM needs the selected session's lidar/ bag
+const noLidar = (s, st) => s.needs === "lidar" && st.lidar && !st.lidar.includes($("bag").value || st.bag);
 function renderHub(st){
   hub = st;
   const want = new URLSearchParams(location.search).get("slam");
@@ -525,15 +599,28 @@ function renderHub(st){
   for (const s of st.slams){
     const b = document.createElement("button");
     b.className = s.id === sel.id ? "sel" : "";
-    b.innerHTML = `${s.label} <span class="st ${s.status}">${STATUS_KO[s.status] || s.status}</span>`;
-    b.onclick = () => { if (s.id !== sel.id) location.search = `?slam=${s.id}`; };
+    const na = noLidar(s, st) && s.status !== "running" && s.status !== "finished";
+    b.innerHTML = `${s.label} <span class="st ${na ? "" : s.status}">${na ? "LiDAR 없음" : STATUS_KO[s.status] || s.status}</span>`;
+    if (na) b.title = "선택한 세션에 LiDAR bag이 없습니다 (260826 세션은 카메라만 녹화)";
+    b.onclick = () => { if (s.id !== sel.id) location.search = `?slam=${s.id}&bag=${encodeURIComponent($("bag").value || st.bag)}`; };
     seg.appendChild(b);
   }
-  const act = $("b-act"); act.hidden = false;
   const busy = sel.status === "running" || sel.status === "loading";
+  const bagSel = $("bag");
+  if (st.bags && !bagSel.options.length){
+    for (const b of st.bags) bagSel.add(new Option(b, b));
+    const q = new URLSearchParams(location.search).get("bag");
+    bagSel.value = st.bags.includes(q) ? q : st.bag;
+    bagSel.hidden = false;
+    bagSel.onchange = () => renderHub(hub);
+  }
+  bagSel.disabled = busy;                       // the session of a running tracker cannot change under it
+  const act = $("b-act"); act.hidden = false;
   act.textContent = busy ? "■ 중지" : sel.status === "finished" ? "↻ 다시 실행" : "▶ 실행";
   act.className = "act" + (busy ? " stop" : "");
   act.onclick = () => busy ? stopSel() : startSel();
+  act.disabled = !busy && noLidar(sel, st);
+  act.title = act.disabled ? `${$("bag").value}에는 LiDAR bag이 없습니다 — 260901·260910·260915 세션을 고르세요` : "";
   const up = busy || sel.status === "finished";
   if (up) connect();
   else if (!received){
@@ -545,13 +632,14 @@ function renderHub(st){
 async function startSel(){
   const other = hub.slams.find(s => s.id !== sel.id && (s.status === "running" || s.status === "loading"));
   if (other && !confirm(`${other.label} 추론을 중지하고 ${sel.label}을(를) 실행할까요? (동시에 돌리면 실시간 측정이 흐려집니다)`)) return;
+  const bag = encodeURIComponent($("bag").value || hub.bag);
   if (sel.status === "finished" || received){  // a fresh run: start from a clean page
-    await api(`/api/start?slam=${sel.id}`, "POST");
-    location.search = `?slam=${sel.id}`;
+    await api(`/api/start?slam=${sel.id}&bag=${bag}`, "POST");
+    location.search = `?slam=${sel.id}&bag=${bag}`;
     return;
   }
   $("overlay").textContent = `${sel.label} 시작 중…`;
-  renderHub(await api(`/api/start?slam=${sel.id}`, "POST"));
+  renderHub(await api(`/api/start?slam=${sel.id}&bag=${bag}`, "POST"));
 }
 async function stopSel(){
   if (!confirm(`${sel.label} 추론을 중지할까요? 지금까지의 결과는 저장됩니다.`)) return;
@@ -573,7 +661,16 @@ function tick(now){
     if (playF >= H.length - 1){ playF = H.length - 1; setPlaying(false); }
     if (Math.floor(playF) !== cursor) seek(Math.floor(playF), true);
   }
-  if (follow && fr.visible){
+  if (view === "fit" && fit.c){             // ease toward the latest map framing
+    const step = fit.pend.clone().multiplyScalar(0.12);
+    controls.target.add(step); camera.position.add(step); fit.pend.sub(step);
+    if (Math.abs(fit.scale - 1) > 1e-3){
+      const k = Math.pow(fit.scale, 0.12);
+      camera.position.sub(controls.target).multiplyScalar(k).add(controls.target);
+      fit.scale /= k;
+    }
+  }
+  if (follow() && fr.visible){
     camWorld.setFromMatrixPosition(fr.matrixWorld);
     const step = camWorld.clone().sub(controls.target).multiplyScalar(0.12);
     controls.target.add(step);

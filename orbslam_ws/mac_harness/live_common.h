@@ -135,6 +135,19 @@ static std::string cdr_string(const unsigned char* d, int n) {
   return std::string((const char*)d + 8, std::max(0, (int)len - 1));
 }
 
+// sensor_msgs/CameraInfo CDR -> size + K (the converted ROS 2 bags; the SDK bag stores these as strings)
+static Intr cdr_camera_info(const unsigned char* d) {
+  const unsigned char* b = d + 4; size_t o = 8;  // stamp
+  auto al = [&](size_t n) { o = (o + n - 1) & ~(n - 1); };
+  auto u32 = [&](void) { al(4); uint32_t v; memcpy(&v, b + o, 4); o += 4; return v; };
+  o += u32();                             // frame_id
+  uint32_t h = u32(), w = u32();
+  o += u32();                             // distortion_model
+  uint32_t nd = u32(); al(8); o += 8 * nd;
+  double k[9]; memcpy(k, b + o, sizeof k);
+  return {(int)w, (int)h, k[0], k[4], k[2], k[5]};
+}
+
 struct Img { int64_t ts; int h, w; std::vector<uint8_t> data; };
 // sensor_msgs/Image CDR (little endian), offsets relative to after the 4-byte encap
 static Img cdr_image(const unsigned char* d, int n, int64_t ts) {
@@ -155,10 +168,25 @@ class BagCamera {
   long pairs = 0, skew_dropped = 0, late_release = 0;
   double max_release_late_ms = 0, align_ms_mean = 0;
 
+  // two bag layouts: the librealsense-SDK recording (fixed topic ids, depth in its own frame, aligned here)
+  // and the converted ROS 2 sessions (/camera/camera/..., depth already aligned to colour)
   bool open(const std::string& bag) {
     if (sqlite3_open_v2(bag.c_str(), &db_, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK) return false;
-    std::map<int, std::string> cfg;
     sqlite3_stmt* st;
+    if (topic_id("/camera/camera/color/image_raw") >= 0) {
+      tid_color_ = topic_id("/camera/camera/color/image_raw");
+      tid_depth_ = topic_id("/camera/camera/aligned_depth_to_color/image_raw");
+      const int tci = topic_id("/camera/camera/color/camera_info");
+      if (tid_depth_ < 0 || tci < 0) return false;
+      sqlite3_prepare_v2(db_, "SELECT data FROM messages WHERE topic_id = ? LIMIT 1", -1, &st, nullptr);
+      sqlite3_bind_int(st, 1, tci);
+      if (sqlite3_step(st) != SQLITE_ROW) { sqlite3_finalize(st); return false; }
+      ic_ = idp_ = cdr_camera_info((const unsigned char*)sqlite3_column_blob(st, 0));
+      sqlite3_finalize(st);
+      aligned_ = true;
+      return true;
+    }
+    std::map<int, std::string> cfg;
     sqlite3_prepare_v2(db_, "SELECT topic_id, data FROM messages WHERE topic_id IN (3,5,30,110,113) "
                             "GROUP BY topic_id", -1, &st, nullptr);
     while (sqlite3_step(st) == SQLITE_ROW)
@@ -179,6 +207,7 @@ class BagCamera {
       }
     return true;
   }
+  bool pre_aligned() const { return aligned_; }
   int width() const { return ic_.w; }
   const Intr& color_intrinsics() const { return ic_; }
   int height() const { return ic_.h; }
@@ -219,15 +248,17 @@ class BagCamera {
 
   void read_loop() {
     sqlite3_stmt* st;
-    sqlite3_prepare_v2(db_, "SELECT topic_id, timestamp, data FROM messages WHERE topic_id IN (108,111) "
+    sqlite3_prepare_v2(db_, "SELECT topic_id, timestamp, data FROM messages WHERE topic_id IN (?,?) "
                             "ORDER BY timestamp", -1, &st, nullptr);
+    sqlite3_bind_int(st, 1, tid_color_);
+    sqlite3_bind_int(st, 2, tid_depth_);
     std::deque<Img> dbuf, cbuf;
     double align_sum = 0;
     while (!g_stop && sqlite3_step(st) == SQLITE_ROW) {
       int tid = sqlite3_column_int(st, 0);
       Img im = cdr_image((const unsigned char*)sqlite3_column_blob(st, 2), sqlite3_column_bytes(st, 2),
                          sqlite3_column_int64(st, 1));
-      if (tid == T_DEPTH_IMG) { dbuf.push_back(std::move(im)); if (dbuf.size() > 8) dbuf.pop_front(); }
+      if (tid == tid_depth_) { dbuf.push_back(std::move(im)); if (dbuf.size() > 8) dbuf.pop_front(); }
       else cbuf.push_back(std::move(im));
       if (dbuf.empty() || cbuf.empty() || dbuf.back().ts <= cbuf.front().ts) continue;
       Img c = std::move(cbuf.front()); cbuf.pop_front();
@@ -236,7 +267,7 @@ class BagCamera {
       if (bd > 20000000) { skew_dropped++; continue; }
       auto ta = Clock::now();
       Frame f;
-      f.depth = align(*best);
+      f.depth = aligned_ ? cv::Mat(best->h, best->w, CV_16UC1, (void*)best->data.data()).clone() : align(*best);
       f.bgr = cv::Mat(c.h, c.w, CV_8UC3, c.data.data()).clone();
       align_sum += ms_between(ta, Clock::now());
       std::unique_lock<std::mutex> l(m_);
@@ -286,7 +317,18 @@ class BagCamera {
     sink.close();
   }
 
+  int topic_id(const char* name) {
+    sqlite3_stmt* st; int id = -1;
+    sqlite3_prepare_v2(db_, "SELECT id FROM topics WHERE name = ?", -1, &st, nullptr);
+    sqlite3_bind_text(st, 1, name, -1, SQLITE_STATIC);
+    if (sqlite3_step(st) == SQLITE_ROW) id = sqlite3_column_int(st, 0);
+    sqlite3_finalize(st);
+    return id;
+  }
+
   sqlite3* db_ = nullptr;
+  int tid_color_ = T_COLOR_IMG, tid_depth_ = T_DEPTH_IMG;
+  bool aligned_ = false;
   Intr ic_{}, idp_{};
   double units_ = 0.001;
   float R_[9]{}, t_[3]{};
@@ -499,7 +541,12 @@ static int run_live(const LiveOptions& opt, const std::string& bag, const std::s
 
   BagCamera cam;
   if (!cam.open(bag)) { std::cerr << "cannot open " << bag << "\n"; return 1; }
-  const std::string bag_name = bag.substr(bag.find_last_of('/') + 1);
+  std::string bag_name = bag.substr(bag.find_last_of('/') + 1);
+  if (bag_name.rfind("SLAM_", 0) == 0) {  // <session>/SLAM/SLAM_0.db3: the session name says more
+    const std::string dir = bag.substr(0, bag.find_last_of('/'));
+    const std::string ses = dir.substr(0, dir.find_last_of('/'));
+    bag_name = ses.substr(ses.find_last_of('/') + 1);
+  }
 
   // ---- state a browser needs on (re)connect
   Recorder rec;
