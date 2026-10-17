@@ -1,0 +1,36 @@
+%YAML:1.0
+# OpenLORIS-Scene D435i colour + aligned depth (sensors.yaml d400_color_optical_frame, all scenes of the
+# Tsinghua robot). 848x480, no distortion, depth in mm. Feature count and the optimizer keys are set per
+# variant by run_openloris.sh (openloris_rgbd --set Key=Value), so this file is identical for every variant.
+File.version: "1.0"
+Camera.type: "PinHole"
+Camera1.fx: 611.4509887695312
+Camera1.fy: 611.4857177734375
+Camera1.cx: 433.2039794921875
+Camera1.cy: 249.4730224609375
+Camera1.k1: 0.0
+Camera1.k2: 0.0
+Camera1.p1: 0.0
+Camera1.p2: 0.0
+Camera.width: 848
+Camera.height: 480
+Camera.fps: 30
+Camera.RGB: 1
+RGBD.DepthMapFactor: 1000.0
+Stereo.ThDepth: 40.0
+Stereo.b: 0.05
+ORBextractor.nFeatures: 1000
+ORBextractor.scaleFactor: 1.2
+ORBextractor.nLevels: 8
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1.0
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2.0
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3.0
+Viewer.ViewpointX: 0.0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -3.5
+Viewer.ViewpointF: 500.0
