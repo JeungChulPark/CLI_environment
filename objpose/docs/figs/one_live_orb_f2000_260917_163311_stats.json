@@ -1,0 +1,50 @@
+{
+ "run": "one_live_orb_f2000_260917_163311",
+ "duration_s": 1759.1,
+ "slam_poses": 47922,
+ "pose_rate_hz": 27.2,
+ "pose_arrival_lag_ms": {
+  "median": 52.1,
+  "p90": 61.8
+ },
+ "sam6d_frames": 3386,
+ "sam6d_rate_hz": 1.92,
+ "sam6d_ms": {
+  "median": 532.0,
+  "empty_median": null,
+  "with_detection_median": 532.0
+ },
+ "stage_share_pct": {
+  "yolo": 1.3,
+  "ism": 19.2,
+  "pem": 79.4
+ },
+ "result_age_s": {
+  "median": 0.63,
+  "p90": 0.77
+ },
+ "estimates_total": 6561,
+ "estimates_placed": 6496,
+ "objects": {
+  "choco_hazelnut_high": {
+   "observations": 3351,
+   "spread_median_cm": 0.44,
+   "spread_p90_cm": 0.8
+  },
+  "milk": {
+   "observations": 2695,
+   "spread_median_cm": 0.36,
+   "spread_p90_cm": 0.65
+  },
+  "Febreze_high": {
+   "observations": 447,
+   "spread_median_cm": 0.72,
+   "spread_p90_cm": 1.45
+  },
+  "Bear": {
+   "observations": 3,
+   "spread_median_cm": 1.34,
+   "spread_p90_cm": 2.17
+  }
+ }
+}

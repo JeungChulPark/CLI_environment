@@ -21,10 +21,14 @@ set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PY=/home/jucpark/anaconda3/envs/sam6d/bin/python
 
-USAGE="usage: run_one.sh <dataset> <backend> [hub.py options]   (datasets: 260910_object | 260826_etri_eightcircle_dark)"
+USAGE="usage: run_one.sh <dataset> <backend> [hub.py options]   (datasets: live | 260910_object | 260915_dense | 260915_distance | 260915_eightcircle | 260915_inlong_fast | 260915_inlong_middle | 260915_outlong_fast | 260915_outlong_middle | 260915_height | 260826_etri_eightcircle_dark)"
+# dataset "live" = the sensors themselves (laptop VLP-16 + this PC's D455f), backend hdl | kiss -> objpose/run_live.sh
+if [ "${1:-}" = live ]; then
+  shift; exec bash "$REPO/objpose/run_live.sh" "$@"
+fi
 # first argument may be the dataset; without it we keep the old behaviour (260910_object)
 case "${1:-}" in
-  260910_object|260826_etri_eightcircle_dark) DATASET="$1"; shift ;;
+  260910_object|260915_dense|260915_distance|260915_eightcircle|260915_inlong_fast|260915_inlong_middle|260915_outlong_fast|260915_outlong_middle|260915_height|260826_etri_eightcircle_dark) DATASET="$1"; shift ;;
   *) DATASET="260910_object" ;;
 esac
 BACKEND="${1:?$USAGE}"; shift
@@ -66,6 +70,31 @@ case "$DATASET" in
                  --mac-slam-session "$MAC_DATASET/lidar" --slam-host "$MAC_HOST" --mac-host "$MAC_SSH") ;;
       *) echo "backend for 260910_object: orb|orb-mac|hdl|hdl-3|hdl-mac|kiss-3|kiss-mac (got $BACKEND)" >&2; exit 2 ;;
     esac ;;
+  260915_dense|260915_distance|260915_eightcircle|260915_inlong_fast|260915_inlong_middle|260915_outlong_fast|260915_outlong_middle|260915_height)
+    # 2026-09-15 recordings (dense / distance / eightcircle), converted bags (header stamps on the shared clock, SAM offset from the session manifest);
+    # RT re-estimated on 260915_eightcircle (docs/rig_rt_260915.md): the SLAM camera moved ~5 cm / 1.7 deg on the
+    # rig since 260910, the SAM camera and the VLP-16 did not (LiDAR->SAM RT within 0.3 cm / 0.6 deg). sam tau from
+    # the json = 0. SLAM host: .3 has the converted copy under ~/DeepLearning/Dataset/data_slam_converted/260915_dense.
+    NAS="${NAS:-/mnt/synology/Dataset/data_slam_converted/$DATASET}"
+    PC3_DATASET="${PC3_DATASET:-/home/jucpark/DeepLearning/Dataset/data_slam_converted/$DATASET}"   # on .3
+    MAC_DATASET="${MAC_DATASET:-~/Documents/DefenseMeta/Dataset/$DATASET}"                                  # Mac copy (if present)
+    X_CAM="$REPO/objpose/rt/260915/X_slam_sam_260915.json"
+    X_LIDAR="$REPO/objpose/rt/260915/X_lidar_sam_260915.json"
+    case "$BACKEND" in
+      orb) LANE=(--slam orbslam3 --link "$LINK" --slam-port 17001 --extrinsic "$X_CAM"
+                 --mac-slam-session "$PC3_DATASET/SLAM" --slam-host "$PC3_HOST" --mac-host "$PC3_SSH"); FEATURES="${FEATURES:-3000}" ;;
+      orb-mac) LANE=(--slam orbslam3 --link direct --slam-port 17004 --extrinsic "$X_CAM"
+                 --mac-slam-session "$MAC_DATASET/SLAM" --slam-host "$MAC_HOST" --mac-host "$MAC_SSH"); FEATURES="${FEATURES:-4000}" ;;
+      kiss-3) LANE=(--slam lidar --link direct --slam-port 17007 --extrinsic "$X_LIDAR"
+                 --mac-slam-session "$PC3_DATASET/lidar" --slam-host "$PC3_HOST" --mac-host "$PC3_SSH") ;;
+      hdl-3) LANE=(--slam hdl --link direct --slam-port 17005 --extrinsic "$X_LIDAR"
+                 --mac-slam-session "$PC3_DATASET/lidar" --slam-host "$PC3_HOST" --mac-host "$PC3_SSH") ;;
+      kiss-mac) LANE=(--slam lidar --link direct --slam-port 17006 --extrinsic "$X_LIDAR"
+                 --mac-slam-session "$MAC_DATASET/lidar" --slam-host "$MAC_HOST" --mac-host "$MAC_SSH") ;;
+      hdl-mac) LANE=(--slam hdl --link direct --slam-port 17003 --extrinsic "$X_LIDAR"
+                 --mac-slam-session "$MAC_DATASET/lidar" --slam-host "$MAC_HOST" --mac-host "$MAC_SSH") ;;
+      *) echo "backend for $DATASET: orb|orb-mac|kiss-3|hdl-3|kiss-mac|hdl-mac (got $BACKEND)" >&2; exit 2 ;;
+    esac ;;
   260826_etri_eightcircle_dark)
     # same inputs as objpose/run_pc3.sh + run_lan.sh: converted SAM/SLAM on the NAS, the raw SDK SLAM
     # session on the SLAM host, camera RT objpose/rt/X_slam_sam.json and the converted-bag SAM tau
@@ -92,6 +121,11 @@ if pgrep -f '^[^ ]*python[^ ]* -u [^ ]*objpose/pc/hub\.py' >/dev/null; then
   echo "다른 허브가 이미 실행 중입니다 (한 번에 하나만): $(pgrep -af 'objpose/pc/hub.py' | cut -c1-120)" >&2; exit 3
 fi
 echo "[run_one] dataset=$DATASET backend=$BACKEND  viewer http://$PC_HOST:$HTTP_PORT  out=$OUT" >&2
+# ORB-SLAM3 depth threshold (Stereo.ThDepth, x Stereo.b 0.0745 m): THDEPTH=40 -> 3.0 m (yaml default), 70 -> 5.2 m.
+# Reaches the streamer as --param (slam_stream.cc, 2026-09-16); ORB-SLAM3 requires a real number -> ".0".
+if [ -n "${THDEPTH:-}" ]; then
+  case " ${LANE[*]} " in *" orbslam3 "*) COMMON+=(--slam-param "Stereo.ThDepth=${THDEPTH%.*}.0") ;; esac
+fi
 exec "$PY" -u "$REPO/objpose/pc/hub.py" "${LANE[@]}" "${COMMON[@]+"${COMMON[@]}"}" --pc-host "$PC_HOST" \
   --http-host 0.0.0.0 --http-port "$HTTP_PORT" \
   --sam-session "$NAS/SAM" --slam-session "$NAS/SLAM" --features "${FEATURES:-2000}" --rate 1.0 --out "$OUT" "$@"

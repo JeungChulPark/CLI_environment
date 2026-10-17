@@ -1,0 +1,35 @@
+{
+ "run": "one_live_kiss_260917_092033",
+ "duration_s": 258.1,
+ "slam_poses": 2560,
+ "pose_rate_hz": 9.9,
+ "pose_arrival_lag_ms": {
+  "median": 523.8,
+  "p90": 527.7
+ },
+ "sam6d_frames": 1272,
+ "sam6d_rate_hz": 4.93,
+ "sam6d_ms": {
+  "median": 200.0,
+  "empty_median": null,
+  "with_detection_median": 200.0
+ },
+ "stage_share_pct": {
+  "yolo": 3.1,
+  "ism": 22.3,
+  "pem": 74.6
+ },
+ "result_age_s": {
+  "median": 0.8,
+  "p90": 0.86
+ },
+ "estimates_total": 1269,
+ "estimates_placed": 1269,
+ "objects": {
+  "choco_hazelnut_high": {
+   "observations": 1269,
+   "spread_median_cm": 0.47,
+   "spread_p90_cm": 0.99
+  }
+ }
+}

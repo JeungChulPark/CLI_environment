@@ -412,7 +412,12 @@ class Sam6DCore:
                         for candidate_diag in self.last_frame_diag["pem_candidates"]:
                             if candidate_diag["object"] == nm:
                                 candidate_diag.update(rejection)
-                        continue
+                        # verify.as_score: keep the (fine-refined geometry-winner) pose with
+                        # verified=False instead of dropping it, so a ranked benchmark (BOP)
+                        # sees every answer; consumers that build the map keep verified only.
+                        if not self.verify.get("as_score"):
+                            continue
+                    verified = bool(verification.get("accepted", False)) or not self.verify.get("enabled")
                     diagnostic = dict(pds[j] or {})
                     # Pointwise evidence already lives in ``verify``. Keeping the same
                     # large array under ``diagnostic`` doubled top-100 dump size without
@@ -453,8 +458,10 @@ class Sam6DCore:
                         "texture_score": ((verification.get("fine") or {}).get(
                             "texture_score")),
                         "cluster_occupancy": verification.get("cluster_occupancy"),
-                        "pose_source": "sam6d",
-                        "rejection_reason": None,
+                        "pose_source": "sam6d" if verified else "sam6d_unverified",
+                        "rejection_reason": None if verified else verification.get(
+                            "rejection_reason", "candidate_verification_failed"),
+                        "verified": verified,
                     })
             except Exception as e:
                 if ((((self.pem_diagnostic or {}).get("score_analysis") or {}).get("enabled"))):

@@ -4,9 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>객체 위치 추정 모니터</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<!-- web fonts load asynchronously: a render/script-blocking stylesheet on a machine without internet froze the whole
+     page (no video, empty map) until the connection timed out (2026-09-17). Without them the page uses system fonts. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap"
+      media="print" onload="this.media='all'">
 <style>
 :root {
   color-scheme: dark;
@@ -74,11 +75,33 @@ th { font-size: 11.5px; font-weight: 500; color: var(--muted); }
 td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
 td .sw { width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
 .empty { color: var(--faint); padding: 14px 10px; }
+
+/* replay controls (shown only when the page is served by pc/replay_run.py) */
+.replay-bar { display: flex; align-items: center; gap: 8px; flex: 1 1 320px; min-width: 260px; }
+.replay-bar button, .replay-bar select { font: inherit; color: var(--ink); background: var(--panel-2); border: 1px solid var(--rule); border-radius: 6px; padding: 3px 9px; cursor: pointer; }
+.replay-bar input[type=range] { flex: 1; accent-color: var(--accent); }
+.replay-bar .mono { font-size: 12px; color: var(--muted); white-space: nowrap; }
+/* navigation pane (shown when the hub has a Nav2 bridge) */
+#nav-wrap { position: relative; aspect-ratio: 4 / 3; background: #0f151b; touch-action: none; }
+#nav-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; }
+#nav-wrap.goal #nav-canvas { cursor: crosshair; }
+.nav-bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 12px; border-top: 1px solid var(--rule); font-size: 12.5px; }
+.nav-bar button { font: inherit; color: var(--ink); background: var(--panel-2); border: 1px solid var(--rule); border-radius: 6px; padding: 5px 10px; cursor: pointer; }
+.nav-bar button:hover { border-color: var(--accent); }
+.nav-bar button:disabled { opacity: .4; cursor: default; }
+.nav-bar button.on { background: var(--accent); color: #06222b; border-color: var(--accent); font-weight: 600; }
+.nav-bar button.stop { background: #5a1f24; border-color: var(--bad); color: #ffd9d9; font-weight: 600; }
+.nav-bar .sp { flex: 1; }
+button.goto { font: inherit; font-size: 12px; color: var(--ink); background: var(--panel-2); border: 1px solid var(--rule); border-radius: 6px; padding: 2px 8px; cursor: pointer; white-space: nowrap; }
+button.goto:hover { border-color: var(--accent); }
+td.objname { cursor: pointer; } td.objname:hover { text-decoration: underline; }
+.nav-bar label { color: var(--muted); cursor: pointer; user-select: none; }
+#nav-msg { position: absolute; left: 10px; top: 8px; font-size: 12px; color: var(--interp); font-family: var(--mono); pointer-events: none; text-shadow: 0 0 4px #000; }
 </style>
 <script type="importmap">
 { "imports": {
-  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+  "three": "/vendor/three/three.module.js",
+  "three/addons/": "/vendor/three/addons/"
 } }
 </script>
 </head>
@@ -86,6 +109,12 @@ td .sw { width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
 <header>
   <h1>객체 위치 추정 모니터</h1>
   <span class="run-state"><span class="dot" id="live-dot"></span><span id="run-status">허브에 연결하는 중</span></span>
+  <span class="replay-bar" id="replay-bar" hidden>
+    <button id="rp-pause" title="일시정지 / 재생">❚❚</button>
+    <input type="range" id="rp-seek" min="0" max="100" step="0.5" value="0">
+    <span class="mono" id="rp-time">0 / – s</span>
+    <select id="rp-speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option><option value="8">8×</option></select>
+  </span>
   <span class="clock">재생 <b id="clock">0.0</b> / <span id="duration">–</span> s · 화면 프레임 <b id="frame-idx">–</b></span>
 </header>
 
@@ -97,6 +126,32 @@ td .sw { width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
       <span class="legend" id="scene-legend"></span>
     </div>
     <div id="scene"><span class="scene-note">드래그: 회전 · 휠: 확대 · 우클릭 드래그: 이동</span></div>
+  </section>
+  <section class="pane" id="nav-pane" hidden>
+    <div class="pane-head">
+      <b>주행 지도</b><span id="nav-status" class="pill idle">대기</span><span class="mono" id="nav-info"></span>
+      <span class="legend">
+        <span><span class="sw" style="background:#d6e0e8"></span>벽</span><span><span class="sw" style="background:#ff5abe"></span>감지된 장애물</span>
+        <span><span class="sw" style="background:#fff"></span>LiDAR</span><span><span class="sw" style="background:#c9a0ff"></span>도로</span><span><span class="sw" style="background:var(--accent)"></span>경로</span>
+      </span>
+    </div>
+    <div id="nav-wrap"><canvas id="nav-canvas"></canvas><span id="nav-msg"></span>
+      <span class="scene-note">드래그: 이동 · 휠: 확대 · 목표 지정 / 순환 지점 추가: 누른 곳이 위치, 끄는 방향이 도착 방향 · 물체 점을 누르면 그 앞으로 이동</span></div>
+    <div class="nav-bar">
+      <button id="nav-goal">목표 지정</button>
+      <button id="nav-wp" title="지도를 눌러 지점을 여러 개 찍은 뒤 '순환 시작'">순환 지점 추가</button>
+      <button id="nav-wp-go" disabled>순환 시작</button>
+      <button id="nav-wp-clear" disabled>지점 지우기</button>
+      <button id="nav-stop" class="stop">정지</button>
+      <span class="sp"></span>
+      <button data-jog="left" title="제자리 왼쪽 30°">↺ 30°</button>
+      <button data-jog="fwd" title="앞으로 30 cm">▲ 30 cm</button>
+      <button data-jog="back" title="뒤로 30 cm">▼ 30 cm</button>
+      <button data-jog="right" title="제자리 오른쪽 30°">↻ 30°</button>
+      <span class="sp"></span>
+      <label><input type="checkbox" id="nav-follow"> 로봇 따라가기</label>
+      <button id="nav-fit">전체 보기</button>
+    </div>
   </section>
 </div>
 
@@ -122,9 +177,9 @@ td .sw { width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; }
     <table>
       <thead><tr>
         <th>SLAM</th><th>객체</th><th>이 프레임 위치의 출처</th><th>메모리 상태</th><th class="num">마지막 SAM-6D 이후</th><th class="num">추정 횟수</th>
-        <th class="num">score</th><th class="num">x (m)</th><th class="num">y (m)</th><th class="num">z (m)</th><th class="num">카메라 거리 (m)</th>
+        <th class="num">score</th><th class="num">x (m)</th><th class="num">y (m)</th><th class="num">z (m)</th><th class="num">카메라 거리 (m)</th><th>이동</th>
       </tr></thead>
-      <tbody id="obj-rows"><tr><td class="empty" colspan="11">아직 SAM-6D 추정이 없습니다.</td></tr></tbody>
+      <tbody id="obj-rows"><tr><td class="empty" colspan="12">아직 SAM-6D 추정이 없습니다.</td></tr></tbody>
     </table>
   </div>
 </section>
@@ -142,14 +197,26 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;",
 
 // ── 3D scene ──────────────────────────────────────────────────────────────
 const host = $("scene");
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-host.prepend(renderer.domElement);
+// A WebGL context can fail in a long-running browser (GPU process lost, context limit reached). That used to throw here
+// and kill the whole module before the event stream opened ("허브에 연결하는 중" forever, 2026-09-17). Now the map pane
+// shows why, and the video / panels keep working.
+let renderer = null;
+try {
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  host.prepend(renderer.domElement);
+} catch (e) {
+  console.error("WebGL renderer", e);
+  const note = document.createElement("div");
+  note.style.cssText = "position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;color:#e0a15a;font-size:13px;line-height:1.6";
+  note.textContent = "3D 지도를 그릴 수 없습니다 (WebGL 생성 실패: " + (e && e.message ? e.message : e) + "). 영상과 표는 계속 갱신됩니다. 브라우저를 완전히 껐다 켜거나 chrome://gpu 를 확인하세요.";
+  host.appendChild(note);
+}
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#0f151b");
 const camera = new THREE.PerspectiveCamera(50, 4 / 3, 0.01, 200);
 camera.position.set(2.2, 2.4, 3.2);
-const controls = new OrbitControls(camera, renderer.domElement);
+const controls = new OrbitControls(camera, renderer ? renderer.domElement : document.createElement("canvas"));
 controls.enableDamping = true;
 scene.add(new THREE.AmbientLight(0xffffff, 1));
 
@@ -217,6 +284,18 @@ function frustum(color, scale = 0.12) {
   return g;
 }
 
+// robot body for lanes whose pose is base_link (x forward, z up): footprint + an arrow to the front
+function robotMarker(color) {
+  const hx = 0.5, hy = 0.34, V = (x, y) => new THREE.Vector3(x, y, 0);
+  const seg = [V(-hx, -hy), V(hx, -hy), V(hx, -hy), V(hx, hy), V(hx, hy), V(-hx, hy), V(-hx, hy), V(-hx, -hy),
+               V(0, 0), V(0.85, 0), V(0.85, 0), V(0.68, 0.12), V(0.85, 0), V(0.68, -0.12)];
+  const g = new THREE.Group();
+  g.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(seg), new THREE.LineBasicMaterial({ color })));
+  const s = label("정면", color, 0.08); s.position.set(0.98, 0, 0.05); g.add(s);
+  g.matrixAutoUpdate = false; g.visible = false;
+  return g;
+}
+
 function setMatrix(obj, m16) {
   if (!m16) { obj.visible = false; return; }
   const m = m16;
@@ -238,6 +317,7 @@ function ensureLane(info) {
   const traj = new THREE.Line(trajGeo, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.6 }));
   group.add(traj);
   const camSlam = frustum(color); group.add(camSlam);
+  const robot = robotMarker(color); group.add(robot);
   const camSam = frustum(color, 0.09); group.add(camSam);
   camSam.children[0].material.transparent = true; camSam.children[0].material.opacity = 0.5;
 
@@ -277,7 +357,7 @@ function ensureLane(info) {
   lg.querySelector("input").addEventListener("change", e => { L.shown = e.target.checked; group.visible = L.shown; });
   $("scene-legend").appendChild(lg);
 
-  L = { info, color, group, traj, trajGeo, camSlam, camSam, objNodes: new Map(), shown: true,
+  L = { info, color, group, traj, trajGeo, camSlam, camSam, robot, objNodes: new Map(), shown: true,
         els: { img: pane.querySelector("img"), wait: pane.querySelector(".waiting"), card,
                q: sel => card.querySelector(sel) } };
   lanes.set(info.name, L);
@@ -341,11 +421,22 @@ function updateTrajectory(L, pts, isRef) {
 
 function resize() {
   const r = host.getBoundingClientRect();
-  renderer.setSize(r.width, r.height, false);
+  if (renderer) renderer.setSize(r.width, r.height, false);
   camera.aspect = r.width / Math.max(1, r.height); camera.updateProjectionMatrix();
 }
 new ResizeObserver(resize).observe(host);
-(function loop() { controls.update(); renderer.render(scene, camera); requestAnimationFrame(loop); })();
+// The render loop starts on the next animation frame instead of synchronously here: in Firefox with software WebGL the
+// first render (shader compilation) ran past the slow-script limit, Firefox terminated this module, and the event stream
+// below was never opened ("허브에 연결하는 중" forever, 2026-09-17). Render errors never stop the page, and the map is
+// redrawn at most ~20 fps so a slow GL path cannot starve the video and panels.
+let lastRender = 0;
+requestAnimationFrame(function loop(ts) {
+  requestAnimationFrame(loop);
+  if (ts - lastRender < 50) return;
+  lastRender = ts;
+  if (!renderer) return;
+  try { controls.update(); renderer.render(scene, camera); } catch (e) { console.error("map render", e); }
+});
 
 // ── panels ─────────────────────────────────────────────────────────────────
 const fmt = (v, d = 2, unit = "") => v === null || v === undefined || Number.isNaN(v) ? "–" : `${Number(v).toFixed(d)}${unit}`;
@@ -415,6 +506,7 @@ function updatePanels(p) {
   const all = [];
   for (const lf of p.lanes) for (const o of lf.objects) all.push({ lane: lf, o });
   if (!all.length) return;
+  window.__objRows = all.map(({ o }) => o);              // for "go to this object" (navigation script below)
   rows.innerHTML = all.sort((a, b) => a.o.name.localeCompare(b.o.name) || a.lane.name.localeCompare(b.lane.name)).map(({ lane, o }) => {
     const T = o.T_w_obj, pos = [T[3], T[7], T[11]];
     const dist = o.T_cam_obj ? Math.hypot(o.T_cam_obj[3], o.T_cam_obj[7], o.T_cam_obj[11]) : null;
@@ -422,15 +514,29 @@ function updatePanels(p) {
       : o.source === "sam6d" ? `<span class="pill ok">SAM-6D 추정</span>`
       : o.source === "slam_interp" ? `<span class="pill warn">SLAM 보간</span>` : `<span class="pill bad">SLAM 없음</span>`;
     return `<tr><td><span class="lane-tag" style="color:${lane.color}">${esc(lane.name)}</span></td>
-      <td><span class="sw" style="background:${PALETTE[o.name] || "#fff"}"></span>${KO[o.name] || o.name}${o.multi ? " #" + o.instance : ""} <span class="mono" style="color:var(--faint)">${o.name}</span></td>
+      <td class="objname" data-goto data-name="${esc(o.name)}" data-instance="${o.instance ?? ""}" data-label="${esc(KO[o.name] || o.name)}" title="누르면 이 물체가 카메라에 보이는 자리로 이동"><span class="sw" style="background:${PALETTE[o.name] || "#fff"}"></span>${KO[o.name] || o.name}${o.multi ? " #" + o.instance : ""} <span class="mono" style="color:var(--faint)">${o.name}</span></td>
       <td>${src}</td><td>${statusPill(o)}</td><td class="num">${fmt(o.age_s, 1, " s")}</td><td class="num">${o.est_count}</td><td class="num">${fmt(o.score, 3)}</td>
-      <td class="num">${fmt(pos[0], 3)}</td><td class="num">${fmt(pos[1], 3)}</td><td class="num">${fmt(pos[2], 3)}</td><td class="num">${fmt(dist, 2)}</td></tr>`;
+      <td class="num">${fmt(pos[0], 3)}</td><td class="num">${fmt(pos[1], 3)}</td><td class="num">${fmt(pos[2], 3)}</td><td class="num">${fmt(dist, 2)}</td>
+      <td><button class="goto" data-goto data-name="${esc(o.name)}" data-instance="${o.instance ?? ""}" data-label="${esc(KO[o.name] || o.name)}" title="이 물체가 카메라에 보이는 자리로 이동">앞으로 이동</button></td></tr>`;
   }).join("");
 }
 
 // ── stream ─────────────────────────────────────────────────────────────────
-const es = new EventSource("/events");
-es.onmessage = ev => {
+// The launcher restarts the hub on a backend switch: the proxied /events answers with an error while the hub is
+// down (~15-45 s), and a browser EventSource does NOT retry after a non-200 answer. Reconnect ourselves.
+let es = null, esRetry = null;
+function connectEvents() {
+  es = new EventSource("/events");
+  es.onmessage = onEvent;
+  es.onerror = () => {
+    $("run-status").textContent = "허브 연결 끊김 — 다시 연결하는 중";
+    $("live-dot").className = "dot";
+    if (es.readyState === EventSource.CLOSED && !esRetry) {
+      esRetry = setTimeout(() => { esRetry = null; connectEvents(); }, 2000);
+    }
+  };
+}
+function onEvent(ev) {
   const p = JSON.parse(ev.data);
   if (p.type === "init") {
     setWorldConvention(!!p.world_zup);
@@ -448,8 +554,13 @@ es.onmessage = ev => {
     L.els.img.src = "data:image/jpeg;base64," + lf.jpeg;
     L.els.wait.hidden = true;
     if (lf.trajectory) updateTrajectory(L, lf.trajectory, lf.name === refName || laneFrames.length === 1);
-    setMatrix(L.camSlam, lf.T_w_slam);
+    const isRobot = lf.slam_frame === "base_link";
+    setMatrix(L.camSlam, isRobot ? null : lf.T_w_slam);
+    setMatrix(L.robot, isRobot ? lf.T_w_slam : null);
     setMatrix(L.camSam, lf.T_w_sam);
+    if (lf.name === refName || laneFrames.length === 1)        // for the navigation pane (same map frame)
+      window.__navLive = { cam: lf.T_w_sam, objects: lf.objects.map(o => ({ name: KO[o.name] || o.name, raw: o.name, instance: o.instance, color: PALETTE[o.name] || "#ccc",
+                                                                           x: o.T_w_obj[3], y: o.T_w_obj[7] })) };
     const seen = new Set();
     for (const o of lf.objects) {
       const n = objectNode(L, o);
@@ -461,8 +572,331 @@ es.onmessage = ev => {
     for (const [key, n] of L.objNodes) { if (!seen.has(key)) { n.g.visible = false; n.hist.visible = false; } else { n.hist.visible = true; } }
   }
   updatePanels(p);
+}
+setTimeout(connectEvents, 0);
+</script>
+<script type="module">
+// ── navigation pane: Nav2 through the hub (/nav/*  ->  nav/real/nav_bridge.py on the robot's computer) ─────────────
+const $ = id => document.getElementById(id);
+const pane = $("nav-pane"), wrap = $("nav-wrap"), cv = $("nav-canvas"), ctx = cv.getContext("2d");
+const N = { s: null, meta: null, map: null, mapVer: -1, cm: null, cmVer: -1, view: { x: 0, y: 0, k: 60 }, fitted: false,
+            goalMode: false, wpMode: false, wp: [], drag: null, pending: null, follow: false, lastOk: 0 };
+const api = async (path, body) => {
+  const r = await fetch("/nav" + path, body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return r.json();
 };
-es.onerror = () => { $("run-status").textContent = "허브 연결 끊김 — 다시 연결하는 중"; $("live-dot").className = "dot"; };
+const img = url => new Promise((ok, bad) => { const i = new Image(); i.onload = () => ok(i); i.onerror = bad; i.src = url; });
+const size = () => [cv.clientWidth, cv.clientHeight];
+const toScr = (x, y) => { const [W, H] = size(); return [W / 2 + (x - N.view.x) * N.view.k, H / 2 - (y - N.view.y) * N.view.k]; };
+const toWorld = (sx, sy) => { const [W, H] = size(); return [N.view.x + (sx - W / 2) / N.view.k, N.view.y - (sy - H / 2) / N.view.k]; };
+function fit() {
+  if (!N.meta || !N.meta.w) return;
+  const [W, H] = size(), m = N.meta, b = m.known || [m.ox, m.oy, m.ox + m.w * m.res, m.oy + m.h * m.res];
+  N.view.k = Math.min(W / (b[2] - b[0]), H / (b[3] - b[1])) * 0.92;
+  N.view.x = (b[0] + b[2]) / 2; N.view.y = (b[1] + b[3]) / 2;
+}
+function grid(image, x0, y0, yaw, res) {          // pixel (i, j) of a ROS grid -> map -> screen (row 0 = lowest y)
+  const dpr = devicePixelRatio || 1, [W, H] = size(), k = N.view.k * res, c = Math.cos(yaw), s = Math.sin(yaw);
+  ctx.setTransform(dpr * k * c, -dpr * k * s, -dpr * k * s, -dpr * k * c,
+                   dpr * (W / 2 + N.view.k * (x0 - N.view.x)), dpr * (H / 2 - N.view.k * (y0 - N.view.y)));
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(image, 0, 0);
+}
+function arrow(x, y, yaw, len, color, width = 2) {
+  const [sx, sy] = toScr(x, y), [ex, ey] = toScr(x + len * Math.cos(yaw), y + len * Math.sin(yaw));
+  const a = Math.atan2(ey - sy, ex - sx);
+  ctx.strokeStyle = ctx.fillStyle = color; ctx.lineWidth = width;
+  ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(ex, ey); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(ex - 9 * Math.cos(a - 0.45), ey - 9 * Math.sin(a - 0.45));
+  ctx.lineTo(ex - 9 * Math.cos(a + 0.45), ey - 9 * Math.sin(a + 0.45)); ctx.closePath(); ctx.fill();
+}
+function draw() {
+  const dpr = devicePixelRatio || 1, [W, H] = size();
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = "#0f151b"; ctx.fillRect(0, 0, cv.width, cv.height);
+  const s = N.s;
+  if (N.follow && s && s.robot) { N.view.x = s.robot[0]; N.view.y = s.robot[1]; }
+  if (N.map && N.meta) grid(N.map, N.meta.ox, N.meta.oy, 0, N.meta.res);
+  if (N.cm && s && s.costmap) grid(N.cm, s.costmap.x, s.costmap.y, s.costmap.yaw, s.costmap.res);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (N.meta && N.meta.road && N.meta.road.length > 1) {      // the road: the path driven by hand while mapping
+    ctx.strokeStyle = "rgba(201,160,255,0.55)"; ctx.lineWidth = 6; ctx.lineJoin = "round"; ctx.beginPath();
+    N.meta.road.forEach((p, i) => { const [x, y] = toScr(p[0], p[1]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
+  }
+  if (s) {
+    if (s.plan && s.plan.length > 1) {
+      ctx.strokeStyle = "#56c2e0"; ctx.lineWidth = 2.5; ctx.beginPath();
+      s.plan.forEach((p, i) => { const [x, y] = toScr(p[0], p[1]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke();
+    }
+    ctx.fillStyle = "#ffffff";
+    for (let i = 0; i + 1 < s.scan.length; i += 2) { const [x, y] = toScr(s.scan[i], s.scan[i + 1]); ctx.fillRect(x - 1, y - 1, 2, 2); }
+    if (s.footprint && s.footprint.length > 2) {
+      ctx.strokeStyle = "#3ddc97"; ctx.lineWidth = 2; ctx.beginPath();
+      s.footprint.forEach((p, i) => { const [x, y] = toScr(p[0], p[1]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath(); ctx.stroke();
+    }
+    if (s.robot) arrow(s.robot[0], s.robot[1], s.robot[2], 0.75, "#3ddc97", 3);
+    const g = s.nav && s.nav.goal;
+    if (g && ["accepted", "executing"].includes(s.nav.status)) {
+      const [x, y] = toScr(g[0], g[1]); ctx.strokeStyle = "#f2b84b"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, 8, 0, 7); ctx.stroke();
+      arrow(g[0], g[1], g[2], 0.5, "#f2b84b");
+    }
+  }
+  // waypoint loop: the points being picked (dashed), else the route the robot is driving (the current target filled)
+  const rt = s && s.nav && s.nav.route, drafting = N.wp.length > 0 || N.wpMode;
+  const pts = drafting ? N.wp.map(p => [p.x, p.y, p.yaw]) : rt ? rt.points : [];
+  if (pts.length) {
+    const col = drafting ? "#c9a0ff" : "#f2b84b", running = !drafting && rt.state === "running";
+    ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]); ctx.beginPath();
+    pts.forEach((p, i) => { const [x, y] = toScr(p[0], p[1]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+    if (pts.length > 2) ctx.closePath(); ctx.stroke(); ctx.setLineDash([]);
+    ctx.font = "bold 11px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    pts.forEach((p, i) => {
+      if (p[2] !== null && p[2] !== undefined) arrow(p[0], p[1], p[2], 0.45, col, 1.5);
+      const [x, y] = toScr(p[0], p[1]), cur = running && i === rt.idx;
+      ctx.beginPath(); ctx.arc(x, y, 10, 0, 7); ctx.fillStyle = cur ? col : "#0f151b"; ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = cur ? "#0f151b" : col; ctx.fillText(String(i + 1), x, y + 0.5);
+    });
+    ctx.textAlign = "start";
+  }
+  const live = window.__navLive;
+  if (live) {
+    if (live.cam) {                                 // camera position and the direction it looks (optical z axis)
+      const m = live.cam, yaw = Math.atan2(m[6], m[2]); arrow(m[3], m[7], yaw, 0.5, "#95a1ad", 1.5);
+    }
+    ctx.font = "12px sans-serif"; ctx.textBaseline = "middle";
+    for (const o of live.objects) {
+      const [x, y] = toScr(o.x, o.y);
+      ctx.fillStyle = o.color; ctx.strokeStyle = "#000"; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(x, y, 5, 0, 7); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = "#e6ebef"; ctx.fillText(o.name, x + 8, y);
+    }
+  }
+  if (N.viewGoal) {                                   // "go to this object": the spot, the robot's heading there, the line of sight
+    const g = N.viewGoal, [x, y] = toScr(g.x, g.y), [ox, oy] = toScr(g.ox, g.oy);
+    ctx.strokeStyle = "#7ee0a1"; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(ox, oy); ctx.stroke(); ctx.setLineDash([]);
+    ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, 9, 0, 7); ctx.stroke(); arrow(g.x, g.y, g.yaw, 0.5, "#7ee0a1");
+  }
+  if (N.pending) {
+    const p = N.pending, [x, y] = toScr(p.x, p.y); ctx.strokeStyle = "#f2b84b"; ctx.setLineDash([4, 3]); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(x, y, 8, 0, 7); ctx.stroke(); ctx.setLineDash([]); if (p.yaw !== null) arrow(p.x, p.y, p.yaw, 0.5, "#f2b84b");
+  }
+  const bar = N.view.k;                              // 1 m scale bar
+  ctx.strokeStyle = ctx.fillStyle = "#95a1ad"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(W - 16 - bar, H - 26); ctx.lineTo(W - 16, H - 26); ctx.stroke();
+  ctx.font = "11px monospace"; ctx.textBaseline = "alphabetic"; ctx.fillText("1 m", W - 16 - bar, H - 31);
+}
+// drawn on demand (new state 5 times a second, or while dragging), not every display frame: the GPU is SAM-6D's
+let drawQueued = false;
+function redraw() { if (drawQueued || pane.hidden) return; drawQueued = true; requestAnimationFrame(() => { drawQueued = false; draw(); }); }
+const KO_STATUS = { idle: ["대기", "idle"], unknown: ["대기", "idle"], accepted: ["목표 수락", "warn"], executing: ["주행 중", "ok"],
+  canceling: ["정지 중", "warn"], succeeded: ["도착", "ok"], canceled: ["정지됨", "idle"], aborted: ["실패", "bad"] };
+async function poll() {
+  try {
+    const s = await api("/state");
+    if (pane.hidden) pane.hidden = false;
+    N.s = s; N.lastOk = performance.now(); N.fails = 0;
+    if (s.map_ver !== N.mapVer) {
+      N.meta = await api("/meta"); N.map = await img("/nav/map.png?v=" + s.map_ver); N.mapVer = s.map_ver;
+      if (!N.fitted) { fit(); N.fitted = true; }
+    }
+    if (s.costmap && s.costmap.ver !== N.cmVer) { const v = s.costmap.ver; N.cm = await img("/nav/costmap.png?v=" + v); N.cmVer = v; }
+    const [t, cls] = KO_STATUS[s.nav.status] || [s.nav.status, "idle"];
+    $("nav-status").textContent = t; $("nav-status").className = "pill " + cls;
+    const busy = ["accepted", "executing", "canceling"].includes(s.nav.status);
+    document.querySelectorAll("[data-jog]").forEach(b => b.disabled = busy || !s.robot || !!s.replay);
+    $("nav-goal").disabled = !s.robot || !!s.replay; $("nav-stop").disabled = !!s.replay;
+    $("nav-info").textContent = !s.robot ? "위치 추정 대기" :
+      `로봇 (${s.robot[0].toFixed(2)}, ${s.robot[1].toFixed(2)}) ${(s.robot[2] * 180 / Math.PI).toFixed(0)}°` +
+      (busy && s.nav.distance_remaining !== null ? ` · 남은 거리 ${s.nav.distance_remaining.toFixed(2)} m` : "") + routeText(s.nav.route);
+    const le = s.loc_event, searching = le && /global relocalization|local search failed/.test(le[0]);
+    $("nav-msg").textContent = s.pose_age_s !== null && s.pose_age_s > 1.5 ? `로봇 위치가 ${s.pose_age_s.toFixed(1)}초 전 값입니다`
+      : searching ? "지도에서 위치를 다시 찾는 중입니다 — 지금 그려진 로봇·장애물 위치는 믿을 수 없습니다"
+      : le && le[1] < 20 && /lost|initialization weak/.test(le[0]) ? `위치를 놓쳤다가 ${le[1].toFixed(0)}초 전에 다시 잡았습니다` : "";
+    $("nav-goal").disabled = !s.robot || !!searching || !!s.replay;
+    $("nav-wp").disabled = !s.robot || !!searching || !!s.replay; wpButtons();
+    redraw();
+    setTimeout(poll, 200);
+  } catch (e) {
+    N.fails = (N.fails || 0) + 1;                    // one slow answer is not a lost connection
+    if (!pane.hidden && N.fails >= 5) {
+      $("nav-msg").textContent = "주행 정보 연결 끊김 — 노트북의 Nav 스택이 꺼졌거나 연결이 끊겼습니다 (" + e.message + ")";
+      $("nav-status").textContent = "연결 끊김"; $("nav-status").className = "pill bad";
+      document.querySelectorAll("[data-jog]").forEach(b => b.disabled = true); $("nav-goal").disabled = true;
+      $("nav-wp").disabled = true; $("nav-wp-go").disabled = true;
+    }
+    setTimeout(poll, pane.hidden ? 3000 : 400);      // no bridge (replay, other modes): the pane stays hidden
+  }
+}
+const pos = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+cv.addEventListener("pointerdown", e => {
+  cv.setPointerCapture(e.pointerId); const [sx, sy] = pos(e);
+  const hit = !N.goalMode && !N.wpMode && window.__navLive && window.__navLive.objects.find(o => { const [x, y] = toScr(o.x, o.y); return Math.hypot(x - sx, y - sy) < 12; });
+  if (hit) { gotoObject(hit.raw, hit.instance, hit.name); return; }      // an object dot on the map: go and look at it
+  if (N.goalMode || N.wpMode) { const [x, y] = toWorld(sx, sy); N.pending = { x, y, yaw: null, sx, sy }; N.drag = "goal"; }
+  else { N.drag = { sx, sy, vx: N.view.x, vy: N.view.y }; N.follow = false; $("nav-follow").checked = false; }
+});
+cv.addEventListener("pointermove", e => {
+  if (!N.drag) return; const [sx, sy] = pos(e);
+  if (N.drag === "goal") { const p = N.pending, dx = sx - p.sx, dy = sy - p.sy; p.yaw = Math.hypot(dx, dy) > 10 ? Math.atan2(-dy, dx) : null; }
+  else { N.view.x = N.drag.vx - (sx - N.drag.sx) / N.view.k; N.view.y = N.drag.vy + (sy - N.drag.sy) / N.view.k; }
+  redraw();
+});
+cv.addEventListener("pointerup", async () => {
+  const d = N.drag; N.drag = null;
+  if (d !== "goal" || !N.pending) return;
+  if (N.wpMode) {                                    // a waypoint of the loop: no heading given = face the next point
+    N.wp.push({ x: N.pending.x, y: N.pending.y, yaw: N.pending.yaw }); N.pending = null; wpButtons(); redraw(); return;
+  }
+  const p = N.pending, r = N.s && N.s.robot;
+  const yaw = p.yaw !== null ? p.yaw : r ? Math.atan2(p.y - r[1], p.x - r[0]) : 0;     // no drag: arrive facing the way it came
+  p.yaw = yaw; setGoalMode(false);
+  const cl = clearance(p.x, p.y);
+  const warn = cl < GOAL_CLEAR_M ? `\n\n⚠ 이 지점은 벽·장애물에서 ${cl.toFixed(2)} m 입니다. ${GOAL_CLEAR_M} m 보다 가까우면 로봇이 끝까지 붙지 못하고 근처에서 앞뒤로 움직일 수 있습니다.` : "";
+  const ok = confirm(`로봇이 실제로 움직입니다.\n목표 (${p.x.toFixed(2)}, ${p.y.toFixed(2)}) m, 도착 방향 ${(yaw * 180 / Math.PI).toFixed(0)}° 로 이동할까요?${warn}`);
+  N.pending = null;
+  if (!ok) return;
+  try { const res = await api("/goal", { x: p.x, y: p.y, yaw }); if (!res.ok) alert(res.error || "목표 전송 실패"); }
+  catch (e) { alert("목표 전송 실패: " + e.message); }
+});
+cv.addEventListener("wheel", e => {
+  e.preventDefault(); const [sx, sy] = pos(e), [wx, wy] = toWorld(sx, sy), f = Math.exp(-e.deltaY * 0.0015);
+  N.view.k = Math.min(400, Math.max(8, N.view.k * f));
+  const [W, H] = size(); N.view.x = wx - (sx - W / 2) / N.view.k; N.view.y = wy + (sy - H / 2) / N.view.k;
+  redraw();
+}, { passive: false });
+// distance from a map point to the nearest wall of the saved map or live LiDAR point (the robot needs room: it reached
+// goals 0.8 m and more from a wall and stopped 0.3 m short of one 0.6 m from a wall, 2026-10-12)
+const GOAL_CLEAR_M = 0.8;
+let mapPixels = null, mapPixelsVer = -1;
+function clearance(x, y) {
+  let best = Infinity;
+  const s = N.s;
+  if (s && s.scan) for (let i = 0; i + 1 < s.scan.length; i += 2) best = Math.min(best, Math.hypot(s.scan[i] - x, s.scan[i + 1] - y));
+  if (N.map && N.meta && N.meta.w) {
+    if (mapPixelsVer !== N.mapVer) {
+      const c = document.createElement("canvas"); c.width = N.meta.w; c.height = N.meta.h;
+      const g = c.getContext("2d", { willReadFrequently: true }); g.drawImage(N.map, 0, 0);
+      mapPixels = g.getImageData(0, 0, c.width, c.height).data; mapPixelsVer = N.mapVer;
+    }
+    const m = N.meta, ci = Math.floor((x - m.ox) / m.res), cj = Math.floor((y - m.oy) / m.res), r = Math.ceil(2.0 / m.res);
+    for (let j = Math.max(0, cj - r); j <= Math.min(m.h - 1, cj + r); j++)
+      for (let i = Math.max(0, ci - r); i <= Math.min(m.w - 1, ci + r); i++)
+        if (mapPixels[(j * m.w + i) * 4] > 150)            // wall cells are the light ones
+          best = Math.min(best, Math.hypot(m.ox + (i + 0.5) * m.res - x, m.oy + (j + 0.5) * m.res - y));
+  }
+  return best;
+}
+function setGoalMode(on) { N.goalMode = on; wrap.classList.toggle("goal", on); $("nav-goal").classList.toggle("on", on); if (!on && N.drag === "goal") N.drag = null; }
+$("nav-goal").onclick = () => { N.pending = null; setWpMode(false); setGoalMode(!N.goalMode); };
+addEventListener("keydown", e => { if (e.key === "Escape") { N.pending = null; setGoalMode(false); setWpMode(false); } });
+// waypoint loop: pick points, then "순환 시작" -> /nav/route; the robot's computer drives them in order until "정지"
+const ROUTE_KO = { running: "", done: " · 완료", failed: " · 실패로 중단", canceled: " · 정지됨", rejected: " · 거부됨" };
+function routeText(r) { return !r ? "" : ` · 순환 ${r.idx + 1}/${r.points.length} 지점, ${r.lap}바퀴째${ROUTE_KO[r.state] ?? " · " + r.state}`; }
+function setWpMode(on) {
+  N.wpMode = on; wrap.classList.toggle("goal", on || N.goalMode); $("nav-wp").classList.toggle("on", on);
+  if (!on && N.drag === "goal" && !N.goalMode) N.drag = null; wpButtons(); redraw();
+}
+function wpButtons() {
+  const off = !N.s || !N.s.robot || !!N.s.replay;
+  $("nav-wp-go").disabled = off || N.wp.length < 2; $("nav-wp-go").textContent = N.wp.length ? `순환 시작 (${N.wp.length}개)` : "순환 시작";
+  $("nav-wp-clear").disabled = N.wp.length === 0;
+}
+$("nav-wp").onclick = () => { N.pending = null; setGoalMode(false); setWpMode(!N.wpMode); };
+$("nav-wp-clear").onclick = () => { N.wp = []; N.pending = null; wpButtons(); redraw(); };
+$("nav-wp-go").onclick = async () => {
+  const n = N.wp.length; if (n < 2) return;
+  const points = N.wp.map((p, i) => { const q = N.wp[(i + 1) % n]; return { x: p.x, y: p.y, yaw: p.yaw !== null ? p.yaw : Math.atan2(q.y - p.y, q.x - p.x) }; });
+  const near = points.map((p, i) => [i + 1, clearance(p.x, p.y)]).filter(v => v[1] < GOAL_CLEAR_M);
+  const warn = near.length ? `\n\n⚠ 벽·장애물에서 ${GOAL_CLEAR_M} m 보다 가까운 지점: ${near.map(v => `${v[0]}번(${v[1].toFixed(2)} m)`).join(", ")}. 그 지점에서는 끝까지 붙지 못하고 앞뒤로 움직이다 순환이 멈출 수 있습니다.` : "";
+  if (!confirm(`로봇이 실제로 움직입니다.\n지점 ${n}개를 1 → ${n} → 1 순서로 '정지'를 누를 때까지 계속 돕니다. 시작할까요?${warn}`)) return;
+  setWpMode(false);
+  try { const res = await api("/route", { points, loop: true }); if (!res.ok) alert(res.error || "순환 시작 실패"); else { N.wp = []; wpButtons(); } }
+  catch (e) { alert("순환 시작 실패: " + e.message); }
+  redraw();
+};
+$("nav-stop").onclick = async () => { try { await api("/cancel", {}); } catch (e) { alert("정지 요청 실패: " + e.message); } };
+$("nav-fit").onclick = () => { N.follow = false; $("nav-follow").checked = false; fit(); redraw(); };
+addEventListener("resize", redraw);
+$("nav-follow").onchange = e => { N.follow = e.target.checked; };
+document.querySelectorAll("[data-jog]").forEach(b => b.onclick = async () => {
+  try { const r = await api("/jog", { kind: b.dataset.jog }); if (!r.ok) alert(r.error || "이동 요청 실패"); }
+  catch (e) { alert("이동 요청 실패: " + e.message); }
+});
+// ── go to an object: stand where the camera (it looks to the robot's LEFT) sees it ────────────────────────────────
+// 1. a place the robot stood when it recognised the object (hub: "view", nearest to 0.9 m) if it is still clear;
+// 2. else a free spot on a ring around the object: robot body clear of walls / live obstacles, nothing between camera and object.
+const VIEW_M = 0.9, BODY_CLEAR_M = 0.55, CAM_LEFT_M = 0.33;
+function sightClear(cx, cy, ox, oy) {                // no wall or lidar point near the camera -> object line (up to 0.3 m before the object)
+  const L = Math.hypot(ox - cx, oy - cy), n = Math.max(1, Math.floor((L - 0.3) / 0.05));
+  for (let i = 1; i <= n; i++) { const t = i * 0.05 / L; if (clearance(cx + (ox - cx) * t, cy + (oy - cy) * t) < 0.08) return false; }
+  return true;
+}
+function viewSpot(o) {
+  const ox = o.T_w_obj[3], oy = o.T_w_obj[7], r = N.s && N.s.robot;
+  if (o.view && clearance(o.view[0], o.view[1]) >= BODY_CLEAR_M - 0.1)
+    return { x: o.view[0], y: o.view[1], yaw: o.view[2], ox, oy, how: `이 물체를 ${o.view[3].toFixed(2)} m 에서 인식했던 자리`, cl: clearance(o.view[0], o.view[1]) };
+  let best = null;
+  for (let a = 0; a < 360; a += 10) {                // a = direction from the object to the robot
+    const th = a * Math.PI / 180, d = VIEW_M + CAM_LEFT_M, x = ox + d * Math.cos(th), y = oy + d * Math.sin(th), yaw = th + Math.PI / 2;
+    const cl = clearance(x, y); if (cl < BODY_CLEAR_M) continue;
+    const cx = ox + VIEW_M * Math.cos(th), cy = oy + VIEW_M * Math.sin(th); if (!sightClear(cx, cy, ox, oy)) continue;
+    const cost = (r ? Math.hypot(x - r[0], y - r[1]) : 0) + (cl < GOAL_CLEAR_M ? 2 : 0);      // near the robot, roomy spots first
+    if (!best || cost < best.cost) best = { x, y, yaw: Math.atan2(Math.sin(yaw), Math.cos(yaw)), ox, oy, cost, cl, how: "물체 둘레에서 찾은 빈 자리" };
+  }
+  return best;
+}
+let gotoBusy = false;
+async function gotoObject(name, instance, label) {
+  if (gotoBusy) return;
+  const o = (window.__objRows || []).find(o => o.name === name && String(o.instance ?? "") === String(instance ?? ""));
+  if (!o) return;
+  gotoBusy = true; try { await gotoObjectAsk(o, label); } finally { gotoBusy = false; }
+}
+// pointerdown, not click: the table body is rebuilt several times a second, so the pressed element is usually gone
+// before the button is released and a click never fires (2026-10-14: "the button does nothing")
+$("obj-rows").addEventListener("pointerdown", e => {
+  const b = e.target.closest("[data-goto]"); if (!b) return;
+  e.preventDefault(); gotoObject(b.dataset.name, b.dataset.instance, b.dataset.label);
+});
+async function gotoObjectAsk(o, label) {
+  if (pane.hidden || !N.s || !N.s.robot) { alert("주행 정보가 없습니다 (주행 스택이 떠 있는 실시간 실행에서만 됩니다)"); return; }
+  if (N.s.replay) { alert("재생 중에는 로봇을 움직일 수 없습니다"); return; }
+  const g = viewSpot(o);
+  if (!g) { alert("이 물체를 볼 수 있는 빈 자리를 찾지 못했습니다 (둘레가 막혀 있거나 지도 밖입니다)"); return; }
+  N.viewGoal = g; setGoalMode(false); setWpMode(false); redraw();
+  await new Promise(r => requestAnimationFrame(() => setTimeout(r, 60)));          // let the preview paint before the dialog
+  const warn = g.cl < GOAL_CLEAR_M ? `\n\n⚠ 이 자리는 벽·장애물에서 ${g.cl.toFixed(2)} m 입니다. 끝까지 붙지 못할 수 있습니다.` : "";
+  const ok = confirm(`로봇이 실제로 움직입니다.\n'${label || o.name}' 이(가) 카메라(로봇 왼쪽)에 보이는 자리로 이동할까요?\n` +
+                     `목표 (${g.x.toFixed(2)}, ${g.y.toFixed(2)}) m, 방향 ${(g.yaw * 180 / Math.PI).toFixed(0)}° — ${g.how}${warn}`);
+  if (ok) {
+    try { const res = await api("/goal", { x: g.x, y: g.y, yaw: g.yaw }); if (!res.ok) alert(res.error || "목표 전송 실패"); }
+    catch (err) { alert("목표 전송 실패: " + err.message); }
+  }
+  N.viewGoal = null; redraw();
+}
+poll();
+
+// ── replay controls: only pc/replay_run.py answers /replay/state ────────────────────────────────────────────────
+const R = { dragging: false };
+const rp = async body => fetch("/replay/ctl", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+async function replayPoll() {
+  try {
+    const r = await fetch("/replay/state"); if (!r.ok) throw 0;
+    const s = await r.json();
+    $("replay-bar").hidden = false;
+    $("rp-pause").textContent = s.paused ? "▶" : "❚❚";
+    if (s.duration) $("rp-seek").max = s.duration;
+    if (!R.dragging) $("rp-seek").value = s.t_rel;
+    $("rp-time").textContent = `${Math.max(0, s.t_rel).toFixed(0)} / ${s.duration ? s.duration.toFixed(0) : "–"} s`;
+    if (document.activeElement !== $("rp-speed")) $("rp-speed").value = String(s.speed);
+    R.paused = s.paused;
+    setTimeout(replayPoll, 500);
+  } catch (e) { /* a live hub: no replay bar */ }
+}
+$("rp-pause").onclick = () => rp({ pause: !R.paused });
+$("rp-speed").onchange = e => rp({ speed: parseFloat(e.target.value) });
+$("rp-seek").addEventListener("input", () => { R.dragging = true; $("rp-time").textContent = `→ ${parseFloat($("rp-seek").value).toFixed(0)} s`; });
+$("rp-seek").addEventListener("change", async () => { await rp({ seek: parseFloat($("rp-seek").value) }); setTimeout(() => { R.dragging = false; }, 800); });
+replayPoll();
 </script>
 </body>
 </html>

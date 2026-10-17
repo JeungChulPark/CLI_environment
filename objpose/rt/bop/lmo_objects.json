@@ -1,0 +1,106 @@
+{
+ "dataset": "lmo",
+ "models_dir": "/home/jucpark/DeepLearning/Datasets/paper_benchmarks/bop/lmo/models",
+ "scenes_dir": "/home/jucpark/DeepLearning/Datasets/paper_benchmarks/bop/lmo/test",
+ "fps": 30.0,
+ "world": "camera",
+ "note": "LM-O (LineMOD-Occlusion), BOP test scene 000002, 1214 frames, 8 annotated objects. scene_camera.json carries NO cam_R_w2c/cam_t_w2c and the ground truth is annotated per image: measured inter-object distances drift by ~80 mm std across frames, so the scene is not rigid and NO global world frame or camera trajectory exists. The pose stream is therefore a fixed identity pose (world = camera) and the object memory is switched off — LM-O scores per-frame 6D pose only, which is what the BOP protocol asks of it.",
+ "objects": [
+  {
+   "obj_id": 1,
+   "name": "lmo_ape",
+   "lm": "ape",
+   "prompt": "dark red figurine",
+   "prompt_candidates": [
+    "dark red figurine",
+    "brown toy animal",
+    "red toy monkey",
+    "toy gorilla"
+   ]
+  },
+  {
+   "obj_id": 5,
+   "name": "lmo_can",
+   "lm": "can",
+   "prompt": "toy can",
+   "prompt_candidates": [
+    "watering can",
+    "white watering can",
+    "plastic jug"
+   ]
+  },
+  {
+   "obj_id": 6,
+   "name": "lmo_cat",
+   "lm": "cat",
+   "prompt": "pink toy animal",
+   "prompt_candidates": [
+    "pink toy animal",
+    "pink cat figurine",
+    "cat statue"
+   ]
+  },
+  {
+   "obj_id": 8,
+   "name": "lmo_driller",
+   "lm": "driller",
+   "prompt": "cordless drill",
+   "prompt_candidates": [
+    "cordless drill",
+    "power drill",
+    "electric drill",
+    "green power tool"
+   ]
+  },
+  {
+   "obj_id": 9,
+   "name": "lmo_duck",
+   "lm": "duck",
+   "prompt": "yellow toy duck",
+   "prompt_candidates": [
+    "yellow toy duck",
+    "yellow rubber duck",
+    "yellow toy bird"
+   ]
+  },
+  {
+   "obj_id": 10,
+   "name": "lmo_eggbox",
+   "lm": "eggbox",
+   "prompt": "paper box",
+   "prompt_candidates": [
+    "egg carton",
+    "white egg box",
+    "white styrofoam container",
+    "paper box"
+   ]
+  },
+  {
+   "obj_id": 11,
+   "name": "lmo_glue",
+   "lm": "glue",
+   "prompt": "white bottle",
+   "prompt_candidates": [
+    "white glue bottle",
+    "plastic bottle",
+    "white bottle"
+   ]
+  },
+  {
+   "obj_id": 12,
+   "name": "lmo_holepuncher",
+   "lm": "holepuncher",
+   "prompt": "blue stapler",
+   "prompt_candidates": [
+    "blue stapler",
+    "hole puncher",
+    "blue office tool"
+   ]
+  }
+ ],
+ "prompt_note": "Prompts chosen by objpose/tools/probe_bop_prompts.py: detector recall over 24 evenly spaced frames per object, images only (no pose ground truth).",
+ "ism_overrides": {
+  "relative_assignment_enabled": false
+ },
+ "ism_overrides_why": "Measured on 40 frames of scene 000002: the per-box owner election (relative assignment, tuned on the 10 lab objects) gives every box to the single object with the highest DINOv2 semantic score, and on LM-O three of eight objects — cat, duck, holepuncher — then never receive a box at all (0 estimates in a full run). With it off all eight are estimated (191 vs 155 estimates, ADD-S 99.5% vs 98.1%). The ON run is kept as an ablation."
+}

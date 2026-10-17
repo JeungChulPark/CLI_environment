@@ -43,6 +43,10 @@ derived from r thresholds:
     tentative older than tentative_max_age frames -> deleted (safety cap
                             for ghosts whose claimed position stays out of view)
     redetected           -> lost/remembered -> active
+    depth check (opt-in, depth_check=DepthCheckConfig, 2026-09-17): an unseen in-view landmark whose spot the aligned
+                            depth image sees THROUGH for confirm_frames consecutive frames -> deleted (any status,
+                            remembered included, reason "depth_free_space"); an OCCLUDED spot suppresses the miss
+                            penalty. Skipped while the camera moves faster than max_speed_mps / max_rot_dps.
 
 A deleted landmark is removed from the live instance list of its class (it stays
 in the store as a tombstone; INV-002: ids are never reused). Its siblings of the
@@ -69,6 +73,8 @@ from core.features import QualityWeights, detection_log_lr
 from core.fusion import fuse_pose, update_rotation_modes
 from core.memory_store import ObjectMemoryStore
 from core.visibility import PD_BASE, expected_p_d
+from core.depth_check import FREE, OCCLUDED, SURFACE, DepthCheckConfig, DepthFrame, depth_evidence
+from core.map_occlusion import occluded_fraction
 from core.models import (AssociationDecision, DecisionType, FusedPoseSample,
                          SlamCameraPose)
 from core.state_machine import ObjectStatus
@@ -93,6 +99,23 @@ R_LOST = 0.3                  # active -> lost when r falls below this
 R_RETIRE = 0.05               # tentative/lost end their life below this
 TENTATIVE_MAX_AGE = 100       # frames; safety cap for out-of-view ghosts
 MIN_OBS_LONGTERM = 5          # retire split: fewer obs -> delete, else remember
+# retire split also needs the evidence spread over time (2026-09-22): a false positive seen in one
+# short burst (9 hits in 5.6 s on a GPU box read as 'milk') must not earn long-term memory.
+EPISODE_GAP_S = 2.0           # an observation more than this after the previous one opens a new episode
+MIN_EPISODES_LONGTERM = 2     # remember only with >= this many episodes ...
+MIN_SPAN_LONGTERM_S = 8.0     # ... or observations spanning at least this long (10 s dropped a real Bear seen for 9.9 s; the milk FP spanned 5.6 s)
+# remembered landmarks still die from in-view misses, just slowly: this many in-view frames without a
+# re-detection since the last one (depth-OCCLUDED frames excluded) deletes them. None disables.
+# a new instance spawned where same-class instances were retired for lack of evidence inherits their
+# episodes and observations for the long-term decision (2026-09-22: a real Dinosaur first seen in one
+# 4.9 s burst was retired, then re-seen twice in short bursts, and stayed off the map for 100 s).
+INHERIT_REASONS = ("existence_floor", "tentative_timeout", "low_evidence")
+# a mapped landmark farther than this from the camera is not updated from a miss at all (no existence decay,
+# no remembered-miss count, no depth check): SAM-6D's detection rate falls from ~40-90 % inside 1 m to <10 %
+# beyond 1.5 m and 0 % beyond 2.5 m (260826 and 260901 runs, 2026-09-22; ~10 % at 1-1.5 m), so not seeing a far object is no
+# evidence that it is gone. Detections are still accepted at any range. None disables.
+MAX_UPDATE_RANGE_M = 1.0
+REMEMBERED_MISS_LIMIT = 60      # ~22 s in view at SAM-6D ~2.7 fps; real objects peaked at 23 on 260826 (Bear)
 # Story 5 (quality-weighted confidence, opt-in via quality_weighting=True):
 R_PRIOR = 0.15                # prior existence of an unconfirmed single detection
 
@@ -194,9 +217,31 @@ def _run_initiator(store, live_ids_by_name, det, name, score, T_meas, ts,
     return lm
 
 
+def _inherit_retired_evidence(store, lm, T_meas, gate_m, consumed):
+    """Give a freshly spawned instance the episodes and observations of same-class instances that were
+    retired for lack of evidence within gate_m of it. Each tombstone is inherited once (``consumed``); its
+    own inheritance comes along, so a chain of short sightings of one spot adds up."""
+    episodes = obs = 0
+    for old in store.all_landmarks():
+        if (old.object_id == lm.object_id or old.object_id in consumed or old.object_name != lm.object_name
+                or old.status is not ObjectStatus.deleted or not old.transition_history
+                or old.transition_history[-1].reason not in INHERIT_REASONS):
+            continue
+        if transform_distance_translation(old.T_map_obj, T_meas) > gate_m:
+            continue
+        consumed.add(old.object_id)
+        episodes += old.episode_count
+        obs += old.observation_count + old.inherited_obs
+    if episodes:
+        store.update_landmark(lm.object_id, episode_count=lm.episode_count + episodes, inherited_obs=obs)
+
+
 def _run_deleter(store, live_ids_by_name, seen_ids, ts, pose, ages,
                  cam_K, img_size, pd_base, r_lost, r_retire,
-                 tentative_max_age, min_obs_longterm):
+                 tentative_max_age, min_obs_longterm,
+                 depth_frame=None, depth_cfg=None, depth_active=False, free_counts=None, depth_log=None,
+                 min_episodes_longterm=1, min_span_longterm_s=0.0, remembered_miss_limit=None,
+                 max_update_range_m=None, occlusion_extents=None, occlusion_fraction=0.5, occlusion_log=None):
     """Deleter stage (Stone Soup pattern): decay existence of unseen live
     instances in proportion to their expected detection probability P_D and
     retire the ones whose existence ran out. An instance outside the camera view
@@ -204,15 +249,80 @@ def _run_deleter(store, live_ids_by_name, seen_ids, ts, pose, ages,
     the (object_name, object_id) pairs deleted this frame so the caller can drop
     them from the live instance lists."""
     released = []
+    free_counts = free_counts if free_counts is not None else {}
     for name, ids in live_ids_by_name.items():
         for object_id in ids:
             if object_id in seen_ids:
+                free_counts.pop(object_id, None)
                 continue
             lm = store.get(object_id)
-            if lm is None or lm.status in (ObjectStatus.deleted,
-                                           ObjectStatus.merged,
-                                           ObjectStatus.remembered):
-                # remembered = stable long-term memory; misses no longer count.
+            if lm is None or lm.status in (ObjectStatus.deleted, ObjectStatus.merged):
+                continue
+            if max_update_range_m is not None and math.dist(
+                    [pose.T_map_cam[i][3] for i in range(3)], [lm.T_map_obj[i][3] for i in range(3)]) > max_update_range_m:
+                # too far to be detected: a miss says nothing. The tentative age cap still applies, so a
+                # ghost claimed far away cannot linger.
+                if lm.status is ObjectStatus.tentative and ages.get(object_id, 0) >= tentative_max_age:
+                    store.apply_transition(object_id, ObjectStatus.deleted, "tentative_timeout", stamp=ts)
+                    released.append((name, object_id))
+                continue
+            # map-based occlusion (opt-in): hidden behind established landmarks nearer the camera -> no miss this
+            # frame. Catches occluders a few cm in front, which the depth check reads as the object's own surface.
+            if occlusion_extents is not None:
+                others = [store.get(i) for ids2 in live_ids_by_name.values() for i in ids2 if i != object_id]
+                others = [o for o in others if o is not None and o.status in
+                          (ObjectStatus.active, ObjectStatus.lost, ObjectStatus.remembered)]
+                frac = occluded_fraction(pose.T_map_cam, lm, others, occlusion_extents, cam_K, img_size)
+                if frac is not None and frac >= occlusion_fraction:
+                    free_counts.pop(object_id, None)
+                    if occlusion_log is not None:
+                        occlusion_log[object_id] = occlusion_log.get(object_id, 0) + 1
+                    continue
+            # depth consistency (opt-in): runs for remembered landmarks too — they are exactly the stale copies
+            if depth_cfg is not None and depth_active:
+                verdict, info = depth_evidence(pose.T_map_cam, lm.T_map_obj, depth_frame, depth_cfg)
+                if depth_log is not None:
+                    depth_log["verdicts"][verdict] = depth_log["verdicts"].get(verdict, 0) + 1
+                    if "why" in info:
+                        key = f'{verdict}:{info["why"]}'
+                        depth_log["unknown_why"][key] = depth_log["unknown_why"].get(key, 0) + 1
+                    if len(depth_log["samples"]) < 400:
+                        depth_log["samples"].append({"ts": round(ts, 3), "object_id": object_id, "name": name,
+                                                     "status": lm.status.value, "verdict": verdict, **info,
+                                                     "cam_t": [round(pose.T_map_cam[i][3], 3) for i in range(3)],
+                                                     "cam_zaxis": [round(pose.T_map_cam[i][2], 3) for i in range(3)],
+                                                     "obj_t": [round(lm.T_map_obj[i][3], 3) for i in range(3)]})
+                if verdict == FREE:
+                    status_before = lm.status.value
+                    free_counts[object_id] = free_counts.get(object_id, 0) + 1
+                    if free_counts[object_id] >= depth_cfg.confirm_frames:
+                        store.apply_transition(object_id, ObjectStatus.deleted, "depth_free_space", stamp=ts,
+                                               metadata={**info, "frames": free_counts[object_id],
+                                                         "from": status_before, "obs": lm.observation_count})
+                        if depth_log is not None:
+                            depth_log["deleted"].append({"ts": ts, "object_id": object_id, "name": name,
+                                                         "from": status_before, "obs": lm.observation_count, **info})
+                        free_counts.pop(object_id, None)
+                        released.append((name, object_id))
+                        continue
+                elif verdict == SURFACE:
+                    free_counts.pop(object_id, None)
+                elif verdict == OCCLUDED:
+                    free_counts.pop(object_id, None)
+                    continue          # hidden behind something: no miss penalty this frame
+            if lm.status is ObjectStatus.remembered:
+                # remembered = stable long-term memory: its existence no longer decays, but a spot that stays
+                # in view without a re-detection for remembered_miss_limit frames is let go (a false positive
+                # stuck on a real surface, which the depth check cannot see through).
+                if remembered_miss_limit is None:
+                    continue
+                if expected_p_d(pose.T_map_cam, lm.T_map_obj, cam_K, img_size, pd_base=pd_base) > 0.0:
+                    missed = lm.missed_count + 1
+                    store.update_landmark(object_id, missed_count=missed)
+                    if missed >= remembered_miss_limit:
+                        store.apply_transition(object_id, ObjectStatus.deleted, "remembered_missed", stamp=ts,
+                                               metadata={"missed": missed, "obs": lm.observation_count})
+                        released.append((name, object_id))
                 continue
             p_d = expected_p_d(pose.T_map_cam, lm.T_map_obj, cam_K, img_size,
                                pd_base=pd_base)
@@ -245,7 +355,9 @@ def _run_deleter(store, live_ids_by_name, seen_ids, ts, pose, ages,
                 # is a pragmatic proxy in both modes (peak-confidence tracking is
                 # a deferred refinement). This keeps a promoted-then-abandoned
                 # weak track from earning permanent 'remembered' status.
-                if lm.observation_count >= min_obs_longterm:
+                span = lm.last_seen_time - lm.first_seen_time
+                if (lm.observation_count + lm.inherited_obs >= min_obs_longterm
+                        and (lm.episode_count >= min_episodes_longterm or span >= min_span_longterm_s)):
                     store.apply_transition(
                         object_id, ObjectStatus.remembered, "long_term_memory",
                         stamp=ts,
@@ -307,6 +419,15 @@ class StreamingObjectMemory:
         quality_weighting: bool = False,
         weights: Optional[QualityWeights] = None,
         r_prior: float = R_PRIOR,
+        depth_check: Optional[DepthCheckConfig] = None,
+        episode_gap_s: float = EPISODE_GAP_S,
+        min_episodes_longterm: int = MIN_EPISODES_LONGTERM,
+        min_span_longterm_s: float = MIN_SPAN_LONGTERM_S,
+        remembered_miss_limit: Optional[int] = REMEMBERED_MISS_LIMIT,
+        inherit_evidence: bool = True,
+        max_update_range_m: Optional[float] = MAX_UPDATE_RANGE_M,
+        occlusion_extents: Optional[dict] = None,
+        occlusion_fraction: float = 0.5,
     ):
         self.assoc_trans_gate_m = assoc_trans_gate_m
         self.assoc_rot_gate_deg = assoc_rot_gate_deg
@@ -321,12 +442,27 @@ class StreamingObjectMemory:
         self.r_retire = r_retire
         self.tentative_max_age = tentative_max_age
         self.min_obs_longterm = min_obs_longterm
+        self.episode_gap_s = episode_gap_s
+        self.min_episodes_longterm = min_episodes_longterm
+        self.min_span_longterm_s = min_span_longterm_s
+        self.remembered_miss_limit = remembered_miss_limit
+        self.inherit_evidence = inherit_evidence
+        self.max_update_range_m = max_update_range_m
+        # map-based occlusion (opt-in): {object_name: 8x3 CAD box corners in metres}; None keeps the old behaviour
+        self.occlusion_extents = occlusion_extents
+        self.occlusion_fraction = occlusion_fraction
+        self.occlusion_log: Dict[int, int] = {}
+        self._inherited: set = set()      # tombstone ids already inherited by a later instance
         self.cam_K = cam_K
         self.img_size = img_size
         self.quality_weighting = quality_weighting
         self.weights = weights if weights is not None else QualityWeights()
         self.logit_prior = math.log(r_prior / (1.0 - r_prior))
 
+        self.depth_check = depth_check
+        self._depth_free_counts: Dict[int, int] = {}
+        self._prev_cam = None             # (T_map_cam, ts) for the depth check's speed gate
+        self.depth_log = {"verdicts": {}, "unknown_why": {}, "samples": [], "deleted": [], "frames_checked": 0, "frames_skipped_speed": 0}
         self.store = ObjectMemoryStore()
         # multi-instance: a class name maps to a LIST of live object_ids.
         self.live_ids_by_name: Dict[str, List[int]] = {}
@@ -349,8 +485,9 @@ class StreamingObjectMemory:
         fr.objects = _snapshot(self.store, self.live_ids_by_name, set())
         return fr
 
-    def step(self, dets, pose: SlamCameraPose, ts, frame_idx: int) -> FrameResult:
-        """Apply one frame's detections against ``pose`` (at time ``ts``)."""
+    def step(self, dets, pose: SlamCameraPose, ts, frame_idx: int, depth: Optional[DepthFrame] = None) -> FrameResult:
+        """Apply one frame's detections against ``pose`` (at time ``ts``). ``depth``: aligned depth of the same
+        frame for the opt-in depth check (ignored when the runner was built without ``depth_check``)."""
         self.detections_total += len(dets)
         store = self.store
         live_ids_by_name = self.live_ids_by_name
@@ -430,6 +567,8 @@ class StreamingObjectMemory:
                     spawn_r = self.r_init
                 lm = _run_initiator(store, live_ids_by_name, det, name,
                                     score, T_meas, ts, pose, spawn_r)
+                if self.inherit_evidence:
+                    _inherit_retired_evidence(store, lm, T_meas, self.assoc_trans_gate_m, self._inherited)
                 ages[lm.object_id] = 0
                 seen_ids.add(lm.object_id)
                 meas_by_id[lm.object_id] = (T_meas, 0.0, 0.0)
@@ -467,9 +606,11 @@ class StreamingObjectMemory:
             else:
                 new_r = update_existence_detected(lm.confidence, self.pd_base,
                                                   self.clutter_ratio)
+            new_episode = ts - lm.last_seen_time > self.episode_gap_s
             store.update_landmark(
                 object_id,
                 T_map_obj=T_fused,
+                episode_count=lm.episode_count + (1 if new_episode else 0),
                 last_seen_time=ts,
                 observation_count=n_prev + 1,
                 missed_count=0,
@@ -514,10 +655,31 @@ class StreamingObjectMemory:
             ages[oid] += 1
 
         # missed instances this frame: decay existence and retire dead ones.
+        depth_active = False
+        if self.depth_check is not None and depth is not None:
+            depth_active = True
+            if self._prev_cam is not None and ts > self._prev_cam[1]:
+                Tp, tp = self._prev_cam
+                dt = ts - tp
+                dpos = math.sqrt(sum((pose.T_map_cam[i][3] - Tp[i][3]) ** 2 for i in range(3)))
+                tr = sum(sum(pose.T_map_cam[i][k] * Tp[i][k] for i in range(3)) for k in range(3))
+                drot = math.degrees(math.acos(max(-1.0, min(1.0, (tr - 1.0) / 2.0))))
+                if dpos / dt > self.depth_check.max_speed_mps or drot / dt > self.depth_check.max_rot_dps:
+                    depth_active = False
+                    self.depth_log["frames_skipped_speed"] += 1
+            if depth_active:
+                self.depth_log["frames_checked"] += 1
+        self._prev_cam = (pose.T_map_cam, ts)
         released = _run_deleter(
             store, live_ids_by_name, seen_ids, ts, pose, ages,
             self.cam_K, self.img_size, self.pd_base, self.r_lost, self.r_retire,
             self.tentative_max_age, self.min_obs_longterm,
+            depth_frame=depth, depth_cfg=self.depth_check, depth_active=depth_active,
+            free_counts=self._depth_free_counts, depth_log=self.depth_log,
+            min_episodes_longterm=self.min_episodes_longterm, min_span_longterm_s=self.min_span_longterm_s,
+            remembered_miss_limit=self.remembered_miss_limit, max_update_range_m=self.max_update_range_m,
+            occlusion_extents=self.occlusion_extents, occlusion_fraction=self.occlusion_fraction,
+            occlusion_log=self.occlusion_log,
         )
         for name, object_id in released:
             # drop the deleted instance from its class's live list.

@@ -27,11 +27,25 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "objectmemory_ws" / "object_memory" / "src"))
 from core.models import Sam6DDetection, SlamCameraPose, TrackingStatus  # noqa: E402
 from pipeline.object_memory_runner import StreamingObjectMemory  # noqa: E402
+from core.depth_check import DepthCheckConfig, DepthFrame  # noqa: E402
 
 from fusion import Fusion, inv_se3  # noqa: E402
 
 import os
 LOOP_W_D0_M = float(os.environ.get("OBJPOSE_LOOP_W_D0_M", "0"))   # 0 (default) = off; 0.05 = the §3.3 weighting — did NOT help (see README 2026-09-14 F1/F2/가중치 절)
+
+
+MAP_OCCL = os.environ.get("OBJPOSE_MAP_OCCL", "0") == "1"   # 1 = map-based occlusion (no miss penalty behind mapped objects)
+MODEL_POINTS = REPO / "sam6d_realtime" / "assets" / "model_points"
+
+
+def map_occlusion_kwargs(names) -> dict:
+    """ObjectMemory kwargs for map-based occlusion (CAD box of each object) when OBJPOSE_MAP_OCCL=1, else {}."""
+    if not MAP_OCCL:
+        return {}
+    from core.map_occlusion import box_corners
+    ext = {n: box_corners(np.load(MODEL_POINTS / f"{n}.npy") / 1000.0) for n in names if (MODEL_POINTS / f"{n}.npy").exists()}
+    return {"occlusion_extents": ext}
 
 
 def to_tuple(T) -> tuple:
@@ -44,11 +58,13 @@ class SamFrame:
     kf: int | None
     T_anchor_sam: np.ndarray | None    # T_kf_sam, or T_w_sam when kf is None; None = no SLAM pose
     dets: list                         # (name, score, T_sam_obj 4x4)
+    depth: object = None               # downsampled aligned depth (uint16 mm) of the frame, for the depth check
 
 
 class ObjectMemory:
-    def __init__(self, fusion: Fusion, K, img_size, **mem_kwargs):
+    def __init__(self, fusion: Fusion, K, img_size, depth_check: DepthCheckConfig | None = None, **mem_kwargs):
         self.fusion = fusion
+        self.depth_check = depth_check
         self.K = [list(map(float, r)) for r in np.asarray(K)]
         self.img_size = tuple(img_size)
         self.mem_kwargs = mem_kwargs
@@ -61,11 +77,12 @@ class ObjectMemory:
         self.last_rebuild_ms = 0.0
 
     def _new(self):
-        return StreamingObjectMemory(cam_K=self.K, img_size=self.img_size, **self.mem_kwargs)
+        return StreamingObjectMemory(cam_K=self.K, img_size=self.img_size, depth_check=self.depth_check, **self.mem_kwargs)
 
     # ── input ────────────────────────────────────────────────────────────────
-    def add_frame(self, t_ns: int, dets: list):
-        """dets: [(name, score, R 3x3, t_mm 3)] from SAM-6D for the frame captured at t_ns."""
+    def add_frame(self, t_ns: int, dets: list, depth=None):
+        """dets: [(name, score, R 3x3, t_mm 3)] from SAM-6D for the frame captured at t_ns; depth: the frame's aligned
+        depth downsampled (e.g. [::8, ::8], uint16 mm) for the depth check, or None."""
         poses = self.fusion.poses
         T_w_sam, _ = self.fusion.T_w_sam(t_ns)
         kf = poses.anchor_at(self.fusion.slam_t(t_ns)) if T_w_sam is not None else None
@@ -83,7 +100,7 @@ class ObjectMemory:
             T[:3, 3] = np.asarray(t_mm, np.float64) / 1000.0
             rows.append((name, float(score), T))
         with self._lock:
-            self.frames.append(SamFrame(t_ns, kf, anchor, rows))
+            self.frames.append(SamFrame(t_ns, kf, anchor, rows, depth))
             self.frames.sort(key=lambda f: f.t_ns)
 
     # ── replay ───────────────────────────────────────────────────────────────
@@ -117,7 +134,10 @@ class ObjectMemory:
         pose = SlamCameraPose(stamp=stamp, frame_id="map", child_frame_id="sam_camera",
                               T_map_cam=to_tuple(T_w_sam), tracking_status=TrackingStatus.OK,
                               source_slam_id="orbslam3")
-        return mem.step(dets, pose, stamp, idx)
+        depth = None
+        if self.depth_check is not None and f.depth is not None:
+            depth = DepthFrame.from_full(f.depth, self.K, self.img_size)
+        return mem.step(dets, pose, stamp, idx, depth=depth)
 
     def update(self):
         """Feed new frames; rebuild everything if keyframe poses changed since last time.
@@ -166,5 +186,22 @@ class ObjectMemory:
         by_status = {}
         for lm in lms:
             by_status[lm["status"]] = by_status.get(lm["status"], 0) + 1
-        return {"frames": len(self.frames), "landmarks": len(lms), "by_status": by_status,
-                "rebuilds": self.rebuilds, "last_rebuild_ms": round(self.last_rebuild_ms, 1)}
+        out = {"frames": len(self.frames), "landmarks": len(lms), "by_status": by_status,
+               "rebuilds": self.rebuilds, "last_rebuild_ms": round(self.last_rebuild_ms, 1)}
+        if self.depth_check is not None:
+            with self._lock:
+                dl = self._mem.depth_log
+                out["depth_check"] = {"frames_checked": dl["frames_checked"], "frames_skipped_speed": dl["frames_skipped_speed"],
+                                      "verdicts": dict(dl["verdicts"]), "why": dict(dl.get("unknown_why", {})), "deleted": len(dl["deleted"]),
+                                      "frames_with_depth": sum(1 for f in self.frames if f.depth is not None)}
+        return out
+
+    def depth_samples(self):
+        """first per-landmark depth verdicts with their numbers (for tuning)"""
+        with self._lock:
+            return list(self._mem.depth_log.get("samples", [])) if self.depth_check is not None and self._mem is not None else []
+
+    def depth_deletions(self):
+        """landmarks the depth check deleted (in the current memory build)"""
+        with self._lock:
+            return list(self._mem.depth_log["deleted"]) if self.depth_check is not None else []

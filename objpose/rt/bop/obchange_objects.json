@@ -1,0 +1,141 @@
+{
+ "dataset": "obchange",
+ "models_dir": "/home/jucpark/DeepLearning/Datasets/paper_benchmarks/YCB_Video/models_fine",
+ "scenes_dir": "/home/jucpark/DeepLearning/Datasets/ObChange/bop/test",
+ "fps": 10.0,
+ "world": "dataset tf (map)",
+ "note": "ObChange (TU Wien, HSR head Xtion). Built by objpose/tools/obchange/make_bop.py (every 3rd frame = 10 fps). Objects = the 11 ObChange YCB objects that are also in YCB-V (templates exist); the other 24 ObChange objects have no template here.",
+ "objects": [
+  {
+   "obj_id": 1,
+   "name": "ycbv_master_chef_can",
+   "ycb": "002_master_chef_can",
+   "prompt": "blue coffee can",
+   "prompt_candidates": [
+    "blue coffee can",
+    "blue can",
+    "coffee can",
+    "metal can"
+   ]
+  },
+  {
+   "obj_id": 2,
+   "name": "ycbv_cracker_box",
+   "ycb": "003_cracker_box",
+   "prompt": "red cracker box",
+   "prompt_candidates": [
+    "red cracker box",
+    "cereal box",
+    "red box"
+   ]
+  },
+  {
+   "obj_id": 3,
+   "name": "ycbv_sugar_box",
+   "ycb": "004_sugar_box",
+   "prompt": "yellow sugar box",
+   "prompt_candidates": [
+    "yellow box",
+    "sugar box",
+    "yellow carton"
+   ]
+  },
+  {
+   "obj_id": 4,
+   "name": "ycbv_tomato_soup_can",
+   "ycb": "005_tomato_soup_can",
+   "prompt": "tomato soup can",
+   "prompt_candidates": [
+    "soup can",
+    "red and white can",
+    "small can"
+   ]
+  },
+  {
+   "obj_id": 7,
+   "name": "ycbv_pudding_box",
+   "ycb": "008_pudding_box",
+   "prompt": "brown pudding box",
+   "prompt_candidates": [
+    "chocolate pudding box",
+    "small brown box",
+    "brown box"
+   ]
+  },
+  {
+   "obj_id": 8,
+   "name": "ycbv_gelatin_box",
+   "ycb": "009_gelatin_box",
+   "prompt": "red gelatin box",
+   "prompt_candidates": [
+    "jello box",
+    "small red box",
+    "red box"
+   ]
+  },
+  {
+   "obj_id": 11,
+   "name": "ycbv_pitcher_base",
+   "ycb": "019_pitcher_base",
+   "prompt": "blue plastic pitcher",
+   "prompt_candidates": [
+    "blue pitcher",
+    "blue jug",
+    "plastic pitcher",
+    "blue plastic jug"
+   ]
+  },
+  {
+   "obj_id": 13,
+   "name": "ycbv_bowl",
+   "ycb": "024_bowl",
+   "prompt": "red bowl",
+   "prompt_candidates": [
+    "red bowl",
+    "bowl",
+    "red dish"
+   ]
+  },
+  {
+   "obj_id": 14,
+   "name": "ycbv_mug",
+   "ycb": "025_mug",
+   "prompt": "red mug",
+   "prompt_candidates": [
+    "red mug",
+    "mug",
+    "red cup",
+    "coffee mug"
+   ]
+  },
+  {
+   "obj_id": 18,
+   "name": "ycbv_large_marker",
+   "ycb": "040_large_marker",
+   "prompt": "marker pen",
+   "prompt_candidates": [
+    "marker pen",
+    "marker",
+    "black pen",
+    "sharpie"
+   ]
+  },
+  {
+   "obj_id": 21,
+   "name": "ycbv_foam_brick",
+   "ycb": "061_foam_brick",
+   "prompt": "red foam brick",
+   "prompt_candidates": [
+    "red foam brick",
+    "red block",
+    "red brick",
+    "red sponge"
+   ]
+  }
+ ],
+ "prompt_note": "Prompts are the hand-written descriptive ones. objpose/tools/probe_bop_prompts.py was run over all 21 objects and its detector-recall winners were rejected: maximising raw proposal recall selects generic wordings ('box', 'toy can', 'black object') that fire on everything, and measured with diag_bop_ism.py on scenes 000048/000057 those produced detections for objects not in the scene (pudding_box 30/30 and power_drill 30/30 frames in a scene holding neither) while the descriptive prompts did not. Recall at the detector is not the objective; what survives the ISM is. On LM-O the same probe DID help, because there the class names mislead ('can' is a watering can) rather than over-generalise.",
+ "ism_overrides": {
+  "relative_assignment_enabled": false
+ },
+ "ism_overrides_why": "Measured with diag_bop_ism.py on 30 frames each of scenes 000048 and 000057: the per-box owner election gives each box to the single object with the highest DINOv2 semantic score, and tuna_fish_can and extra_large_clamp then never receive a box (0 estimates in the 2026-09-19 12-scene batch). With it off both are detected (tuna_fish_can 30/30 frames on 000048). Same finding as LM-O: the election was tuned on 10 lab objects and does not transfer to a benchmark where several objects look alike."
+}

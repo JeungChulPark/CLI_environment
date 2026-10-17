@@ -7,10 +7,16 @@
 //
 //   --mode offline --out traj.txt     all frames, as fast as possible, TUM T_world_camera
 //   --mode live --connect HOST:PORT   real-time paced, newline-delimited JSON poses over TCP
+//   --session live --mode live ...    frames from this host's camera on stdin (linux_slam/rs_capture.py | slam_stream):
+//                                     JSON header line, then per frame int64 t_ns | BGR8 | uint16 mm depth aligned to colour
 //
 // Timestamps: t_ns = associated_host_epoch_timestamp_ns + --offset-ns.
 
 #include <algorithm>
+#include <atomic>
+#include <condition_variable>
+#include <memory>
+#include <mutex>
 #include <arpa/inet.h>
 #include <chrono>
 #include <cmath>
@@ -91,6 +97,7 @@ struct Args {
   std::string save_atlas, load_atlas;
   std::string time_source = "frame";
   std::string print_times;
+  std::vector<std::string> params;   // --param Key=Value (settings yaml overrides, repeatable)
   bool localization = false;
 };
 
@@ -99,6 +106,7 @@ static void usage() {
                "            [--offset-ns NS] [--max-frames N] [--pace R (offline real-time pacing)]\n"
                "            [--save-atlas PATH | --load-atlas PATH --localization]   (PATH without .osa)\n"
                "            [--time-source frame|assoc (default frame)] [--print-times i,j,k]\n"
+               "            [--param Key=Value ...]   (any settings yaml key, e.g. Stereo.ThDepth=55)\n"
                "            --mode offline --out TUM.txt | --mode live --connect HOST:PORT [--rate R]\n";
 }
 
@@ -137,8 +145,8 @@ static std::string settings_with_camera(const std::string& path, const Session& 
 }
 
 static std::string settings_override(const std::string& path, int features, const std::string& save_name,
-                                     const std::string& load_name) {
-  if (features <= 0 && save_name.empty() && load_name.empty()) return path;
+                                     const std::string& load_name, const std::vector<std::string>& params = {}) {
+  if (features <= 0 && save_name.empty() && load_name.empty() && params.empty()) return path;
   std::ifstream in(path);
   if (!in) throw std::runtime_error("cannot read settings " + path);
   std::stringstream ss;
@@ -148,6 +156,16 @@ static std::string settings_override(const std::string& path, int features, cons
     std::regex re(R"((^|\n)ORBextractor\.nFeatures:[^\n]*)");
     if (!std::regex_search(txt, re)) throw std::runtime_error("settings has no ORBextractor.nFeatures");
     txt = std::regex_replace(txt, re, "$1ORBextractor.nFeatures: " + std::to_string(features));
+  }
+  // --param Key=Value: replace the key's line if the template has it, else append it (hub --slam-param)
+  for (const std::string& kv : params) {
+    auto eq = kv.find('=');
+    if (eq == std::string::npos || eq == 0) throw std::runtime_error("--param expects Key=Value, got " + kv);
+    std::string key = kv.substr(0, eq), value = kv.substr(eq + 1);
+    std::regex re("(^|\\n)" + std::regex_replace(key, std::regex(R"(\.)"), R"(\.)") + ":[^\\n]*");
+    if (std::regex_search(txt, re)) txt = std::regex_replace(txt, re, "$1" + key + ": " + value);
+    else txt += "\n" + key + ": " + value + "\n";
+    fprintf(stderr, "[slam_stream] settings override %s: %s\n", key.c_str(), value.c_str());
   }
   // Drop any existing atlas keys, then set exactly what was asked for.
   txt = std::regex_replace(txt, std::regex(R"((^|\n)System\.(Load|Save)AtlasFromFile:[^\n]*)"), "$1");
@@ -171,6 +189,77 @@ static std::pair<std::string, std::string> split_atlas_path(const std::string& p
   return {buf, base};
 }
 
+// ---------------------------------------------------------------- live camera on stdin
+// rs_capture.py owns the camera (pyrealsense2, V4L2 backend: no root needed); a reader thread keeps only the newest
+// frame so that tracking always works on the latest image and slow frames are counted as dropped.
+struct LiveCam {
+  json hdr;
+  int W = 0, H = 0;
+  std::mutex mu;
+  std::condition_variable cond;
+  cv::Mat color, depth;  // newest frame
+  long long t_ns = 0, seq = 0;
+  bool eof = false;
+  std::thread th;
+  static bool read_all(void* dst, size_t n) {
+    char* p = static_cast<char*>(dst);
+    while (n) {
+      ssize_t k = ::read(0, p, n);
+      if (k <= 0) return false;
+      p += k; n -= size_t(k);
+    }
+    return true;
+  }
+  void open() {
+    std::string line;
+    char ch;
+    while (read_all(&ch, 1) && ch != '\n') line += ch;
+    if (line.empty()) throw std::runtime_error("live: no camera header on stdin (rs_capture.py failed?)");
+    hdr = json::parse(line);
+    W = hdr.at("W"); H = hdr.at("H");
+    th = std::thread([this] {
+      for (;;) {
+        long long t;
+        cv::Mat c(H, W, CV_8UC3), d(H, W, CV_16UC1);
+        if (!read_all(&t, 8) || !read_all(c.data, c.total() * 3) || !read_all(d.data, d.total() * 2)) break;
+        std::lock_guard<std::mutex> lk(mu);
+        color = c; depth = d; t_ns = t; ++seq;
+        cond.notify_all();
+      }
+      std::lock_guard<std::mutex> lk(mu);
+      eof = true;
+      cond.notify_all();
+    });
+    th.detach();
+  }
+  void fill_session(Session& s) const {
+    s.dir = "live";
+    s.db3 = "realsense:" + hdr.value("serial", std::string("?"));
+    s.input_kind = "converted";
+    s.depth_aligned = true;
+    s.distortion_model = hdr.value("model", std::string("?"));
+    s.time_source = "header";
+    s.time_domain = "live colour frame timestamp (RealSense global time = host epoch clock)";
+    Calib& c = s.calib;
+    std::memset(&c, 0, sizeof(c));
+    c.W = W; c.H = H;
+    c.fxc = c.fxd = hdr.at("fx"); c.fyc = c.fyd = hdr.at("fy");
+    c.ppxc = c.ppxd = hdr.at("ppx"); c.ppyc = c.ppyd = hdr.at("ppy");
+    std::vector<double> k = hdr.at("coeffs");
+    c.k1 = k.at(0); c.k2 = k.at(1); c.p1 = k.at(2); c.p2 = k.at(3); c.k3 = k.at(4);
+    c.R[0] = c.R[4] = c.R[8] = 1.0;
+    c.depth_units = 0.001;
+  }
+  // waits for a frame newer than `after`; false on EOF
+  bool next(long long after, cv::Mat& c, cv::Mat& d, long long& t, long long& s_out, double wait_s) {
+    std::unique_lock<std::mutex> lk(mu);
+    if (!cond.wait_for(lk, std::chrono::duration<double>(wait_s), [&] { return eof || seq > after; })) return true;
+    if (seq <= after) return false;
+    c = color; d = depth; t = t_ns; s_out = seq;
+    return true;
+  }
+};
+
 int main(int argc, char** argv) {
   signal(SIGPIPE, SIG_IGN);
   Args a;
@@ -193,12 +282,15 @@ int main(int argc, char** argv) {
     else if (k == "--max-frames") a.max_frames = std::stoi(val());
     else if (k == "--time-source") a.time_source = val();
     else if (k == "--print-times") a.print_times = val();
+    else if (k == "--param") a.params.push_back(val());
     else if (k == "--save-atlas") a.save_atlas = val();
     else if (k == "--load-atlas") a.load_atlas = val();
     else if (k == "--localization") a.localization = true;
     else if (k == "--dump-aligned") { a.dump_idx = std::stoll(val()); a.dump_path = val(); }
     else { usage(); return 2; }
   }
+  const bool live_cam = (a.session == "live");
+  if (live_cam && a.mode != "live") { std::cerr << "--session live needs --mode live\n"; return 2; }
   if (a.session.empty() || a.settings.empty() || a.vocab.empty() ||
       (a.mode == "offline" && a.out.empty()) || (a.mode == "live" && a.connect.empty()) ||
       (a.mode != "offline" && a.mode != "live")) {
@@ -206,13 +298,20 @@ int main(int argc, char** argv) {
     return 2;
   }
 
-  Session s = load_session(a.session, a.offset_ns, a.time_source);
+  LiveCam cam;
+  Session s;
+  if (live_cam) {
+    cam.open();
+    cam.fill_session(s);
+  } else {
+    s = load_session(a.session, a.offset_ns, a.time_source);
+  }
   fprintf(stderr, "[slam_stream] time-source=%s domain=%s offset_ns=%lld non_monotonic=%lld\n", s.time_source.c_str(),
           s.time_domain.c_str(), a.offset_ns, s.non_monotonic);
   if (s.non_monotonic)
     fprintf(stderr, "[slam_stream] WARNING: %lld frame times are not strictly increasing (association order kept)\n",
             s.non_monotonic);
-  if (!a.print_times.empty()) {  // verification aid: t_ns of chosen frame_idx values, then exit
+  if (!a.print_times.empty() && !live_cam) {  // verification aid: t_ns of chosen frame_idx values, then exit
     std::stringstream ss(a.print_times);
     std::string tok;
     while (std::getline(ss, tok, ',')) {
@@ -231,7 +330,7 @@ int main(int argc, char** argv) {
             s.frames.size(), s.inexact_pairs, s.max_pair_dt_ms, s.unpaired_color, s.unpaired_depth, c.fxc, c.fyc, c.ppxc,
             c.ppyc, c.k1, c.k2, c.p1, c.p2, c.k3, s.distortion_model.c_str());
   Aligner aligner(c);
-  if (a.dump_idx >= 0) {  // verification aid: raw uint16 aligned depth of one frame, no SLAM
+  if (a.dump_idx >= 0 && !live_cam) {  // verification aid: raw uint16 aligned depth of one frame, no SLAM
     Bag dbag(s.db3);
     Blob b;
     const FrameRef& f = s.frames.at(size_t(a.dump_idx));
@@ -265,14 +364,15 @@ int main(int argc, char** argv) {
     cam_settings = settings_with_camera(base_settings, s);
     base_settings = cam_settings;
   }
-  std::string settings = settings_override(base_settings, a.features, save_name, load_name);
+  std::string settings = settings_override(base_settings, a.features, save_name, load_name, a.params);
   if (!atlas_dir.empty()) {
     if (chdir(atlas_dir.c_str()) != 0) throw std::runtime_error("chdir failed: " + atlas_dir);
     fprintf(stderr, "[slam_stream] atlas %s: %s/%s.osa\n", load_name.empty() ? "save" : "load", atlas_dir.c_str(),
             (load_name.empty() ? save_name : load_name).c_str());
   }
 
-  Bag bag(s.db3);
+  std::unique_ptr<Bag> bag;
+  if (!live_cam) bag.reset(new Bag(s.db3));
   ORB_SLAM3::System slam(a.vocab, settings, ORB_SLAM3::System::RGBD, false);
   if (a.localization) {
     slam.ActivateLocalizationMode();  // as rgbd_node: no LocalMapping/LoopClosing, prior map fixed
@@ -293,9 +393,23 @@ int main(int argc, char** argv) {
     int state; bool ok; Sophus::SE3f Twc; double track_ms, prep_ms; long long map_id; bool map_changed;
     int n_tracked_mp; bool vo;
   };
+  auto track = [&](const cv::Mat& color_in, const cv::Mat& depth_in, long long t_ns, Result& r) {
+    auto t1 = Clock::now();
+    Sophus::SE3f Tcw = slam.TrackRGBD(color_in, depth_in, double(t_ns) * 1e-9);
+    auto t2 = Clock::now();
+    r.state = slam.GetTrackingState();
+    r.ok = (r.state == 2) && !Tcw.matrix().isZero(0);
+    r.Twc = Tcw.inverse();
+    r.track_ms = std::chrono::duration<double, std::milli>(t2 - t1).count();
+    r.map_id = current_map_id();
+    r.map_changed = slam.MapChanged();
+    std::vector<ORB_SLAM3::MapPoint*> tracked = slam.GetTrackedMapPoints();
+    r.n_tracked_mp = int(std::count_if(tracked.begin(), tracked.end(), [](ORB_SLAM3::MapPoint* m) { return m != nullptr; }));
+    r.vo = tracker ? tracker->*get(TrackingVOTag()) : false;
+  };
   auto process = [&](const FrameRef& f, Result& r) -> bool {
     auto t0 = Clock::now();
-    if (!bag.by_id(f.color_id, cb) || !bag.by_id(f.depth_id, db)) return false;
+    if (!bag->by_id(f.color_id, cb) || !bag->by_id(f.depth_id, db)) return false;
     ImageView ci = read_image_msg(cb.d), di = read_image_msg(db.d);
     if (int(ci.w) != c.W || int(ci.h) != c.H || int(di.w) != c.W || int(di.h) != c.H ||
         ci.len != ci.w * ci.h * 3 || di.len != di.w * di.h * 2)
@@ -317,19 +431,8 @@ int main(int argc, char** argv) {
     std::vector<uint16_t> raw(c.W * c.H);
     std::memcpy(raw.data(), di.data, raw.size() * 2);
     depth_to_color(s, aligner, raw.data(), depth_aligned);
-    auto t1 = Clock::now();
-    Sophus::SE3f Tcw = slam.TrackRGBD(color, depth_aligned, double(f.t_ns) * 1e-9);
-    auto t2 = Clock::now();
-    r.state = slam.GetTrackingState();
-    r.ok = (r.state == 2) && !Tcw.matrix().isZero(0);
-    r.Twc = Tcw.inverse();
-    r.prep_ms = std::chrono::duration<double, std::milli>(t1 - t0).count();
-    r.track_ms = std::chrono::duration<double, std::milli>(t2 - t1).count();
-    r.map_id = current_map_id();
-    r.map_changed = slam.MapChanged();
-    std::vector<ORB_SLAM3::MapPoint*> tracked = slam.GetTrackedMapPoints();
-    r.n_tracked_mp = int(std::count_if(tracked.begin(), tracked.end(), [](ORB_SLAM3::MapPoint* m) { return m != nullptr; }));
-    r.vo = tracker ? tracker->*get(TrackingVOTag()) : false;
+    r.prep_ms = std::chrono::duration<double, std::milli>(Clock::now() - t0).count();
+    track(color, depth_aligned, f.t_ns, r);
     return true;
   };
 
@@ -423,8 +526,16 @@ int main(int argc, char** argv) {
       fprintf(stderr, "[slam_stream] cannot connect to %s\n", a.connect.c_str());
       return 1;
     }
-    line.send_json({{"type", "hello"}, {"source", "orbslam3"}, {"features", a.features}, {"session", s.dir},
-                    {"first_ns", s.frames.front().t_ns}, {"last_ns", s.frames.back().t_ns},
+    long long first_ns = 0, last_ns = 0;
+    if (live_cam) {  // as orb_live_stream.py: an open-ended session starting now on the host clock
+      first_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+      last_ns = first_ns + 3600LL * 1000000000LL;
+    } else {
+      first_ns = s.frames.front().t_ns;
+      last_ns = s.frames.back().t_ns;
+    }
+    line.send_json({{"type", "hello"}, {"source", live_cam ? "orbslam3_live" : "orbslam3"}, {"features", a.features},
+                    {"session", s.dir}, {"first_ns", first_ns}, {"last_ns", last_ns}, {"live", live_cam},
                     {"n_frames", s.frames.size()}, {"time_source", s.time_source}, {"time_domain", s.time_domain},
                     {"kf_updates", true}});
     json start;
@@ -435,7 +546,7 @@ int main(int argc, char** argv) {
         return 1;
       }
     } while (start.value("type", "") != "start");
-    long long t0_ns = start.value("t0_ns", s.frames.front().t_ns);
+    long long t0_ns = start.value("t0_ns", first_ns);
     double rate = start.value("rate", a.rate);
     fprintf(stderr, "[slam_stream] start t0_ns=%lld rate=%.2f\n", t0_ns, rate);
 
@@ -513,7 +624,73 @@ int main(int argc, char** argv) {
     wall0 = Clock::now();
     last_periodic = wall0;
     bool alive = true;
-    while (alive && idx < s.frames.size()) {
+    // one pose message (shared by the replay and the live camera loop)
+    auto send_pose = [&](const Result& r, long long t_ns, long long frame_idx) -> bool {
+      ++processed;
+      last_t_ns = t_ns;
+      track_ms.push_back(r.track_ms);
+      // Reference keyframe used for this frame's pose (the one SaveTrajectoryTUM anchors to),
+      // read in the tracking thread right after TrackRGBD.
+      ORB_SLAM3::KeyFrame* ref = tracker ? tracker->mCurrentFrame.mpReferenceKF : nullptr;
+      json pose = {{"type", "pose"}, {"t_ns", t_ns}, {"state", state_name(r.state)},
+                   {"track_ms", std::round(r.track_ms * 100) / 100}, {"prep_ms", std::round(r.prep_ms * 100) / 100},
+                   {"dropped", dropped}, {"map_changed", r.map_changed}, {"map_id", r.map_id}};
+      if (frame_idx >= 0) pose["frame_idx"] = frame_idx;
+      if (r.ok) {
+        Eigen::Matrix4f M = r.Twc.matrix();
+        std::vector<double> v;
+        for (int rr = 0; rr < 4; ++rr)
+          for (int cc = 0; cc < 4; ++cc) v.push_back(M(rr, cc));
+        pose["T_wc"] = v;
+      } else {
+        pose["T_wc"] = nullptr;
+      }
+      std::string body = pose.dump();
+      body.pop_back();  // splice fixed-precision keyframe fields before the closing brace
+      if (ref) {
+        Eigen::Matrix4f K = ref->GetPoseInverse().matrix();
+        ORB_SLAM3::Map* km = ref->GetMap();
+        body += ",\"ref_kf\":" + std::to_string(ref->mnId) + ",\"kf_map_id\":" +
+                (km ? std::to_string(km->GetId()) : std::string("null")) + ",\"T_w_kf\":[";
+        for (int rr = 0; rr < 4; ++rr)
+          for (int cc = 0; cc < 4; ++cc) body += (rr || cc ? "," : "") + fmt6(K(rr, cc));
+        body += "]}";
+      } else {
+        body += ",\"ref_kf\":null,\"kf_map_id\":null,\"T_w_kf\":null}";
+      }
+      bool ok = line.send_raw(body);
+      if (ok && r.map_changed) {
+        ok = send_kf_update("map_changed");
+        auto now = Clock::now();
+        kf_followups.push_back(now + std::chrono::milliseconds(500));
+        kf_followups.push_back(now + std::chrono::milliseconds(3000));
+        last_periodic = now;
+      }
+      return ok;
+    };
+    if (live_cam) {
+      long long seq = 0, t_ns = 0, got = 0;
+      cv::Mat lc, ld;
+      auto last_status = Clock::now();
+      while (alive) {
+        if (!service_kf_updates()) { alive = false; break; }
+        long long prev = seq;
+        if (!cam.next(seq, lc, ld, t_ns, got, 0.05)) { fprintf(stderr, "[slam_stream] camera stream ended\n"); break; }
+        if (got <= prev) continue;  // timeout, no new frame
+        if (prev > 0) dropped += int(got - prev - 1);
+        seq = got;
+        Result r;
+        r.prep_ms = 0;
+        track(lc, ld, t_ns, r);
+        alive = send_pose(r, t_ns, -1);
+        if (std::chrono::duration<double>(Clock::now() - last_status).count() >= 10.0) {
+          fprintf(stderr, "[slam_stream] live cam: processed %d dropped %d state %s track mean %.1f ms\n", processed, dropped,
+                  state_name(r.state).c_str(), std::accumulate(track_ms.begin(), track_ms.end(), 0.0) / track_ms.size());
+          last_status = Clock::now();
+        }
+      }
+    }
+    while (alive && !live_cam && idx < s.frames.size()) {
       if (!service_kf_updates()) { alive = false; break; }
       double elapsed = std::chrono::duration<double>(Clock::now() - wall0).count();
       double due_s = double(s.frames[idx].t_ns - t0_ns) * 1e-9 / rate;
@@ -525,47 +702,7 @@ int main(int argc, char** argv) {
       while (j + 1 < s.frames.size() && double(s.frames[j + 1].t_ns - t0_ns) * 1e-9 / rate <= elapsed) ++j;
       dropped += int(j - idx);
       Result r;
-      if (process(s.frames[j], r)) {
-        ++processed;
-        last_t_ns = s.frames[j].t_ns;
-        track_ms.push_back(r.track_ms);
-        // Reference keyframe used for this frame's pose (the one SaveTrajectoryTUM anchors to),
-        // read in the tracking thread right after TrackRGBD.
-        ORB_SLAM3::KeyFrame* ref = tracker ? tracker->mCurrentFrame.mpReferenceKF : nullptr;
-        json pose = {{"type", "pose"}, {"t_ns", s.frames[j].t_ns}, {"state", state_name(r.state)},
-                     {"track_ms", std::round(r.track_ms * 100) / 100}, {"prep_ms", std::round(r.prep_ms * 100) / 100},
-                     {"frame_idx", j}, {"dropped", dropped}, {"map_changed", r.map_changed}, {"map_id", r.map_id}};
-        if (r.ok) {
-          Eigen::Matrix4f M = r.Twc.matrix();
-          std::vector<double> v;
-          for (int rr = 0; rr < 4; ++rr)
-            for (int cc = 0; cc < 4; ++cc) v.push_back(M(rr, cc));
-          pose["T_wc"] = v;
-        } else {
-          pose["T_wc"] = nullptr;
-        }
-        std::string body = pose.dump();
-        body.pop_back();  // splice fixed-precision keyframe fields before the closing brace
-        if (ref) {
-          Eigen::Matrix4f K = ref->GetPoseInverse().matrix();
-          ORB_SLAM3::Map* km = ref->GetMap();
-          body += ",\"ref_kf\":" + std::to_string(ref->mnId) + ",\"kf_map_id\":" +
-                  (km ? std::to_string(km->GetId()) : std::string("null")) + ",\"T_w_kf\":[";
-          for (int rr = 0; rr < 4; ++rr)
-            for (int cc = 0; cc < 4; ++cc) body += (rr || cc ? "," : "") + fmt6(K(rr, cc));
-          body += "]}";
-        } else {
-          body += ",\"ref_kf\":null,\"kf_map_id\":null,\"T_w_kf\":null}";
-        }
-        alive = line.send_raw(body);
-        if (alive && r.map_changed) {
-          alive = send_kf_update("map_changed");
-          auto now = Clock::now();
-          kf_followups.push_back(now + std::chrono::milliseconds(500));
-          kf_followups.push_back(now + std::chrono::milliseconds(3000));
-          last_periodic = now;
-        }
-      }
+      if (process(s.frames[j], r)) alive = send_pose(r, s.frames[j].t_ns, (long long)j);
       idx = j + 1;
     }
     if (alive) alive = send_kf_update("end");

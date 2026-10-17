@@ -1,0 +1,72 @@
+{
+ "dataset": "real",
+ "models_dir": "/home/jucpark/DeepLearning/CLI_environment_server/objpose/output/pgt_260915_inlong_middle/models",
+ "scenes_dir": "/home/jucpark/DeepLearning/CLI_environment_server/objpose/output/pgt_260915_inlong_middle/eval",
+ "fps": 30.0,
+ "note": "260915_inlong_middle SAM camera, 9 lab objects; pseudo ground truth from the map (objpose/tools/pgt)",
+ "objects": [
+  {
+   "obj_id": 1,
+   "name": "milk",
+   "ko": "우유팩",
+   "prompt": "milk carton",
+   "template_dir": "template/milk_high/templates"
+  },
+  {
+   "obj_id": 2,
+   "name": "choco_hazelnut_high",
+   "ko": "초코과자",
+   "prompt": "maroon box",
+   "template_dir": "template/choco_hazelnut_color_high/templates"
+  },
+  {
+   "obj_id": 3,
+   "name": "Febreze_high",
+   "ko": "탈취제",
+   "prompt": "febreze spray bottle",
+   "template_dir": "template/Febreze_high/templates"
+  },
+  {
+   "obj_id": 4,
+   "name": "Mugcup_high",
+   "ko": "머그컵",
+   "prompt": "mug cup",
+   "template_dir": "template/Mugcup_color_high/templates"
+  },
+  {
+   "obj_id": 5,
+   "name": "saffron",
+   "ko": "사프란",
+   "prompt": "white jug",
+   "template_dir": "template/saffron/templates"
+  },
+  {
+   "obj_id": 6,
+   "name": "Sauce_high",
+   "ko": "소스병",
+   "prompt": "orange bottle",
+   "template_dir": "template/Sauce_high/templates"
+  },
+  {
+   "obj_id": 7,
+   "name": "Sikhye_high",
+   "ko": "식혜캔",
+   "prompt": "yellow can",
+   "template_dir": "template/Sikhye_high/templates"
+  },
+  {
+   "obj_id": 8,
+   "name": "Bear",
+   "ko": "곰인형",
+   "prompt": "brown bear doll",
+   "template_dir": "template/Bear/templates"
+  },
+  {
+   "obj_id": 9,
+   "name": "Dinosaur",
+   "ko": "공룡인형",
+   "prompt": "green dinosaur doll",
+   "template_dir": "template/Dinosaur/templates"
+  }
+ ]
+}

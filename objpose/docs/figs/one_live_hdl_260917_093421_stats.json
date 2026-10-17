@@ -1,0 +1,35 @@
+{
+ "run": "one_live_hdl_260917_093421",
+ "duration_s": 136.6,
+ "slam_poses": 1335,
+ "pose_rate_hz": 9.8,
+ "pose_arrival_lag_ms": {
+  "median": 519.8,
+  "p90": 522.8
+ },
+ "sam6d_frames": 569,
+ "sam6d_rate_hz": 4.16,
+ "sam6d_ms": {
+  "median": 227.0,
+  "empty_median": 169.0,
+  "with_detection_median": 227.0
+ },
+ "stage_share_pct": {
+  "yolo": 3.0,
+  "ism": 21.1,
+  "pem": 75.9
+ },
+ "result_age_s": {
+  "median": 0.82,
+  "p90": 0.89
+ },
+ "estimates_total": 565,
+ "estimates_placed": 557,
+ "objects": {
+  "choco_hazelnut_high": {
+   "observations": 557,
+   "spread_median_cm": 0.63,
+   "spread_p90_cm": 1.39
+  }
+ }
+}

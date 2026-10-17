@@ -396,6 +396,12 @@ def sequential_candidate_select(pred_rs, pred_ts_m, geo_scores, texture_scores,
     The return index always identifies an existing proposal. Rejected batches receive the
     geometry winner as an inert placeholder so batched fine inference stays shape-stable;
     ``accepted`` is authoritative and prevents that placeholder from being published.
+
+    2026-10-12: same decisions and the same rows as before, but every tensor crosses to the
+    CPU once (``.tolist()``) instead of one ``.item()`` per value. The 300-row candidate
+    table cost thousands of GPU syncs per frame (236 ms of a 637 ms frame with 3 objects)
+    and is dropped by the caller unless analysis / dump_topk is on. Reference copy and the
+    side-by-side check: sam6d_realtime/_speed_opt_2026_10_07/.
     """
     B, P = geo_scores.shape
     mask_min = float(ver.get('mask_iou_min', ver.get('iou_min', 0.420998)))
@@ -411,7 +417,6 @@ def sequential_candidate_select(pred_rs, pred_ts_m, geo_scores, texture_scores,
         geo_order = torch.argsort(geo_scores[b], descending=True, stable=True)
         rank_geo = torch.empty(P, dtype=torch.long, device=geo_scores.device)
         rank_geo[geo_order] = torch.arange(P, device=geo_scores.device)
-        fallback = int(geo_order[0].item())
         R = pred_rs[b]
         t = pred_ts_m[b]
         pose_valid = (torch.isfinite(R).flatten(1).all(1)
@@ -430,91 +435,101 @@ def sequential_candidate_select(pred_rs, pred_ts_m, geo_scores, texture_scores,
         texture_pass = (mask_pass & torch.isfinite(texture_scores[b])
                         & (texture_scores[b] >= texture_min))
         survivors = torch.where(texture_pass)[0]
+
+        # One transfer for everything the decision and the rows need.
+        geo_order_l, rank_l = geo_order.tolist(), rank_geo.tolist()
+        pose_valid_l, projection_valid_l = pose_valid.tolist(), projection_valid.tolist()
+        mask_pass_l, texture_pass_l = mask_pass.tolist(), texture_pass.tolist()
+        geo_l, mask_iou_l = geo_scores[b].tolist(), mask_iou.tolist()
+        texture_l = texture_scores[b].tolist()
+        survivors_l = survivors.tolist()
+
         accepted = False
         reason = None
         occupancy = 0.0
-        cluster = torch.empty(0, dtype=torch.long, device=R.device)
+        cluster_l = []
         center = None
 
-        if not bool((pose_valid & projection_valid).any().item()):
+        if not any(v and p for v, p in zip(pose_valid_l, projection_valid_l)):
             reason = 'candidate_projection_invalid'
-        elif not bool(mask_pass.any().item()):
+        elif not any(mask_pass_l):
             reason = 'mask_filter_empty'
-        elif not bool(texture_pass.any().item()):
+        elif not any(texture_pass_l):
             reason = 'texture_filter_empty'
-        elif survivors.numel() == 1:
-            cluster = survivors
-            center = int(survivors[0].item())
+        elif len(survivors_l) == 1:
+            cluster_l = survivors_l
+            center = survivors_l[0]
             occupancy = 1.0
             accepted = True
         else:
             sym = _sym_group(sym_tab.get(names[b]), sym_step, R.device, R.dtype)
             angles = _pairwise_angle_deg(R, sym)
             translations = torch.cdist(t, t)
-            best_key = None
-            best_cluster = None
-            best_center = None
-            for candidate in survivors.tolist():
-                members = survivors[(angles[candidate, survivors] <= rot_limit)
-                                    & (translations[candidate, survivors] <= trans_limit_m)]
-                # Largest neighbourhood first; ties use the better geometry-ranked centre.
-                key = (int(members.numel()), -int(rank_geo[candidate].item()))
-                if best_key is None or key > best_key:
-                    best_key, best_cluster, best_center = key, members, candidate
-            cluster, center = best_cluster, best_center
-            occupancy = float(cluster.numel()) / float(survivors.numel())
+            near = ((angles[survivors][:, survivors] <= rot_limit)
+                    & (translations[survivors][:, survivors] <= trans_limit_m)).cpu().numpy()
+            counts = near.sum(1)
+            # Largest neighbourhood first; ties use the better geometry-ranked centre
+            # (geometry ranks are unique, so the key has no ties).
+            best = max(range(len(survivors_l)),
+                       key=lambda i: (int(counts[i]), -rank_l[survivors_l[i]]))
+            center = survivors_l[best]
+            cluster_l = [s for s, member in zip(survivors_l, near[best]) if member]
+            occupancy = float(len(cluster_l)) / float(len(survivors_l))
             accepted = occupancy >= occupancy_min
             if not accepted:
                 reason = 'convergence_insufficient'
 
-        chosen = fallback
+        chosen = geo_order_l[0]
         if accepted:
-            chosen = int(cluster[torch.argmin(rank_geo[cluster])].item())
+            chosen = min(cluster_l, key=lambda c: rank_l[c])
         selected_out.append(chosen)
-        proposal = (torch.arange(P, device=R.device) if proposal_ids is None
-                    else proposal_ids[b])
+        proposal_l = (list(range(P)) if proposal_ids is None
+                      else proposal_ids[b].tolist())
+        have_coverage = shape is not None and 'coverage' in shape
+        if have_coverage:
+            coverage_l = shape['coverage'][b].tolist()
+            size_ratio_l = shape['size_ratio'][b].tolist()
+            rendered_area_l = shape['rendered_mask_area_px'][b].tolist()
+        cluster_set = set(cluster_l)
         candidates = []
-        for original in geo_order.tolist():
+        for original in geo_order_l:
             candidate_row = {
-                'rank_geo': int(rank_geo[original].item()),
-                'index300': int(original),
-                'proposal6000_index': int(proposal[original].item()),
-                'geometry_score': _rounded_finite(geo_scores[b, original].item(), 8),
-                'mask_iou': (_rounded_finite(mask_iou[original].item(), 6)
-                             if torch.isfinite(mask_iou[original]) else None),
-                'texture_score': (_rounded_finite(texture_scores[b, original].item(), 8)
-                                  if torch.isfinite(texture_scores[b, original]) else None),
-                'pose_valid': bool(pose_valid[original].item()),
-                'projection_valid': bool(projection_valid[original].item()),
-                'mask_pass': bool(mask_pass[original].item()),
-                'texture_pass': bool(texture_pass[original].item()),
-                'cluster_member': bool((cluster == original).any().item()),
+                'rank_geo': rank_l[original],
+                'index300': original,
+                'proposal6000_index': int(proposal_l[original]),
+                'geometry_score': _rounded_finite(geo_l[original], 8),
+                'mask_iou': (_rounded_finite(mask_iou_l[original], 6)
+                             if math.isfinite(mask_iou_l[original]) else None),
+                'texture_score': (_rounded_finite(texture_l[original], 8)
+                                  if math.isfinite(texture_l[original]) else None),
+                'pose_valid': pose_valid_l[original],
+                'projection_valid': projection_valid_l[original],
+                'mask_pass': mask_pass_l[original],
+                'texture_pass': texture_pass_l[original],
+                'cluster_member': original in cluster_set,
             }
-            if shape is not None and 'coverage' in shape:
+            if have_coverage:
                 candidate_row.update({
-                    'coverage': _rounded_finite(shape['coverage'][b, original].item(), 6),
-                    'size_ratio': _rounded_finite(
-                        shape['size_ratio'][b, original].item(), 6),
-                    'rendered_mask_area_px': int(
-                        shape['rendered_mask_area_px'][b, original].item()),
+                    'coverage': _rounded_finite(coverage_l[original], 6),
+                    'size_ratio': _rounded_finite(size_ratio_l[original], 6),
+                    'rendered_mask_area_px': int(rendered_area_l[original]),
                 })
             candidates.append(candidate_row)
-        selected_candidate = candidates[int(rank_geo[chosen].item())]
+        selected_candidate = candidates[rank_l[chosen]]
         rows.append({
             'selection_method': 'geometry_mask_texture_convergence',
             'accepted': accepted,
             'rejection_reason': reason,
-            'rank_geo': int(rank_geo[chosen].item()),
+            'rank_geo': rank_l[chosen],
             'selected_index300': chosen if accepted else None,
-            'selected_proposal6000_index': (int(proposal[chosen].item()) if accepted else None),
+            'selected_proposal6000_index': (int(proposal_l[chosen]) if accepted else None),
             'mask_iou_min': mask_min,
             'texture_score_min': texture_min,
-            'mask_survivors': int(mask_pass.sum().item()),
-            'texture_survivors': int(texture_pass.sum().item()),
-            'cluster_size': int(cluster.numel()),
+            'mask_survivors': sum(mask_pass_l),
+            'texture_survivors': sum(texture_pass_l),
+            'cluster_size': len(cluster_l),
             'cluster_occupancy': round(occupancy, 6),
-            'cluster_center_rank_geo': (None if center is None else
-                                        int(rank_geo[center].item())),
+            'cluster_center_rank_geo': (None if center is None else rank_l[center]),
             'mask_iou': selected_candidate.get('mask_iou'),
             'texture_score': selected_candidate.get('texture_score'),
             'coverage': selected_candidate.get('coverage'),

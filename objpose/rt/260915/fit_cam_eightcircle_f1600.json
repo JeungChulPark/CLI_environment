@@ -1,0 +1,102 @@
+{
+ "session": "260915_eightcircle",
+ "slam_traj": "/home/jucpark/DeepLearning/CLI_environment/objpose/rt/260915/eightcircle_slam_orb_tum.txt.optimized.txt",
+ "sam_traj": "/home/jucpark/DeepLearning/CLI_environment/objpose/rt/260915/eightcircle_sam_orb_tum.txt.optimized.txt",
+ "motion": {
+  "n_slam": 3860,
+  "n_sam": 3861,
+  "path_m": 25.01,
+  "bbox_max_m": 3.87,
+  "yaw_range_deg": 1125.6,
+  "plane_rms_slam_cm": 0.61,
+  "plane_rms_sam_cm": 0.24
+ },
+ "T_slam_sam": [
+  [
+   0.020288300380877332,
+   0.3055094815611844,
+   -0.951972868071287,
+   -0.29770908679758495
+  ],
+  [
+   0.024817958451800112,
+   0.9517215589497575,
+   0.3059577473582389,
+   0.07789471036208732
+  ],
+  [
+   0.9994860948537203,
+   -0.029833385769294705,
+   0.011726691246913064,
+   -0.371076701621572
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "tau_s": 0.0,
+ "rotation_consistency_deg": 0.068,
+ "planar_handeye": {
+  "pairs": 7596,
+  "tx_m": -0.36743667592541335,
+  "ty_m": -0.29970402148047376,
+  "phi_deg": -88.52516069325274,
+  "residual_median_cm": 1.04,
+  "residual_p90_cm": 3.21,
+  "sd_mm_mm_deg": [
+   0.46,
+   0.32,
+   0.0357
+  ]
+ },
+ "quarters": [
+  {
+   "t_from_s": 0.0,
+   "n": 1899,
+   "d_tx_mm": -19.0,
+   "d_ty_mm": 6.3,
+   "d_phi_deg": 0.543
+  },
+  {
+   "t_from_s": 31.6,
+   "n": 1899,
+   "d_tx_mm": 9.8,
+   "d_ty_mm": 9.6,
+   "d_phi_deg": -0.705
+  },
+  {
+   "t_from_s": 63.3,
+   "n": 1899,
+   "d_tx_mm": -10.1,
+   "d_ty_mm": -4.4,
+   "d_phi_deg": 1.686
+  },
+  {
+   "t_from_s": 94.9,
+   "n": 1899,
+   "d_tx_mm": 0.2,
+   "d_ty_mm": -14.8,
+   "d_phi_deg": -0.288
+  }
+ ],
+ "floor": {
+  "h_slam_m": 1.08687730827624,
+  "mad_slam_cm": 3.05,
+  "n_slam": 77,
+  "tried_slam": 77,
+  "h_sam_m": 0.9999060863467699,
+  "mad_sam_cm": 0.68,
+  "n_sam": 1092,
+  "tried_sam": 1103,
+  "dz_m": 0.08697122192947004,
+  "normal_vs_trajdown_slam_deg": 1.42,
+  "normal_vs_trajdown_sam_deg": 0.75
+ },
+ "vs_260910": {
+  "translation_diff_cm": 4.98,
+  "rotation_diff_deg": 1.735
+ }
+}

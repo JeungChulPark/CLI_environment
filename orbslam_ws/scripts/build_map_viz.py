@@ -69,7 +69,7 @@ def load_run(d: Path, stride: int):
 
 
 def main():
-    base = Path("/home/jucpark/DeepLearning/CLI_environment/orbslam_ws/output")
+    base = Path("/home/jucpark/DeepLearning/CLI_environment_server/orbslam_ws/output")
     out = {
         "convention": {"up": "-y", "ground": "xz",
                        "note": "ORB-SLAM3 world frame = first camera optical frame"},

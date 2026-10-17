@@ -1,0 +1,47 @@
+{
+ "T_slam_sam": [
+  [
+   -0.8260625235419126,
+   0.15444748451232002,
+   -0.5420024739126045,
+   -0.17614272168085776
+  ],
+  [
+   0.563472638431057,
+   0.20770013847996005,
+   -0.7995994235959332,
+   -0.27550551704257475
+  ],
+  [
+   -0.010922130703764021,
+   -0.9659226816900108,
+   -0.2586002321299574,
+   -0.41689734152278707
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "source": "261012 Husky mounting after the lidar was re-fixed (it had turned about its own axis: +16 deg by 10/12 morning, +41 deg after re-fixing, both relative to 10/06). VLP-16 (velodyne) -> SAM camera (D455f on the PC): static LiDAR-to-depth registration, robot not moving; start = the 261006 calibration with the lidar turned by d (sharp peak at d = +41.0 deg for BOTH cameras), then a free 6-DoF fit. objpose/rt/261012_husky/scan_turn.py",
+ "slam_sensor": "lidar",
+ "sam_tau_s": 0.0,
+ "clock": "live: the hub measures laptop - PC at every start",
+ "fit": {
+  "lidar_points_in_view": 38844,
+  "within_3cm": 16261,
+  "residual_median_cm": 1.81,
+  "turn_vs_261006_deg": 41.0
+ },
+ "cross_check": {
+  "vs_261006": {
+   "translation_cm": 25.7,
+   "rotation_deg": 39.2
+  },
+  "front_camera_forward_in_lidar_deg": 144.77,
+  "lidar_yaw_used_rad": -2.5447,
+  "camera_forward_in_base_link_yaw_deg": 90.1
+ }
+}

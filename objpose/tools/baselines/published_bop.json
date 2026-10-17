@@ -1,0 +1,16 @@
+{
+ "_note": "BOP-19 AR (%) on LM-O / YCB-V, model-based unseen objects, 6D localization. time = s per image as reported (paper times averaged over the 7 BOP core datasets, GPU differs). Verified 2026-09-24 against the papers / BOP leaderboard.",
+ "rows": [
+  {"method": "MegaPose + refiner (5 hyp)", "input": "RGB", "det": "CNOS", "lmo": 56.0, "ycbv": 62.1, "time": 21.9, "src": "GigaPose Tab.1"},
+  {"method": "GigaPose + MegaPose (5 hyp)", "input": "RGB", "det": "CNOS", "lmo": 59.8, "ycbv": 66.1, "time": 7.7, "src": "GigaPose Tab.1"},
+  {"method": "FoundPose + MegaPose (5 hyp)", "input": "RGB", "det": "CNOS", "lmo": 61.0, "ycbv": 69.0, "time": 20.5, "src": "FoundPose Tab.1"},
+  {"method": "MegaPose + Teaser++", "input": "RGB-D", "det": "CNOS", "lmo": 62.6, "ycbv": 76.4, "time": 142.0, "src": "BOP23 report Tab.4"},
+  {"method": "GenFlow-MultiHypo16", "input": "RGB-D", "det": "CNOS", "lmo": 63.5, "ycbv": 83.3, "time": 34.58, "src": "BOP23 report Tab.4"},
+  {"method": "SAM-6D (FastSAM)", "input": "RGB-D", "det": "SAM-6D ISM", "lmo": 66.7, "ycbv": 83.4, "time": 1.43, "src": "SAM-6D Tab.2/6 (RTX 3090)"},
+  {"method": "SAM-6D (SAM)", "input": "RGB-D", "det": "SAM-6D ISM", "lmo": 69.9, "ycbv": 84.5, "time": 4.37, "src": "SAM-6D Tab.2/6 (RTX 3090)"},
+  {"method": "FreeZe (SAM-6D masks, refined)", "input": "RGB-D", "det": "SAM-6D", "lmo": 71.6, "ycbv": 84.0, "time": 11.5, "src": "FreeZe Tab.1"},
+  {"method": "Co-op (5 hyp)", "input": "RGB-D", "det": "CNOS", "lmo": 73.0, "ycbv": 88.7, "time": 7.16, "src": "Co-op Tab.3"},
+  {"method": "FoundationPose", "input": "RGB-D", "det": "SAM-6D", "lmo": 75.6, "ycbv": 88.9, "time": 29.3, "src": "BOP24 report Tab.2"},
+  {"method": "FreeZeV2.1 (BOP24 1st)", "input": "RGB-D", "det": "4 detectors", "lmo": 77.1, "ycbv": 91.5, "time": 24.8, "src": "FreeZeV2 Tab.II"}
+ ]
+}

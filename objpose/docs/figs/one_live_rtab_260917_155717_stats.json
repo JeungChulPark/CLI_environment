@@ -1,0 +1,70 @@
+{
+ "run": "one_live_rtab_260917_155717",
+ "duration_s": 626.9,
+ "slam_poses": 17963,
+ "pose_rate_hz": 28.7,
+ "pose_arrival_lag_ms": {
+  "median": 33.8,
+  "p90": 38.9
+ },
+ "sam6d_frames": 1078,
+ "sam6d_rate_hz": 1.72,
+ "sam6d_ms": {
+  "median": 468.0,
+  "empty_median": 333.5,
+  "with_detection_median": 482.0
+ },
+ "stage_share_pct": {
+  "yolo": 1.4,
+  "ism": 18.6,
+  "pem": 80.0
+ },
+ "result_age_s": {
+  "median": 0.62,
+  "p90": 0.81
+ },
+ "estimates_total": 1449,
+ "estimates_placed": 1447,
+ "objects": {
+  "Febreze_high": {
+   "observations": 778,
+   "spread_median_cm": 0.72,
+   "spread_p90_cm": 1.54
+  },
+  "choco_hazelnut_high": {
+   "observations": 625,
+   "spread_median_cm": 0.56,
+   "spread_p90_cm": 1.11
+  },
+  "Sikhye_high": {
+   "observations": 9,
+   "spread_median_cm": 4.13,
+   "spread_p90_cm": 8.88
+  },
+  "Dinosaur": {
+   "observations": 9,
+   "spread_median_cm": 2.61,
+   "spread_p90_cm": 5.67
+  },
+  "Mugcup_high": {
+   "observations": 7,
+   "spread_median_cm": 1.64,
+   "spread_p90_cm": 6.07
+  },
+  "milk": {
+   "observations": 7,
+   "spread_median_cm": 4.69,
+   "spread_p90_cm": 10.63
+  },
+  "saffron": {
+   "observations": 7,
+   "spread_median_cm": 2.38,
+   "spread_p90_cm": 6.21
+  },
+  "Bear": {
+   "observations": 5,
+   "spread_median_cm": 3.96,
+   "spread_p90_cm": 5.24
+  }
+ }
+}

@@ -88,6 +88,17 @@ def inv(T):
     return out
 
 
+def base_to_sensor(spec: str) -> np.ndarray:
+    """'x,y,z,yaw' (m, rad; an optional leading '@' keeps a negative x from looking like an option) -> 4x4"""
+    T = np.eye(4)
+    if spec:
+        x, y, z, yaw = (float(v) for v in spec.lstrip("@").split(","))
+        c, s = np.cos(yaw), np.sin(yaw)
+        T[:3, :3] = [[c, -s, 0], [s, c, 0], [0, 0, 1]]
+        T[:3, 3] = [x, y, z]
+    return T
+
+
 def m16(T):
     return [round(float(v), 6) for v in np.asarray(T).reshape(-1)]
 
@@ -125,10 +136,13 @@ class Bridge(Node):
         self.scan_pub = self.create_publisher(PointCloud2, a.topic, rel)
         self.clock_pub = self.create_publisher(Clock, "/clock", QoSProfile(depth=8, reliability=ReliabilityPolicy.RELIABLE))
         self.create_subscription(Odometry, "/odom", self.on_odom, rel)
-        self.create_subscription(TFMessage, "/tf", self.on_tf, QoSProfile(depth=100, reliability=ReliabilityPolicy.RELIABLE))
+        self.create_subscription(TFMessage, a.tf_topic, self.on_tf, QoSProfile(depth=100, reliability=ReliabilityPolicy.RELIABLE))
         self.create_subscription(PathMsg, "/hdl_graph_slam/keyframes", self.on_keyframes, QoSProfile(depth=1, reliability=ReliabilityPolicy.RELIABLE))
         self.create_subscription(Int32, "/hdl_graph_slam/debug/loop_count", self.on_loops, latched)
         self.create_subscription(ScanMatchingOdometryDebug, "/scan_matching_odometry/debug", self.on_smo_debug, rel)
+        # attach mode: the shared hdl reports base_link (with the real mounting); the hub expects the lidar frame
+        self.T_base_sensor = base_to_sensor(a.base_to_sensor)
+        self.last_odom_wall = time.monotonic()
         self.reg_ms = None
         self.reg_ms_hist: list[float] = []
         self.smo_count = 0
@@ -164,7 +178,7 @@ class Bridge(Node):
     # ── ROS callbacks (executor thread) ──────────────────────────────────
     def on_tf(self, msg):
         for tr in msg.transforms:
-            if tr.header.frame_id == "map" and tr.child_frame_id == "odom":
+            if tr.header.frame_id == "map" and tr.child_frame_id == self.a.graph_odom_frame:
                 with self.lock:
                     self.T_map_odom = tf_to_T(tr.transform)
 
@@ -229,6 +243,7 @@ class Bridge(Node):
         t_ns = stamp_ns(msg.header.stamp)
         T_oc = pose_to_T(msg.pose.pose)
         now = time.monotonic()
+        self.last_odom_wall = now
         with self.lock:
             import bisect
             if t_ns not in self.odom_by_t:
@@ -253,6 +268,7 @@ class Bridge(Node):
         if self.muted:
             self.poses_sent += 1          # warm-up: counted, not sent
             return
+        T_wc = T_wc @ self.T_base_sensor
         proc = None if pub_wall is None else (now - pub_wall) * 1e3
         if proc is not None:
             self.proc_ms.append(proc)
@@ -289,7 +305,15 @@ def wait_for_nodes(node: Node, topic: str, timeout_s: float) -> bool:
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--session", required=True, help="dataset lidar/ folder with the velodyne *.db3")
+    ap.add_argument("--session", required=True,
+                    help="dataset lidar/ folder with the velodyne *.db3, or `live` = the VLP-16 on this host "
+                         "(velodyne driver launched here, hdl_graph_slam on wall time, no replay)")
+    ap.add_argument("--velodyne-launch", default="velodyne-all-nodes-VLP16-launch.py",
+                    help="live: launch file of the `velodyne` package to start the driver")
+    ap.add_argument("--live-status-s", type=float, default=10.0, help="live: status line period")
+    ap.add_argument("--driver", default="auto", choices=["auto", "ros", "builtin"],
+                    help="live: `ros` = the velodyne ROS package, `builtin` = vlp16_publisher.py (no ROS driver needed), "
+                         "`auto` = ros if the package is installed, else builtin")
     ap.add_argument("--mode", default="live", choices=["live"])
     ap.add_argument("--connect", required=True)
     ap.add_argument("--rate", type=float, default=1.0)
@@ -308,29 +332,59 @@ def main():
     ap.add_argument("--warmup-s", type=float, default=20.0, help="before hello: publish the first scan until odometry answers (0 = off)")
     ap.add_argument("--tail-s", type=float, default=3.0, help="after the last scan: wait for odometry + a final optimisation")
     ap.add_argument("--dump-dir", default="", help="call /hdl_graph_slam/dump_graph here at the end (optimised keyframes)")
+    ap.add_argument("--attach", type=int, default=0,
+                    help="live: 1 = use an hdl_graph_slam that already runs on this host (the Nav2 stack of nav/real/real_up.sh); "
+                         "nothing is launched or stopped here")
+    ap.add_argument("--tf-topic", default="/tf", help="where map -> <graph odom frame> is published (Nav2 stack: /hdl/tf)")
+    ap.add_argument("--graph-odom-frame", default="odom", help="child frame of the graph's map TF (Nav2 stack: hdl_odom)")
+    ap.add_argument("--base-to-sensor", default="", help="attach: base_link -> velodyne mounting '@x,y,z,yaw' applied to every pose")
+    ap.add_argument("--odom-timeout-s", type=float, default=5.0, help="attach: end the stream when /odom stops this long")
     ap.add_argument("--launch-log", default="", help="ros2 launch stdout/stderr (default: stderr of this process)")
     a, _unknown = ap.parse_known_args()       # accept and ignore slam_stream-only flags (--features ...)
 
-    db = next(Path(a.session).expanduser().glob("*.db3"))
-    con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
-    tid = con.execute("select id from topics where name=?", (a.topic,)).fetchone()[0]
-    rows = con.execute("select id, substr(data, 1, 16) from messages where topic_id=?", (tid,)).fetchall()
-    frames = sorted((header_stamp(h) + a.offset_ns, mid) for mid, h in rows)
-    print(f"[hdl_stream] {db.name} | {len(frames)} scans | topic {a.topic} | domain {a.domain}", flush=True)
+    live = a.session.strip().lower() == "live"
+    attach = bool(a.attach)
+    if attach and not live:
+        ap.error("--attach needs --session live")
+    if live:
+        db, con, frames = None, None, []
+        print(f"[hdl_stream] LIVE VLP-16 ({a.velodyne_launch}) | topic {a.topic} | domain {a.domain}", flush=True)
+    else:
+        db = next(Path(a.session).expanduser().glob("*.db3"))
+        con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+        tid = con.execute("select id from topics where name=?", (a.topic,)).fetchone()[0]
+        rows = con.execute("select id, substr(data, 1, 16) from messages where topic_id=?", (tid,)).fetchall()
+        frames = sorted((header_stamp(h) + a.offset_ns, mid) for mid, h in rows)
+        print(f"[hdl_stream] {db.name} | {len(frames)} scans | topic {a.topic} | domain {a.domain}", flush=True)
 
     env = dict(os.environ)
     env["ROS_DOMAIN_ID"] = str(a.domain)
-    env.setdefault("ROS_LOCALHOST_ONLY", "1")
-    os.environ.update({k: env[k] for k in ("ROS_DOMAIN_ID", "ROS_LOCALHOST_ONLY")})
-    launch_cmd = ["ros2", "launch", "hdl_graph_slam", "hdl_graph_slam_501.launch.py", "use_sim_time:=true",
+    if not attach:                # the shared hdl talks on the Nav2 stack's domain, not localhost-only
+        env.setdefault("ROS_LOCALHOST_ONLY", "1")
+    os.environ.update({k: env[k] for k in ("ROS_DOMAIN_ID", "ROS_LOCALHOST_ONLY") if k in env})
+    launch_cmd = ["ros2", "launch", "hdl_graph_slam", "hdl_graph_slam_501.launch.py",
+                  f"use_sim_time:={'false' if live else 'true'}",
                   f"raw_points_topic:={a.topic}", "points_topic:=/filtered_points",
                   "raw_points_qos:=reliable", "filtered_points_qos:=reliable",
                   f"enable_floor_detection:={a.floor}", f"distance_far_thresh:={a.far_thresh}",
                   f"graph_keyframe_delta_trans:={a.kf_trans}", f"graph_keyframe_delta_angle:={a.kf_angle}",
                   f"scan_reg_num_threads:={a.reg_threads}", f"g2o_solver_type:={a.solver}"]
     lf = open(a.launch_log, "w") if a.launch_log else None
-    launch = subprocess.Popen(launch_cmd, env=env, stdout=lf or sys.stderr, stderr=subprocess.STDOUT, start_new_session=True)
-    print(f"[hdl_stream] launched pid={launch.pid}: {' '.join(launch_cmd)}", flush=True)
+    vel = launch = None
+    if attach:
+        print(f"[hdl_stream] ATTACH: running hdl_graph_slam on domain {a.domain}, map->{a.graph_odom_frame} on {a.tf_topic}, "
+              f"base->sensor {a.base_to_sensor or 'identity'}", flush=True)
+    elif live:
+        driver = a.driver
+        if driver == "auto":
+            driver = "ros" if subprocess.run(["ros2", "pkg", "prefix", "velodyne"], env=env, capture_output=True).returncode == 0 else "builtin"
+        vel_cmd = (["ros2", "launch", "velodyne", a.velodyne_launch] if driver == "ros" else
+                   [sys.executable, "-u", str(Path(__file__).resolve().parent / "vlp16_publisher.py"), "--topic", a.topic])
+        vel = subprocess.Popen(vel_cmd, env=env, stdout=lf or sys.stderr, stderr=subprocess.STDOUT, start_new_session=True)
+        print(f"[hdl_stream] velodyne driver pid={vel.pid}: {' '.join(vel_cmd)}", flush=True)
+    if not attach:
+        launch = subprocess.Popen(launch_cmd, env=env, stdout=lf or sys.stderr, stderr=subprocess.STDOUT, start_new_session=True)
+        print(f"[hdl_stream] launched pid={launch.pid}: {' '.join(launch_cmd)}", flush=True)
 
     # own SIGINT/SIGTERM handling (the hub stops a lane with SIGINT to the process group): finish the
     # protocol (end, graph dump) and stop the launch instead of letting rclpy tear the context down
@@ -348,19 +402,20 @@ def main():
     spin.start()
 
     def stop_launch():
-        if launch.poll() is None:
-            try:
-                os.killpg(launch.pid, signal.SIGINT)
-                launch.wait(timeout=15)
-            except (ProcessLookupError, subprocess.TimeoutExpired):
+        for proc in (launch, vel):
+            if proc is not None and proc.poll() is None:
                 try:
-                    os.killpg(launch.pid, signal.SIGKILL)
-                except ProcessLookupError:
-                    pass
+                    os.killpg(proc.pid, signal.SIGINT)
+                    proc.wait(timeout=15)
+                except (ProcessLookupError, subprocess.TimeoutExpired):
+                    try:
+                        os.killpg(proc.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
 
     try:
         # sim time must exist before the nodes' timers start; hold it at the first scan until start
-        clock_t = {"ns": frames[0][0] - 1_000_000_000}
+        clock_t = {"ns": (frames[0][0] - 1_000_000_000) if frames else 0}
         clock_stop = threading.Event()
 
         def clock_loop():
@@ -369,7 +424,8 @@ def main():
                     clock_t["ns"] = int(node.t0 + (time.monotonic() - node.wall0) * node.rate * 1e9)
                 node.publish_clock(clock_t["ns"])
                 time.sleep(0.02)
-        threading.Thread(target=clock_loop, daemon=True).start()
+        if not live:                      # live: the nodes run on wall time, the driver stamps the scans
+            threading.Thread(target=clock_loop, daemon=True).start()
         t_launch_end = time.monotonic() + a.launch_wait_s
 
         while not stop.is_set() and not wait_for_nodes(node, a.topic, 1.0) and time.monotonic() < t_launch_end:
@@ -384,7 +440,16 @@ def main():
         # warm-up BEFORE hello: the first scan through DDS + prefiltering + fast_gicp initialisation took ~10 s on the
         # Mac (91 scans dropped after start). Publish the first scan until an odometry message comes back, so the
         # pipeline is primed when the hub starts the clock. The map origin becomes this (stationary) first scan.
-        if a.warmup_s > 0:
+        if live and a.warmup_s > 0:
+            # the driver already streams scans: wait until scan matching answers (pipeline primed) before hello
+            t_w = time.monotonic()
+            while node.poses_sent == 0 and time.monotonic() - t_w < a.warmup_s and not stop.is_set():
+                time.sleep(0.2)
+            print(f"[hdl_stream] warm-up (live): odometry {'ok' if node.poses_sent else 'NOT seen'} after "
+                  f"{time.monotonic() - t_w:.1f} s ({node.smo_count} scans matched)", flush=True)
+            node.poses_sent = 0
+            node.world_anchored = 0
+        elif a.warmup_s > 0:
             blob0 = bytes(con.execute("select data from messages where id=?", (frames[0][1],)).fetchone()[0])
             t_w = time.monotonic()
             n_w = 0
@@ -398,12 +463,19 @@ def main():
             node.world_anchored = 0
         node.muted = False
 
-        line.send({"type": "hello", "source": "lidar_hdl_graph_slam", "features": None, "session": str(db),
-                   "first_ns": frames[0][0], "last_ns": frames[-1][0], "n_frames": len(frames),
-                   "time_source": "header", "time_domain": "velodyne header stamp", "kf_updates": True,
+        now_ns = time.time_ns()
+        line.send({"type": "hello", "source": "lidar_hdl_graph_slam", "features": None,
+                   "session": "live:VLP16" if live else str(db),
+                   "first_ns": now_ns if live else frames[0][0],
+                   "last_ns": now_ns + 3_600_000_000_000 if live else frames[-1][0],
+                   "n_frames": 0 if live else len(frames), "live": live,
+                   "time_source": "header", "time_domain": "velodyne header stamp" + (" (live, host wall clock)" if live else ""),
+                   "kf_updates": True,
                    "params": {"backend": "hdl_graph_slam", "registration": "FAST_GICP", "kf_trans_m": a.kf_trans,
                               "kf_angle_rad": a.kf_angle, "far_thresh_m": a.far_thresh, "floor": a.floor == "true",
-                              "optimize_interval_s": 2.0, "reg_threads": a.reg_threads, "solver": a.solver, "smooth_scans": 1}})
+                              "optimize_interval_s": 2.0, "reg_threads": a.reg_threads, "solver": a.solver, "smooth_scans": 1,
+                              "attach": attach,
+                              "pose_frame": "base_link" if attach and not a.base_to_sensor else "velodyne"}})
         line.s.settimeout(1.0)
         msg = {}
         while msg.get("type") != "start" and not stop.is_set():
@@ -419,10 +491,36 @@ def main():
         t0, rate, wall0 = node.t0, node.rate, node.wall0
         print(f"[hdl_stream] start t0_ns={t0} rate={rate}", flush=True)
 
-        idx = next((i for i, f in enumerate(frames) if f[0] >= t0), len(frames))
-        processed = 0
+        if live:
+            # nothing to replay: the driver feeds hdl_graph_slam, on_odom streams every pose. Run until the hub
+            # closes the socket (its Ctrl+C / --duration-s) or we get SIGINT/SIGTERM.
+            line.s.settimeout(0.5)
+            t_status = time.monotonic()
+            while not stop.is_set():
+                try:
+                    msg = line.recv()
+                    if msg.get("type") == "stop":
+                        break
+                except socket.timeout:
+                    pass
+                except (ConnectionError, OSError):
+                    print("[hdl_stream] hub closed the connection", flush=True)
+                    break
+                if attach and time.monotonic() - node.last_odom_wall > a.odom_timeout_s:
+                    print(f"[hdl_stream] no /odom for {a.odom_timeout_s:.0f} s: the shared hdl_graph_slam is gone", flush=True)
+                    break
+                if time.monotonic() - t_status >= a.live_status_s:
+                    t_status = time.monotonic()
+                    print(f"[hdl_stream] live +{time.monotonic() - wall0:6.1f}s | odom {node.poses_sent} (smo {node.smo_count}) "
+                          f"reg {node.reg_ms} ms | keyframes {len(node.kfs)} loops {node.loop_count} | "
+                          f"lag {node.lag_s(node.last_odom_t) if node.last_odom_t else None} s", flush=True)
+            processed = node.smo_count
+            idx = 0
+            line.s.settimeout(None)
+        idx = idx if live else next((i for i, f in enumerate(frames) if f[0] >= t0), len(frames))
+        processed = processed if live else 0
         timing = {"read": 0.0, "pub": 0.0, "n": 0}
-        while idx < len(frames) and not stop.is_set():
+        while not live and idx < len(frames) and not stop.is_set():
             if a.max_frames and processed >= a.max_frames:
                 break
             due = wall0 + (frames[idx][0] - t0) / 1e9 / rate
@@ -453,18 +551,21 @@ def main():
                 print(f"[hdl_stream] +{(t_ns - t0) / 1e9:6.1f}s published {processed} dropped {node.dropped} | odom {node.poses_sent} "
                       f"(smo {node.smo_count}) reg {node.reg_ms} ms | keyframes {len(node.kfs)} loops {node.loop_count} "
                       f"| lag {node.lag_s(t_ns)} s", flush=True)
-        last_t = frames[idx - 1][0] if idx > 0 else t0
+        last_t = frames[idx - 1][0] if (not live and idx > 0) else t0
         # let odometry catch up with the last scans and let the graph run one more optimisation tick
-        t_end = time.monotonic() + a.tail_s
+        t_end = time.monotonic() + (0.0 if live else a.tail_s)
         while time.monotonic() < t_end and node.last_odom_t < last_t and not stop.is_set():
             time.sleep(0.05)
-        if not stop.is_set():
+        if not stop.is_set() and not live:
             time.sleep(max(0.0, min(a.tail_s, t_end - time.monotonic())))
         if stop.is_set():
             print(f"[hdl_stream] stopped by signal after {processed} scans", flush=True)
-        line.send({"type": "end", "stopped": stop.is_set(), "processed": processed, "dropped": node.dropped, "poses": node.poses_sent,
-                   "kf_updates": node.kf_updates, "keyframes": len(node.kfs), "loops": node.loop_count,
-                   "world_anchored_poses": node.world_anchored})
+        try:
+            line.send({"type": "end", "stopped": stop.is_set(), "processed": processed, "dropped": node.dropped, "poses": node.poses_sent,
+                       "kf_updates": node.kf_updates, "keyframes": len(node.kfs), "loops": node.loop_count,
+                       "world_anchored_poses": node.world_anchored})
+        except OSError:
+            pass
         lags = np.array(node.lags) if node.lags else np.zeros(1)
         pm = np.array(node.proc_ms) if node.proc_ms else np.zeros(1)
         rm = np.array(node.reg_ms_hist) if node.reg_ms_hist else np.zeros(1)

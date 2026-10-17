@@ -1,0 +1,118 @@
+[
+ {
+  "frame": 185,
+  "t": 6.13,
+  "raw": "s055_0184_raw.jpg",
+  "overlay": "s055_0184_overlay.jpg",
+  "dets": [
+   {
+    "obj": "wood_block",
+    "err_mm": 1.3804941575938445
+   },
+   {
+    "obj": "tomato_soup_can",
+    "err_mm": 4.053422473486406
+   },
+   {
+    "obj": "mug",
+    "err_mm": 5.312662095508705
+   },
+   {
+    "obj": "master_chef_can",
+    "err_mm": 3.3132123420413433
+   }
+  ],
+  "not_detected": [
+   "sugar_box",
+   "bleach_cleanser"
+  ],
+  "ms": 571
+ },
+ {
+  "frame": 816,
+  "t": 27.17,
+  "raw": "s055_0815_raw.jpg",
+  "overlay": "s055_0815_overlay.jpg",
+  "dets": [
+   {
+    "obj": "bleach_cleanser",
+    "err_mm": 12.996356860333526
+   },
+   {
+    "obj": "tomato_soup_can",
+    "err_mm": 1.152533096453265
+   },
+   {
+    "obj": "sugar_box",
+    "err_mm": 1.2358784791614017
+   },
+   {
+    "obj": "mug",
+    "err_mm": 1.7916534052140032
+   }
+  ],
+  "not_detected": [
+   "master_chef_can",
+   "wood_block"
+  ],
+  "ms": 518
+ },
+ {
+  "frame": 1273,
+  "t": 42.4,
+  "raw": "s055_1272_raw.jpg",
+  "overlay": "s055_1272_overlay.jpg",
+  "dets": [
+   {
+    "obj": "bleach_cleanser",
+    "err_mm": 16.7463627079072
+   },
+   {
+    "obj": "master_chef_can",
+    "err_mm": 3.2802186755682046
+   },
+   {
+    "obj": "tomato_soup_can",
+    "err_mm": 1.6405680612546572
+   },
+   {
+    "obj": "mug",
+    "err_mm": 2.1711289059676657
+   }
+  ],
+  "not_detected": [
+   "sugar_box",
+   "wood_block"
+  ],
+  "ms": 544
+ },
+ {
+  "frame": 1825,
+  "t": 60.8,
+  "raw": "s055_1824_raw.jpg",
+  "overlay": "s055_1824_overlay.jpg",
+  "dets": [
+   {
+    "obj": "master_chef_can",
+    "err_mm": 3.791538367627599
+   },
+   {
+    "obj": "sugar_box",
+    "err_mm": 1.3694030642876758
+   },
+   {
+    "obj": "tomato_soup_can",
+    "err_mm": 1.4447833446073204
+   },
+   {
+    "obj": "mug",
+    "err_mm": 1.533324208474624
+   }
+  ],
+  "not_detected": [
+   "bleach_cleanser",
+   "wood_block"
+  ],
+  "ms": 515
+ }
+]

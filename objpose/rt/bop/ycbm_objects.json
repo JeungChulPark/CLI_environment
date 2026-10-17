@@ -1,0 +1,258 @@
+{
+ "dataset": "ycbm",
+ "models_dir": "/home/jucpark/DeepLearning/Datasets/paper_benchmarks/YCB_Video/models_fine",
+ "scenes_dir": "/home/jucpark/DeepLearning/Datasets/paper_benchmarks/YCB_M/xtion_bop/test",
+ "fps": 6.0,
+ "world": "gt_camera",
+ "note": "YCB-M (xtion, 32 static scenes, robot-arm 'trajectory' recordings) in BOP form with the YCB-V BOP models and assets; camera poses recovered from the static object poses; no timestamps in the dataset, replayed at 6 fps (camera ~13 mm/frame, as HOPE-Video). Built by objpose/tools/bench_to_bop.py ycbm",
+ "objects": [
+  {
+   "obj_id": 1,
+   "name": "ycbv_master_chef_can",
+   "ycb": "002_master_chef_can",
+   "prompt": "blue coffee can",
+   "prompt_candidates": [
+    "blue coffee can",
+    "blue can",
+    "coffee can",
+    "metal can"
+   ]
+  },
+  {
+   "obj_id": 2,
+   "name": "ycbv_cracker_box",
+   "ycb": "003_cracker_box",
+   "prompt": "red cracker box",
+   "prompt_candidates": [
+    "red cracker box",
+    "cereal box",
+    "red box"
+   ]
+  },
+  {
+   "obj_id": 3,
+   "name": "ycbv_sugar_box",
+   "ycb": "004_sugar_box",
+   "prompt": "yellow sugar box",
+   "prompt_candidates": [
+    "yellow box",
+    "sugar box",
+    "yellow carton"
+   ]
+  },
+  {
+   "obj_id": 4,
+   "name": "ycbv_tomato_soup_can",
+   "ycb": "005_tomato_soup_can",
+   "prompt": "tomato soup can",
+   "prompt_candidates": [
+    "soup can",
+    "red and white can",
+    "small can"
+   ]
+  },
+  {
+   "obj_id": 5,
+   "name": "ycbv_mustard_bottle",
+   "ycb": "006_mustard_bottle",
+   "prompt": "yellow mustard bottle",
+   "prompt_candidates": [
+    "mustard bottle",
+    "yellow bottle",
+    "yellow squeeze bottle"
+   ]
+  },
+  {
+   "obj_id": 6,
+   "name": "ycbv_tuna_fish_can",
+   "ycb": "007_tuna_fish_can",
+   "prompt": "small tuna can",
+   "prompt_candidates": [
+    "small tin can",
+    "tuna can",
+    "flat metal can",
+    "small round can",
+    "sardine can"
+   ]
+  },
+  {
+   "obj_id": 7,
+   "name": "ycbv_pudding_box",
+   "ycb": "008_pudding_box",
+   "prompt": "brown pudding box",
+   "prompt_candidates": [
+    "chocolate pudding box",
+    "small brown box",
+    "brown box"
+   ]
+  },
+  {
+   "obj_id": 8,
+   "name": "ycbv_gelatin_box",
+   "ycb": "009_gelatin_box",
+   "prompt": "red gelatin box",
+   "prompt_candidates": [
+    "jello box",
+    "small red box",
+    "red box"
+   ]
+  },
+  {
+   "obj_id": 9,
+   "name": "ycbv_potted_meat_can",
+   "ycb": "010_potted_meat_can",
+   "prompt": "potted meat can",
+   "prompt_candidates": [
+    "blue tin can",
+    "spam can",
+    "small blue can"
+   ]
+  },
+  {
+   "obj_id": 10,
+   "name": "ycbv_banana",
+   "ycb": "011_banana",
+   "prompt": "banana",
+   "prompt_candidates": [
+    "banana",
+    "yellow banana",
+    "yellow fruit"
+   ]
+  },
+  {
+   "obj_id": 11,
+   "name": "ycbv_pitcher_base",
+   "ycb": "019_pitcher_base",
+   "prompt": "blue plastic pitcher",
+   "prompt_candidates": [
+    "blue pitcher",
+    "blue jug",
+    "plastic pitcher",
+    "blue plastic jug"
+   ]
+  },
+  {
+   "obj_id": 12,
+   "name": "ycbv_bleach_cleanser",
+   "ycb": "021_bleach_cleanser",
+   "prompt": "white cleanser bottle",
+   "prompt_candidates": [
+    "white bottle",
+    "cleaning bottle",
+    "bleach bottle",
+    "white plastic bottle"
+   ]
+  },
+  {
+   "obj_id": 13,
+   "name": "ycbv_bowl",
+   "ycb": "024_bowl",
+   "prompt": "red bowl",
+   "prompt_candidates": [
+    "red bowl",
+    "bowl",
+    "red dish"
+   ]
+  },
+  {
+   "obj_id": 14,
+   "name": "ycbv_mug",
+   "ycb": "025_mug",
+   "prompt": "red mug",
+   "prompt_candidates": [
+    "red mug",
+    "mug",
+    "red cup",
+    "coffee mug"
+   ]
+  },
+  {
+   "obj_id": 15,
+   "name": "ycbv_power_drill",
+   "ycb": "035_power_drill",
+   "prompt": "power drill",
+   "prompt_candidates": [
+    "power drill",
+    "cordless drill",
+    "red drill",
+    "electric drill"
+   ]
+  },
+  {
+   "obj_id": 16,
+   "name": "ycbv_wood_block",
+   "ycb": "036_wood_block",
+   "prompt": "wooden block",
+   "prompt_candidates": [
+    "wooden block",
+    "wood block",
+    "wooden beam",
+    "wooden post"
+   ]
+  },
+  {
+   "obj_id": 17,
+   "name": "ycbv_scissors",
+   "ycb": "037_scissors",
+   "prompt": "scissors",
+   "prompt_candidates": [
+    "scissors",
+    "orange scissors",
+    "pair of scissors"
+   ]
+  },
+  {
+   "obj_id": 18,
+   "name": "ycbv_large_marker",
+   "ycb": "040_large_marker",
+   "prompt": "marker pen",
+   "prompt_candidates": [
+    "marker pen",
+    "marker",
+    "black pen",
+    "sharpie"
+   ]
+  },
+  {
+   "obj_id": 19,
+   "name": "ycbv_large_clamp",
+   "ycb": "051_large_clamp",
+   "prompt": "black clamp",
+   "prompt_candidates": [
+    "black clamp",
+    "spring clamp",
+    "black spring clamp",
+    "black tool"
+   ]
+  },
+  {
+   "obj_id": 20,
+   "name": "ycbv_extra_large_clamp",
+   "ycb": "052_extra_large_clamp",
+   "prompt": "large black clamp",
+   "prompt_candidates": [
+    "large black clamp",
+    "big spring clamp",
+    "black clamp",
+    "large clamp"
+   ]
+  },
+  {
+   "obj_id": 21,
+   "name": "ycbv_foam_brick",
+   "ycb": "061_foam_brick",
+   "prompt": "red foam brick",
+   "prompt_candidates": [
+    "red foam brick",
+    "red block",
+    "red brick",
+    "red sponge"
+   ]
+  }
+ ],
+ "prompt_note": "Prompts are the hand-written descriptive ones. objpose/tools/probe_bop_prompts.py was run over all 21 objects and its detector-recall winners were rejected: maximising raw proposal recall selects generic wordings ('box', 'toy can', 'black object') that fire on everything, and measured with diag_bop_ism.py on scenes 000048/000057 those produced detections for objects not in the scene (pudding_box 30/30 and power_drill 30/30 frames in a scene holding neither) while the descriptive prompts did not. Recall at the detector is not the objective; what survives the ISM is. On LM-O the same probe DID help, because there the class names mislead ('can' is a watering can) rather than over-generalise.",
+ "ism_overrides": {
+  "relative_assignment_enabled": false
+ },
+ "ism_overrides_why": "Measured with diag_bop_ism.py on 30 frames each of scenes 000048 and 000057: the per-box owner election gives each box to the single object with the highest DINOv2 semantic score, and tuna_fish_can and extra_large_clamp then never receive a box (0 estimates in the 2026-09-19 12-scene batch). With it off both are detected (tuna_fish_can 30/30 frames on 000048). Same finding as LM-O: the election was tuned on 10 lab objects and does not transfer to a benchmark where several objects look alike."
+}

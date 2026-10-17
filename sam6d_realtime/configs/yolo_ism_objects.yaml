@@ -285,7 +285,15 @@ objects:
     enabled: false  # low-texture template moved to fail/
 
   - name: Mugcup_high
-    yolo_prompt: "mug cup"
+    # 2026-09-29: "mug cup" -> "pink mug". On 260901_cbnu_longcircle SAM (670 frames, other 7 prompts in the same
+    # call) "mug cup" put about half its boxes on the yellow Sikhye can (750 non-pink boxes); "pink mug" found the mug
+    # in 407 vs 357 frames, 235 non-pink boxes, median conf 0.19 vs 0.08 (objpose/tools/prompt_probe/probe_mugcup_prompt.py)
+    yolo_prompt: "pink mug"
+    # 2026-09-29 Phase 1C colour correction: the real mug reads hue ~1 (OpenCV) vs render ~170.5. On
+    # 260901_cbnu_longcircle, of the pink boxes the mug owns, +0 passed the HSV gate 18/132, +3 113/132 (non-mug
+    # boxes 6/202), +6 122/132 (11/202), +12 132/132 (47/202). Took the smallest step that recovers most:
+    # objpose/tools/prompt_probe/mug_hue_sweep.py. Baked into the HSV cache (tools/build_hsv_template_cache.py).
+    hsv_hue_correction_ocv: 3
     object_id: Mugcup_color_high
     template_dir: template/Mugcup_color_high/templates
     cad_ply: data/cad/Mugcup_color_high/Mugcup_color_with_normal_vertexcolor.ply
@@ -317,7 +325,7 @@ objects:
     object_id: Sauce_high
     template_dir: template/Sauce_high/templates
     cad_ply: data/cad/Sauce_high/Sauce_color_with_normal_vertexcolor.ply
-    enabled: true
+    enabled: false  # 2026-09-29 user: never estimate Sauce_high
     # NOTE: Sauce is an ORANGE squeeze bottle (white cap, green base), not brown.
 
   - name: Sauce_low

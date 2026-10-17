@@ -1,0 +1,57 @@
+{
+ "T_slam_sam": [
+  [
+   0.35226814670578954,
+   -0.23724527077553187,
+   0.9053296826632351,
+   0.31269347481224236
+  ],
+  [
+   -0.9357918206501246,
+   -0.10393495969042015,
+   0.33688453891278086,
+   0.11284585033650944
+  ],
+  [
+   0.014171140419691353,
+   -0.9658738042046675,
+   -0.25862515950775206,
+   -0.43186699086738745
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "slam_sensor": "lidar",
+ "sam_tau_s": 0.0,
+ "clock": "live: the hub measures laptop - PC at every start",
+ "source": "static LiDAR-to-depth registration, robot not moving (objpose/rt/calib_mount.py): start = X_lidar_sam_261013_husky.json with the lidar turned by +0.0 deg about its own axis, then a free 6-DoF fit. 261014_1027_calib",
+ "fit": {
+  "turn_scan_best_deg": 0.0,
+  "turn_scan_best_share": 0.421,
+  "turn_hint_deg": null,
+  "turn_1dof_deg": 0.0,
+  "turn_free_fit_deg": 0.05,
+  "lidar_points_in_view": 60000,
+  "within_3cm": 25921,
+  "share_within_3cm": 0.432,
+  "residual_median_cm": 1.97,
+  "position_std_cm": [
+   0.03,
+   0.1,
+   0.24
+  ],
+  "revolutions": 39,
+  "moved_vs_ref_cm": 1.6,
+  "lidar_yaw_from_camera": 1.2163,
+  "ok": true
+ },
+ "decision": {
+  "lidar_yaw": 1.2163,
+  "why": "\uc8fc\uc758: \uc8fc\ud589\uc73c\ub85c \ud655\uc778\ub418\uc9c0 \uc54a\uc740 \uac12\uc785\ub2c8\ub2e4 (\uce74\uba54\ub77c\uac00 \ub85c\ubd07 \uc704\uc5d0\uc11c \uadf8\ub300\ub85c\ub77c\uace0 \uac00\uc815)",
+  "drive": null
+ }
+}

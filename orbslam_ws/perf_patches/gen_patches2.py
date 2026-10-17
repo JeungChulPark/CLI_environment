@@ -13,9 +13,9 @@ import shutil
 import subprocess
 import sys
 
-SRC = "/home/jucpark/DeepLearning/CLI_environment/orbslam_ws/src/ORB_SLAM3"
-ROS = "/home/jucpark/DeepLearning/CLI_environment/orbslam_ws/src/orbslam3_ros2"
-OUT = "/home/jucpark/DeepLearning/CLI_environment/orbslam_ws/perf_patches"
+SRC = "/home/jucpark/DeepLearning/CLI_environment_server/orbslam_ws/src/ORB_SLAM3"
+ROS = "/home/jucpark/DeepLearning/CLI_environment_server/orbslam_ws/src/orbslam3_ros2"
+OUT = "/home/jucpark/DeepLearning/CLI_environment_server/orbslam_ws/perf_patches"
 TMP = "/tmp/claude-1000/-home-jucpark-DeepLearning-CLI-environment/8468b6ce-4d06-487b-8a0d-0e81b118bece/scratchpad/p2"
 
 # (patch_name, root, [files])

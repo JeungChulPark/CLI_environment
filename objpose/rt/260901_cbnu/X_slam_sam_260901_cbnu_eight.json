@@ -1,0 +1,140 @@
+{
+ "T_slam_sam": [
+  [
+   0.008213588181629922,
+   0.2837121268541324,
+   -0.9588743223410915,
+   -0.37896497806727253
+  ],
+  [
+   0.06274142064566172,
+   0.9568711024883516,
+   0.2836568478956408,
+   0.06275241167633953
+  ],
+  [
+   0.9979960175795024,
+   -0.06249097773784028,
+   -0.009941156714488942,
+   -0.3746796548504583
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "source": "offline: trajectory-plane gravity + planar SE(2) hand-eye on ORB-SLAM3 f2000 relative motions + depth floor height",
+ "inputs": {
+  "slam_traj": "objpose/rt/260901_cbnu/slam_traj_tum.txt.optimized.txt",
+  "sam_traj": "objpose/rt/260901_cbnu/sam_traj_tum.txt.optimized.txt",
+  "windows_s": [
+   0.5,
+   1.0,
+   1.5,
+   2.0,
+   3.0,
+   4.0
+  ]
+ },
+ "down": {
+  "slam": [
+   -0.0051971024031651596,
+   0.9985235671028142,
+   -0.05407102798063368
+  ],
+  "sam": [
+   0.008643429698224672,
+   0.9573628169437904,
+   0.28875894420173687
+  ],
+  "plane_rms_cm": [
+   0.861,
+   0.443
+  ]
+ },
+ "tau_s": -0.212,
+ "planar_handeye": {
+  "pairs": 4623,
+  "tx_m": -0.37063184152593404,
+  "ty_m": -0.37863323661976733,
+  "phi_deg": -89.66003931938461,
+  "residual_median_cm": 1.681,
+  "residual_p90_cm": 4.487,
+  "sd_tx_mm": 0.86,
+  "sd_ty_mm": 0.63,
+  "sd_phi_deg": 0.034,
+  "quarters": [
+   {
+    "t_from_s": 0.0,
+    "n": 1156,
+    "d_tx_mm": 0.8,
+    "d_ty_mm": 2.4,
+    "d_phi_deg": -0.118
+   },
+   {
+    "t_from_s": 36.4,
+    "n": 1156,
+    "d_tx_mm": -6.1,
+    "d_ty_mm": -0.1,
+    "d_phi_deg": 0.314
+   },
+   {
+    "t_from_s": 75.1,
+    "n": 1156,
+    "d_tx_mm": 1.4,
+    "d_ty_mm": 3.8,
+    "d_phi_deg": 0.143
+   },
+   {
+    "t_from_s": 108.0,
+    "n": 1155,
+    "d_tx_mm": -0.8,
+    "d_ty_mm": -5.0,
+    "d_phi_deg": -0.142
+   }
+  ]
+ },
+ "floor": {
+  "h_slam_m": 1.051410599102087,
+  "h_sam_m": 0.966522003251302,
+  "mad_cm": [
+   2.04,
+   0.53
+  ],
+  "frames_used": [
+   283,
+   397
+  ],
+  "normal_vs_trajectory_deg": [
+   0.788,
+   0.381
+  ]
+ },
+ "compare": {
+  "urdf": {
+   "translation_diff_cm": 53.66,
+   "rotation_diff_deg": 91.29
+  },
+  "previous_axzb": {
+   "translation_diff_cm": 4.48,
+   "rotation_diff_deg": 1.01
+  },
+  "shared_map_loc": {
+   "translation_diff_cm": 2.83,
+   "rotation_diff_deg": 3.37
+  },
+  "shared_map_loc_ftime": {
+   "translation_diff_cm": 6.58,
+   "rotation_diff_deg": 1.25
+  },
+  "offline_assoc_stamps": {
+   "translation_diff_cm": 4.95,
+   "rotation_diff_deg": 1.01
+  }
+ },
+ "object_consistency_check (reference only)": {},
+ "sam_tau_s": -0.212,
+ "note_260929": "eightcircle only: copy of X_slam_sam_260901_cbnu.json with sam_tau_s -0.212 so the ORB lane's tau equals the --sam-tau-s -0.212 that corrects the eightcircle SAM bag (converted ~208 ms late). With the original file (no sam_tau_s -> lane tau 0) the hub looked poses up 212 ms late and boxes drifted in turns (wired2_cbnu_f3000_260925_182605: drawn 19.8 px at 15-30 deg/s, estimates consistent at offset 0)."
+}

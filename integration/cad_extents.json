@@ -188,5 +188,556 @@
   ],
   "vertices": 600228,
   "cad": "/home/ldh9501/temp_ws/CLI_environment/sam6d_ws/data/cad/saffron/saffron_color_with_normal_vertexcolor.ply"
+ },
+ "ycbv_master_chef_can": {
+  "min_mm": [
+   -51.145,
+   -51.223,
+   -70.072
+  ],
+  "max_mm": [
+   51.145,
+   51.223,
+   70.072
+  ],
+  "size_mm": [
+   102.289,
+   102.446,
+   140.144
+  ],
+  "diameter_mm": 172.063,
+  "cad": "BOP ycbv models/obj_000001.ply"
+ },
+ "ycbv_cracker_box": {
+  "min_mm": [
+   -35.865,
+   -81.989,
+   -106.743
+  ],
+  "max_mm": [
+   35.865,
+   81.989,
+   106.743
+  ],
+  "size_mm": [
+   71.73,
+   163.977,
+   213.486
+  ],
+  "diameter_mm": 269.573,
+  "cad": "BOP ycbv models/obj_000002.ply"
+ },
+ "ycbv_sugar_box": {
+  "min_mm": [
+   -24.772,
+   -47.024,
+   -88.007
+  ],
+  "max_mm": [
+   24.772,
+   47.024,
+   88.007
+  ],
+  "size_mm": [
+   49.544,
+   94.048,
+   176.015
+  ],
+  "diameter_mm": 198.377,
+  "cad": "BOP ycbv models/obj_000003.ply"
+ },
+ "ycbv_tomato_soup_can": {
+  "min_mm": [
+   -33.927,
+   -33.875,
+   -51.019
+  ],
+  "max_mm": [
+   33.927,
+   33.875,
+   51.019
+  ],
+  "size_mm": [
+   67.854,
+   67.75,
+   102.037
+  ],
+  "diameter_mm": 120.543,
+  "cad": "BOP ycbv models/obj_000004.ply"
+ },
+ "ycbv_mustard_bottle": {
+  "min_mm": [
+   -48.575,
+   -33.31,
+   -95.704
+  ],
+  "max_mm": [
+   48.575,
+   33.31,
+   95.704
+  ],
+  "size_mm": [
+   97.15,
+   66.62,
+   191.408
+  ],
+  "diameter_mm": 196.463,
+  "cad": "BOP ycbv models/obj_000005.ply"
+ },
+ "ycbv_tuna_fish_can": {
+  "min_mm": [
+   -42.755,
+   -42.807,
+   -16.756
+  ],
+  "max_mm": [
+   42.755,
+   42.807,
+   16.756
+  ],
+  "size_mm": [
+   85.51,
+   85.614,
+   33.511
+  ],
+  "diameter_mm": 89.797,
+  "cad": "BOP ycbv models/obj_000006.ply"
+ },
+ "ycbv_pudding_box": {
+  "min_mm": [
+   -68.924,
+   -64.395,
+   -19.414
+  ],
+  "max_mm": [
+   68.924,
+   64.395,
+   19.414
+  ],
+  "size_mm": [
+   137.848,
+   128.791,
+   38.828
+  ],
+  "diameter_mm": 142.543,
+  "cad": "BOP ycbv models/obj_000007.ply"
+ },
+ "ycbv_gelatin_box": {
+  "min_mm": [
+   -44.678,
+   -50.554,
+   -15.06
+  ],
+  "max_mm": [
+   44.678,
+   50.554,
+   15.06
+  ],
+  "size_mm": [
+   89.355,
+   101.109,
+   30.12
+  ],
+  "diameter_mm": 114.053,
+  "cad": "BOP ycbv models/obj_000008.ply"
+ },
+ "ycbv_potted_meat_can": {
+  "min_mm": [
+   -51.062,
+   -30.161,
+   -41.819
+  ],
+  "max_mm": [
+   51.062,
+   30.161,
+   41.819
+  ],
+  "size_mm": [
+   102.123,
+   60.322,
+   83.637
+  ],
+  "diameter_mm": 129.54,
+  "cad": "BOP ycbv models/obj_000009.ply"
+ },
+ "ycbv_banana": {
+  "min_mm": [
+   -54.444,
+   -89.206,
+   -18.335
+  ],
+  "max_mm": [
+   54.444,
+   89.206,
+   18.335
+  ],
+  "size_mm": [
+   108.888,
+   178.412,
+   36.67
+  ],
+  "diameter_mm": 197.796,
+  "cad": "BOP ycbv models/obj_000010.ply"
+ },
+ "ycbv_pitcher_base": {
+  "min_mm": [
+   -74.499,
+   -72.385,
+   -121.32
+  ],
+  "max_mm": [
+   74.499,
+   72.385,
+   121.32
+  ],
+  "size_mm": [
+   148.997,
+   144.769,
+   242.64
+  ],
+  "diameter_mm": 259.534,
+  "cad": "BOP ycbv models/obj_000011.ply"
+ },
+ "ycbv_bleach_cleanser": {
+  "min_mm": [
+   -51.203,
+   -33.856,
+   -125.32
+  ],
+  "max_mm": [
+   51.203,
+   33.856,
+   125.32
+  ],
+  "size_mm": [
+   102.406,
+   67.712,
+   250.64
+  ],
+  "diameter_mm": 259.566,
+  "cad": "BOP ycbv models/obj_000012.ply"
+ },
+ "ycbv_bowl": {
+  "min_mm": [
+   -80.722,
+   -80.556,
+   -27.485
+  ],
+  "max_mm": [
+   80.722,
+   80.556,
+   27.485
+  ],
+  "size_mm": [
+   161.444,
+   161.113,
+   54.97
+  ],
+  "diameter_mm": 161.922,
+  "cad": "BOP ycbv models/obj_000013.ply"
+ },
+ "ycbv_mug": {
+  "min_mm": [
+   -58.483,
+   -46.538,
+   -40.692
+  ],
+  "max_mm": [
+   58.483,
+   46.538,
+   40.692
+  ],
+  "size_mm": [
+   116.966,
+   93.075,
+   81.384
+  ],
+  "diameter_mm": 124.99,
+  "cad": "BOP ycbv models/obj_000014.ply"
+ },
+ "ycbv_power_drill": {
+  "min_mm": [
+   -92.121,
+   -93.717,
+   -28.659
+  ],
+  "max_mm": [
+   92.121,
+   93.717,
+   28.659
+  ],
+  "size_mm": [
+   184.241,
+   187.434,
+   57.317
+  ],
+  "diameter_mm": 226.17,
+  "cad": "BOP ycbv models/obj_000015.ply"
+ },
+ "ycbv_wood_block": {
+  "min_mm": [
+   -51.975,
+   -51.774,
+   -102.945
+  ],
+  "max_mm": [
+   51.975,
+   51.774,
+   102.945
+  ],
+  "size_mm": [
+   103.951,
+   103.548,
+   205.89
+  ],
+  "diameter_mm": 237.299,
+  "cad": "BOP ycbv models/obj_000016.ply"
+ },
+ "ycbv_scissors": {
+  "min_mm": [
+   -48.04,
+   -100.772,
+   -7.858
+  ],
+  "max_mm": [
+   48.04,
+   100.772,
+   7.858
+  ],
+  "size_mm": [
+   96.08,
+   201.544,
+   15.716
+  ],
+  "diameter_mm": 203.973,
+  "cad": "BOP ycbv models/obj_000017.ply"
+ },
+ "ycbv_large_marker": {
+  "min_mm": [
+   -10.52,
+   -60.422,
+   -9.438
+  ],
+  "max_mm": [
+   10.52,
+   60.422,
+   9.438
+  ],
+  "size_mm": [
+   21.039,
+   120.845,
+   18.877
+  ],
+  "diameter_mm": 121.365,
+  "cad": "BOP ycbv models/obj_000018.ply"
+ },
+ "ycbv_large_clamp": {
+  "min_mm": [
+   -59.978,
+   -85.639,
+   -19.575
+  ],
+  "max_mm": [
+   59.978,
+   85.639,
+   19.575
+  ],
+  "size_mm": [
+   119.956,
+   171.278,
+   39.15
+  ],
+  "diameter_mm": 174.746,
+  "cad": "BOP ycbv models/obj_000019.ply"
+ },
+ "ycbv_extra_large_clamp": {
+  "min_mm": [
+   -104.897,
+   -82.18,
+   -18.166
+  ],
+  "max_mm": [
+   104.897,
+   82.18,
+   18.166
+  ],
+  "size_mm": [
+   209.794,
+   164.36,
+   36.333
+  ],
+  "diameter_mm": 217.094,
+  "cad": "BOP ycbv models/obj_000020.ply"
+ },
+ "ycbv_foam_brick": {
+  "min_mm": [
+   -26.315,
+   -38.921,
+   -25.566
+  ],
+  "max_mm": [
+   26.315,
+   38.921,
+   25.566
+  ],
+  "size_mm": [
+   52.63,
+   77.842,
+   51.131
+  ],
+  "diameter_mm": 102.903,
+  "cad": "BOP ycbv models/obj_000021.ply"
+ },
+ "lmo_ape": {
+  "min_mm": [
+   -37.934,
+   -38.8,
+   -45.885
+  ],
+  "max_mm": [
+   37.934,
+   38.8,
+   45.885
+  ],
+  "size_mm": [
+   75.869,
+   77.599,
+   91.769
+  ],
+  "diameter_mm": 102.099,
+  "cad": "BOP lmo models/obj_000001.ply"
+ },
+ "lmo_can": {
+  "min_mm": [
+   -50.396,
+   -90.898,
+   -96.867
+  ],
+  "max_mm": [
+   50.396,
+   90.898,
+   96.867
+  ],
+  "size_mm": [
+   100.792,
+   181.796,
+   193.734
+  ],
+  "diameter_mm": 201.404,
+  "cad": "BOP lmo models/obj_000005.ply"
+ },
+ "lmo_cat": {
+  "min_mm": [
+   -33.505,
+   -63.816,
+   -58.728
+  ],
+  "max_mm": [
+   33.505,
+   63.816,
+   58.729
+  ],
+  "size_mm": [
+   67.011,
+   127.633,
+   117.457
+  ],
+  "diameter_mm": 154.546,
+  "cad": "BOP lmo models/obj_000006.ply"
+ },
+ "lmo_driller": {
+  "min_mm": [
+   -114.738,
+   -37.736,
+   -104.001
+  ],
+  "max_mm": [
+   114.738,
+   37.736,
+   104.001
+  ],
+  "size_mm": [
+   229.476,
+   75.471,
+   208.002
+  ],
+  "diameter_mm": 261.472,
+  "cad": "BOP lmo models/obj_000008.ply"
+ },
+ "lmo_duck": {
+  "min_mm": [
+   -52.215,
+   -38.704,
+   -42.849
+  ],
+  "max_mm": [
+   52.214,
+   38.704,
+   42.849
+  ],
+  "size_mm": [
+   104.429,
+   77.408,
+   85.697
+  ],
+  "diameter_mm": 108.999,
+  "cad": "BOP lmo models/obj_000009.ply"
+ },
+ "lmo_eggbox": {
+  "min_mm": [
+   -75.092,
+   -53.538,
+   -34.621
+  ],
+  "max_mm": [
+   75.093,
+   53.538,
+   34.621
+  ],
+  "size_mm": [
+   150.185,
+   107.075,
+   69.241
+  ],
+  "diameter_mm": 164.628,
+  "cad": "BOP lmo models/obj_000010.ply"
+ },
+ "lmo_glue": {
+  "min_mm": [
+   -18.36,
+   -38.933,
+   -86.408
+  ],
+  "max_mm": [
+   18.361,
+   38.933,
+   86.408
+  ],
+  "size_mm": [
+   36.721,
+   77.866,
+   172.816
+  ],
+  "diameter_mm": 175.889,
+  "cad": "BOP lmo models/obj_000011.ply"
+ },
+ "lmo_holepuncher": {
+  "min_mm": [
+   -50.444,
+   -54.248,
+   -45.4
+  ],
+  "max_mm": [
+   50.444,
+   54.248,
+   45.4
+  ],
+  "size_mm": [
+   100.888,
+   108.497,
+   90.8
+  ],
+  "diameter_mm": 145.543,
+  "cad": "BOP lmo models/obj_000012.ply"
  }
 }

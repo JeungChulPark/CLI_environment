@@ -1,0 +1,1 @@
+{"turn_scan_best_deg": 0.0, "turn_scan_best_share": 0.403, "turn_hint_deg": null, "turn_1dof_deg": -0.5, "turn_free_fit_deg": -0.55, "lidar_points_in_view": 60000, "within_3cm": 24420, "share_within_3cm": 0.407, "residual_median_cm": 1.91, "position_std_cm": [0.01, 0.04, 0.02], "revolutions": 39, "moved_vs_ref_cm": 1.2, "lidar_yaw_from_camera": 1.2267, "ok": true}

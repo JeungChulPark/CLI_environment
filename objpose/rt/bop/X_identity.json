@@ -1,0 +1,6 @@
+{
+ "T_slam_sam": [[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],
+ "source": "identity — BOP scenes are a single camera, so the SLAM camera and the SAM camera are the same frame",
+ "tau_s": 0.0,
+ "clock": "bop_session synthetic frame clock (see objpose/pc/bop_session.py)"
+}

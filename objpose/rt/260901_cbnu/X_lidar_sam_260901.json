@@ -1,0 +1,33 @@
+{
+ "T_slam_sam": [
+  -0.2690598580541019,
+  0.2660947560670146,
+  -0.925635119027764,
+  -0.34860301917335584,
+  0.9630803647039947,
+  0.08342465457881797,
+  -0.25596198571277146,
+  -0.11264297176136567,
+  0.009110647920245647,
+  -0.960330103559209,
+  -0.27871686043803023,
+  -0.17090099141642826,
+  0.0,
+  0.0,
+  0.0,
+  1.0
+ ],
+ "source": "260901_cbnu_eightcircle LiDAR (velodyne) -> SAM-folder camera: planar hand-eye + overlap height (objpose/lidar/estimate_lidar_cam_rt.py --camera SAM, SAM ORB trajectory shifted by the SAM tau -0.212 s; KISS-ICP base from objpose/rt/260901_cbnu/kiss_260901.py)",
+ "slam_sensor": "lidar",
+ "sam_tau_s": -0.212,
+ "tau_s_fit": 0.014,
+ "fit": {
+  "pairs": 2866,
+  "tx_m": -0.36429246889526623,
+  "ty_m": 0.016804912061057865,
+  "phi_deg": -164.2475752163149,
+  "residual_median_cm": 1.27
+ },
+ "height_along_down_m": -0.17443693693693596,
+ "height_uncertainty_m": 0.1
+}

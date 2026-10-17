@@ -39,7 +39,7 @@ import torch
 
 REPO = Path(__file__).resolve().parents[1]
 PEM_DIR = REPO / "sam6d_master" / "SAM-6D" / "Pose_Estimation_Model"
-DEFAULT_TEMPLATES = (Path("/home/jucpark/DeepLearning/CLI_environment/sam6d_ws")
+DEFAULT_TEMPLATES = (Path("/home/jucpark/DeepLearning/CLI_environment_server/sam6d_ws")
                      / "sam6d_master/SAM-6D/Data/custom/Milk_scaled_195mm/templates")
 
 

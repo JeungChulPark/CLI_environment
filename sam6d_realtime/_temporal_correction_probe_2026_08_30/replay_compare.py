@@ -197,10 +197,10 @@ def main():
     ap.add_argument("--detections",
                     default=str(REPO / "output/longcircle2_visualization/detections.jsonl"))
     ap.add_argument("--trajectory",
-                    default="/home/jucpark/DeepLearning/CLI_environment/output_slam/"
+                    default="/home/jucpark/DeepLearning/CLI_environment_server/output_slam/"
                             "260804_office/orb3_slam/longcircle2/CameraTrajectory.txt")
     ap.add_argument("--extrinsic",
-                    default="/home/jucpark/DeepLearning/CLI_environment/integration/"
+                    default="/home/jucpark/DeepLearning/CLI_environment_server/integration/"
                             "data/260804_office/longcircle2/calib/X_camSLAM_camSAM.npy")
     ap.add_argument("--rt-period-s", type=float, default=0.5)
     ap.add_argument("--out", default=str(PROBE / "outputs" / "compare.json"))
