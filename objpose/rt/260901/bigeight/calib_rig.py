@@ -50,17 +50,63 @@ def kabsch_vectors(a, b, w=None):
     return Vt.T @ D @ U.T, S
 
 
+def hand_eye(a, tc, Tc, tl, Tl, tau_cl, out):
+    """T_lidar_cam by hand-eye on relative motions (A X = X B over win_s windows); fills out["T_lidar_cam*"]"""
+    Lc = Traj(tl, Tl, 0.25); Cc = Traj(tc, Tc, 0.2)
+    t0 = np.arange(max(tc[0], tl[0] - tau_cl) + 0.5, min(tc[-1], tl[-1] - tau_cl) - a.win_s - 0.5, 0.25)
+    C0, ok0 = Cc.at(t0); C1, ok1 = Cc.at(t0 + a.win_s)
+    L0, ok2 = Lc.at(t0 + tau_cl); L1, ok3 = Lc.at(t0 + a.win_s + tau_cl)
+    ok = ok0 & ok1 & ok2 & ok3
+    A = inv(L0[ok]) @ L1[ok]; B = inv(C0[ok]) @ C1[ok]
+    moving = (np.linalg.norm(rotvec(A[:, :3, :3]), axis=1) > np.radians(3)) | (np.linalg.norm(A[:, :3, 3], axis=1) > 0.1)
+    A, B = A[moving], B[moving]
+    R0, _ = kabsch_vectors(rotvec(A[:, :3, :3]), rotvec(B[:, :3, :3]))
+
+    def resid(x):
+        RX = Rotation.from_rotvec(x[:3]).as_matrix(); tX = x[3:]
+        er = rotvec(np.einsum("nij,jk,nlk,ml->nim", A[:, :3, :3], RX, B[:, :3, :3], RX))   # R_A R_X R_B^T R_X^T
+        et = np.einsum("nij,j->ni", A[:, :3, :3], tX) + A[:, :3, 3] - B[:, :3, 3] @ RX.T - tX
+        return np.concatenate([er.ravel() * 2.0, et.ravel(), [1e-3 * x[5]]])
+
+    sol = least_squares(resid, np.concatenate([Rotation.from_matrix(R0).as_rotvec(), [0, 0, 0]]), loss="soft_l1", f_scale=0.02)
+    RX = Rotation.from_rotvec(sol.x[:3]).as_matrix(); tX = sol.x[3:]
+    r = resid(sol.x)[:-1]; n = len(A)
+    out["T_lidar_cam"] = se3(RX, tX).tolist()
+    out["T_lidar_cam_fit"] = {"windows": int(n), "win_s": a.win_s,
+                              "rot_resid_deg_rms": float(np.degrees(np.sqrt(((r[:3 * n] / 2.0).reshape(n, 3) ** 2).sum(1).mean()))),
+                              "trans_resid_m_rms": float(np.sqrt((r[3 * n:].reshape(n, 3) ** 2).sum(1).mean())),
+                              "note": "lever arm along the (vertical) rotation axis is unobservable in planar motion; regularised to 0",
+                              "cam_z_in_lidar": RX[:, 2].tolist(), "cam_y_in_lidar": RX[:, 1].tolist()}
+    return RX, tX
+
+
+def lidar_only(a, tc, Tc, tl, Tl, out):
+    """camera <-> LiDAR only (no IMU bag): time offset from |w|, then hand-eye"""
+    tcm, wc = body_rate(tc, Tc, 0.3); tlm, wl = body_rate(tl, Tl, 0.0)
+    tau_cl, c_cl = best_shift(tcm, np.linalg.norm(wc, axis=1), tlm, np.linalg.norm(wl, axis=1))
+    out["time"] = {"lidar_minus_cam_s": tau_cl, "corr_cl": c_cl,
+                   "meaning": "an event stamped t on the camera clock is stamped t + tau on the other sensor's clock"}
+    RX, tX = hand_eye(a, tc, Tc, tl, Tl, tau_cl, out)
+    Path(a.out).write_text(json.dumps(out, indent=1))
+    print(json.dumps({k_: v for k_, v in out.items() if k_ != "T_lidar_cam"}, indent=1))
+    np.set_printoptions(precision=4, suppress=True)
+    print("T_lidar_cam=\n", se3(RX, tX))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--cam", required=True); ap.add_argument("--lidar", required=True)
-    ap.add_argument("--imu", required=True); ap.add_argument("--out", required=True)
+    ap.add_argument("--imu", default="", help="imu.npz; omit for a session without an IMU bag (camera <-> LiDAR only)")
+    ap.add_argument("--out", required=True)
     ap.add_argument("--static-s", type=float, default=25.0, help="initial standstill used for the gyro bias")
     ap.add_argument("--win-s", type=float, default=2.0)
     a = ap.parse_args()
     tc, Tc = load_tum(a.cam); tl, Tl = load_tum(a.lidar)
+    out = {"cam": str(a.cam), "lidar": str(a.lidar), "imu": str(a.imu)}
+    if not a.imu:
+        return lidar_only(a, tc, Tc, tl, Tl, out)
     imu = np.load(a.imu)
     ti = imu["t_hdr_ns"] * 1e-9; gyro = imu["gyro"]; acc = imu["acc"]
-    out = {"cam": str(a.cam), "lidar": str(a.lidar), "imu": str(a.imu)}
 
     # ---------------- gyro bias from the initial standstill
     st = ti < ti[0] + a.static_s
@@ -95,32 +141,7 @@ def main():
                             "rate_rms_rad_s": float(np.sqrt((wc[mv] ** 2).sum(1).mean())),
                             "imu_axis_std_rad_s": gi[mv].std(0).tolist()}
 
-    # ---------------- T_lidar_cam by hand-eye on relative motions
-    Lc = Traj(tl, Tl, 0.25); Cc = Traj(tc, Tc, 0.2)
-    t0 = np.arange(max(tc[0], tl[0] - tau_cl) + 0.5, min(tc[-1], tl[-1] - tau_cl) - a.win_s - 0.5, 0.25)
-    C0, ok0 = Cc.at(t0); C1, ok1 = Cc.at(t0 + a.win_s)
-    L0, ok2 = Lc.at(t0 + tau_cl); L1, ok3 = Lc.at(t0 + a.win_s + tau_cl)
-    ok = ok0 & ok1 & ok2 & ok3
-    A = inv(L0[ok]) @ L1[ok]; B = inv(C0[ok]) @ C1[ok]
-    moving = (np.linalg.norm(rotvec(A[:, :3, :3]), axis=1) > np.radians(3)) | (np.linalg.norm(A[:, :3, 3], axis=1) > 0.1)
-    A, B = A[moving], B[moving]
-    R0, _ = kabsch_vectors(rotvec(A[:, :3, :3]), rotvec(B[:, :3, :3]))
-
-    def resid(x):
-        RX = Rotation.from_rotvec(x[:3]).as_matrix(); tX = x[3:]
-        er = rotvec(np.einsum("nij,jk,nlk,ml->nim", A[:, :3, :3], RX, B[:, :3, :3], RX))   # R_A R_X R_B^T R_X^T
-        et = np.einsum("nij,j->ni", A[:, :3, :3], tX) + A[:, :3, 3] - B[:, :3, 3] @ RX.T - tX
-        return np.concatenate([er.ravel() * 2.0, et.ravel(), [1e-3 * x[5]]])
-
-    sol = least_squares(resid, np.concatenate([Rotation.from_matrix(R0).as_rotvec(), [0, 0, 0]]), loss="soft_l1", f_scale=0.02)
-    RX = Rotation.from_rotvec(sol.x[:3]).as_matrix(); tX = sol.x[3:]
-    r = resid(sol.x)[:-1]; n = len(A)
-    out["T_lidar_cam"] = se3(RX, tX).tolist()
-    out["T_lidar_cam_fit"] = {"windows": int(n), "win_s": a.win_s,
-                              "rot_resid_deg_rms": float(np.degrees(np.sqrt(((r[:3 * n] / 2.0).reshape(n, 3) ** 2).sum(1).mean()))),
-                              "trans_resid_m_rms": float(np.sqrt((r[3 * n:].reshape(n, 3) ** 2).sum(1).mean())),
-                              "note": "lever arm along the (vertical) rotation axis is unobservable in planar motion; regularised to 0",
-                              "cam_z_in_lidar": RX[:, 2].tolist(), "cam_y_in_lidar": RX[:, 1].tolist()}
+    RX, tX = hand_eye(a, tc, Tc, tl, Tl, tau_cl, out)
 
     # ---------------- gyro quality: integrated gyro rotation vs KISS rotation (through the two extrinsics)
     dt = np.diff(ti)

@@ -58,5 +58,52 @@
    "imu_live2",
    "hdl"
   ]
+ },
+ {
+  "session": "260915_eight_fast",
+  "path_m": 24.14,
+  "hdl": false,
+  "series": [
+   "kiss",
+   "orb_live",
+   "orb_opt"
+  ]
+ },
+ {
+  "session": "260915_eight_middle",
+  "path_m": 23.71,
+  "hdl": false,
+  "series": [
+   "kiss",
+   "orb_live",
+   "orb_opt"
+  ]
+ },
+ {
+  "session": "260826_etri_longcircle_dark",
+  "path_m": 19.84,
+  "hdl": false,
+  "series": [
+   "orb_live",
+   "orb_opt"
+  ]
+ },
+ {
+  "session": "260826_etri_differentObject",
+  "path_m": 13.28,
+  "hdl": false,
+  "series": [
+   "orb_live",
+   "orb_opt"
+  ]
+ },
+ {
+  "session": "260826_etri_similarObject",
+  "path_m": 13.44,
+  "hdl": false,
+  "series": [
+   "orb_live",
+   "orb_opt"
+  ]
  }
 ]

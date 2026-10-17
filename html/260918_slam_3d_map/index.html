@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>260901 CBNU SLAM 3D 맵</title>
+<title>SLAM 3D 맵</title>
 <style>
   :root{
     color-scheme: dark;
@@ -119,16 +119,17 @@
   <div id="view"><div id="hud"></div></div>
   <div id="compare">
     <div class="chead">
-      <h2>4개 세션 × 시스템 비교</h2>
+      <h2 id="cmptitle">세션 × 시스템 비교</h2>
       <div class="metricsel" id="msel"></div>
     </div>
     <div class="wrap"><table id="cmp"><thead></thead><tbody></tbody></table></div>
     <p class="cap" id="cmpcap"></p>
   </div>
   <aside>
-    <h1>260901 CBNU · SLAM 3D 맵</h1>
+    <h1>SLAM 3D 맵</h1>
     <p class="sub">KISS-ICP LiDAR 맵 위에 카메라 SLAM 궤적을 겹쳐 본 것. 모든 궤적은 채점과 동일하게
-      기준 타임스탬프로 보간한 뒤 Umeyama 정렬해 LiDAR 좌표계에 올렸습니다.</p>
+      기준 타임스탬프로 보간한 뒤 Umeyama 정렬해 LiDAR 좌표계에 올렸습니다. LiDAR가 없는 세션은
+      깊이 영상으로 만든 맵 위에 궤적만 표시합니다.</p>
 
     <h2>세션</h2>
     <select id="sess"></select>
@@ -202,6 +203,7 @@
   };
   const DEFAULT_ON = ['kiss','orb_opt','imu_opt','hdl'];
   const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const short = s => s.replace('260901_cbnu_','');
 
   // ---- three.js scene
   let scene, camera, renderer, grid, ok3d = HAS3D;
@@ -380,7 +382,7 @@
       const s = data.series.find(x=>x.key===key), st = STYLE[key];
       const m = s.m;
       row(key, st.label, st.c, st.dash, DEFAULT_ON.includes(key),
-          m ? `${m.ate} cm` : '기준');
+          m ? `${m.ate} cm` : (s.ref ? '기준' : '기준 없음'));
       if(m){
         const tr = document.createElement('tr');
         tr.innerHTML = `<td>${st.label.replace('ORB-SLAM3','ORB').replace('HDL graph SLAM','HDL').replace(' · ','<br>')}</td>
@@ -391,8 +393,15 @@
     if(!have.has('hdl') && !have.has('hdl_opt'))
       row('hdl', 'HDL graph SLAM', '--hdl', false, false, '결과 없음', true);
 
+    $('#tbl').style.display = tb.children.length ? '' : 'none';
     const su = data.summary || {};
-    $('#foot').innerHTML =
+    if(!have.has('kiss')){
+      $('#foot').innerHTML = `${data.note || ''}<br><br>
+        ORB 최적화 궤적: 프레임 ${su.frames ?? '-'}개 · 경로 ${su.path_m ?? '-'} m · 복귀 거리 ${su.return_error_cm ?? '-'} cm`;
+      $('#hud').textContent = `${data.session} · 맵 ${data.cloud.length.toLocaleString()} 점 (깊이 역투영)`;
+      return;
+    }
+    $('#foot').innerHTML = (data.note ? `${data.note}<br><br>` : '') +
       `궤적과 수치 모두 <code>eval_traj.py</code>가 만든 것을 그대로 씁니다. 카메라 SLAM은 rig 외부
        파라미터를 거친 카메라 기준 포즈와, HDL은 LiDAR 추정이므로 KISS 포즈와 직접 비교됩니다
        (카메라는 LiDAR에서 55 cm 떨어져 있어, 이를 무시하면 카메라 쪽 오차가 그만큼 부풀려집니다).<br><br>
@@ -445,12 +454,14 @@
     {k:'final',   name:'최종 드리프트',   unit:'cm', hint:'초반만 정렬하고 끝까지 둔 뒤 마지막 위치 오차 — 실시간 소비자가 겪는 값'},
     {k:'rot',     name:'회전 오차',       unit:'°',  hint:'정렬 후 남은 회전 오차 RMSE'},
   ];
-  let summary = null, metric = 'ate';
+  let summaryAll = null, metric = 'ate';
 
   function renderCompare(){
-    if(!summary) return;
+    if(!summaryAll) return;
     const M = METRICS.find(m=>m.k===metric);
-    const sess = summary.map(s=>s.session.replace('260901_cbnu_',''));
+    const summary = summaryAll.filter(s=>s.metrics && Object.keys(s.metrics).length);   // sessions without a reference have no scores
+    $('#cmptitle').textContent = `${summary.length}개 세션 × 시스템 비교`;
+    const sess = summary.map(s=>short(s.session));
     const keys = Object.keys(STYLE).filter(k=>summary.some(s=>s.metrics && s.metrics[k]));
 
     $('#cmp thead').innerHTML = `<tr><th>시스템</th>${
@@ -488,9 +499,12 @@
       }
     }
     $('#cmp tbody').innerHTML = body.join('');
+    const noref = summaryAll.filter(s=>!summary.includes(s)).map(s=>short(s.session));
     $('#cmpcap').textContent =
       `단위 ${M.unit} · 낮을수록 좋음 · ${M.hint}. 굵게 표시된 값이 해당 세션의 최솟값입니다. ` +
-      `HDL graph SLAM은 LiDAR 추정이라 KISS-ICP 포즈와 직접, 카메라 SLAM은 rig 외부 파라미터를 거쳐 비교됩니다.`;
+      `HDL graph SLAM은 LiDAR 추정이라 KISS-ICP 포즈와 직접, 카메라 SLAM은 rig 외부 파라미터를 거쳐 비교됩니다. ` +
+      `260915 세션은 rig 보정값이 없어 같은 실행에서 추정한 rig를 썼고, IMU·HDL 실행이 없습니다.` +
+      (noref.length ? ` LiDAR가 없어 표에서 빠진 세션: ${noref.join(', ')}.` : '');
   }
 
   METRICS.forEach(m=>{
@@ -507,17 +521,20 @@
   (async function init(){
     try{
       const idx = await (await fetch('./data/index.json')).json();
-      fetch('./data/summary.json').then(r=>r.json()).then(s=>{ summary = s; renderCompare(); })
+      fetch('./data/summary.json').then(r=>r.json()).then(s=>{ summaryAll = s; renderCompare(); })
         .catch(()=>{});
       const sel = $('#sess');
       idx.forEach(s=>{
         const o = document.createElement('option');
         o.value = s.session;
-        o.textContent = `${s.session.replace('260901_cbnu_','')} (${s.path_m} m)`;
+        o.textContent = `${short(s.session)} (${s.path_m} m)`;
         sel.appendChild(o);
       });
       sel.addEventListener('change', ()=>load(sel.value).catch(showErr));
-      await load(idx[0].session);
+      const want = new URLSearchParams(location.search).get('s');      // ?s=<session> opens that session
+      const first = idx.some(s=>s.session===want) ? want : idx[0].session;
+      sel.value = first;
+      await load(first);
     }catch(e){ showErr(e); }
   })();
 
