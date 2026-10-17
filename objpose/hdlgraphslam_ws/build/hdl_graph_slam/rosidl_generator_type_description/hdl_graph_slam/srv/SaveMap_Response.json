@@ -1,0 +1,26 @@
+{
+  "type_description_msg": {
+    "type_description": {
+      "type_name": "hdl_graph_slam/srv/SaveMap_Response",
+      "fields": [
+        {
+          "name": "success",
+          "type": {
+            "type_id": 15,
+            "capacity": 0,
+            "string_capacity": 0,
+            "nested_type_name": ""
+          },
+          "default_value": ""
+        }
+      ]
+    },
+    "referenced_type_descriptions": []
+  },
+  "type_hashes": [
+    {
+      "type_name": "hdl_graph_slam/srv/SaveMap_Response",
+      "hash_string": "RIHS01_e5eeb2e417f75382c539a0c1fa7c5d2fdc6799eebcc8b15bc9bf242f8bcc2f65"
+    }
+  ]
+}

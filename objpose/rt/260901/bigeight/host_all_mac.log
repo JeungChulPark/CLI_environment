@@ -1,0 +1,95 @@
+######## [13:25:43] eightcircle
+need /Users/user/Documents/DefenseMeta/Dataset/260901_cbnu_eightcircle/{SLAM,imu,lidar}
+######## [13:25:43] longcircle
+== [13:25:43] KISS-ICP reference -> /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/Userui-MacBookPro/260901_cbnu_longcircle/kiss
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/kiss_gt.py:78: RuntimeWarning: divide by zero encountered in matmul
+  cloud.append((T[:3, :3] @ p.T).T + T[:3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/kiss_gt.py:78: RuntimeWarning: overflow encountered in matmul
+  cloud.append((T[:3, :3] @ p.T).T + T[:3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/kiss_gt.py:78: RuntimeWarning: invalid value encountered in matmul
+  cloud.append((T[:3, :3] @ p.T).T + T[:3, 3])
+{"messages": 1341, "unique_header_stamps": 1341, "scans_used": 1341, "dt_ms": {"median": 100.86, "std": 0.171, "min": 99.24, "max": 102.48}, "ms_per_scan": 33.14, "path_m": 46.67, "return_error_cm": 44.9, "total_abs_yaw_deg": 1100.1, "net_yaw_deg": 1079.9, "map_preview_points": 21871}
+== [13:26:30] run 1/2: base + gyro (real-time paced, f4000)
+[slam_stream] done: 4056 processed, 4056 ok, wall 135.2 s
+[slam_stream] done: 4056 processed, 4056 ok, wall 135.2 s
+[slam_stream] gyro aid: 4056 frames with gyro, 0 without | 8110 pose priors, 14115 keyframe edges | 11 zero-rate updates, final bias -0.00064 0.00190 -0.00138 r
+   loops: base 1  gyro 1
+== [13:29:03] run 2/2: base + gyro (real-time paced, f4000)
+[slam_stream] done: 4056 processed, 4056 ok, wall 135.2 s
+[slam_stream] done: 4056 processed, 4056 ok, wall 135.2 s
+[slam_stream] gyro aid: 4056 frames with gyro, 0 without | 8110 pose priors, 15175 keyframe edges | 11 zero-rate updates, final bias -0.00054 0.00197 -0.00138 r
+   loops: base 1  gyro 1
+== [13:31:28] scoring against KISS-ICP
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: divide by zero encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: overflow encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: invalid value encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: divide by zero encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: overflow encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: invalid value encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: divide by zero encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: overflow encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: invalid value encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+base_live1                   ATE    4.7 cm (max   15.1)  rot  0.86 deg | drift pos rmse    5.1 max   15.7 final    4.0 cm  yaw rmse  0.45 max  1.66 tilt rmse  0.72 | RPE10s   7.0 cm  1.02 deg  RPE1s  1.95 cm 0.363 deg
+base_opt1                    ATE    3.2 cm (max    7.1)  rot  0.64 deg | drift pos rmse    3.5 max    7.9 final    4.6 cm  yaw rmse  0.18 max  0.47 tilt rmse  0.67 | RPE10s   4.7 cm  0.89 deg  RPE1s  1.44 cm 0.334 deg
+gyro_live1                   ATE    4.3 cm (max   12.7)  rot  0.80 deg | drift pos rmse    4.8 max   13.5 final    3.9 cm  yaw rmse  0.36 max  1.39 tilt rmse  0.70 | RPE10s   6.3 cm  0.96 deg  RPE1s  1.74 cm 0.350 deg
+gyro_opt1                    ATE    3.3 cm (max    7.3)  rot  0.63 deg | drift pos rmse    3.6 max    8.7 final    4.5 cm  yaw rmse  0.17 max  0.51 tilt rmse  0.67 | RPE10s   4.9 cm  0.87 deg  RPE1s  1.39 cm 0.329 deg
+base_live2                   ATE    4.7 cm (max   15.2)  rot  0.89 deg | drift pos rmse    4.9 max   15.8 final    4.0 cm  yaw rmse  0.46 max  2.02 tilt rmse  0.76 | RPE10s   7.0 cm  1.06 deg  RPE1s  2.00 cm 0.370 deg
+base_opt2                    ATE    3.3 cm (max    7.4)  rot  0.64 deg | drift pos rmse    3.6 max    8.4 final    4.8 cm  yaw rmse  0.18 max  0.61 tilt rmse  0.68 | RPE10s   4.9 cm  0.89 deg  RPE1s  1.43 cm 0.338 deg
+gyro_live2                   ATE    4.2 cm (max   11.8)  rot  0.79 deg | drift pos rmse    4.4 max   12.3 final    3.9 cm  yaw rmse  0.39 max  1.41 tilt rmse  0.71 | RPE10s   6.3 cm  0.98 deg  RPE1s  1.77 cm 0.348 deg
+gyro_opt2                    ATE    3.3 cm (max    7.0)  rot  0.64 deg | drift pos rmse    3.6 max    8.0 final    4.5 cm  yaw rmse  0.17 max  0.48 tilt rmse  0.69 | RPE10s   4.9 cm  0.89 deg  RPE1s  1.37 cm 0.330 deg
+######## [13:31:28] digut
+== [13:31:28] KISS-ICP reference -> /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/Userui-MacBookPro/260901_cbnu_digut/kiss
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/kiss_gt.py:78: RuntimeWarning: divide by zero encountered in matmul
+  cloud.append((T[:3, :3] @ p.T).T + T[:3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/kiss_gt.py:78: RuntimeWarning: overflow encountered in matmul
+  cloud.append((T[:3, :3] @ p.T).T + T[:3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/kiss_gt.py:78: RuntimeWarning: invalid value encountered in matmul
+  cloud.append((T[:3, :3] @ p.T).T + T[:3, 3])
+{"messages": 2280, "unique_header_stamps": 2280, "scans_used": 2280, "dt_ms": {"median": 100.86, "std": 0.19, "min": 99.35, "max": 102.37}, "ms_per_scan": 53.84, "path_m": 52.95, "return_error_cm": 35.9, "total_abs_yaw_deg": 1838.3, "net_yaw_deg": -1.2, "map_preview_points": 29390}
+== [13:33:34] run 1/2: base + gyro (real-time paced, f4000)
+[slam_stream] done: 6893 processed, 6893 ok, wall 229.9 s
+[slam_stream] done: 6893 processed, 6893 ok, wall 229.9 s
+[slam_stream] gyro aid: 6893 frames with gyro, 0 without | 13784 pose priors, 28720 keyframe edges | 26 zero-rate updates, final bias -0.00062 0.00179 -0.00119 
+   loops: base 1  gyro 1
+== [13:37:52] run 2/2: base + gyro (real-time paced, f4000)
+[slam_stream] done: 6893 processed, 6893 ok, wall 229.9 s
+[slam_stream] done: 6893 processed, 6893 ok, wall 229.9 s
+[slam_stream] gyro aid: 6893 frames with gyro, 0 without | 13784 pose priors, 28171 keyframe edges | 26 zero-rate updates, final bias -0.00068 0.00176 -0.00116 
+   loops: base 1  gyro 1
+== [13:41:51] scoring against KISS-ICP
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: divide by zero encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: overflow encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: invalid value encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: divide by zero encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: overflow encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: invalid value encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: divide by zero encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: overflow encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: invalid value encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+base_live1                   ATE    4.9 cm (max   15.6)  rot  1.17 deg | drift pos rmse    6.1 max   16.6 final    4.2 cm  yaw rmse  0.43 max  1.81 tilt rmse  1.34 | RPE10s   6.7 cm  1.50 deg  RPE1s  2.16 cm 0.398 deg
+base_opt1                    ATE    4.5 cm (max   12.2)  rot  1.07 deg | drift pos rmse    5.8 max   13.7 final    3.8 cm  yaw rmse  0.26 max  1.28 tilt rmse  1.36 | RPE10s   6.0 cm  1.44 deg  RPE1s  1.72 cm 0.345 deg
+gyro_live1                   ATE    5.0 cm (max   18.4)  rot  1.20 deg | drift pos rmse    6.1 max   17.1 final    3.8 cm  yaw rmse  0.39 max  1.58 tilt rmse  1.28 | RPE10s   6.6 cm  1.45 deg  RPE1s  2.33 cm 0.391 deg
+gyro_opt1                    ATE    4.3 cm (max   11.5)  rot  1.11 deg | drift pos rmse    5.3 max   12.5 final    3.2 cm  yaw rmse  0.21 max  1.19 tilt rmse  1.32 | RPE10s   6.0 cm  1.43 deg  RPE1s  1.92 cm 0.334 deg
+base_live2                   ATE    4.8 cm (max   12.2)  rot  1.21 deg | drift pos rmse    6.1 max   14.6 final    4.3 cm  yaw rmse  0.40 max  1.81 tilt rmse  1.29 | RPE10s   6.7 cm  1.47 deg  RPE1s  2.30 cm 0.406 deg
+base_opt2                    ATE    4.4 cm (max   12.2)  rot  1.10 deg | drift pos rmse    5.8 max   14.8 final    3.5 cm  yaw rmse  0.29 max  1.33 tilt rmse  1.33 | RPE10s   6.0 cm  1.45 deg  RPE1s  1.79 cm 0.363 deg
+gyro_live2                   ATE    5.2 cm (max   37.5)  rot  1.18 deg | drift pos rmse    7.0 max   41.5 final    5.2 cm  yaw rmse  0.44 max  2.94 tilt rmse  1.29 | RPE10s   7.5 cm  1.50 deg  RPE1s  3.50 cm 0.394 deg
+gyro_opt2                    ATE    4.4 cm (max   21.3)  rot  1.08 deg | drift pos rmse    6.4 max   19.0 final    4.0 cm  yaw rmse  0.30 max  1.31 tilt rmse  1.31 | RPE10s   5.9 cm  1.45 deg  RPE1s  1.89 cm 0.344 deg
+######## [13:41:51] all done

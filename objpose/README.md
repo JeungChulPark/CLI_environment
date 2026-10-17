@@ -1,5 +1,7 @@
 # objpose — SLAM 기반 객체 위치 추정 + localhost 시각화
 
+> Mac 쪽(ORB-SLAM3·RTAB-Map·LiDAR 스트리머, 미리 빌드한 바이너리) 설치와 실행은 [`README_mac.md`](README_mac.md) 에 있다.
+
 두 대의 RealSense(SLAM 카메라, SAM 카메라)로 녹화한 `Dataset/260826_etri_eightcircle_dark`를
 입력으로, **Mac(192.168.20.55)의 ORB-SLAM3 위치**와 **PC(192.168.20.5)의 SAM-6D 객체 포즈**를 시간 동기화·보간해
 SLAM 지도 좌표계의 객체 위치를 `http://localhost:8765`에 실시간으로 보여준다.

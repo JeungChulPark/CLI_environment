@@ -18,6 +18,7 @@
 
 
 #include "LoopClosing.h"
+#include <cmath>
 
 #include "Sim3Solver.h"
 #include "Converter.h"
@@ -262,6 +263,34 @@ void LoopClosing::Run()
 
                     }
 
+                    // GYRO LOOP VETO (objpose 2026-09-18): the loop implies a relative rotation between the matched keyframe
+                    // and the (corrected) current keyframe; the gyro knows that rotation to a fraction of a degree even
+                    // 100 s apart. A loop that disagrees is a wrong place-recognition match (figure-8 crossing) -> refuse it.
+                    if (bGoodLoop && Optimizer::sGyroUse && Optimizer::sGyroLoopVetoDeg > 0 &&
+                        mpCurrentKF->mbHasGyro && mpLoopMatchedKF->mbHasGyro &&
+                        mpCurrentKF->mnGyroEpoch == mpLoopMatchedKF->mnGyroEpoch)
+                    {
+                        Eigen::Matrix3d Rcw_loop = mg2oLoopScw.rotation().toRotationMatrix();
+                        Eigen::Matrix3d Rmw = mpLoopMatchedKF->GetRotation().cast<double>();
+                        Eigen::Matrix3d Rcm_loop = Rcw_loop * Rmw.transpose();
+                        Eigen::Matrix3d Rcm_gyro = (mpCurrentKF->mRgc.transpose() * mpLoopMatchedKF->mRgc).cast<double>();
+                        Eigen::AngleAxisd aa(Rcm_gyro.transpose() * Rcm_loop);
+                        const double ang = aa.angle() * 180.0 / M_PI;
+                        const double dt = fabs(mpCurrentKF->mTimeStamp - mpLoopMatchedKF->mTimeStamp);
+                        const double lim = Optimizer::sGyroLoopVetoDeg + Optimizer::sGyroLoopVetoRate * dt;
+                        Eigen::Matrix3d Rcm_now = mpCurrentKF->GetRotation().cast<double>() * Rmw.transpose();
+                        const double ang_now = Eigen::AngleAxisd(Rcm_gyro.transpose() * Rcm_now).angle() * 180.0 / M_PI;
+                        std::cout << std::fixed << std::setprecision(3) << "GYRO_LOOP_CHECK|cur_id=" << mpCurrentKF->mnId
+                                  << "|matched_id=" << mpLoopMatchedKF->mnId << "|dt_s=" << dt
+                                  << "|loop_vs_gyro_deg=" << ang << "|current_vs_gyro_deg=" << ang_now
+                                  << "|limit_deg=" << lim << "|verdict=" << (ang > lim ? "VETO" : "ok") << std::endl;
+                        if (ang > lim)
+                        {
+                            bGoodLoop = false;
+                            Optimizer::sGyroLoopVetoed++;
+                        }
+                    }
+
                     if (bGoodLoop) {
 
                         mvpLoopMapPoints = mvpLoopMPs;
@@ -274,6 +303,16 @@ void LoopClosing::Run()
                             Eigen::Vector3f mc = mpLoopMatchedKF->GetCameraCenter();
                             Eigen::Vector3d s3t = mg2oLoopScw.translation();
                             double gap = (cc - mc).norm();
+                            // Where CorrectLoop() is about to put this keyframe. Scw maps
+                            // world to camera (x_c = s*R*x_w + t), so the corrected camera
+                            // centre is -R^T t / s. The magnitude of s3t on its own is just
+                            // that centre's distance from the map origin, which tracks where
+                            // the MATCHED keyframe sits rather than how far the closure moves
+                            // anything, so it cannot judge a closure. corr_m can.
+                            Eigen::Matrix3d Rcorr = mg2oLoopScw.rotation().toRotationMatrix();
+                            Eigen::Vector3d Ccorr = -(Rcorr.transpose() * s3t) / mg2oLoopScw.scale();
+                            double corr = (Ccorr.cast<float>() - cc).norm();
+                            double resid = (Ccorr.cast<float>() - mc).norm();
                             std::cout << std::fixed << std::setprecision(6)
                                       << "LOOP_GAP|cur_id=" << mpCurrentKF->mnId
                                       << "|matched_id=" << mpLoopMatchedKF->mnId
@@ -284,6 +323,8 @@ void LoopClosing::Run()
                                       << "|gap_m=" << gap
                                       << "|sim3t=" << s3t(0) << "," << s3t(1) << "," << s3t(2)
                                       << "|sim3_scale=" << mg2oLoopScw.scale()
+                                      << "|corr_m=" << corr
+                                      << "|resid_m=" << resid
                                       << std::endl;
                         }
 

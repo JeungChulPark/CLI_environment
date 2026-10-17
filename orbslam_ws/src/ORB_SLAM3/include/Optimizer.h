@@ -71,6 +71,29 @@ public:
     static int  sPoseOptIters[4];
     static bool sPoseOptEarlyExit;
 
+    // GYRO AID (objpose, 2026-09-18): rotation constraints from an external gyro in the non-inertial modes
+    // (see GyroEdges.h). Settings keys, read in the Tracking constructor:
+    //   Gyro.Use          1 enables it (frames must also carry a gyro orientation, System::SetFrameGyro)
+    //   Gyro.SigmaFrame   rad, 1-sigma of the gyro rotation between two consecutive frames (PoseOptimization prior)
+    //   keyframe-to-keyframe rotation (LocalBundleAdjustment), sigma^2 = SigmaKF^2 + SigmaARW^2*dt + (SigmaRate*dt)^2 + (SigmaScale*angle)^2
+    //   Gyro.SigmaKF      rad, floor (camera/IMU stamp jitter at both ends)
+    //   Gyro.SigmaARW     rad/sqrt(s), angle random walk
+    //   Gyro.SigmaRate    rad/s, residual bias after the caller's bias estimation
+    //   Gyro.SigmaScale   -, scale-factor error, times the rotation angle of the interval
+    //   Gyro.MaxGapS      s, keyframes further apart in time than this are not tied
+    static bool   sGyroUse;
+    static double sGyroSigmaFrame;
+    static double sGyroSigmaKF;
+    static double sGyroSigmaRate;
+    static double sGyroSigmaARW;
+    static double sGyroSigmaScale;
+    static double sGyroMaxGapS;
+    static double sGyroLoopVetoDeg;    // loop closure veto: allowed disagreement with the gyro, deg (+ rate*dt); <=0 disables
+    static double sGyroLoopVetoRate;   // deg/s
+    static long   sGyroLoopVetoed;
+    static long   sGyroPriorEdges;   // diagnostics: edges added so far
+    static long   sGyroKFEdges;
+
     int static PoseOptimization(Frame* pFrame);
     int static PoseInertialOptimizationLastKeyFrame(Frame* pFrame, bool bRecInit = false);
     int static PoseInertialOptimizationLastFrame(Frame *pFrame, bool bRecInit = false);

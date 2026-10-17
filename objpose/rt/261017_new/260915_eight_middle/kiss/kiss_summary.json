@@ -1,0 +1,17 @@
+{
+ "messages": 1007,
+ "unique_header_stamps": 1007,
+ "scans_used": 1007,
+ "dt_ms": {
+  "median": 100.865,
+  "std": 0.167,
+  "min": 98.62,
+  "max": 103.03
+ },
+ "ms_per_scan": 16.05,
+ "path_m": 23.71,
+ "return_error_cm": 4.5,
+ "total_abs_yaw_deg": 1152.5,
+ "net_yaw_deg": 1075.2,
+ "map_preview_points": 11654
+}

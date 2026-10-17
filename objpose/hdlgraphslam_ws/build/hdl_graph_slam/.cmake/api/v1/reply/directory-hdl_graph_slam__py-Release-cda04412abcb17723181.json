@@ -1,0 +1,19 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"codemodelVersion" : 
+	{
+		"major" : 2,
+		"minor" : 11
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "hdl_graph_slam__py",
+		"source" : "/Users/user/objpose/hdlgraphslam_ws/build/hdl_graph_slam/hdl_graph_slam__py"
+	}
+}

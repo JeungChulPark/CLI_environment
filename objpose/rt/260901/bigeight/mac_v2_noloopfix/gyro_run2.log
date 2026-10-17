@@ -1,0 +1,115 @@
+[slam_stream] time-source=header domain=colour header stamp offset_ns=0 non_monotonic=0
+[slam_stream] /Users/user/Documents/DefenseMeta/Dataset/260901_cbnu_bigeightcircle/SLAM/SLAM_0.db3 | 9445 frames | color 640x480 fx=385.238 | depth fx=385.238 | t=(0.000000,0.000000,0.000000) | units=0.001
+[slam_stream] converted bag: 9445 pairs (inexact 0, max dt 0.000 ms, unpaired colour 0 depth 0) K fx=385.238 fy=384.667 cx=320.789 cy=243.438 D=[-0.055259 0.068334 -0.000608 -0.000944 -0.022290] plumb_bob, depth pre-aligned
+[slam_stream] gyro aid: /Users/user/Documents/DefenseMeta/Dataset/260901_cbnu_bigeightcircle/imu/xsens_20260901_165918.db3 /xsens/imu/data | 63013 samples 200.0 Hz | start bias (rig, camera frame) -0.00064 0.00167 -0.00141 rad/s | zero-rate update on | imu-cam -2.74 ms
+[slam_stream] settings override Gyro.Use: 1
+
+ORB-SLAM3 Copyright (C) 2017-2020 Carlos Campos, Richard Elvira, Juan J. Gómez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+ORB-SLAM2 Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+This program comes with ABSOLUTELY NO WARRANTY;
+This is free software, and you are welcome to redistribute it
+under certain conditions. See LICENSE.txt.
+
+Input sensor was set to: RGB-D
+Loading settings from /tmp/slam_stream_21611_settings.yaml
+	-Loaded camera 1
+Camera.newHeight optional parameter does not exist...
+Camera.newWidth optional parameter does not exist...
+	-Loaded image info
+	-Loaded RGB-D calibration
+	-Loaded ORB settings
+Viewer.imageViewScale optional parameter does not exist...
+	-Loaded viewer settings
+System.LoadAtlasFromFile optional parameter does not exist...
+System.SaveAtlasToFile optional parameter does not exist...
+	-Loaded Atlas settings
+System.thFarPoints optional parameter does not exist...
+	-Loaded misc parameters
+----------------------------------
+SLAM settings: 
+	-Camera 1 parameters (Pinhole): [ 385.238 384.667 320.789 243.438 ]
+	-Camera 1 distortion parameters: [  -0.055259 0.068334 -0.000608 -0.000944 -0.02229 ]
+	-Original image size: [ 640 , 480 ]
+	-Current image size: [ 640 , 480 ]
+	-Sequence FPS: 30
+	-RGB-D depth map factor: 1000
+	-Features per image: 4000
+	-ORB scale factor: 1.2
+	-ORB number of scales: 8
+	-Initial FAST threshold: 20
+	-Min FAST threshold: 7
+
+
+Loading ORB Vocabulary. This could take a while...
+Vocabulary loaded!
+
+Initialization of Atlas from scratch 
+Creation of new map with id: 0
+Creation of new map with last KF id: 0
+Seq. Name: 
+Gyro aid: on, sigma frame 0.0005 rad, keyframe 0.0005 rad + 0.0002 rad/sqrt(s) + 0.0001 rad/s + 0.001 x angle, max gap 10 s
+There are 1 cameras in the atlas
+Camera 0 is pinhole
+First KF:0; Map init KF:0
+New Map created with 3445 points
+[slam_stream] gyro bias update #1 at 3.00 s: bias (camera frame) -0.00061 0.00173 -0.00133 rad/s
+[slam_stream] gyro bias update #2 at 6.03 s: bias (camera frame) -0.00055 0.00166 -0.00127 rad/s
+[slam_stream] gyro bias update #3 at 9.07 s: bias (camera frame) -0.00063 0.00181 -0.00130 rad/s
+[slam_stream] gyro bias update #4 at 12.10 s: bias (camera frame) -0.00059 0.00169 -0.00131 rad/s
+[slam_stream] gyro bias update #5 at 15.14 s: bias (camera frame) -0.00060 0.00173 -0.00125 rad/s
+[slam_stream] 500/9445 ok=500 track mean 12.56 ms
+[slam_stream] gyro bias update #6 at 18.17 s: bias (camera frame) -0.00057 0.00169 -0.00127 rad/s
+[slam_stream] gyro bias update #7 at 21.21 s: bias (camera frame) -0.00063 0.00178 -0.00126 rad/s
+[slam_stream] gyro bias update #8 at 24.24 s: bias (camera frame) -0.00060 0.00179 -0.00126 rad/s
+[slam_stream] gyro bias update #9 at 27.27 s: bias (camera frame) -0.00060 0.00184 -0.00126 rad/s
+[slam_stream] 1000/9445 ok=1000 track mean 11.78 ms
+[slam_stream] gyro bias update #10 at 49.18 s: bias (camera frame) -0.00060 0.00175 -0.00124 rad/s
+[slam_stream] 1500/9445 ok=1500 track mean 11.88 ms
+[slam_stream] gyro bias update #11 at 52.21 s: bias (camera frame) -0.00067 0.00166 -0.00123 rad/s
+[slam_stream] gyro bias update #12 at 55.25 s: bias (camera frame) -0.00062 0.00163 -0.00123 rad/s
+[slam_stream] 2000/9445 ok=2000 track mean 11.76 ms
+[slam_stream] gyro bias update #13 at 70.82 s: bias (camera frame) -0.00063 0.00170 -0.00126 rad/s
+[slam_stream] gyro bias update #14 at 73.85 s: bias (camera frame) -0.00064 0.00171 -0.00126 rad/s
+[slam_stream] gyro bias update #15 at 76.89 s: bias (camera frame) -0.00065 0.00174 -0.00125 rad/s
+[slam_stream] gyro bias update #16 at 79.92 s: bias (camera frame) -0.00066 0.00173 -0.00120 rad/s
+[slam_stream] 2500/9445 ok=2500 track mean 11.49 ms
+[slam_stream] 3000/9445 ok=3000 track mean 11.19 ms
+[slam_stream] gyro bias update #17 at 100.19 s: bias (camera frame) -0.00064 0.00177 -0.00120 rad/s
+[slam_stream] gyro bias update #18 at 103.22 s: bias (camera frame) -0.00060 0.00181 -0.00121 rad/s
+*Loop detected
+LOOP_GAP|cur_id=246|matched_id=8|ts_cur=1788249691.647730|ts_matched=1788249594.858449|cur_xyz=0.040151,0.100483,-0.145991|matched_xyz=0.005694,0.081318,1.470390|gap_m=1.616861|sim3t=0.026554,-0.145236,0.191234|sim3_scale=1.000000
+Local Mapping STOP
+Local Mapping RELEASE
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] 3500/9445 ok=3500 track mean 11.09 ms
+[slam_stream] gyro bias update #19 at 124.33 s: bias (camera frame) -0.00059 0.00182 -0.00123 rad/s
+[slam_stream] gyro bias update #20 at 127.36 s: bias (camera frame) -0.00059 0.00185 -0.00125 rad/s
+[slam_stream] gyro bias update #21 at 130.40 s: bias (camera frame) -0.00055 0.00187 -0.00127 rad/s
+[slam_stream] 4000/9445 ok=4000 track mean 11.55 ms
+[slam_stream] gyro bias update #22 at 145.60 s: bias (camera frame) -0.00058 0.00184 -0.00127 rad/s
+[slam_stream] 4500/9445 ok=4500 track mean 11.84 ms
+[slam_stream] 5000/9445 ok=5000 track mean 12.06 ms
+[slam_stream] gyro bias update #23 at 175.81 s: bias (camera frame) -0.00059 0.00188 -0.00129 rad/s
+[slam_stream] 5500/9445 ok=5500 track mean 12.12 ms
+[slam_stream] 6000/9445 ok=6000 track mean 12.30 ms
+[slam_stream] gyro bias update #24 at 200.85 s: bias (camera frame) -0.00061 0.00187 -0.00128 rad/s
+[slam_stream] gyro bias update #25 at 213.42 s: bias (camera frame) -0.00064 0.00187 -0.00127 rad/s
+[slam_stream] gyro bias update #26 at 216.45 s: bias (camera frame) -0.00067 0.00189 -0.00128 rad/s
+[slam_stream] 6500/9445 ok=6500 track mean 12.44 ms
+[slam_stream] 7000/9445 ok=7000 track mean 12.44 ms
+[slam_stream] 7500/9445 ok=7500 track mean 12.51 ms
+[slam_stream] 8000/9445 ok=8000 track mean 12.72 ms
+[slam_stream] gyro bias update #27 at 269.26 s: bias (camera frame) -0.00074 0.00185 -0.00127 rad/s
+[slam_stream] gyro bias update #28 at 272.30 s: bias (camera frame) -0.00085 0.00188 -0.00127 rad/s
+[slam_stream] 8500/9445 ok=8500 track mean 12.90 ms
+[slam_stream] 9000/9445 ok=9000 track mean 12.91 ms
+[slam_stream] gyro bias update #29 at 310.44 s: bias (camera frame) -0.00083 0.00187 -0.00127 rad/s
+[slam_stream] gyro bias update #30 at 313.48 s: bias (camera frame) -0.00082 0.00185 -0.00127 rad/s
+[slam_stream] done: 9445 processed, 9445 ok, wall 315.0 s
+[slam_stream] gyro aid: 9445 frames with gyro, 0 without | 18888 pose priors, 22804 keyframe edges | 30 zero-rate updates, final bias -0.00082 0.00185 -0.00127 rad/s
+Shutdown
+Shutdown: waiting for background threads (localMapper=busy, loopCloser=busy, GBA=idle) ...
+Shutdown: background threads stopped after 390 ms.
+
+Saving camera trajectory to /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/mac/gyro_run2_tum.txt.optimized.txt ...

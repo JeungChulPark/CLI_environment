@@ -70,6 +70,25 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
                           << Optimizer::sPoseOptIters[2] << " "
                           << Optimizer::sPoseOptIters[3] << std::endl;
             }
+            // GYRO AID: see Optimizer.h
+            cv::FileNode nGu = fPerf["Gyro.Use"];
+            if(!nGu.empty() && nGu.isInt())
+                Optimizer::sGyroUse = ((int)nGu != 0);
+            cv::FileNode nG;
+            nG = fPerf["Gyro.SigmaFrame"]; if(!nG.empty() && nG.isReal()) Optimizer::sGyroSigmaFrame = (double)nG;
+            nG = fPerf["Gyro.SigmaKF"];    if(!nG.empty() && nG.isReal()) Optimizer::sGyroSigmaKF = (double)nG;
+            nG = fPerf["Gyro.SigmaRate"];  if(!nG.empty() && nG.isReal()) Optimizer::sGyroSigmaRate = (double)nG;
+            nG = fPerf["Gyro.SigmaARW"];   if(!nG.empty() && nG.isReal()) Optimizer::sGyroSigmaARW = (double)nG;
+            nG = fPerf["Gyro.SigmaScale"]; if(!nG.empty() && nG.isReal()) Optimizer::sGyroSigmaScale = (double)nG;
+            nG = fPerf["Gyro.MaxGapS"];    if(!nG.empty() && nG.isReal()) Optimizer::sGyroMaxGapS = (double)nG;
+            nG = fPerf["Gyro.LoopVetoDeg"];  if(!nG.empty() && nG.isReal()) Optimizer::sGyroLoopVetoDeg = (double)nG;
+            nG = fPerf["Gyro.LoopVetoRate"]; if(!nG.empty() && nG.isReal()) Optimizer::sGyroLoopVetoRate = (double)nG;
+            if(Optimizer::sGyroUse)
+                std::cout << "Gyro aid: on, sigma frame " << Optimizer::sGyroSigmaFrame << " rad, keyframe "
+                          << Optimizer::sGyroSigmaKF << " rad + " << Optimizer::sGyroSigmaARW << " rad/sqrt(s) + "
+                          << Optimizer::sGyroSigmaRate << " rad/s + " << Optimizer::sGyroSigmaScale << " x angle, max gap "
+                          << Optimizer::sGyroMaxGapS << " s" << std::endl;
+
             cv::FileNode nEe = fPerf["Optimizer.PoseEarlyExit"];
             if(!nEe.empty() && nEe.isInt())
             {
@@ -1542,6 +1561,7 @@ Sophus::SE3f Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat 
 #endif
 
     //cout << "Tracking start" << endl;
+    ApplyPendingGyro();   // GYRO AID
     Track();
     //cout << "Tracking end" << endl;
 
@@ -1589,6 +1609,7 @@ Sophus::SE3f Tracking::GrabImageRGBD(const cv::Mat &imRGB,const cv::Mat &imD, co
     vdORBExtract_ms.push_back(mCurrentFrame.mTimeORB_Ext);
 #endif
 
+    ApplyPendingGyro();   // GYRO AID
     Track();
 
     return mCurrentFrame.GetPose();
@@ -1641,6 +1662,7 @@ Sophus::SE3f Tracking::GrabImageMonocular(const cv::Mat &im, const double &times
 #endif
 
     lastID = mCurrentFrame.mnId;
+    ApplyPendingGyro();   // GYRO AID
     Track();
 
     return mCurrentFrame.GetPose();
@@ -2841,6 +2863,51 @@ void Tracking::CheckReplacedInLastFrame()
 }
 
 
+// ---- GYRO AID (objpose, 2026-09-18) ---------------------------------------------------------------
+void Tracking::SetNextFrameGyro(const Eigen::Matrix3f &Rgc, int epoch)
+{
+    mNextRgc = Rgc;
+    mnNextGyroEpoch = epoch;
+    mbNextGyro = true;
+}
+
+void Tracking::ApplyPendingGyro()
+{
+    if(mbNextGyro)
+    {
+        mCurrentFrame.mbHasGyro = true;
+        mCurrentFrame.mnGyroEpoch = mnNextGyroEpoch;
+        mCurrentFrame.mRgc = mNextRgc;
+        mbNextGyro = false;
+    }
+}
+
+bool Tracking::GyroDeltaFromLast(Eigen::Matrix3f &Rcl) const
+{
+    if(!Optimizer::sGyroUse || !mCurrentFrame.mbHasGyro || !mLastFrame.mbHasGyro || mCurrentFrame.mnGyroEpoch!=mLastFrame.mnGyroEpoch)
+        return false;
+    const double dt = mCurrentFrame.mTimeStamp - mLastFrame.mTimeStamp;
+    if(dt<=0 || dt>0.5)
+        return false;
+    Rcl = mCurrentFrame.mRgc.transpose() * mLastFrame.mRgc;   // R_(c <- g) * R_(g <- l)
+    return true;
+}
+
+void Tracking::SetGyroRotPrior()
+{
+    mCurrentFrame.mbHasRotPrior = false;
+    Eigen::Matrix3f Rcl;
+    if(!mLastFrame.HasPose() || !GyroDeltaFromLast(Rcl))
+        return;
+    mCurrentFrame.mRcwPrior = (Rcl * mLastFrame.GetPose().rotationMatrix()).cast<double>();
+    // per-frame sigma; frames skipped by a live feed integrate proportionally more gyro noise
+    const double dt = mCurrentFrame.mTimeStamp - mLastFrame.mTimeStamp;
+    const double nfr = std::max(1.0, dt*30.0);
+    mCurrentFrame.mRotPriorInfo = 1.0/(Optimizer::sGyroSigmaFrame*Optimizer::sGyroSigmaFrame*nfr);
+    mCurrentFrame.mbHasRotPrior = true;
+}
+// ---------------------------------------------------------------------------------------------------
+
 bool Tracking::TrackReferenceKeyFrame()
 {
     // Compute Bag of Words vector
@@ -2861,6 +2928,16 @@ bool Tracking::TrackReferenceKeyFrame()
 
     mCurrentFrame.mvpMapPoints = vpMapPointMatches;
     mCurrentFrame.SetPose(mLastFrame.GetPose());
+    {
+        // GYRO AID: start from the last pose turned by the gyro (camera centre unchanged), and keep the prior
+        Eigen::Matrix3f Rcl;
+        if(GyroDeltaFromLast(Rcl))
+        {
+            const Sophus::SE3f Tlw = mLastFrame.GetPose();
+            mCurrentFrame.SetPose(Sophus::SE3f(Eigen::Quaternionf(Rcl*Tlw.rotationMatrix()).normalized(), Rcl*Tlw.translation()));
+        }
+        SetGyroRotPrior();
+    }
 
     //mCurrentFrame.PrintPointDistribution();
 
@@ -2991,7 +3068,17 @@ bool Tracking::TrackWithMotionModel()
     }
     else
     {
-        mCurrentFrame.SetPose(mVelocity * mLastFrame.GetPose());
+        // GYRO AID: the constant-velocity model keeps the camera-centre motion, the rotation comes from the gyro
+        Eigen::Matrix3f Rcl;
+        if(GyroDeltaFromLast(Rcl))
+        {
+            const Eigen::Vector3f cl = -(mVelocity.rotationMatrix().transpose()*mVelocity.translation());   // centre in last frame
+            const Sophus::SE3f Tcl(Eigen::Quaternionf(Rcl).normalized(), -(Rcl*cl));
+            mCurrentFrame.SetPose(Tcl * mLastFrame.GetPose());
+        }
+        else
+            mCurrentFrame.SetPose(mVelocity * mLastFrame.GetPose());
+        SetGyroRotPrior();
     }
 
 

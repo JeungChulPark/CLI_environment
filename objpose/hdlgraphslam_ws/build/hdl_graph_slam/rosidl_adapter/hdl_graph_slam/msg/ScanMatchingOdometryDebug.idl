@@ -1,0 +1,29 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from hdl_graph_slam/msg/ScanMatchingOdometryDebug.msg
+// generated code does not contain a copyright notice
+
+#include "std_msgs/msg/Header.idl"
+
+module hdl_graph_slam {
+  module msg {
+    struct ScanMatchingOdometryDebug {
+      std_msgs::msg::Header header;
+
+      uint32 input_point_count;
+
+      uint32 downsampled_point_count;
+
+      float registration_time_ms;
+
+      float callback_time_ms;
+
+      uint64 odom_count;
+
+      boolean registration_triggered;
+
+      boolean has_converged;
+
+      float matching_error;
+    };
+  };
+};

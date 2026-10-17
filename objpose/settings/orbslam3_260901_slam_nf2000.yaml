@@ -1,0 +1,56 @@
+%YAML:1.0
+
+# ORB-SLAM3 RGB-D settings for dataset 260901_cbnu_eightcircle / SLAM
+#   source : SLAM/SLAM_0.db3 (converted rosbag2, standard topics, depth already aligned)
+#   device : Intel RealSense D455F, the same SLAM-rig camera as 260826_etri_eightcircle_dark
+#            (identical distortion coefficients and principal point; focal differs by 0.2 px)
+#   NOTE   : intrinsics below are the COLOR stream's, read straight out of the bag
+#            (/camera/camera/color/camera_info). The aligned_depth_to_color topic reports the
+#            same K, so these are the correct intrinsics for the aligned pair.
+
+File.version: "1.0"
+Camera.type: "PinHole"
+
+Camera1.fx: 385.134
+Camera1.fy: 384.563
+Camera1.cx: 320.789
+Camera1.cy: 243.438
+
+# RealSense reports "Inverse Brown Conrady" for the color stream; coefficients are
+# small (|k1| ~ 0.055) and are used here as plumb_bob, matching the convention
+# already used by orbslam3_260826_dark_nf2000.yaml in this project.
+Camera1.k1: -0.055259
+Camera1.k2:  0.068334
+Camera1.p1: -0.000608
+Camera1.p2: -0.000944
+Camera1.k3: -0.022290
+
+Camera.width: 640
+Camera.height: 480
+Camera.fps: 30
+Camera.RGB: 1
+
+# Depth_Units in the bag = 0.001 m/count -> factor 1000
+RGBD.DepthMapFactor: 1000.0
+
+# kept identical to orbslam3_260826_dark_nf2000.yaml so timing/accuracy stay
+# comparable with this project's earlier runs
+Stereo.ThDepth: 40.0
+Stereo.b: 0.0745
+
+ORBextractor.nFeatures: 2000
+ORBextractor.scaleFactor: 1.2
+ORBextractor.nLevels: 8
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
+
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1.0
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2.0
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3.0
+Viewer.ViewpointX: 0.0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -3.5
+Viewer.ViewpointF: 500.0

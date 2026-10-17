@@ -1,0 +1,14 @@
+pairs_released 7145
+skew_dropped 819
+tracked 7145
+queue_dropped 0
+late_release_gt5ms 2208
+max_release_late_ms 5.12
+wall_s 238.35
+effective_hz 29.98
+track_ms mean 10.23 p50 10.26 p95 11.73 p99 12.25 p99.9 13.53 max 16.79
+over_33.33ms 0
+release_to_done_ms p99 12.26 max 16.80
+state_not_ok 0
+no_pose 0
+align_ms_mean 2.03

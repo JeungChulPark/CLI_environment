@@ -88,6 +88,9 @@ public:
     // Use this function if you have deactivated local mapping and you only want to localize the camera.
     void InformOnlyTracking(const bool &flag);
 
+    // GYRO AID (objpose): see System::SetFrameGyro / GyroEdges.h
+    void SetNextFrameGyro(const Eigen::Matrix3f &Rgc, int epoch = 0);
+
     void UpdateFrameIMU(const float s, const IMU::Bias &b, KeyFrame* pCurrentKeyFrame);
     KeyFrame* GetLastKeyFrame()
     {
@@ -223,6 +226,14 @@ protected:
     void CheckReplacedInLastFrame();
     bool TrackReferenceKeyFrame();
     void UpdateLastFrame();
+
+    // GYRO AID
+    void ApplyPendingGyro();          // move the pending gyro orientation into mCurrentFrame
+    bool GyroDeltaFromLast(Eigen::Matrix3f &Rcl) const;   // gyro rotation current <- last frame, if both have one
+    void SetGyroRotPrior();           // mCurrentFrame.mRcwPrior from mLastFrame's pose (call after UpdateLastFrame)
+    bool mbNextGyro{false};
+    int mnNextGyroEpoch{0};
+    Eigen::Matrix3f mNextRgc;
     bool TrackWithMotionModel();
     bool PredictStateIMU();
 

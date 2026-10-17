@@ -1,0 +1,26 @@
+{
+  "type_description_msg": {
+    "type_description": {
+      "type_name": "hdl_graph_slam/srv/LoadGraph_Request",
+      "fields": [
+        {
+          "name": "path",
+          "type": {
+            "type_id": 17,
+            "capacity": 0,
+            "string_capacity": 0,
+            "nested_type_name": ""
+          },
+          "default_value": ""
+        }
+      ]
+    },
+    "referenced_type_descriptions": []
+  },
+  "type_hashes": [
+    {
+      "type_name": "hdl_graph_slam/srv/LoadGraph_Request",
+      "hash_string": "RIHS01_b35769b91cf98937fe9117ab1765e868e14f9d2f967067667fdc112222804bd9"
+    }
+  ]
+}

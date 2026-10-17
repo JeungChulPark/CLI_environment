@@ -1,0 +1,270 @@
+{
+	"abstract" : true,
+	"artifacts" : 
+	[
+		{
+			"path" : "/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/qt6/plugins/permissions/libqdarwinmicrophonepermission.a"
+		}
+	],
+	"backtrace" : 27,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"include",
+			"__qt_internal_include_plugin_packages",
+			"find_package",
+			"__find_dependency_common",
+			"find_dependency",
+			"_qt_internal_find_qt_dependencies",
+			"find_VTK",
+			"find_external_library",
+			"set_target_properties",
+			"target_link_libraries",
+			"__qt_internal_propagate_object_library",
+			"__qt_internal_add_static_plugin_import_macro"
+		],
+		"files" : 
+		[
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/Qt6Core/Qt6QDarwinMicrophonePermissionPluginTargets.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/Qt6Core/Qt6QDarwinMicrophonePermissionPluginConfig.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/Qt6/QtPublicPluginHelpers.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/Qt6Core/Qt6CorePlugins.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/Qt6Core/Qt6CoreConfig.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/share/cmake-4.4/Modules/CMakeFindDependencyMacro.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/Qt6OpenGL/Qt6OpenGLDependencies.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/Qt6OpenGL/Qt6OpenGLConfig.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/Qt6/Qt6Config.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/vtk-9.5/VTK-vtk-module-find-packages.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/vtk-9.5/vtk-config.cmake",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/share/pcl-1.15/PCLConfig.cmake",
+			"CMakeLists.txt",
+			"/Users/user/micromamba/envs/hdl_graph_slam_jazzy/lib/cmake/Qt6Core/Qt6CoreMacros.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 13
+			},
+			{
+				"command" : 3,
+				"file" : 13,
+				"line" : 17,
+				"parent" : 0
+			},
+			{
+				"file" : 12,
+				"parent" : 1
+			},
+			{
+				"command" : 8,
+				"file" : 12,
+				"line" : 573,
+				"parent" : 2
+			},
+			{
+				"command" : 7,
+				"file" : 12,
+				"line" : 322,
+				"parent" : 3
+			},
+			{
+				"command" : 3,
+				"file" : 12,
+				"line" : 273,
+				"parent" : 4
+			},
+			{
+				"file" : 11,
+				"parent" : 5
+			},
+			{
+				"command" : 1,
+				"file" : 11,
+				"line" : 171,
+				"parent" : 6
+			},
+			{
+				"file" : 10,
+				"parent" : 7
+			},
+			{
+				"command" : 3,
+				"file" : 10,
+				"line" : 1108,
+				"parent" : 8
+			},
+			{
+				"file" : 9,
+				"parent" : 9
+			},
+			{
+				"command" : 3,
+				"file" : 9,
+				"line" : 241,
+				"parent" : 10
+			},
+			{
+				"file" : 8,
+				"parent" : 11
+			},
+			{
+				"command" : 1,
+				"file" : 8,
+				"line" : 40,
+				"parent" : 12
+			},
+			{
+				"file" : 7,
+				"parent" : 13
+			},
+			{
+				"command" : 6,
+				"file" : 7,
+				"line" : 50,
+				"parent" : 14
+			},
+			{
+				"command" : 5,
+				"file" : 6,
+				"line" : 142,
+				"parent" : 15
+			},
+			{
+				"command" : 4,
+				"file" : 5,
+				"line" : 125,
+				"parent" : 16
+			},
+			{
+				"command" : 3,
+				"file" : 5,
+				"line" : 93,
+				"parent" : 17
+			},
+			{
+				"file" : 4,
+				"parent" : 18
+			},
+			{
+				"command" : 1,
+				"file" : 4,
+				"line" : 194,
+				"parent" : 19
+			},
+			{
+				"file" : 3,
+				"parent" : 20
+			},
+			{
+				"command" : 2,
+				"file" : 3,
+				"line" : 13,
+				"parent" : 21
+			},
+			{
+				"command" : 1,
+				"file" : 2,
+				"line" : 515,
+				"parent" : 22
+			},
+			{
+				"file" : 1,
+				"parent" : 23
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 58,
+				"parent" : 24
+			},
+			{
+				"file" : 0,
+				"parent" : 25
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 59,
+				"parent" : 26
+			},
+			{
+				"command" : 9,
+				"file" : 0,
+				"line" : 61,
+				"parent" : 26
+			},
+			{
+				"command" : 12,
+				"file" : 2,
+				"line" : 585,
+				"parent" : 22
+			},
+			{
+				"command" : 11,
+				"file" : 2,
+				"line" : 211,
+				"parent" : 29
+			},
+			{
+				"command" : 10,
+				"file" : 14,
+				"line" : 2094,
+				"parent" : 30
+			}
+		]
+	},
+	"codemodelVersion" : 
+	{
+		"major" : 2,
+		"minor" : 11
+	},
+	"id" : "Qt6::QDarwinMicrophonePermissionPlugin::@6890427a1f51a3e7e1df",
+	"imported" : true,
+	"interfaceCompileDependencies" : 
+	[
+		{
+			"backtrace" : 31,
+			"id" : "Qt6::QDarwinMicrophonePermissionPlugin_init::@6890427a1f51a3e7e1df"
+		}
+	],
+	"interfaceLinkLibraries" : 
+	[
+		{
+			"backtrace" : 28,
+			"id" : "Qt6::Core::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 28,
+			"id" : "Qt6::Core::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 28,
+			"fragment" : "-framework Foundation"
+		},
+		{
+			"backtrace" : 28,
+			"id" : "Qt6::PlatformPluginInternal::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 28,
+			"fragment" : "-framework AVFoundation"
+		},
+		{
+			"backtrace" : 31,
+			"id" : "Qt6::QDarwinMicrophonePermissionPlugin_init::@6890427a1f51a3e7e1df"
+		}
+	],
+	"local" : true,
+	"name" : "Qt6::QDarwinMicrophonePermissionPlugin",
+	"nameOnDisk" : "libqdarwinmicrophonepermission.a",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sources" : [],
+	"type" : "STATIC_LIBRARY"
+}

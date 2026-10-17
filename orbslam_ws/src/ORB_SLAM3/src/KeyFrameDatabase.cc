@@ -710,7 +710,15 @@ void KeyFrameDatabase::DetectNBestCandidates(KeyFrame *pKF, vector<KeyFrame*> &v
     {
         KeyFrame* pKFi = it->second;
         if(pKFi->isBad())
+        {
+            // FIX (objpose 2026-09-18): upstream `continue` never advanced i/it, so a candidate culled by
+            // LocalMapping between the two phases of this function spun the LoopClosing thread forever
+            // (isBad() lock/unlock at 100 % CPU, no loop closure for the rest of the run, and a livelock of
+            // the other threads on that keyframe's mutex). Seen in 2 of 3 real-time runs of 260901 bigeightcircle.
+            i++;
+            it++;
             continue;
+        }
 
         if(!spAlreadyAddedKF.count(pKFi))
         {

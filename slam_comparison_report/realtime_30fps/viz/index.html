@@ -21,11 +21,17 @@ a.card span{font-size:13.5px;color:var(--ink-2)}
 footer{margin-top:32px;font-size:12px;color:var(--ink-3);border-top:1px solid var(--rule);padding-top:16px}
 code{font-family:"IBM Plex Mono",monospace;font-size:12.5px}
 </style></head><body><div class="w">
-<div class="eyebrow">260826_etri_eightcircle_dark · i9-12900HK · WSL2 · CPU only</div>
+<div class="eyebrow">260826_etri_eightcircle_dark · i9-12900HK WSL2 · Apple M4 Pro macOS · CPU only</div>
 <h1>SLAM Latency Study</h1>
 <p class="lede">Measured runs of ORB-SLAM3 and RTAB-Map over the same 285-second RealSense D455F
 sequence, against the 33.33 ms frame budget a 30 FPS camera allows.</p>
 <ul>
+<li><a class="card" href="machines/"><b>WSL2 vs Mac at 2000 Features</b>
+<span>The same four configurations on both machines: latency against the budget, stage by stage, and accuracy.</span></a></li>
+<li><a class="card" href="mac_orb_vs_rtab/"><b>ORB-SLAM3 vs RTAB-Map Maps</b>
+<span>Both systems live at 30 Hz on the Mac: floor-plan maps, trajectories overlaid, and how far their pose estimates drift apart.</span></a></li>
+<li><a class="card" href="mac/live2000/"><b>Mac Live Tracking at 2000 Features</b>
+<span>The 30 Hz playback page for the run measured on the Apple M4 Pro.</span></a></li>
 <li><a class="card" href="live2000/"><b>Live Tracking at 2000 Features</b>
 <span>The stream at 30 Hz with pose, per-frame cost and the tracker's own state, errors marked.</span></a></li>
 <li><a class="card" href="playback/"><b>Tracking Playback at 30 Hz</b>

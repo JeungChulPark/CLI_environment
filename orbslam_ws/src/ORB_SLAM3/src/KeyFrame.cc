@@ -61,6 +61,10 @@ KeyFrame::KeyFrame(Frame &F, Map *pMap, KeyFrameDatabase *pKFDB):
     mvLeftToRightMatch(F.mvLeftToRightMatch),mvRightToLeftMatch(F.mvRightToLeftMatch), mTlr(F.GetRelativePoseTlr()),
     mvKeysRight(F.mvKeysRight), NLeft(F.Nleft), NRight(F.Nright), mTrl(F.GetRelativePoseTrl()), mnNumberOfOpt(0), mbHasVelocity(false)
 {
+    mbHasGyro = F.mbHasGyro;   // GYRO AID
+    mnGyroEpoch = F.mnGyroEpoch;
+    mRgc = F.mRgc;
+
     mnId=nNextId++;
 
     mGrid.resize(mnGridCols);
@@ -680,8 +684,10 @@ void KeyFrame::SetBadFlag()
 
 bool KeyFrame::isBad()
 {
-    unique_lock<mutex> lock(mMutexConnections);
-    return mbBad;
+    // DEADLOCK FIX (objpose 2026-09-18): no lock. UpdateBestCovisibles() calls isBad() on every neighbour while holding
+    // this keyframe's mMutexConnections; two concurrent SetBadFlag() (LocalMapping culling + LoopClosing SetErase) on
+    // connected keyframes then locked each other's mutex in opposite order and froze the whole system (Tracking too).
+    return mbBad.load();
 }
 
 void KeyFrame::EraseConnection(KeyFrame* pKF)

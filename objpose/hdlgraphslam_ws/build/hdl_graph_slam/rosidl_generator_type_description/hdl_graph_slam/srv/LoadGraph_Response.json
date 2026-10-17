@@ -1,0 +1,26 @@
+{
+  "type_description_msg": {
+    "type_description": {
+      "type_name": "hdl_graph_slam/srv/LoadGraph_Response",
+      "fields": [
+        {
+          "name": "success",
+          "type": {
+            "type_id": 15,
+            "capacity": 0,
+            "string_capacity": 0,
+            "nested_type_name": ""
+          },
+          "default_value": ""
+        }
+      ]
+    },
+    "referenced_type_descriptions": []
+  },
+  "type_hashes": [
+    {
+      "type_name": "hdl_graph_slam/srv/LoadGraph_Response",
+      "hash_string": "RIHS01_607aeca51d9d472619524883e4397ab4e9b214325257ed98c96650ffff890aef"
+    }
+  ]
+}

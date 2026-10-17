@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/user/objpose/hdlgraphslam_ws/build/hdl_graph_slam/cmake_install.cmake",
+		"/Users/user/objpose/hdlgraphslam_ws/build/hdl_graph_slam/hdl_graph_slam__py/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

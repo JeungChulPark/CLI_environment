@@ -1,0 +1,29 @@
+slam RTAB-Map
+pairs_released 7145
+skew_dropped 819
+tracked 7145
+queue_dropped 0
+late_release_gt5ms 3452
+max_release_late_ms 10.07
+wall_s 238.41
+effective_hz 29.97
+track_ms mean 14.57 p50 14.65 p95 16.50 p99 17.40 p99.9 18.25 max 32.92
+over_33.33ms 0
+release_to_done_ms p99 17.40 max 32.93
+state_not_ok 0
+no_pose 0
+align_ms_mean 1.37
+viz_handoff_ms_mean 0.04
+jpeg_ms_mean 1.46
+publisher_skipped 0
+odometry_lost_frames 0
+odometry_features_mean 878.60
+odometry_inliers_mean 380.93
+rtabmap_updates 236
+rtabmap_update_ms mean 117.04 p99 488.82 max 651.46
+graph_nodes 228
+loop_closures 110
+map_corrections 147
+keyframes_referenced 228
+keyframe_snapshots 237
+map_cloud_points 349874

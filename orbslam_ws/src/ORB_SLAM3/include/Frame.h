@@ -164,6 +164,18 @@ public:
 
 
 
+    // GYRO AID (objpose, 2026-09-18). Optional external gyro for the non-inertial sensor modes (RGB-D):
+    //   mRgc           camera orientation at this frame's stamp from integrating the gyro alone, R_(gyro world <- camera).
+    //                  Only differences between frames are used (R_ci_cj = mRgc_i^T * mRgc_j), never the absolute value.
+    //   mRcwPrior      rotation prior for Optimizer::PoseOptimization = (gyro rotation since the last frame) * R_cw(last frame),
+    //                  with information mRotPriorInfo (1/rad^2) on each axis. Set by Tracking::Track().
+    bool mbHasGyro = false;
+    int mnGyroEpoch = 0;          // gyro integration restarts (IMU gap) bump this: no tie across epochs
+    Eigen::Matrix3f mRgc = Eigen::Matrix3f::Identity();
+    bool mbHasRotPrior = false;
+    Eigen::Matrix3d mRcwPrior = Eigen::Matrix3d::Identity();
+    double mRotPriorInfo = 0.0;
+
 private:
     //Sophus/Eigen migration
     Sophus::SE3<float> mTcw;

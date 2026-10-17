@@ -1,0 +1,797 @@
+// rtab_stream — RTAB-Map RGB-D backend with the same CLI and live protocol as slam_stream.
+//
+// Layout follows orbslam_ws/mac_harness/live_rtabmap.cc (the validated Mac run): visual
+// odometry (rtabmap::Odometry, RTAB-Map defaults = F2M, GFTT/BRIEF) runs on every frame in the
+// tracking thread; the RTAB-Map core (memory, loop closure, graph optimisation) runs on its own
+// thread and takes the latest odometry output at Rtabmap/DetectionRate (default 1 Hz), exactly
+// as the rtabmap ROS node does. Odometry covariance is left at Rtabmap::process's default, as in
+// the harness.
+//
+// Frames and poses (same convention as ORB-SLAM3 / slam_stream):
+//   RTAB-Map works in a base frame (x forward, y left, z up) with the camera mounted on it through
+//   O = CameraModel::opticalRotation() (T_base_optical). Every pose leaving this program is
+//     T_w_cam = O^-1 * T_map_base * O
+//   i.e. camera optical axes (x right, y down, z forward) and world = the first camera's optical
+//   frame (odometry starts at identity, so the first T_w_cam is identity).
+//   Live pose  : T_map_base = map_correction * T_odom_base   (RTAB-Map's map->odom chain)
+//   Node pose  : T_map_base = getLocalOptimizedPoses()[id]
+//
+// Keyframe equivalents: RTAB-Map graph nodes (signatures). ref_kf = newest node the mapper has
+// added by the time this frame is tracked.
+
+#include <atomic>
+#include <condition_variable>
+#include <iomanip>
+#include <iostream>
+#include <memory>
+#include <mutex>
+#include <numeric>
+#include <signal.h>
+
+#include "raw_session.h"
+#include "imu_source.h"
+#include "lidar_source.h"
+#include "rtab_aux.h"
+
+#include <rtabmap/core/CameraModel.h>
+#include <rtabmap/core/Memory.h>
+#include <rtabmap/core/Odometry.h>
+#include <rtabmap/core/OdometryInfo.h>
+#include <rtabmap/core/Parameters.h>
+#include <rtabmap/core/Rtabmap.h>
+#include <rtabmap/core/SensorData.h>
+#include <rtabmap/core/Statistics.h>
+#include <rtabmap/core/Version.h>
+#include <rtabmap/utilite/ULogger.h>
+
+using rtabmap::Transform;
+using Clock = std::chrono::steady_clock;
+
+static double ms_since(Clock::time_point t0) {
+  return std::chrono::duration<double, std::milli>(Clock::now() - t0).count();
+}
+
+static std::string fmt6(double v) {
+  char b[32];
+  snprintf(b, sizeof(b), "%.6f", v);
+  std::string s(b);
+  if (s == "-0.000000") s = "0.000000";
+  return s;
+}
+
+struct Args {
+  std::string session, mode = "offline", out, connect, time_source = "frame";
+  // optional inputs (rtab_aux.h): IMU into SensorData, or an external odometry replacing the visual one
+  // --gyro RIG.json [--imu DIR] mirrors slam_stream's ORB-SLAM3 CLI; --rig is for --ext-odom.
+  std::string imu_dir, imu_topic = "/xsens/imu/data", gyro_rig, rig, ext_odom;
+  // --lidar DIR attaches VLP-16 scans so loop links can be closed with ICP (Reg/Strategy 1 or 2)
+  std::string lidar_dir, lidar_topic = "/velodyne_points";
+  bool lidar_z_set = false;
+  double lidar_z = 0;
+  // Neighbor-link covariance for --ext-odom (the visual odometry reports its own).
+  // Defaults: sigma 1 cm / 0.001 rad per 1 Hz link -- conservative for KISS-ICP on the VLP-16,
+  // whose return error is 15 cm over a 66 m path (0.23 %), i.e. sub-mm over one link.
+  double ext_lin_var = 1e-4, ext_ang_var = 1e-6;
+  bool odom_cov = true;
+  int features = 0;
+  long long offset_ns = 0;
+  double rate = 1.0, pace = 0.0;
+  int max_frames = 0;
+  std::vector<std::pair<std::string, std::string>> params;
+};
+
+static void usage() {
+  std::cerr << "rtab_stream --session DIR [--features N] [--offset-ns NS] [--time-source frame|assoc]\n"
+               "            [--max-frames N] [--param Key=Value ...] [--settings X --vocab X (ignored)]\n"
+               "            [--gyro RIG.json [--imu DIR] [--imu-topic T]] [--ext-odom TUM.txt --rig RIG.json]\n"
+               "                 --gyro     : sensor_msgs/Imu -> SensorData::setIMU (imu_source.h). Stock RTAB-Map\n"
+               "                              then uses it in OdometryF2M's bundle adjustment and as a\n"
+               "                              Link::kGravity per node (Optimizer/GravitySigma).\n"
+               "                 --ext-odom : replace the visual odometry with this trajectory (e.g. KISS-ICP)\n"
+               "                 --lidar    : VLP-16 scans -> SensorData::setLaserScan, so loop links are closed\n"
+               "                              with ICP rather than with the camera (needs --rig; sets\n"
+               "                              Reg/Strategy=1 unless --param overrides it)\n"
+               "            [--ext-cov LINVAR ANGVAR] [--no-odom-cov]\n"
+               "                 by default the odometry covariance is handed to Rtabmap::process (as rtabmap_ros\n"
+               "                 does); --no-odom-cov restores the identity default (sigma 1 m / 1 rad)\n"
+               "            --mode offline --out TUM.txt [--pace R] | --mode live --connect HOST:PORT [--rate R]\n";
+}
+
+// ---------------------------------------------------------------- backend
+class RtabBackend {
+ public:
+  RtabBackend(const Calib& c, const rtabmap::ParametersMap& params, const std::string& db, bool async,
+              ImuSource* imu, ExtOdom* ext, LidarSource* lidar, bool use_cov, double ext_lin_var,
+              double ext_ang_var)
+      : params_(params), async_(async), imu_(imu), ext_(ext), lidar_(lidar), use_cov_(use_cov) {
+    if (ext_) {
+      ext_cov_ = cv::Mat::eye(6, 6, CV_64FC1);
+      for (int k = 0; k < 3; ++k) ext_cov_.at<double>(k, k) = ext_lin_var;
+      for (int k = 3; k < 6; ++k) ext_cov_.at<double>(k, k) = ext_ang_var;
+    }
+    model_ = rtabmap::CameraModel(c.fxc, c.fyc, c.ppxc, c.ppyc, O_, 0, cv::Size(c.W, c.H));
+    odom_.reset(rtabmap::Odometry::create(params_));
+    rtab_.init(params_, db);
+    float rate = rtabmap::Parameters::defaultRtabmapDetectionRate();
+    rtabmap::Parameters::parse(params_, rtabmap::Parameters::kRtabmapDetectionRate(), rate);
+    period_s_ = rate > 0 ? 1.0 / rate : 0.0;
+    if (async_) mapper_ = std::thread([this] { map_loop(); });
+  }
+  ~RtabBackend() { stop(); }
+
+  struct Track {
+    bool ok = false;
+    Transform T_odom_base;     // null when lost
+    Transform T_w_cam;         // optical, map frame
+    double odom_ms = 0, map_ms = 0;
+    bool map_changed = false;
+    int ref_kf = 0, kf_map_id = -1, map_id = -1;
+    Transform T_w_kf;          // optical
+    int features = 0, inliers = 0;
+    int map_updates = 0;       // mapper updates completed since last frame
+  };
+
+  // Tracking thread. color/depth must be fresh buffers (SensorData shares them with the mapper).
+  Track track(const cv::Mat& bgr, const cv::Mat& depth, double stamp_s, long long data_ns) {
+    Track r;
+    rtabmap::SensorData data(bgr, depth, model_, ++id_, stamp_s);
+    if (imu_) {
+      rtabmap::IMU imu = imu_->at(data_ns);
+      if (!imu.empty()) data.setIMU(imu);
+    }
+    if (lidar_) {
+      rtabmap::LaserScan sc = lidar_->at(data_ns);
+      if (!sc.empty()) data.setLaserScan(sc);
+    }
+    rtabmap::OdometryInfo info;
+    auto t0 = Clock::now();
+    Transform odom;
+    if (ext_) {
+      // external odometry: rtabmap::Odometry is not run at all, the mapper gets these poses directly
+      if (!ext_->at(data_ns, odom)) odom = Transform();
+      if (use_cov_ && !odom.isNull()) odom_cov_ = ext_cov_;
+    } else {
+      odom = odom_->process(data, &info);
+      // rtabmap_ros CoreWrapper.cpp:1152-1178 — keep the LARGEST registration covariance seen between
+      // two mapper updates ("to be independent of the odometry frame rate"), ignoring the 1.0 sentinel.
+      const cv::Mat& rc = info.reg.covariance;
+      if (use_cov_ && !odom.isNull() && rc.rows == 6 && rc.cols == 6 && rc.type() == CV_64FC1 &&
+          std::isfinite(rc.at<double>(0, 0)) && rc.at<double>(0, 0) != 1.0 && rc.at<double>(0, 0) > 0.0) {
+        if (odom_cov_.empty() || rc.at<double>(0, 0) > odom_cov_.at<double>(0, 0)) odom_cov_ = rc.clone();
+      }
+    }
+    r.odom_ms = ms_since(t0);
+    r.features = info.features;
+    r.inliers = info.reg.inliers;
+    if (!odom.isNull() && base0_.isNull()) base0_ = odom;
+    if (!odom.isNull()) {
+      if (async_) {
+        std::lock_guard<std::mutex> l(m_);
+        pending_ = std::make_shared<rtabmap::SensorData>(data);
+        pending_pose_ = odom;
+        pending_cov_ = odom_cov_;
+        odom_cov_.release();            // reset after each handoff, as CoreWrapper does
+        cv_.notify_one();
+      } else if (last_sync_ns_ < 0 || double(data_ns - last_sync_ns_) * 1e-9 >= period_s_) {
+        // offline, unpaced: feed the mapper on the data clock so it sees the same 1 Hz cadence
+        last_sync_ns_ = data_ns;
+        map_update(data, odom, odom_cov_);
+        odom_cov_.release();
+      }
+    }
+    std::lock_guard<std::mutex> l(m_);
+    r.map_ms = map_ms_accum_;
+    r.map_updates = map_updates_since_;
+    map_ms_accum_ = 0;
+    map_updates_since_ = 0;
+    r.map_changed = changed_version_ != changed_seen_;
+    changed_seen_ = changed_version_;
+    r.map_id = map_id_;
+    r.T_odom_base = odom;
+    if (!odom.isNull()) {
+      r.ok = true;
+      r.T_w_cam = view(correction_ * odom);
+    }
+    if (latest_node_ > 0) {
+      auto it = optimized_.find(latest_node_);
+      if (it != optimized_.end()) {
+        r.ref_kf = latest_node_;
+        r.T_w_kf = view(it->second);
+        r.kf_map_id = node_map_.count(latest_node_) ? node_map_.at(latest_node_) : map_id_;
+      }
+    }
+    return r;
+  }
+
+  // kf_update body pieces from the latest optimised graph (current map only).
+  int kf_rows(std::string& kfs, int& map_id) {
+    std::lock_guard<std::mutex> l(m_);
+    map_id = map_id_;
+    int n = 0;
+    kfs.reserve(optimized_.size() * 140);
+    for (const auto& p : optimized_) {
+      if (p.first <= 0) continue;  // negative ids are landmarks
+      auto mid = node_map_.find(p.first);
+      if (mid != node_map_.end() && mid->second != map_id_) continue;
+      Eigen::Matrix4f T = view(p.second).toEigen4f();
+      if (n) kfs += ",";
+      kfs += "[" + std::to_string(p.first);
+      for (int rr = 0; rr < 3; ++rr)
+        for (int cc = 0; cc < 4; ++cc) kfs += "," + fmt6(T(rr, cc));
+      kfs += "]";
+      ++n;
+    }
+    return n;
+  }
+
+  struct NodeInfo { Transform T_odom_base; };
+  // Final optimised poses (base frame) + odometry pose each node was created at.
+  void finish(std::map<int, Transform>& final_poses, std::map<int, Transform>& node_odom) {
+    stop();
+    std::lock_guard<std::mutex> l(m_);
+    final_poses = rtab_.getLocalOptimizedPoses();
+    if (final_poses.empty()) final_poses = optimized_;  // last update added no node
+    node_odom = node_odom_;
+  }
+  void close(bool save) { rtab_.close(save); }
+
+  // T_w_cam in the optical convention, world = the first tracked camera pose. base0_ is identity for a
+  // plain run (odometry starts at identity) and the IMU attitude when --imu resets the initial pose.
+  Transform view(const Transform& T_base) const {
+    return O_.inverse() * (base0_.isNull() ? T_base : base0_.inverse() * T_base) * O_;
+  }
+  Transform cam_of(const Transform& T_base) const { return T_base * O_; }
+  int loops() const { return loops_; }
+  std::vector<double> cov_lin_used() {
+    std::lock_guard<std::mutex> l(m_);
+    return cov_lin_used_;
+  }
+  int proximities() const { return proximities_; }
+  int empty_updates() const { return empty_updates_; }
+  size_t nodes() {
+    std::lock_guard<std::mutex> l(m_);
+    return optimized_.size();
+  }
+  std::vector<double> map_ms_all() {
+    std::lock_guard<std::mutex> l(m_);
+    return map_ms_all_;
+  }
+  int latest_node() {
+    std::lock_guard<std::mutex> l(m_);
+    return latest_node_;
+  }
+
+ private:
+  void stop() {
+    if (!async_ || !mapper_.joinable()) return;
+    {
+      std::lock_guard<std::mutex> l(m_);
+      stop_ = true;
+    }
+    cv_.notify_all();
+    mapper_.join();
+  }
+
+  void map_update(const rtabmap::SensorData& d, const Transform& odom, const cv::Mat& cov) {
+    auto t0 = Clock::now();
+    const cv::Mat C = cov.empty() ? cv::Mat::eye(6, 6, CV_64FC1) : cov;
+    rtab_.process(d, odom, C);
+    double ms = ms_since(t0);
+    const rtabmap::Statistics& st = rtab_.getStatistics();
+    const bool loop = st.loopClosureId() > 0, prox = st.proximityDetectionId() > 0;
+    int last = rtab_.getLastLocationId();
+    std::map<int, Transform> poses = rtab_.getLocalOptimizedPoses();
+    const rtabmap::Memory* mem = rtab_.getMemory();
+    int map_id = (mem && last > 0) ? mem->getMapId(last) : -1;
+    std::map<int, int> node_map;
+    for (const auto& p : poses)
+      if (p.first > 0 && mem) node_map[p.first] = mem->getMapId(p.first);
+    std::lock_guard<std::mutex> l(m_);
+    cov_lin_used_.push_back(C.at<double>(0, 0));
+    if (loop) ++loops_;
+    if (prox) ++proximities_;
+    if (loop || prox) ++changed_version_;
+    if (last > 0 && poses.count(last) && !node_odom_.count(last)) {
+      node_odom_[last] = odom;  // node made from this odometry pose
+      latest_node_ = last;
+    }
+    // Rtabmap::process() can leave getLocalOptimizedPoses() empty on an update that adds no node
+    // (e.g. rehearsal while barely moving). Keep the last graph and correction rather than
+    // reporting an empty map.
+    if (!poses.empty()) {
+      optimized_.swap(poses);
+      node_map_.swap(node_map);
+      if (map_id >= 0) map_id_ = map_id;
+      correction_ = rtab_.getMapCorrection();
+    } else {
+      ++empty_updates_;
+    }
+    map_ms_accum_ += ms;
+    ++map_updates_since_;
+    map_ms_all_.push_back(ms);
+  }
+
+  void map_loop() {
+    auto next = Clock::now();
+    while (true) {
+      std::shared_ptr<rtabmap::SensorData> d;
+      Transform pose;
+      cv::Mat cov;
+      {
+        std::unique_lock<std::mutex> l(m_);
+        cv_.wait(l, [&] { return stop_ || pending_; });
+        cv_.wait_until(l, next, [&] { return stop_; });
+        if (stop_) return;
+        d = std::move(pending_);
+        pose = pending_pose_;
+        cov = pending_cov_;
+        pending_cov_.release();
+      }
+      next = Clock::now() + std::chrono::duration_cast<Clock::duration>(std::chrono::duration<double>(period_s_));
+      map_update(*d, pose, cov);
+    }
+  }
+
+  const Transform O_ = rtabmap::CameraModel::opticalRotation();
+  rtabmap::ParametersMap params_;
+  bool async_;
+  ImuSource* imu_ = nullptr;
+  ExtOdom* ext_ = nullptr;
+  LidarSource* lidar_ = nullptr;
+  bool use_cov_ = true;
+  cv::Mat ext_cov_;                  // fixed Neighbor-link covariance for --ext-odom
+  cv::Mat odom_cov_;                 // largest covariance seen since the last mapper update (tracking thread)
+  cv::Mat pending_cov_;
+  std::vector<double> cov_lin_used_; // diagnostics: the linear variance actually handed to the mapper
+  Transform base0_;                  // first odometry pose; the output world frame is re-anchored on it
+                                     // (with --imu, RTAB-Map resets the initial pose to the IMU attitude)
+  rtabmap::CameraModel model_;
+  std::unique_ptr<rtabmap::Odometry> odom_;
+  rtabmap::Rtabmap rtab_;
+  double period_s_ = 1.0;
+  int id_ = 0;
+  long long last_sync_ns_ = -1;
+
+  std::thread mapper_;
+  std::mutex m_;
+  std::condition_variable cv_;
+  bool stop_ = false;
+  std::shared_ptr<rtabmap::SensorData> pending_;
+  Transform pending_pose_;
+  Transform correction_ = Transform::getIdentity();
+  std::map<int, Transform> optimized_;
+  std::map<int, int> node_map_;
+  std::map<int, Transform> node_odom_;
+  int latest_node_ = 0, map_id_ = -1;
+  long changed_version_ = 0, changed_seen_ = 0;
+  double map_ms_accum_ = 0;
+  int map_updates_since_ = 0;
+  std::vector<double> map_ms_all_;
+  std::atomic<int> loops_{0}, proximities_{0}, empty_updates_{0};
+};
+
+static std::string tf16(const Transform& T) {
+  Eigen::Matrix4f M = T.toEigen4f();
+  std::string s = "[";
+  for (int r = 0; r < 4; ++r)
+    for (int c = 0; c < 4; ++c) s += (r || c ? "," : "") + fmt6(M(r, c));
+  return s + "]";
+}
+
+static void tum_line(std::ostream& o, long long t_ns, const Transform& T) {
+  Eigen::Quaternionf q = T.getQuaternionf();
+  char buf[256];
+  snprintf(buf, sizeof(buf), "%.9f %.6f %.6f %.6f %.7f %.7f %.7f %.7f\n", double(t_ns) * 1e-9, T.x(), T.y(), T.z(),
+           q.x(), q.y(), q.z(), q.w());
+  o << buf;
+}
+
+int main(int argc, char** argv) {
+  signal(SIGPIPE, SIG_IGN);
+  Args a;
+  for (int i = 1; i < argc; ++i) {
+    std::string k = argv[i];
+    auto val = [&]() -> std::string {
+      if (i + 1 >= argc) { usage(); exit(2); }
+      return argv[++i];
+    };
+    if (k == "--session") a.session = val();
+    else if (k == "--settings" || k == "--vocab") val();  // ORB-SLAM3 only
+    else if (k == "--mode") a.mode = val();
+    else if (k == "--out") a.out = val();
+    else if (k == "--connect") a.connect = val();
+    else if (k == "--features") a.features = std::stoi(val());
+    else if (k == "--offset-ns") a.offset_ns = std::stoll(val());
+    else if (k == "--time-source") a.time_source = val();
+    else if (k == "--rate") a.rate = std::stod(val());
+    else if (k == "--pace") a.pace = std::stod(val());
+    else if (k == "--max-frames") a.max_frames = std::stoi(val());
+    else if (k == "--rig") a.rig = val();
+    else if (k == "--gyro") a.gyro_rig = val();
+    else if (k == "--imu") a.imu_dir = val();
+    else if (k == "--imu-topic") a.imu_topic = val();
+    else if (k == "--ext-odom") a.ext_odom = val();
+    else if (k == "--lidar") a.lidar_dir = val();
+    else if (k == "--lidar-topic") a.lidar_topic = val();
+    else if (k == "--lidar-z") { a.lidar_z = atof(val().c_str()); a.lidar_z_set = true; }
+    else if (k == "--ext-cov") { a.ext_lin_var = atof(val().c_str()); a.ext_ang_var = atof(val().c_str()); }
+    else if (k == "--no-odom-cov") a.odom_cov = false;
+    else if (k == "--param") {
+      std::string kv = val();
+      auto eq = kv.find('=');
+      if (eq == std::string::npos) { usage(); return 2; }
+      a.params.push_back({kv.substr(0, eq), kv.substr(eq + 1)});
+    } else { usage(); return 2; }
+  }
+  if (a.session.empty() || (a.mode == "offline" && a.out.empty()) || (a.mode == "live" && a.connect.empty()) ||
+      (a.mode != "offline" && a.mode != "live")) {
+    usage();
+    return 2;
+  }
+
+  ULogger::setType(ULogger::kTypeConsole);
+  ULogger::setLevel(ULogger::kError);  // g2o "no csparse, using PCG" warns on every update
+
+  Session s = load_session(a.session, a.offset_ns, a.time_source);
+  if (a.max_frames > 0 && int(s.frames.size()) > a.max_frames) s.frames.resize(a.max_frames);
+  const Calib& c = s.calib;
+  fprintf(stderr, "[rtab_stream] %s | %zu frames | time-source=%s domain=%s offset_ns=%lld non_monotonic=%lld\n",
+          s.db3.c_str(), s.frames.size(), s.time_source.c_str(), s.time_domain.c_str(), a.offset_ns, s.non_monotonic);
+  Aligner aligner(c);
+
+  // Parameters: RTAB-Map defaults (as the harness), --features -> Vis/MaxFeatures, then --param.
+  rtabmap::ParametersMap params;
+  if (!a.lidar_dir.empty()) params[rtabmap::Parameters::kRegStrategy()] = "1";   // Icp; --param overrides
+  if (a.features > 0) params[rtabmap::Parameters::kVisMaxFeatures()] = std::to_string(a.features);
+  for (auto& kv : a.params) params[kv.first] = kv.second;
+  rtabmap::ParametersMap effective = rtabmap::Parameters::getDefaultParameters();
+  for (auto& kv : params) effective[kv.first] = kv.second;
+  static const char* SHOW[] = {"Odom/Strategy", "Vis/FeatureType", "Vis/MaxFeatures", "Vis/CorType", "Vis/MinInliers",
+                               "Kp/DetectorStrategy", "Kp/MaxFeatures", "Reg/Strategy", "Rtabmap/DetectionRate",
+                               "Rtabmap/TimeThr", "RGBD/LinearUpdate", "RGBD/AngularUpdate", "RGBD/ProximityBySpace",
+                               "Optimizer/Strategy", "Mem/STMSize", "Mem/IncrementalMemory", "Odom/ResetCountdown",
+                               "OdomF2M/MaxSize", "Icp/Strategy", "Icp/VoxelSize", "Icp/MaxTranslation",
+                               "Icp/MaxCorrespondenceDistance", "Icp/Iterations", "Icp/PointToPlane",
+                               "Icp/CorrespondenceRatio"};
+  json shown = json::object();
+  for (const char* k : SHOW)
+    if (effective.count(k)) shown[k] = effective[k];
+  fprintf(stderr, "[rtab_stream] RTAB-Map %s params: %s | overrides:", RTABMAP_VERSION, shown.dump().c_str());
+  for (auto& kv : params) fprintf(stderr, " %s=%s", kv.first.c_str(), kv.second.c_str());
+  fprintf(stderr, "\n");
+
+  const bool async = !(a.mode == "offline" && a.pace <= 0);
+  std::string db = a.mode == "offline" ? a.out + ".rtabmap.db" : "";
+  if (!db.empty()) unlink(db.c_str());
+  ImuSource imu_feed;
+  ExtOdom ext_feed;
+  ImuSource* imu_p = nullptr;
+  ExtOdom* ext_p = nullptr;
+  if (!a.gyro_rig.empty()) {
+    if (a.imu_dir.empty()) a.imu_dir = a.session + "/../imu";   // as slam_stream does
+    imu_feed.load(a.imu_dir, a.gyro_rig, a.imu_topic);
+    imu_p = &imu_feed;
+    fprintf(stderr, "[rtab_stream] imu: %s %s | %zu samples %.1f Hz | imu-cam %.2f ms | T_base_imu %s\n",
+            imu_feed.db3.c_str(), imu_feed.topic.c_str(), imu_feed.t_ns.size(), imu_feed.rate_hz,
+            imu_feed.tau_ns * 1e-6, imu_feed.local.prettyPrint().c_str());
+    fprintf(stderr, "[rtab_stream] %s\n", imu_feed.gravity_report().c_str());
+  }
+  LidarSource lidar_feed;
+  LidarSource* lidar_p = nullptr;
+  if (!a.lidar_dir.empty()) {
+    if (a.rig.empty()) { fprintf(stderr, "--lidar needs --rig RIG.json\n"); return 2; }
+    if (a.lidar_z_set) { lidar_feed.lever_z_set = true; lidar_feed.lever_z = float(a.lidar_z); }
+    lidar_feed.load(a.lidar_dir, a.rig, a.lidar_topic);
+    lidar_p = &lidar_feed;
+    fprintf(stderr, "[rtab_stream] lidar: %s %s | %zu scans %.1f Hz | lidar-cam %.2f ms | T_base_lidar %s\n",
+            lidar_feed.db3.c_str(), lidar_feed.topic.c_str(), lidar_feed.scans.size(), lidar_feed.rate_hz,
+            lidar_feed.tau_ns * 1e-6, lidar_feed.local.prettyPrint().c_str());
+    fprintf(stderr, "[rtab_stream] %s\n", lidar_feed.report().c_str());
+  }
+  if (!a.ext_odom.empty()) {
+    if (a.rig.empty()) { fprintf(stderr, "--ext-odom needs --rig RIG.json\n"); return 2; }
+    ext_feed.load(a.ext_odom, a.rig);
+    ext_p = &ext_feed;
+    fprintf(stderr, "[rtab_stream] external odometry: %s | %zu poses | visual odometry disabled\n",
+            ext_feed.path.c_str(), ext_feed.t_ns.size());
+  }
+  RtabBackend be(c, params, db, async, imu_p, ext_p, lidar_p, a.odom_cov, a.ext_lin_var, a.ext_ang_var);
+
+  Bag bag(s.db3);
+  Blob cb, dbl;
+  struct FrameOut {
+    long long t_ns; bool ok; Transform T_odom_base, live; int node; double odom_ms, map_ms; bool map_changed; int map_id;
+    int features, inliers;
+  };
+  std::vector<FrameOut> frames_out;
+  std::vector<double> odom_ms, map_ms_frames, track_ms;
+  int processed = 0, ok_count = 0, dropped = 0;
+
+  auto process = [&](const FrameRef& f, RtabBackend::Track& r, double& prep_ms) -> bool {
+    auto t0 = Clock::now();
+    if (!bag.by_id(f.color_id, cb) || !bag.by_id(f.depth_id, dbl)) return false;
+    ImageView ci = read_image_msg(cb.d), di = read_image_msg(dbl.d);
+    if (int(ci.w) != c.W || int(ci.h) != c.H || int(di.w) != c.W || int(di.h) != c.H ||
+        ci.len != ci.w * ci.h * 3 || di.len != di.w * di.h * 2)
+      throw std::runtime_error("unexpected image geometry/size");
+    cv::Mat color;
+    if (ci.enc == "bgr8") {
+      color = cv::Mat(c.H, c.W, CV_8UC3, (void*)ci.data).clone();
+    } else if (ci.enc == "rgb8") {
+      cv::Mat rgb(c.H, c.W, CV_8UC3, (void*)ci.data);
+      color.create(c.H, c.W, CV_8UC3);
+      for (int v = 0; v < c.H; ++v)
+        for (int u = 0; u < c.W; ++u) {
+          const auto& p = rgb.at<cv::Vec3b>(v, u);
+          color.at<cv::Vec3b>(v, u) = cv::Vec3b(p[2], p[1], p[0]);
+        }
+    } else {
+      throw std::runtime_error("unsupported colour encoding " + ci.enc);
+    }
+    if (di.enc != "mono16" && di.enc != "16UC1") throw std::runtime_error("unsupported depth encoding " + di.enc);
+    std::vector<uint16_t> raw(c.W * c.H);
+    std::memcpy(raw.data(), di.data, raw.size() * 2);
+    cv::Mat depth;  // fresh buffer per frame: the mapper keeps a reference to it
+    depth_to_color(s, aligner, raw.data(), depth);
+    prep_ms = ms_since(t0);
+    r = be.track(color, depth, double(f.t_ns) * 1e-9, f.t_ns);
+    return true;
+  };
+
+  auto record = [&](const FrameRef& f, const RtabBackend::Track& r) {
+    ++processed;
+    if (r.ok) ++ok_count;
+    odom_ms.push_back(r.odom_ms);
+    track_ms.push_back(r.odom_ms + r.map_ms);
+    if (r.map_updates) map_ms_frames.push_back(r.map_ms);
+    frames_out.push_back({f.t_ns, r.ok, r.T_odom_base, r.T_w_cam, r.ref_kf, r.odom_ms, r.map_ms, r.map_changed,
+                          r.map_id, r.features, r.inliers});
+  };
+
+  if (a.mode == "offline") {
+    auto wall0 = Clock::now();
+    std::ofstream live(a.out);
+    for (size_t i = 0; i < s.frames.size(); ++i) {
+      if (a.pace > 0) {
+        double due_s = double(s.frames[i].t_ns - s.frames.front().t_ns) * 1e-9 / a.pace;
+        double el = std::chrono::duration<double>(Clock::now() - wall0).count();
+        if (due_s > el) std::this_thread::sleep_for(std::chrono::duration<double>(due_s - el));
+      }
+      RtabBackend::Track r;
+      double prep = 0;
+      if (!process(s.frames[i], r, prep)) continue;
+      record(s.frames[i], r);
+      if (r.ok) tum_line(live, s.frames[i].t_ns, r.T_w_cam);
+      if (processed % 1000 == 0)
+        fprintf(stderr, "[rtab_stream] %d/%zu ok=%d loops=%d nodes=%zu\n", processed, s.frames.size(), ok_count,
+                be.loops(), be.nodes());
+    }
+    double wall = std::chrono::duration<double>(Clock::now() - wall0).count();
+
+    // Final optimised trajectory: T_w_node(final) * T_node_cam(odometry), like CameraTrajectory.txt
+    // of the harness / ORB-SLAM3's keyframe-anchored file. Frames tracked before the first node are
+    // anchored to it afterwards; nodes no longer in the graph ride on the nearest surviving node.
+    std::map<int, Transform> finals, node_odom;
+    be.finish(finals, node_odom);
+    std::map<int, long long> node_t;
+    for (auto& fo : frames_out)
+      if (fo.node && !node_t.count(fo.node)) node_t[fo.node] = fo.t_ns;
+    auto node_final_cam = [&](int id, Transform& out) -> bool {
+      auto it = finals.find(id);
+      if (it != finals.end()) { out = be.view(it->second); return true; }
+      int best = 0;
+      for (auto& n : node_odom)
+        if (finals.count(n.first) && (!best || std::llabs(node_t[n.first] - node_t[id]) < std::llabs(node_t[best] - node_t[id])))
+          best = n.first;
+      if (!best || !node_odom.count(id)) return false;
+      out = be.view(finals.at(best)) * (be.cam_of(node_odom.at(best)).inverse() * be.cam_of(node_odom.at(id)));
+      return true;
+    };
+    int first_node = node_odom.empty() ? 0 : node_odom.begin()->first;
+    std::ofstream opt(a.out + ".optimized.txt");
+    std::ofstream fcsv(a.out + ".frames.csv");
+    fcsv << "t_ns,state,ok,map_id,track_ms,odom_ms,map_ms,map_changed,ref_kf,features,inliers,tx,ty,tz,qx,qy,qz,qw\n";
+    int n_opt = 0;
+    for (auto& fo : frames_out) {
+      char buf[400];
+      snprintf(buf, sizeof(buf), "%lld,%s,%d,%d,%.3f,%.3f,%.3f,%d,%d,%d,%d", fo.t_ns, fo.ok ? "OK" : "LOST", int(fo.ok),
+               fo.map_id, fo.odom_ms + fo.map_ms, fo.odom_ms, fo.map_ms, int(fo.map_changed), fo.node, fo.features,
+               fo.inliers);
+      fcsv << buf;
+      if (fo.ok) {
+        Eigen::Quaternionf q = fo.live.getQuaternionf();
+        snprintf(buf, sizeof(buf), ",%.6f,%.6f,%.6f,%.7f,%.7f,%.7f,%.7f\n", fo.live.x(), fo.live.y(), fo.live.z(), q.x(),
+                 q.y(), q.z(), q.w());
+        fcsv << buf;
+      } else {
+        fcsv << ",,,,,,,\n";
+      }
+      if (!fo.ok) continue;
+      int node = fo.node ? fo.node : first_node;
+      Transform Tn;
+      if (!node || !node_odom.count(node) || !node_final_cam(node, Tn)) continue;
+      Transform T_node_cam = be.cam_of(node_odom.at(node)).inverse() * be.cam_of(fo.T_odom_base);
+      tum_line(opt, fo.t_ns, Tn * T_node_cam);
+      ++n_opt;
+    }
+    std::vector<double> mm = be.map_ms_all();
+    json side = {
+        {"backend", "rtabmap"}, {"rtabmap_version", RTABMAP_VERSION}, {"session", s.dir}, {"db3", s.db3},
+        {"features", a.features}, {"params_effective", shown}, {"offset_ns", a.offset_ns},
+        {"time_source", s.time_source}, {"time_domain", s.time_domain}, {"non_monotonic", s.non_monotonic},
+        {"pace", a.pace}, {"mapper", async ? "async thread at Rtabmap/DetectionRate (wall clock)" : "synchronous at Rtabmap/DetectionRate (data clock)"},
+        {"imu", imu_p ? json{{"bag", imu_feed.db3}, {"topic", imu_feed.topic}, {"rate_hz", imu_feed.rate_hz},
+                             {"imu_minus_cam_ms", imu_feed.tau_ns * 1e-6}, {"frames_found", imu_feed.found},
+                             {"frames_missing", imu_feed.missing},
+                             {"max_gap_ms", imu_feed.max_gap_seen_ns * 1e-6},
+                             {"gravity_check", imu_feed.gravity_report()}} : json(nullptr)},
+        {"lidar", lidar_p ? json{{"bag", lidar_feed.db3}, {"topic", lidar_feed.topic},
+                                 {"scans", lidar_feed.scans.size()}, {"rate_hz", lidar_feed.rate_hz},
+                                 {"frames_found", lidar_feed.found}, {"frames_missing", lidar_feed.missing},
+                                 {"max_gap_ms", lidar_feed.max_gap_seen_ns * 1e-6},
+                                 {"geometry_check", lidar_feed.report()}} : json(nullptr)},
+        {"ext_odom", ext_p ? json{{"path", ext_feed.path}, {"poses", ext_feed.t_ns.size()},
+                                  {"frames_served", ext_feed.served}, {"frames_missed", ext_feed.missed}} : json(nullptr)},
+        {"frames", s.frames.size()}, {"processed", processed}, {"ok_frames", ok_count},
+        {"ok_ratio", processed ? double(ok_count) / processed : 0.0},
+        {"odom_ms", {{"mean", odom_ms.empty() ? 0 : std::accumulate(odom_ms.begin(), odom_ms.end(), 0.0) / odom_ms.size()},
+                     {"p50", pct(odom_ms, 50)}, {"p95", pct(odom_ms, 95)}, {"p99", pct(odom_ms, 99)},
+                     {"over_33ms", std::count_if(odom_ms.begin(), odom_ms.end(), [](double x) { return x > 33.333; })}}},
+        {"map_update_ms", {{"n", mm.size()}, {"mean", mm.empty() ? 0 : std::accumulate(mm.begin(), mm.end(), 0.0) / mm.size()},
+                           {"p99", pct(mm, 99)}, {"max", mm.empty() ? 0 : *std::max_element(mm.begin(), mm.end())}}},
+        {"loop_closures", be.loops()}, {"proximity_detections", be.proximities()}, {"empty_graph_updates", be.empty_updates()}, {"graph_nodes_final", finals.size()},
+        {"optimized_frames", n_opt}, {"wall_s", wall},
+        {"trajectory", "TUM T_world_cam (optical, world = first camera): live = O^-1*correction*odom*O per frame; "
+                       ".optimized.txt = final node pose * odometry T_node_cam"}};
+    std::ofstream(a.out + ".json") << side.dump(1) << "\n";
+    be.close(true);
+    {
+      std::vector<double> cv_ = be.cov_lin_used();
+      if (!cv_.empty()) {
+        std::sort(cv_.begin(), cv_.end());
+        size_t unlinked = 0;
+        for (double v : cv_)
+          if (v >= 9999.0) ++unlinked;   // OdometryF2M: "a very high variance tells that the new pose is
+                                         // not linked with the previous one" (init / reset branch)
+        fprintf(stderr, "[rtab_stream] odom link covariance handed to the mapper: %s | n=%zu  lin var min %.3g "
+                        "med %.3g max %.3g  (sigma med %.4f m) | unlinked(>=9999) %zu\n",
+                a.odom_cov ? "ON" : "OFF (identity)", cv_.size(), cv_.front(), cv_[cv_.size() / 2], cv_.back(),
+                std::sqrt(cv_[cv_.size() / 2]), unlinked);
+      }
+    }
+    fprintf(stderr, "[rtab_stream] done: %d processed, %d ok, loops %d, nodes %zu, wall %.1f s\n", processed, ok_count,
+            be.loops(), finals.size(), wall);
+    return 0;
+  }
+
+  // ---------------------------------------------------------------- live
+  Line line;
+  if (!line.connect_to(a.connect)) {
+    fprintf(stderr, "[rtab_stream] cannot connect to %s\n", a.connect.c_str());
+    return 1;
+  }
+  line.send_json({{"type", "hello"}, {"source", "rtabmap"}, {"features", a.features}, {"session", s.dir},
+                  {"first_ns", s.frames.front().t_ns}, {"last_ns", s.frames.back().t_ns},
+                  {"n_frames", s.frames.size()}, {"time_source", s.time_source}, {"time_domain", s.time_domain},
+                  {"kf_updates", true}, {"rtabmap_version", RTABMAP_VERSION}, {"params", shown}});
+  json start;
+  do {
+    if (!line.read_json(start)) {
+      fprintf(stderr, "[rtab_stream] server closed before start\n");
+      return 1;
+    }
+  } while (start.value("type", "") != "start");
+  long long t0_ns = start.value("t0_ns", s.frames.front().t_ns);
+  double rate = start.value("rate", a.rate);
+  fprintf(stderr, "[rtab_stream] start t0_ns=%lld rate=%.2f\n", t0_ns, rate);
+
+  std::vector<double> kf_build_ms;
+  std::vector<size_t> kf_bytes;
+  long long last_t_ns = t0_ns;
+  auto send_kf_update = [&](const char* reason) -> bool {
+    auto tb = Clock::now();
+    std::string kfs;
+    int map_id = -1;
+    int n = be.kf_rows(kfs, map_id);
+    double build = ms_since(tb);
+    std::string body = "{\"type\":\"kf_update\",\"t_ns\":" + std::to_string(last_t_ns) + ",\"map_id\":" +
+                       std::to_string(map_id) + ",\"reason\":\"" + reason + "\",\"n\":" + std::to_string(n) +
+                       ",\"build_ms\":" + fmt6(build) + ",\"kfs\":[" + kfs + "]}";
+    kf_build_ms.push_back(build);
+    kf_bytes.push_back(body.size() + 1);
+    return line.send_raw(body);
+  };
+  const double kf_period_s = 1.0;
+  auto last_periodic = Clock::now();
+  std::vector<Clock::time_point> kf_followups;
+  auto service_kf_updates = [&]() -> bool {
+    auto now = Clock::now();
+    bool ok = true, sent = false;
+    for (auto it = kf_followups.begin(); it != kf_followups.end();) {
+      if (*it <= now) {
+        if (!sent) {
+          ok = ok && send_kf_update("map_changed");
+          sent = true;
+          last_periodic = now;
+        }
+        it = kf_followups.erase(it);
+      } else {
+        ++it;
+      }
+    }
+    if (ok && std::chrono::duration<double>(now - last_periodic).count() >= kf_period_s) {
+      ok = send_kf_update("periodic");
+      last_periodic = now;
+    }
+    return ok;
+  };
+
+  size_t idx = 0;
+  while (idx < s.frames.size() && s.frames[idx].t_ns < t0_ns) ++idx;
+  auto wall0 = Clock::now();
+  last_periodic = wall0;
+  int map_changed_frames = 0;
+  bool alive = true;
+  while (alive && idx < s.frames.size()) {
+    if (!service_kf_updates()) { alive = false; break; }
+    double elapsed = std::chrono::duration<double>(Clock::now() - wall0).count();
+    double due_s = double(s.frames[idx].t_ns - t0_ns) * 1e-9 / rate;
+    if (due_s > elapsed) {
+      std::this_thread::sleep_for(std::chrono::duration<double>(std::min(due_s - elapsed, 0.005)));
+      continue;
+    }
+    size_t j = idx;
+    while (j + 1 < s.frames.size() && double(s.frames[j + 1].t_ns - t0_ns) * 1e-9 / rate <= elapsed) ++j;
+    dropped += int(j - idx);
+    RtabBackend::Track r;
+    double prep = 0;
+    if (process(s.frames[j], r, prep)) {
+      record(s.frames[j], r);
+      last_t_ns = s.frames[j].t_ns;
+      if (r.map_changed) ++map_changed_frames;
+      std::string body = "{\"type\":\"pose\",\"t_ns\":" + std::to_string(s.frames[j].t_ns) + ",\"state\":\"" +
+                         (r.ok ? "OK" : "LOST") + "\",\"T_wc\":" + (r.ok ? tf16(r.T_w_cam) : std::string("null")) +
+                         ",\"track_ms\":" + fmt6(r.odom_ms + r.map_ms) + ",\"odom_ms\":" + fmt6(r.odom_ms) +
+                         ",\"map_ms\":" + fmt6(r.map_ms) + ",\"prep_ms\":" + fmt6(prep) +
+                         ",\"frame_idx\":" + std::to_string(j) + ",\"dropped\":" + std::to_string(dropped) +
+                         ",\"map_changed\":" + (r.map_changed ? "true" : "false") + ",\"map_id\":" +
+                         std::to_string(r.map_id) + ",\"features\":" + std::to_string(r.features) +
+                         ",\"inliers\":" + std::to_string(r.inliers);
+      if (r.ref_kf > 0)
+        body += ",\"ref_kf\":" + std::to_string(r.ref_kf) + ",\"kf_map_id\":" + std::to_string(r.kf_map_id) +
+                ",\"T_w_kf\":" + tf16(r.T_w_kf) + "}";
+      else
+        body += ",\"ref_kf\":null,\"kf_map_id\":null,\"T_w_kf\":null}";
+      alive = line.send_raw(body);
+      if (alive && r.map_changed) {
+        alive = send_kf_update("map_changed");
+        auto now = Clock::now();
+        kf_followups.push_back(now + std::chrono::milliseconds(500));
+        kf_followups.push_back(now + std::chrono::milliseconds(3000));
+        last_periodic = now;
+      }
+    }
+    idx = j + 1;
+  }
+  if (alive) alive = send_kf_update("end");
+  if (alive) line.send_json({{"type", "end"}, {"processed", processed}, {"dropped", dropped}});
+  std::vector<double> mm = be.map_ms_all();
+  fprintf(stderr,
+          "[rtab_stream] live done: processed %d ok %d dropped %d | odom mean %.2f p99 %.2f ms | map updates %zu mean %.1f "
+          "p99 %.1f max %.1f ms | loops %d proximity %d map_changed frames %d nodes %zu empty-graph updates %d%s\n",
+          processed, ok_count, dropped,
+          odom_ms.empty() ? 0 : std::accumulate(odom_ms.begin(), odom_ms.end(), 0.0) / odom_ms.size(), pct(odom_ms, 99),
+          mm.size(), mm.empty() ? 0 : std::accumulate(mm.begin(), mm.end(), 0.0) / mm.size(), pct(mm, 99),
+          mm.empty() ? 0 : *std::max_element(mm.begin(), mm.end()), be.loops(), be.proximities(), map_changed_frames,
+          be.nodes(), be.empty_updates(), alive ? "" : " (server disconnected)");
+  if (!kf_build_ms.empty())
+    fprintf(stderr, "[rtab_stream] kf_update: %zu sent, build mean %.2f max %.2f ms, size mean %.0f max %zu bytes\n",
+            kf_build_ms.size(), std::accumulate(kf_build_ms.begin(), kf_build_ms.end(), 0.0) / kf_build_ms.size(),
+            *std::max_element(kf_build_ms.begin(), kf_build_ms.end()),
+            std::accumulate(kf_bytes.begin(), kf_bytes.end(), 0.0) / kf_bytes.size(),
+            *std::max_element(kf_bytes.begin(), kf_bytes.end()));
+  std::map<int, Transform> finals, node_odom;
+  be.finish(finals, node_odom);
+  be.close(false);
+  return 0;
+}

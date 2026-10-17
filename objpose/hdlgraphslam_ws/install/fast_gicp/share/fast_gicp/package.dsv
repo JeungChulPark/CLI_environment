@@ -1,0 +1,11 @@
+source;share/fast_gicp/hook/cmake_prefix_path.ps1
+source;share/fast_gicp/hook/cmake_prefix_path.dsv
+source;share/fast_gicp/hook/cmake_prefix_path.sh
+source;share/fast_gicp/hook/dyld_library_path.ps1
+source;share/fast_gicp/hook/dyld_library_path.dsv
+source;share/fast_gicp/hook/dyld_library_path.sh
+source;share/fast_gicp/local_setup.bash
+source;share/fast_gicp/local_setup.dsv
+source;share/fast_gicp/local_setup.ps1
+source;share/fast_gicp/local_setup.sh
+source;share/fast_gicp/local_setup.zsh

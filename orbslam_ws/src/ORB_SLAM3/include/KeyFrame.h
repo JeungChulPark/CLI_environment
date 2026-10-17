@@ -33,6 +33,7 @@
 #include "SerializationUtils.h"
 
 #include <mutex>
+#include <atomic>
 
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/vector.hpp>
@@ -161,7 +162,7 @@ class KeyFrame
         // Bad flags
         ar & mbNotErase;
         ar & mbToBeErased;
-        ar & mbBad;
+        bool bBad = mbBad; ar & bBad; mbBad = bBad;   // std::atomic is not serialisable directly
 
         ar & mHalfBaseline;
 
@@ -412,6 +413,12 @@ public:
     IMU::Preintegrated* mpImuPreintegrated;
     IMU::Calib mImuCalib;
 
+    // GYRO AID (objpose): gyro-only camera orientation at this keyframe's stamp (copied from the Frame);
+    // LocalBundleAdjustment ties temporally consecutive keyframes with R_ci_cj = mRgc_i^T * mRgc_j. Not serialised.
+    bool mbHasGyro = false;
+    int mnGyroEpoch = 0;
+    Eigen::Matrix3f mRgc = Eigen::Matrix3f::Identity();
+
     unsigned int mnOriginMapId;
 
     string mNameFile;
@@ -478,7 +485,7 @@ protected:
     // Bad flags
     bool mbNotErase;
     bool mbToBeErased;
-    bool mbBad;    
+    std::atomic<bool> mbBad;   // atomic: isBad() reads it without mMutexConnections (deadlock fix, 2026-09-18)
 
     float mHalfBaseline; // Only for visualization
 

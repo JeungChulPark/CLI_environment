@@ -1,0 +1,111 @@
+{
+ "cam": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/rtab_odom/../bigeight/Userui-MacBookPro/260901_cbnu_longcircle/base_run1_tum.txt.optimized.txt",
+ "lidar": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/rtab_odom/../bigeight/Userui-MacBookPro/260901_cbnu_longcircle/kiss/kiss_tum.txt",
+ "imu": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/rtab_odom/rigs/imu_longcircle.npz",
+ "gyro_bias_rad_s": [
+  -0.0011921525547813872,
+  -0.0013094256180772846,
+  0.002644474696035104
+ ],
+ "gyro_static_std_rad_s": [
+  0.004418240315335798,
+  0.009797558499359071,
+  0.008313283224728022
+ ],
+ "acc_static_mean": [
+  0.5838078130356734,
+  -0.03296360822301722,
+  -9.776866075992585
+ ],
+ "time": {
+  "lidar_minus_cam_s": -0.0030454213645677098,
+  "corr_cl": 0.9973714806567852,
+  "imu_minus_cam_s": -0.0018491380479205872,
+  "corr_ci": 0.9997550061323778,
+  "imu_minus_lidar_s": 0.0008650004448873698,
+  "corr_li": 0.9975908792435657,
+  "meaning": "an event stamped t on the camera clock is stamped t + tau on the other sensor's clock",
+  "closure_s": -0.00033128287175975273
+ },
+ "R_cam_imu": [
+  [
+   -0.002204252606714451,
+   0.9999617690518044,
+   -0.008461779081935416
+  ],
+  [
+   0.0018641338450179237,
+   0.008465893821077765,
+   0.9999624261175103
+  ],
+  [
+   0.9999958331290454,
+   0.002188395895610304,
+   -0.0018827235459370137
+  ]
+ ],
+ "R_cam_imu_fit": {
+  "n": 2554,
+  "singular_values": [
+   165.2085741666981,
+   0.1384479385985447,
+   0.07733573273976325
+  ],
+  "resid_rms_rad_s": 0.006487685680614335,
+  "rate_rms_rad_s": 0.25394105702339004,
+  "imu_axis_std_rad_s": [
+   0.008533604810325616,
+   0.0073399961639575555,
+   0.12735392218146924
+  ]
+ },
+ "T_lidar_cam": [
+  [
+   0.9601367177044886,
+   -0.01978986786509032,
+   -0.2788294181852655,
+   -0.09742225662269148
+  ],
+  [
+   0.27948653962581704,
+   0.05020828799335436,
+   0.9588359619792967,
+   0.3484289709917791
+  ],
+  [
+   -0.004975689262601807,
+   -0.9985426825863074,
+   0.053737822524767276,
+   -1.5915845273020173
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "T_lidar_cam_fit": {
+  "windows": 524,
+  "win_s": 2.0,
+  "rot_resid_deg_rms": 0.4616161699107691,
+  "trans_resid_m_rms": 0.019107423648412395,
+  "note": "lever arm along the (vertical) rotation axis is unobservable in planar motion; regularised to 0",
+  "cam_z_in_lidar": [
+   -0.2788294181852655,
+   0.9588359619792967,
+   0.053737822524767276
+  ],
+  "cam_y_in_lidar": [
+   -0.01978986786509032,
+   0.05020828799335436,
+   -0.9985426825863074
+  ]
+ },
+ "gyro_vs_kiss": {
+  "err_deg_end": 8.301564612286779,
+  "err_deg_max": 8.31056879117656,
+  "err_deg_median": 4.2659542334371885,
+  "duration_s": 135.05149483680725
+ }
+}

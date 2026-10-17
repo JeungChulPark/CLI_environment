@@ -1,0 +1,6 @@
+mapper-induced change to the trajectory it was given
+(--ext-odom run: the input is the KISS trajectory itself, so this is the mapper's own contribution)
+
+run        poses     med cm    p95 cm    max cm     rot med   rot max
+live        9443       3.11     15.00     34.15      0.420°    6.916°
+opt         9443      11.22     16.82     28.10      1.512°    6.716°
