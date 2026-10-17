@@ -11,6 +11,7 @@ not write its result back, so it is a no-op there and is left out here.
 
 Runs in the `fmfusion` conda env:
   ~/anaconda3/envs/fmfusion/bin/python fmfusion_detect.py --scenes 52 [--frame-gap 10]
+--realtime-fps 30: real-time condition (frames arrive at 30 fps, the detector takes the newest one when free).
 """
 import argparse
 import json
@@ -33,7 +34,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import GroundingDINO.groundingdino.datasets.transforms as T  # noqa: E402
 from GroundingDINO.groundingdino.models import build_model  # noqa: E402
-import GroundingDINO.groundingdino.models.GroundingDINO.ms_deform_attn as msda  # noqa: E402
 from GroundingDINO.groundingdino.util.slconfig import SLConfig  # noqa: E402
 from GroundingDINO.groundingdino.util.utils import clean_state_dict, get_grouped_tokens  # noqa: E402
 from segment_anything import SamPredictor, build_sam  # noqa: E402
@@ -50,14 +50,6 @@ def load_image(path):
                     T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
     image, _ = tf(image_pil, None)
     return image_pil, image
-
-
-def use_pytorch_msda():
-    """Route MSDeformAttn through GroundingDINO's own pure-PyTorch implementation instead of the locally
-    compiled _C kernel (groundingdino/_C*.so). The _C kernel is the only CUDA code this job runs that the
-    sam6d env does not; the 4090 PC froze four times (10-13/14) during this detector, never during SAM-6D."""
-    msda.MultiScaleDeformableAttnFunction.apply = staticmethod(
-        lambda value, shapes, start_idx, loc, attn, step: msda.multi_scale_deformable_attn_pytorch(value, shapes, loc, attn))
 
 
 def load_dino():
@@ -110,7 +102,31 @@ def save(out_dir, name, boxes, maps, masks, prompts):
     cv2.imwrite(str(out_dir / f"{name}_mask.png"), img)
 
 
-def run_scene(scene, dino, sam, gap, dataset="ycbv"):
+def detect_frame(p, out, dino, sam, caption, prompts):
+    """GroundingDINO + SAM on one frame; writes its prediction (nothing when no box). Returns the number of boxes."""
+    pil, image = load_image(p)
+    boxes, scores, maps = grounding(dino, image, caption)
+    if boxes.size(0) == 0:
+        return 0
+    W, H = pil.size
+    boxes = boxes * torch.Tensor([W, H, W, H])
+    boxes[:, :2] -= boxes[:, 2:] / 2
+    boxes[:, 2:] += boxes[:, :2]
+    idx = torchvision.ops.nms(boxes, scores, NMS_IOU).numpy().tolist()
+    boxes, maps = boxes[idx], [maps[i] for i in idx]
+    rgb = cv2.cvtColor(cv2.imread(str(p)), cv2.COLOR_BGR2RGB)
+    sam.set_image(rgb)
+    tb = sam.transform.apply_boxes_torch(boxes, rgb.shape[:2]).to(DEVICE)
+    masks, _, _ = sam.predict_torch(point_coords=None, point_labels=None, boxes=tb, multimask_output=False)
+    save(out, p.stem, boxes, maps, masks, prompts)
+    return len(maps)
+
+
+def run_scene(scene, dino, sam, gap, dataset="ycbv", realtime_fps=0.0):
+    """realtime_fps > 0: the frames arrive at that rate on the wall clock (frame n at n / fps after the first frame,
+    which also warms the models up and is not timed); whenever the detector is free it takes the newest frame that
+    has arrived and the ones it missed are dropped, as in the live replay of the proposed method. The frames it took
+    and its per-frame latency go to <scan>/realtime_detect.json. Otherwise every gap-th frame (the published setting)."""
     d = FMF_DATA / "scans" / seq_name(dataset, scene)
     out = d / "prediction_no_augment"
     out.mkdir(exist_ok=True)   # an existing link (ObChange scans share one folder) is kept
@@ -118,29 +134,31 @@ def run_scene(scene, dino, sam, gap, dataset="ycbv"):
     prompts = classes(dataset)[0]
     caption = ". ".join(prompts) + "."
     times, n_det = [], 0
+    if realtime_fps > 0:
+        taken, n, t0 = [], 0, None
+        while n < len(frames):
+            t1 = time.time()
+            n_det += detect_frame(frames[n], out, dino, sam, caption, prompts)
+            if t0 is None:
+                t0 = time.time() - n / realtime_fps          # the clock starts once the first frame is done
+            else:
+                times.append(time.time() - t1)
+            taken.append(int(frames[n].stem.split("-")[1]))
+            wait = t0 + (n + 1) / realtime_fps - time.time()
+            if wait > 0:                                             # faster than the stream: wait for the next one
+                time.sleep(wait)
+            n = max(n + 1, int((time.time() - t0) * realtime_fps))   # newest frame that has arrived
+        json.dump({"fps": realtime_fps, "n_frames": len(frames), "taken": taken,
+                   "ms_per_frame": 1000 * float(np.mean(times)) if times else 0.0},
+                  open(d / "realtime_detect.json", "w"))
+        return len(taken), n_det, float(np.mean(times)) if times else 0.0
     for p in frames:
         name = p.stem
         if int(name.split("-")[1]) % gap != 0 or (out / f"{name}_label.json").exists():
             continue
         t0 = time.time()
-        pil, image = load_image(p)
-        boxes, scores, maps = grounding(dino, image, caption)
-        if boxes.size(0) == 0:
-            times.append(time.time() - t0)
-            continue
-        W, H = pil.size
-        boxes = boxes * torch.Tensor([W, H, W, H])
-        boxes[:, :2] -= boxes[:, 2:] / 2
-        boxes[:, 2:] += boxes[:, :2]
-        idx = torchvision.ops.nms(boxes, scores, NMS_IOU).numpy().tolist()
-        boxes, maps = boxes[idx], [maps[i] for i in idx]
-        rgb = cv2.cvtColor(cv2.imread(str(p)), cv2.COLOR_BGR2RGB)
-        sam.set_image(rgb)
-        tb = sam.transform.apply_boxes_torch(boxes, rgb.shape[:2]).to(DEVICE)
-        masks, _, _ = sam.predict_torch(point_coords=None, point_labels=None, boxes=tb, multimask_output=False)
-        save(out, name, boxes, maps, masks, prompts)
+        n_det += detect_frame(p, out, dino, sam, caption, prompts)
         times.append(time.time() - t0)
-        n_det += len(maps)
     return len(times), n_det, float(np.mean(times)) if times else 0.0
 
 
@@ -149,18 +167,15 @@ def main():
     ap.add_argument("--scenes", type=int, nargs="*", default=list(range(48, 60)))
     ap.add_argument("--frame-gap", type=int, default=10)
     ap.add_argument("--dataset", default="ycbv", help="see common.seq_cameras")
-    ap.add_argument("--msda", choices=["cuda", "pytorch"], default="cuda",
-                    help="deformable attention: compiled _C kernel (default) or GroundingDINO's PyTorch fallback")
+    ap.add_argument("--realtime-fps", type=float, default=0.0,
+                    help="replay the frames at this rate and detect only the newest one whenever free (0: every gap-th)")
     a = ap.parse_args()
-    if a.msda == "pytorch":
-        use_pytorch_msda()
-    print(f"msda={a.msda}", flush=True)
     dino = load_dino()
     sam = SamPredictor(build_sam(checkpoint=str(WEIGHTS / "sam_vit_h_4b8939.pth")).to(DEVICE))
     log = FMF_DATA / "detect_times.json"
     rec = json.load(open(log)) if log.exists() else {}
     for s in a.scenes:
-        n, nd, t = run_scene(s, dino, sam, a.frame_gap, a.dataset)
+        n, nd, t = run_scene(s, dino, sam, a.frame_gap, a.dataset, a.realtime_fps)
         print(f"{seq_name(a.dataset, s)}: {n} frames detected, {nd} boxes, {1000 * t:.0f} ms/frame", flush=True)
         if n:
             rec[seq_name(a.dataset, s)] = {"frames": n, "boxes": nd, "ms_per_frame": 1000 * t}

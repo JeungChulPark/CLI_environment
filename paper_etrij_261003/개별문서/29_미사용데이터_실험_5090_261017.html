@@ -32,7 +32,7 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>물체 위치:</strong> 기준 위치까지 거리 중앙값 원본 2.9 cm 대 개선안 3 2.0 cm, 10 cm 넘은 물체 21개 대 7개.</li>
 <li><strong>채점 주의:</strong> 이 녹화들은 이전 실행이 없어, 녹화마다 배포 인식기 실행 하나(<code>ref_&lt;녹화&gt;_ours_l5090</code>)의 최종 지도를 기준 위치로 썼습니다(08 문서의 260910_object 와 같은 방식). 기준 실행과 개선안 3 은 같은 계열이라 개선안 3 에 유리할 수 있습니다. 다만 독립적인 원본 SAM-6D 가 기준 위치 96개 중 83개를 20 cm 안에서 따로 찾았으므로, 기준 위치 자체는 대부분 맞다고 봅니다(2.3절).</li>
 <li><strong>HOPE-Video 413장(목표 3,243개), 원본 L0 대 개선안 3 + 군집 먼저:</strong> 찾은 비율 63.6 → 54.0% (−9.6%p), 정답 비율 70.9 → <strong>89.4%</strong>, 이미지당 오답 2.05 → <strong>0.50</strong>, 둘 다 답한 물체의 ADD-S AUC 84.4 → <strong>88.4</strong>, 이미지당 시간 856 → <strong>377 ms</strong>. 18 문서의 다른 BOP 데이터셋과 같은 방향이고, 찾은 비율 손실은 그중 가장 작습니다(4절).</li>
-<li>ObChange 다른 방: 5절.</li>
+<li><strong>ObChange 다른 방(Office · LivingArea · SmallRoom), 모든 방법 같은 실시간 30 fps:</strong> ctr5cm F1 합산 방문별 / 연속이 제안(관측 자세) <strong>0.448 / 0.234</strong>, 제안(CAD 자세) 0.317 / 0.193, dualmap_bgr 0.200 / 0.074, FM-Fusion 0.131 / 0.067, DualMap 0.105 / 0.054 입니다. 10 fps 기본 설정(기준 방법은 시간 제약 없음)에서 실시간으로 바꾸면 제안은 거의 같고 DualMap 두 판은 떨어집니다. 처리 빈도는 제안 4.7~6.7 Hz, FM-Fusion 1.3~1.5 Hz, DualMap 8.2~17.4 Hz 입니다. BigRoom 은 실행 중입니다(5절).</li>
 </ul>
 <h2>1. 대상 데이터와 쓰지 않은 이유</h2>
 <h3>1.1 문서와 대조</h3>
@@ -422,4 +422,299 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>ADD-S AUC(답 없음 포함)</strong> 는 원본이 높습니다. 답을 안 낸 목표를 무한 오차로 세므로 찾은 비율 손실이 그대로 들어간 값입니다.</li>
 <li><strong>물체별 찾은 비율이 가장 많이 준 것(원본 → 개선안 3):</strong> Mushrooms 53.2 → 14.4%, Yogurt 54.9 → 29.7%, Corn 48.4 → 25.8%, Mustard 83.9 → 62.2%, Mayo 75.8 → 58.1%. 오른 것: Milk 48.2 → 60.6%, Peas&amp;Carrots 38.9 → 46.7%, Cherries 27.9 → 31.0%.</li>
 </ul>
-<!-- ObChange 절은 실행 뒤 채움 --></main></body></html>
+<h2>5. ObChange 다른 방 네 개 (Office · LivingArea · SmallRoom · BigRoom)</h2>
+<p>21 문서는 ObChange(TU Wien, CC BY 4.0) 다섯 방 중 Kitchen 만 썼습니다. 같은 비교(제안 · FM-Fusion · DualMap 두 판, 방문별 · 연속 지도)를 나머지 네 방에서 했습니다. <strong>본 결과는 모든 방법을 같은 실시간 30 fps 입력으로 돌린 것(5.2절)이고, 처음 돌린 10 fps 기본 설정 결과는 보조로 둡니다(5.3절).</strong></p>
+<h3>5.1 데이터와 두 조건</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방</th>
+<th>방문</th>
+<th>정답 물체 (방문 2~끝 합계)</th>
+<th>채점 제외 물체(CAD 없음)</th>
+<th>프레임 10 fps / 30 fps</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Office</td>
+<td>1~6</td>
+<td>10 (방문마다 2)</td>
+<td>15</td>
+<td>4,184 / 12,545</td>
+</tr>
+<tr>
+<td>LivingArea</td>
+<td>1~6</td>
+<td>14</td>
+<td>42</td>
+<td>6,026 / 18,069</td>
+</tr>
+<tr>
+<td>SmallRoom</td>
+<td>1~6</td>
+<td>25</td>
+<td>29</td>
+<td>16,648 / 49,936</td>
+</tr>
+<tr>
+<td>BigRoom</td>
+<td>1~7</td>
+<td>46</td>
+<td>60</td>
+<td>32,829 / 98,463</td>
+</tr>
+<tr>
+<td>(참고) Kitchen, 21 문서</td>
+<td>1~6</td>
+<td>25</td>
+<td>5</td>
+<td>— / 8,974</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>정답:</strong> 21 문서와 같은 방법입니다. 점 단위 주석(ElasticFusion 재구성 위)을 정답으로 쓰고, YCB-V CAD 를 그 점에 ICP 로 맞춰 6D 자세를 만들었습니다(<code>obchange_gt.py --room</code>). LivingArea 주석 한 줄(scene6 plane 2, 065-j_cups)은 바닥 표시 플래그가 줄 가운데에 있어, 플래그를 줄 어디서든 읽도록 파서를 고쳤습니다.</li>
+<li><strong>10 fps 와 30 fps:</strong> 네 방은 처음에 데이터셋의 BOP 판 프레임(<code>bop/test/&lt;방&gt;_s&lt;k&gt;</code>)으로 돌렸습니다. 원본 rosbag 과 대조하니 <strong>BOP 판은 30 Hz 카메라 영상의 정확히 3장에 1장</strong>이었습니다(시각 차이 0 ms, 카메라 자세 차이 중앙값 0.4 mm · 최대 2.2 mm, 내부 파라미터 같음). 그래서 원본 bag 을 30 fps 로 다시 풀었습니다(<code>obchange_raw_seq.py</code>, Kitchen 의 <code>obchange_prep.py</code> 와 같은 변환). 방 → bag 폴더: Office = GH30_office, LivingArea = GH30_living, SmallRoom = Arena, BigRoom = KennyLab.</li>
+</ul>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>조건</th>
+<th>입력</th>
+<th>제안</th>
+<th>FM-Fusion</th>
+<th>DualMap · dualmap_bgr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>실시간 30 fps (본 결과)</strong></td>
+<td>원본 bag 30 fps, 벽시계에 맞춰 흘림</td>
+<td>허브 1배속 재생(21 문서와 같음): 인식기가 비면 가장 최근 프레임을 가져가고 지나간 프레임은 버림</td>
+<td>같은 규칙. 검출(GroundingDINO + SAM)이 비면 가장 최근 프레임을 검출(<code>fmfusion_detect.py --realtime-fps 30</code>), 지도 생성은 검출한 프레임만</td>
+<td>같은 규칙(<code>stride=1</code>, <code>DM_RT_INTERVAL=1/30</code>: 처리가 밀린 프레임은 버림)</td>
+</tr>
+<tr>
+<td>10 fps 기본 설정 (보조)</td>
+<td>BOP 판 10 fps</td>
+<td>허브 1배속 재생</td>
+<td>시간 제약 없이 3프레임마다 검출(21 문서 Kitchen 은 30 fps 에서 10프레임마다 = 같은 영상 간격)</td>
+<td>시간 제약 없이 저장소 기본 <code>stride: 10</code></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>실시간 조건의 뜻:</strong> 세 방법 모두 같은 30 fps 영상을 같은 시계로 받고, 자기 처리 속도만큼만 봅니다. 10 fps 기본 설정에서는 제안만 실시간이고 두 기준 방법은 시간 제약 없이 정해진 간격의 프레임을 다 처리했습니다.</li>
+<li><strong>FM-Fusion 지도 생성 시간:</strong> 실시간 검출이 고른 프레임만 지도 생성(IntegrateInstanceMap)에 넣고, 지도 생성은 검출과 동시에 돈다고(파이프라인) 봅니다. 프레임당 지도 생성 시간은 Office 에서 평균 367~413 ms(95% 680~800 ms)로 검출 간격(755 ms)보다 짧아 이 가정이 성립합니다. 둘을 차례로 돌린다고 보면 프레임당 약 1.17 초(0.86 Hz)라 처리 프레임이 더 줄어듭니다. 즉 이 비교는 FM-Fusion 에 유리한 쪽입니다.</li>
+<li><strong>DualMap 프레임 규칙:</strong> DualMap 의 로봇용 실행기(<code>runner_ros</code>)는 자체 키프레임 규칙(0.5 초 · 10 cm · 3°)으로 프레임을 덜 고릅니다. 이번에는 세 방법에 같은 규칙("비면 가장 최근 프레임")을 적용했습니다. DualMap 은 지도 생성을 별도 스레드에서 하므로 주 처리 흐름이 빨리 비어, 영상의 27~58%를 받았습니다(5.4절).</li>
+<li><strong>지도 방식:</strong> 21 문서와 같습니다. 방문별 = 방문 k 만 본 지도. 연속 = 방문 1~k 를 이어 본 지도의 방문 k 끝 상태(제안은 한 번 재생하며 방문 끝마다 메모리 스냅숏, 두 기준 방법은 방문 1~k 를 매번 처음부터 입력).</li>
+<li><strong>채점:</strong> <code>obchange_score.py</code>. 같은 종류 · 물체 중심 5 cm 안이면 맞음(ctr5cm). IoU 0.25 짝짓기는 21 문서와 같은 이유(정답 점군과 카메라 궤적의 cm 단위 흔들림, 작은 물체)로 모든 방법이 0.00~0.27 이라 표에서 뺐습니다. CAD 가 없는 물체 위의 예측은 빼고 셉니다(don't care).</li>
+</ul>
+<h3>5.2 결과: 실시간 30 fps (본 결과)</h3>
+<p>ctr5cm F1, <strong>방문별 / 연속</strong>, 괄호는 연속 지도에서 <strong>치운 물체 중 지도에 남은 수 / 치운 물체 수</strong>(작을수록 변화를 잘 따름). 합산은 방들의 TP · FP · FN 을 더해 다시 계산한 F1 입니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>Office</th>
+<th>LivingArea</th>
+<th>SmallRoom</th>
+<th><strong>합산</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ours_obs</td>
+<td>0.389 / 0.200 (5/7)</td>
+<td>0.690 / 0.261 (7/11)</td>
+<td>0.385 / 0.236 (5/7)</td>
+<td>0.448 / 0.234 (17/25)</td>
+</tr>
+<tr>
+<td>ours_cad</td>
+<td>0.222 / 0.102 (3/7)</td>
+<td>0.438 / 0.229 (6/11)</td>
+<td>0.312 / 0.220 (4/7)</td>
+<td>0.317 / 0.193 (13/25)</td>
+</tr>
+<tr>
+<td>FM-Fusion</td>
+<td>0.162 / 0.098 (5/7)</td>
+<td>0.242 / 0.099 (10/11)</td>
+<td>0.083 / 0.040 (2/7)</td>
+<td>0.131 / 0.067 (17/25)</td>
+</tr>
+<tr>
+<td>DualMap</td>
+<td>0.069 / 0.070 (0/7)</td>
+<td>0.375 / 0.069 (1/11)</td>
+<td>0.000 / 0.038 (0/7)</td>
+<td>0.105 / 0.054 (1/25)</td>
+</tr>
+<tr>
+<td>dualmap_bgr</td>
+<td>0.160 / 0.100 (1/7)</td>
+<td>0.188 / 0.088 (1/11)</td>
+<td>0.219 / 0.053 (0/7)</td>
+<td>0.200 / 0.074 (2/25)</td>
+</tr>
+</tbody>
+</table></div>
+<p>BigRoom 은 실행 중입니다(5.5절).</p>
+<h3>5.3 결과: 10 fps 기본 설정 (보조)</h3>
+<p>같은 형식입니다. BigRoom 은 기준 방법 실행 도중 30 fps 실시간 비교로 바꾸면서 멈춰 없습니다(제안만 끝남).</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>Office</th>
+<th>LivingArea</th>
+<th>SmallRoom</th>
+<th><strong>합산</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ours_obs</td>
+<td>0.424 / 0.230 (5/7)</td>
+<td>0.600 / 0.281 (6/11)</td>
+<td>0.366 / 0.252 (5/7)</td>
+<td>0.428 / 0.253 (16/25)</td>
+</tr>
+<tr>
+<td>ours_cad</td>
+<td>0.242 / 0.098 (3/7)</td>
+<td>0.438 / 0.207 (5/11)</td>
+<td>0.272 / 0.216 (4/7)</td>
+<td>0.301 / 0.181 (12/25)</td>
+</tr>
+<tr>
+<td>FM-Fusion</td>
+<td>0.144 / 0.089 (5/7)</td>
+<td>0.226 / 0.095 (10/11)</td>
+<td>0.074 / 0.049 (3/7)</td>
+<td>0.123 / 0.071 (18/25)</td>
+</tr>
+<tr>
+<td>DualMap</td>
+<td>0.167 / 0.095 (0/7)</td>
+<td>0.370 / 0.208 (2/11)</td>
+<td>0.129 / 0.115 (1/7)</td>
+<td>0.195 / 0.136 (3/25)</td>
+</tr>
+<tr>
+<td>dualmap_bgr</td>
+<td>0.381 / 0.091 (1/7)</td>
+<td>0.296 / 0.111 (2/11)</td>
+<td>0.250 / 0.150 (1/7)</td>
+<td>0.288 / 0.124 (4/25)</td>
+</tr>
+</tbody>
+</table></div>
+<h3>5.4 실시간 조건에서 각 방법이 처리한 프레임</h3>
+<p>방마다 연속 지도 실행(방문 1~끝을 이어 재생) 한 번 기준입니다. 괄호는 영상 시간 기준 초당 처리 프레임(FM-Fusion 은 검출 한 장 평균 시간 포함).</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방(30 fps 프레임)</th>
+<th>우리 방법</th>
+<th>FM-Fusion</th>
+<th>DualMap</th>
+<th>dualmap_bgr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Office (12545)</td>
+<td>1958 (4.7 Hz)</td>
+<td>556 (1.3 Hz, 755 ms)</td>
+<td>3436 (8.2 Hz)</td>
+<td>3515 (8.4 Hz)</td>
+</tr>
+<tr>
+<td>LivingArea (18069)</td>
+<td>4057 (6.7 Hz)</td>
+<td>892 (1.5 Hz, 676 ms)</td>
+<td>10492 (17.4 Hz)</td>
+<td>9184 (15.2 Hz)</td>
+</tr>
+<tr>
+<td>SmallRoom (49936)</td>
+<td>10902 (6.6 Hz)</td>
+<td>2467 (1.5 Hz, 675 ms)</td>
+<td>21717 (13.0 Hz)</td>
+<td>20326 (12.2 Hz)</td>
+</tr>
+</tbody>
+</table></div>
+<h3>5.5 해석</h3>
+<ul>
+<li><strong>세 방 합산, 실시간 30 fps(본 결과):</strong> 제안(관측 자세, ours_obs)이 방문별 <strong>0.448</strong> · 연속 <strong>0.234</strong> 로 가장 높습니다. 다음은 제안(CAD 자세) 0.317 / 0.193, dualmap_bgr 0.200 / 0.074, FM-Fusion 0.131 / 0.067, DualMap 0.105 / 0.054 입니다. 방 하나씩 봐도 제안(관측 자세)은 세 방의 방문별 · 연속 모두에서 가장 높습니다.</li>
+<li><strong>조건을 맞추면 기준 방법이 떨어집니다.</strong> 10 fps 기본 설정에서 실시간 30 fps 로 바꾸면 제안은 방문별 0.428 → 0.448 · 연속 0.253 → 0.234 로 거의 같지만, DualMap 은 0.195 / 0.136 → 0.105 / 0.054, dualmap_bgr 은 0.288 / 0.124 → 0.200 / 0.074 로 떨어집니다. DualMap 은 영상의 27~58% 를 받았는데도(5.4절) 맞힌 물체(TP)가 연속 지도 합계 12 → 6 개로 줄었습니다. 시간 제약 없는 10프레임 간격보다 처리가 밀려 버린 프레임 구성이 불리했던 것으로 봅니다. FM-Fusion 은 두 조건 모두 0.13 / 0.07 안팎으로 낮습니다. 맞힌 수는 제안과 비슷하지만(연속 TP 28 대 28) 잘못 올린 물체가 연속 지도 합계 761 개(제안 162 개)라 정밀도가 낮습니다.</li>
+<li><strong>처리 빈도(5.4절):</strong> 30 fps 영상에서 제안은 초당 4.7~6.7 장, FM-Fusion 검출은 1.3~1.5 장(한 장 675~755 ms)입니다. DualMap 은 8.2~17.4 장으로 가장 많이 받지만 F1 은 가장 낮습니다. 많이 보는 것보다 한 장에서 무엇을 얼마나 정확히 올리느냐가 결과를 정합니다.</li>
+<li><strong>치운 물체:</strong> 괄호 숫자는 작을수록 좋아 보이지만 그대로 읽으면 안 됩니다. 세 방 실시간 합계로 치운 물체 25 개 중 지도에 한 번이라도 올린 것이 제안(관측) 17, FM-Fusion 19, DualMap 2, dualmap_bgr 3 개입니다. DualMap 의 0~2 는 치운 물체를 지운 것이 아니라 애초에 거의 올리지 않은 결과입니다. 올린 것 중에서 지운 것은 제안 0/17, FM-Fusion 2/19 로, <strong>연속 지도에서 치운 물체를 지우는 것은 어느 방법도 거의 못 합니다.</strong> 새로 놓인 물체(31 개)는 제안 20, FM-Fusion 18, DualMap 5, dualmap_bgr 7 개를 찾았습니다.</li>
+<li><strong>제안 안에서:</strong> 관측 자세(ours_obs)가 CAD 자세(ours_cad)보다 세 방 모두 높습니다. 21 문서 Kitchen 과 같은 방향입니다.</li>
+<li><strong>BigRoom:</strong> 30 fps 실시간 실행 중입니다(98,463 프레임, 10/18 01:12 시작). 끝나면 표에 더합니다.</li>
+</ul>
+<h3>5.6 바꾼 코드와 외부 코드 패치</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>파일</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/objmap/obchange_raw_seq.py</code> (새 파일)</td>
+<td>Kitchen 이외 방의 원본 bag → 30 fps 프레임 · cameras.json. bag 을 zip 에서 하나씩 풀어 두 번 읽음(1차: /tf · 영상 시각, 2차: 쓸 프레임만 저장)으로 메모리를 쓰지 않음</td>
+</tr>
+<tr>
+<td><code>src/objmap/run_obchange_rt.sh</code> (새 파일)</td>
+<td>실시간 30 fps 한 방 전체(입력 준비 → 제안 → FM-Fusion 실시간 검출 → FM-Fusion 지도 생성 · DualMap 두 판 → 채점). 결과는 <code>gt30/</code>, <code>out30/</code>, <code>~/DeepLearning/Datasets/objmap_obchange30/</code> 에 따로 둠</td>
+</tr>
+<tr>
+<td><code>src/objmap/obchange_bop_seq.py</code>, <code>run_obchange_room.sh</code>, <code>obchange_env.sh</code>, <code>fmf_python.sh</code> (새 파일)</td>
+<td>10 fps 기본 설정 한 방 전체와 노트북 경로</td>
+</tr>
+<tr>
+<td><code>src/objmap/fmfusion_detect.py</code></td>
+<td><code>--realtime-fps</code>: 프레임이 그 속도로 도착한다고 보고, 검출기가 비면 가장 최근 프레임만 검출. 고른 프레임 · 검출 시간을 <code>realtime_detect.json</code> 에 남김</td>
+</tr>
+<tr>
+<td><code>src/objmap/run_ours.py</code></td>
+<td><code>SEQ_BAGS_DELETE</code>: 30 fps 재생 bag(프레임당 1.5 MB, SmallRoom 연속 72 GB)을 실행 뒤 지움</td>
+</tr>
+<tr>
+<td><code>src/objmap/dualmap_run.sh</code></td>
+<td><code>DUALMAP_EXTRA</code>: hydra 설정 덧붙이기(실시간은 <code>stride=1</code>)</td>
+</tr>
+<tr>
+<td><code>src/objmap/obchange_gt.py</code>, <code>common.py</code>, <code>seq_bags.py</code>, <code>gt_pose_stream.py</code>, <code>dualmap_prep.py</code>, <code>fmfusion_prep.py</code>, <code>fmfusion_export.py</code>, <code>obchange_score.py</code></td>
+<td>방 이름(<code>--room</code>, <code>obchange_&lt;방&gt;[_all]</code>) 처리, 재생 시계 fps 를 cameras.json 에서 읽음</td>
+</tr>
+<tr>
+<td><code>src/objmap/obchange_tables_261017.py</code> (새 파일)</td>
+<td>이 절의 표</td>
+</tr>
+<tr>
+<td>FM-Fusion <code>src/IntegrateInstanceMap.cpp</code> 71행 (로컬)</td>
+<td>폴더 프레임 수 상한 4000 → 1,000,000. 상한을 넘으면 아무 출력 없이 끝나는 코드라, 10 fps 방(최대 32,829)과 30 fps BigRoom(98,463)에서 지도가 비지 않게 함</td>
+</tr>
+<tr>
+<td>FM-Fusion <code>src/mapping/Instance.cpp</code> (로컬)</td>
+<td>볼록 껍질(Qhull)이 평평한 점군에서 예외를 내면 프로그램 전체가 멈춤 → 흔든 입력으로 한 번 더, 그래도 실패하면 그 물체의 상자만 갱신하지 않음. 10 fps SmallRoom 첫 실행이 방문 2 에서 이 예외로 멈췄고, 고친 뒤 다시 돌린 실행들에서는 이 경로가 한 번도 쓰이지 않았습니다(재현 안 됨). 원래 멈추던 경우에만 동작하므로 다른 결과는 바뀌지 않음</td>
+</tr>
+<tr>
+<td>DualMap <code>utils/object_detector.py</code> (로컬)</td>
+<td>dualmap_bgr 판의 BGR 입력(24 문서 패치를 다시 만든 것, <code>src/objmap/dualmap_ultralytics_bgr_reconstructed_261017.patch</code>). <code>applications/runner_dataset.py</code> 의 실시간 훅(<code>DM_RT_INTERVAL</code>)은 이전 실험에서 넣은 것 그대로</td>
+</tr>
+</tbody>
+</table></div>
+<h3>5.7 주의</h3>
+<ul>
+<li>방마다 정답 물체가 적습니다(Office 는 방문마다 2개). 한두 개 차이로 F1 이 0.1 넘게 움직이므로 합산 결과로 읽는 것이 맞습니다.</li>
+<li>정답 6D 자세는 점 주석에 CAD 를 맞춘 것이라, 21 문서와 같이 중심 5 cm 짝짓기만 본 결과로 씁니다.</li>
+<li>실시간 조건의 처리 프레임 수는 장비(RTX 5090 Laptop)와 그 순간의 부하에 따라 달라집니다. FM-Fusion 지도 생성(CPU)은 DualMap 실행과 같은 시간에 돌았습니다.</li>
+</ul></main></body></html>

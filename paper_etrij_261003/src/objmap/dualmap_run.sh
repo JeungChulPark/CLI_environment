@@ -3,6 +3,7 @@
 # then export each concrete map to out/<method>/ycbv/<scene>.
 # Usage: bash dualmap_run.sh 52 [48 49 ...]   (prepare first: python dualmap_prep.py)
 # Deviations from the repo defaults: class list = 21 YCB-V prompts + 'unknown', use_rerun=False.
+# DUALMAP_EXTRA: more hydra overrides (real-time condition: "stride=1" with DM_RT_INTERVAL=0.0333 exported).
 # DUALMAP_METHOD=dualmap_bgr also feeds YOLO-World/MobileSAM/FastSAM BGR images
 # (DualMap passes RGB arrays, which ultralytics reads as BGR); default 'dualmap' = as published.
 # timeout: an exception in the main thread leaves DualMap's worker threads alive (process hangs).
@@ -33,7 +34,7 @@ for s in "$@"; do
   ${LOCK:+flock $LOCK} timeout ${DUALMAP_TIMEOUT:-1500} python -m applications.runner_dataset \
     dataset_name=ycbv scene_id=$sid dataset_path=$DATA/Replica \
     dataset_conf_path=$DATA/configs/$sid.yaml output_path=$RUNS/$sid \
-    yolo.given_classes_path=$CLASSES use_rerun=False \
+    yolo.given_classes_path=$CLASSES use_rerun=False ${DUALMAP_EXTRA:-} \
     > "$RUNS/$sid.log" 2>&1 || { echo "FAILED, see $RUNS/$sid.log"; tail -20 "$RUNS/$sid.log"; continue; }
   python "$HERE/dualmap_export.py" --scene "$s" --method "$METHOD" --dataset "$DATASET" --map "$RUNS/$sid/ycbv_$sid/map"
 done

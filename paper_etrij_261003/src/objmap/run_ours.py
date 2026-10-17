@@ -22,6 +22,7 @@ sam6d_realtime/ run; cluster-first needs commit 0c539f3 or later.
 import argparse
 import json
 import os
+import shutil
 import signal
 import subprocess
 import time
@@ -90,6 +91,8 @@ def run_scene(s, http_port, slam_port, dataset="ycbv"):
         gt.wait(30) if gt.poll() is None else None
     ok = (out / "summary.json").exists()
     print(f"{sc} {'ok' if ok else 'NO SUMMARY'} {time.time() - t:.0f} s", flush=True)
+    if dataset != "ycbv" and os.environ.get("SEQ_BAGS_DELETE"):   # 30 fps bags are 1.5 MB a frame: written per run
+        shutil.rmtree(bags, ignore_errors=True)
     return ok
 
 
@@ -190,9 +193,6 @@ def main():
     a = ap.parse_args()
     if a.cmd == "run":
         for s in a.scenes:
-            if (RUNS / seq_name(a.dataset, s) / "summary.json").exists():   # resumable (2026-10-12)
-                print(f"{seq_name(a.dataset, s)} skip (summary.json exists)", flush=True)
-                continue
             run_scene(s, a.http_port, a.slam_port, a.dataset)
             time.sleep(5)     # let the ports and the shared-memory channel go
     else:
