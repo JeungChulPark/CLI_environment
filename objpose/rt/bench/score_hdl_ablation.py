@@ -19,10 +19,10 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[2]
 sys.path.insert(0, str(REPO / "objpose/rt/260901/bigeight"))
 import eval_traj  # noqa: E402
-from trajlib import load_tum  # noqa: E402
+from trajlib import load_tum, Traj, umeyama_se3, rotvec  # noqa: E402
 
 SESSIONS = ("260901_cbnu_bigeightcircle", "260901_cbnu_eightcircle", "260901_cbnu_digut", "260901_cbnu_longcircle")
-FILES = {"live": "live_tum.txt", "final": "final_tum.txt", "kf": "kf_tum.txt"}
+FILES = {"live": "live_tum.txt", "final": "final_tum.txt"}
 
 
 def g(d, *k):
@@ -31,6 +31,29 @@ def g(d, *k):
             return float("nan")
         d = d[x]
     return d
+
+
+def at_keyframes(kf_file, other_files, tg, Tg):
+    """ATE of the graph keyframes and of the per-scan trajectories sampled at the SAME keyframe stamps.
+    eval_traj samples the estimate at the reference rate (0.2 s gap limit), which the 0.5 m keyframes do not meet,
+    so this samples the reference at the keyframe stamps instead: SE(3) Umeyama, position RMSE / max, rotation RMSE
+    after removing the mean offset"""
+    tk, _ = load_tum(kf_file)
+    Tr, okr = Traj(tg, Tg, 0.2).at(tk)
+    out = {}
+    for name, f in [("kf", kf_file)] + other_files:
+        te, Te = load_tum(f)
+        # the keyframes are taken as they are (their own gaps exceed the interpolation limit)
+        Tq, ok = (Te, np.ones(len(te), bool)) if name == "kf" else Traj(te, Te, 0.2).at(tk)
+        ok &= okr & np.isfinite(Tq[:, :3, 3]).all(1)
+        R, t = umeyama_se3(Tq[ok, :3, 3], Tr[ok, :3, 3])
+        pe = np.linalg.norm(Tq[ok, :3, 3] @ R.T + t - Tr[ok, :3, 3], axis=1)
+        dR = np.einsum("nji,njk->nik", Tr[ok, :3, :3], R @ Tq[ok, :3, :3])
+        rv = rotvec(dR); rv -= rv.mean(0)
+        re = np.degrees(np.linalg.norm(rv, axis=1))
+        out[name] = {"n": int(ok.sum()), "ate_cm": float(np.sqrt((pe ** 2).mean()) * 100), "ate_max_cm": float(pe.max() * 100),
+                     "rot_deg": float(np.sqrt((re ** 2).mean()))}
+    return out
 
 
 def main():
@@ -60,6 +83,20 @@ def main():
                              "tilt_deg": g(res, "drift", "tilt_deg", "rmse"),
                              "rpe1_cm": g(res, "rpe_1s", "trans_cm", "rmse"), "rpe1_deg": g(res, "rpe_1s", "rot_deg", "rmse"),
                              "rpe10_cm": g(res, "rpe_10s", "trans_cm", "rmse"), "coverage": res["coverage"]})
+    print("\nat the graph keyframe stamps (kf = optimised keyframes; live / final sampled at the same stamps)")
+    print(f"{'session':28s} {'config':10s} {'n':>4s}  {'kf ATE/max/rot':>20s}  {'final ATE/max/rot':>20s}  {'live ATE/max/rot':>20s}")
+    for s in SESSIONS:
+        tg, Tg = load_tum(REPO / f"objpose/rt/gt/out/{s}/pgo_tum.txt")
+        for fl in ("on", "off"):
+            for r in sorted((HERE / f"out/{s}/hdl_floor_{fl}").glob("run*")):
+                if not (r / "kf_tum.txt").exists():
+                    continue
+                k = at_keyframes(r / "kf_tum.txt", [("final", r / "final_tum.txt"), ("live", r / "live_tum.txt")], tg, Tg)
+                for kind, v in k.items():
+                    rows.append({"session": s, "config": f"floor_{fl}", "run": r.name, "traj": f"{kind}@kf", "poses": v["n"],
+                                 "ate_cm": v["ate_cm"], "ate_max_cm": v["ate_max_cm"], "rot_deg": v["rot_deg"]})
+                cell = lambda v: f"{v['ate_cm']:6.2f} {v['ate_max_cm']:6.2f} {v['rot_deg']:5.2f}"
+                print(f"{s:28s} floor_{fl:4s} {k['kf']['n']:4d}  {cell(k['kf']):>20s}  {cell(k['final']):>20s}  {cell(k['live']):>20s}")
     keys = ["session", "config", "run", "traj", "poses", "ate_cm", "ate_max_cm", "rot_deg", "tilt_deg", "rpe1_cm",
             "rpe1_deg", "rpe10_cm", "coverage", "error"]
     with open(a.out_csv, "w", newline="") as fh:
