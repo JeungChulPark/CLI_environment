@@ -18,6 +18,9 @@ SESSIONS = ["260901_cbnu_eightcircle", "260901_cbnu_bigeightcircle", "260901_cbn
 CONFIGS = [("origL05_orb", "live_261018_{s}_l5090_origL05_orb"), ("hyb3cf_orb", "live_261018_{s}_l5090_hyb3cf_orb"),
            ("hyb3cf_orbgyro", "live_261018_{s}_l5090_hyb3cf_orbgyro")]
 CONFIGS += [(k + r, f + r) for r in ("_r2", "_r3") for k, f in CONFIGS[1:]]   # repeats (SUF=_r2/_r3 HYB_ONLY=1)
+# unmodified ORB-SLAM3 V1.0 (run_orbup_l5090.sh)
+CONFIGS += [("origL05_orbup", "live_261018_{s}_l5090_origL05_orbup")]
+CONFIGS += [("hyb3cf_orbup" + r, "live_261018_{s}_l5090_hyb3cf_orbup" + r) for r in ("", "_r2", "_r3")]
 REF_RUN = {"260901_cbnu_digut": "ref_260901_cbnu_digut_ours_l5090",
            "260901_cbnu_longcircle": "ref_260901_cbnu_longcircle_ours_l5090"}
 

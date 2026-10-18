@@ -559,7 +559,7 @@ dd 읽기에 I/O 오류 0). Mac 사본은 `integrity_check` **ok**, 메시지 37
 
 ### `mac_slam/` 사본이 Mac 보다 낡다
 
-> **2026-10-18 해결:** Mac 의 `~/objpose/src` 와 `ORB_SLAM3_src` 를 가져와 `mac_slam/` 을 갱신했다(`gyro_aid.h` 추가, ORB-SLAM3 전체 수정은 `patches/03-orbslam3-objpose-full-260918.patch`). 아래는 그 전 기록이다(paper_etrij_261003 30 문서 4절).
+> **2026-10-18 해결:** Mac 의 `~/objpose/src` 와 `ORB_SLAM3_src` 를 가져와 `mac_slam/` 을 갱신했다(`gyro_aid.h` 추가, ORB-SLAM3 전체 수정은 `patches/03-orbslam3-objpose-full-260918.patch`). 같은 날 19:00 에 .106 저장소의 크래시 수정 2건을 `ORB_SLAM3_src` 에 넣고 다시 빌드했다(`patches/04-orbslam3-crash-fixes-261018.patch`, 30 문서 4.2절). 원본 ORB-SLAM3 v1.0 비교용 빌드는 `build_upstream_mac.sh` 가 `~/objpose/build_upstream` 에 따로 만든다(30 문서 4.1절). 아래는 그 전 기록이다(paper_etrij_261003 30 문서 4절).
 
 Mac 의 `~/objpose/src/slam_stream.cc` 는 33,401 바이트(9/18)인데 리포의 `objpose/mac_slam/slam_stream.cc` 는
 28,664 바이트(9/13)이고, 자이로 보조의 핵심인 **`gyro_aid.h`(10,189 바이트)는 리포에 아예 없다**. ORB-SLAM3 + IMU

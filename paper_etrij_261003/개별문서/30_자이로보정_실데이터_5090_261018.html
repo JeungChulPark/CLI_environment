@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>30. 실 데이터 객체 위치 추정 — 원본 ORB vs 우리 기술 ORB vs 우리 기술 ORB + 자이로 (RTX 5090 Laptop, 2026-10-18)</title><style>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>30. 실 데이터 객체 위치 추정 — 원본 ORB-SLAM3 · 수정 ORB-SLAM3 · 수정 ORB-SLAM3 + 자이로 (RTX 5090 Laptop, 2026-10-18)</title><style>
 :root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
 @media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
 *{box-sizing:border-box}
@@ -20,9 +20,9 @@ hr{border:0;border-top:1px solid var(--line);margin:30px 0}
 li{margin:3px 0}
 
 a{color:var(--acc);word-break:break-all}
-</style></head><body><main><h1>30. 실 데이터 객체 위치 추정 — 원본 ORB vs 우리 기술 ORB vs 우리 기술 ORB + 자이로 (RTX 5090 Laptop, 2026-10-18)</h1>
+</style></head><body><main><h1>30. 실 데이터 객체 위치 추정 — 원본 ORB-SLAM3 · 수정 ORB-SLAM3 · 수정 ORB-SLAM3 + 자이로 (RTX 5090 Laptop, 2026-10-18)</h1>
 <blockquote>
-<p>자이로(IMU) 데이터가 있는 실 데이터 녹화 4개(260901 cbnu)에서 세 구성을 비교했습니다. 인식은 노트북(RTX 5090 Laptop)에서, SLAM 은 Mac(192.168.219.106)에서 실시간으로 돌렸습니다. 세 구성은 원본 0.5 + ORB, 개선안 3 + 군집 먼저 + ORB, 개선안 3 + 군집 먼저 + ORB + 자이로 보정입니다. 우리 기술 두 구성은 녹화마다 3번씩 반복했습니다. 함께 Mac 에만 있던 수정 ORB-SLAM3 소스를 저장소로 가져왔습니다(4절). 실행 스크립트 · 채점 코드 · 결과는 <code>src/realdata/logs_gyro_261018/</code> 에 있습니다(<code>run_gyro_l5090.sh</code>, <code>score_gyro.py</code>, <code>results_gyro_l5090.json</code>).</p>
+<p>자이로(IMU) 데이터가 있는 실 데이터 녹화 4개(260901 cbnu)에서 세 구성을 비교했습니다. 인식은 노트북(RTX 5090 Laptop)에서, SLAM 은 Mac(192.168.219.106)에서 실시간으로 돌렸습니다. 세 구성은 원본 0.5 + ORB, 개선안 3 + 군집 먼저 + ORB, 개선안 3 + 군집 먼저 + ORB + 자이로 보정입니다. 우리 기술 두 구성은 녹화마다 3번씩 반복했습니다. 이어서 같은 녹화를 <strong>원본 ORB-SLAM3(v1.0, 우리 수정 없음)</strong> 로도 돌렸습니다(원본 0.5 1번, 개선안 3 + 군집 먼저 3번, 2.4절). 함께 Mac 에만 있던 수정 ORB-SLAM3 소스를 저장소로 가져왔습니다(4절). 실행 스크립트 · 채점 코드 · 결과는 <code>src/realdata/logs_gyro_261018/</code> 에 있습니다(<code>run_gyro_l5090.sh</code>, <code>run_orbup_l5090.sh</code>, <code>score_gyro.py</code>, <code>results_gyro_l5090.json</code>).</p>
 </blockquote>
 <h2>0. 요약</h2>
 <ul>
@@ -40,7 +40,12 @@ a{color:var(--acc);word-break:break-all}
 <li>잘못은 자이로 없이 12번 실행 중 3개, 자이로를 켜면 0개입니다.</li>
 <li>3개 중 2개는 장면에 없는 소스(Sauce_high)를 다른 물체 자리에 올린 인식 오류라 SLAM 과 직접 관계가 없습니다. 나머지 1개(longcircle 1회차 milk, 기준에서 22 cm)는 위치 오차입니다.</li>
 <li>기준까지 거리(중앙값 2.7 → 2.4 cm, 평균 3.4 → 3.4 cm)와 실행 중 점수 평균(71.7 → 71.8%)은 거의 같습니다.</li>
-<li><strong>SLAM 구분:</strong> 이 문서의 "ORB" 는 원본 ORB-SLAM3 가 아니라 <strong>Mac 의 수정 ORB-SLAM3 에서 자이로만 끈 것</strong>입니다. 자이로와 상관없이 원본 버그 수정과 메모리 할당 개선이 들어 있습니다(4절). 2026-10-18 부터 Mac 실행은 자이로가 있는 녹화는 수정 ORB + 자이로, 없는 녹화는 수정 ORB 를 기본으로 합니다.</li>
+<li><strong>SLAM 구분:</strong> 1~3절 표의 "ORB" 는 <strong>Mac 의 수정 ORB-SLAM3 에서 자이로만 끈 것</strong>입니다. 자이로와 상관없이 원본 버그 수정, 메모리 할당 개선, <strong>루프 임계값 완화</strong>가 들어 있습니다(4절). 원본 ORB-SLAM3 는 2.4절에 따로 있습니다.</li>
+<li><strong>원본 ORB-SLAM3 (2.4절, 개선안 3 + 군집 먼저, 3번 반복):</strong></li>
+<li>최종 지도 맞음 / 잘못은 <strong>32/0 · 31/0 · 31/0</strong> 입니다. 2 · 3회차 longcircle 의 1개 부족은 SLAM 이 실행 도중 죽어서입니다.</li>
+<li><strong>원본은 16번 실행 중 3번 죽었습니다.</strong> 2번은 실행 도중(longcircle 2 · 3회, 루프 직후 <code>Sim3Solver</code> NaN), 1번은 끝난 뒤 종료할 때(eightcircle 2회, mutex)입니다. 수정 ORB 는 이 문서의 31번 실행에서 한 번도 죽지 않았습니다.</li>
+<li>죽지 않은 10번의 가장 큰 루프 보정은 중앙값 9.1 · 평균 10.4 · 최대 17.1 cm 입니다. <strong>자이로 없는 수정 ORB(13.6 · 18.9 · 70.2 cm)보다 작고, 수정 ORB + 자이로(9.6 · 10.7 · 17.0 cm)와 비슷합니다.</strong> 수정 ORB 의 큰 루프 보정은 루프 임계값 완화에서 온 것으로 보입니다. 자이로는 그 부작용을 원본 수준으로 되돌리면서 죽지 않게 합니다.</li>
+<li>물체 위치는 원본이 조금 나쁩니다(거리 중앙값 3.2 cm, 수정 ORB 2.7 cm, 수정 ORB + 자이로 2.4 cm). 2026-10-18 부터 Mac 실행은 자이로가 있는 녹화는 수정 ORB + 자이로, 없는 녹화는 수정 ORB 를 기본으로 합니다.</li>
 </ul>
 <h2>1. 데이터와 실행 조건</h2>
 <h3>1.1 녹화</h3>
@@ -106,12 +111,25 @@ a{color:var(--acc);word-break:break-all}
 <td>수정 ORB-SLAM3 + 자이로 보정 (<code>--gyro rig_260901_gyro.json --imu &lt;녹화&gt;/imu</code>, catalog 백엔드 <code>orbslam3_imu</code>)</td>
 <td><code>..._hyb3cf_orbgyro[_r2, _r3]</code></td>
 </tr>
+<tr>
+<td>원본 0.5 + 원본 ORB</td>
+<td>원본 SAM-6D, ViT-L, 0.5</td>
+<td><strong>원본 ORB-SLAM3 v1.0</strong> (<code>~/objpose/build_upstream</code>, hub <code>--mac-runner ~/objpose/run_slam_upstream.sh</code>)</td>
+<td><code>..._origL05_orbup</code></td>
+</tr>
+<tr>
+<td>개선안 3 + 원본 ORB</td>
+<td>개선안 3 + 군집 먼저</td>
+<td>원본 ORB-SLAM3 v1.0</td>
+<td><code>..._hyb3cf_orbup[_r2, _r3]</code></td>
+</tr>
 </tbody>
 </table></div>
 <ul>
 <li>공통: Mac ORB-SLAM3 실시간 1배속, 특징점 2000개(<code>orbslam3_260901_slam_nf2000.yaml</code>), 노트북 허브(<code>objpose/pc/hub.py</code>). 실행 방법은 27 문서와 같습니다(ssh <code>LD_LIBRARY_PATH</code> 우회 포함).</li>
 <li>자이로 보정 실행 12개는 모두 SLAM 시작 메시지에 <code>gyro: True</code> 가 찍힌 것을 확인했습니다. 자이로 없는 실행은 <code>gyro: False</code> 입니다.</li>
 <li>반복: 우리 기술 두 구성은 녹화마다 3번(1회차 13:25~, 2회차 15:38~, 3회차 16:10~) 돌렸습니다. 원본 0.5 는 차이가 커서 한 번만 돌렸습니다.</li>
+<li>원본 ORB 실행은 17:52~18:57 에 돌렸습니다(<code>run_orbup_l5090.sh</code>, 1회차 원본 0.5 와 개선안 3, 2 · 3회차 개선안 3).</li>
 </ul>
 <h3>1.3 채점</h3>
 <p>27 문서의 <code>score_unused.py</code> 규칙을 그대로 씁니다(<code>score_gyro.py</code>). 같은 종류이고 기준 위치에서 20 cm 안이면 맞음이고, 종류마다 하나만 셉니다. 나머지 지도 항목은 모두 잘못입니다. 점수는 맞음 / (8 + 잘못) 입니다.</p>
@@ -263,11 +281,237 @@ a{color:var(--acc);word-break:break-all}
 <li>자이로 없이 생긴 큰 보정(eightcircle 1회 28.8 cm, digut 2회 70.2 cm)이 자이로를 켠 실행에서는 한 번도 나오지 않았습니다(최대 17.0 cm).</li>
 <li>원본 0.5 의 bigeightcircle 302.1 cm 는 그 실행에서 SLAM 이 프레임 6개를 놓치며 크게 틀어진 것입니다. 원본 0.5 의 1/7 은 인식기만의 결과로 보면 안 됩니다.</li>
 </ul>
+<h3>2.4 원본 ORB-SLAM3 (v1.0, 우리 수정 없음)</h3>
+<p>원본 빌드는 4.1절에 있습니다. 소스는 .106 의 OpenLORIS 비교(6절)에서 쓴 원본과 같습니다.</p>
+<p><strong>최종 지도 맞음 / 잘못</strong> (개선안 3 은 1 · 2 · 3회)</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화</th>
+<th>원본 0.5 + 원본 ORB</th>
+<th>원본 0.5 + 수정 ORB (2.1절)</th>
+<th>개선안 3 + 원본 ORB</th>
+<th>개선안 3 + 수정 ORB (2.1절)</th>
+<th>개선안 3 + 수정 ORB + 자이로 (2.1절)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>eightcircle</td>
+<td>7 / 2</td>
+<td>4 / 5</td>
+<td>8/0 · 8/0 · 8/0</td>
+<td>8/0 · 8/1 · 8/1</td>
+<td>8/0 · 8/0 · 8/0</td>
+</tr>
+<tr>
+<td>bigeightcircle</td>
+<td>6 / 3</td>
+<td>1 / 7</td>
+<td>8/0 · 8/0 · 8/0</td>
+<td>8/0 · 8/0 · 8/0</td>
+<td>8/0 · 8/0 · 8/0</td>
+</tr>
+<tr>
+<td>digut</td>
+<td>7 / 1</td>
+<td>7 / 1</td>
+<td>8/0 · 8/0 · 8/0</td>
+<td>8/0 · 8/0 · 8/0</td>
+<td>8/0 · 8/0 · 8/0</td>
+</tr>
+<tr>
+<td>longcircle</td>
+<td>7 / 2</td>
+<td>7 / 2</td>
+<td>8/0 · <strong>7/0</strong> · <strong>7/0</strong></td>
+<td>7/1 · 8/0 · 8/0</td>
+<td>8/0 · 8/0 · 8/0</td>
+</tr>
+<tr>
+<td><strong>합계</strong></td>
+<td><strong>27 / 8</strong></td>
+<td>19 / 15</td>
+<td><strong>32/0 · 31/0 · 31/0</strong></td>
+<td>31/1 · 32/1 · 32/1</td>
+<td>32/0 · 32/0 · 32/0</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>longcircle 2 · 3회의 7/0 은 SLAM 이 실행 도중 죽은 결과입니다(아래). 포즈가 4,041개 중 1,283 · 1,536개(약 43 · 51 s)에서 끊겼고, 그 뒤 지도는 갱신되지 않았습니다. Mugcup_high 를 아직 올리지 못한 때였습니다.</li>
+<li>원본 0.5 는 원본 ORB 쪽이 낫습니다(27/8 대 19/15). 수정 ORB 실행의 bigeightcircle 302 cm 루프 보정(2.3절)이 크고, 한 번씩만 돌린 결과라 흔들림이 큽니다. 두 원본 0.5 실행 모두 Sauce_high 오류는 녹화마다 나왔습니다.</li>
+</ul>
+<p><strong>SLAM 이 죽은 실행</strong> (원본 ORB 16번 중)</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>실행</th>
+<th>언제</th>
+<th>원인 (Mac 충돌 보고서 · 로그)</th>
+<th>결과에 미친 영향</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>longcircle 개선안 3, 2회</td>
+<td>재생 약 43 s (프레임 1,283)</td>
+<td>루프 검출 직후 <code>Sim3Solver::iterate → ComputeSim3</code> 에서 NaN, <code>SO3::exp failed</code>, SIGABRT</td>
+<td>지도가 43 s 에서 멈춤</td>
+</tr>
+<tr>
+<td>longcircle 개선안 3, 3회</td>
+<td>재생 약 51 s (프레임 1,536)</td>
+<td>같음</td>
+<td>지도가 51 s 에서 멈춤</td>
+</tr>
+<tr>
+<td>eightcircle 개선안 3, 2회</td>
+<td>재생이 끝난 뒤 종료 중</td>
+<td><code>std::system_error</code> (mutex), SIGABRT</td>
+<td>없음 (재생 4,536 프레임 모두 처리)</td>
+</tr>
+</tbody>
+</table></div>
+<p>수정 ORB 는 이 문서의 31번 실행(자이로 없음 16: 원본 0.5 4 · 개선안 3 12, 자이로 12, longcircle 기준 실행 1, 새 빌드 확인 2)에서 한 번도 죽지 않았습니다(모든 Mac 로그에 <code>live done</code>, 오류 없음). 수정 ORB 의 <code>Sim3Solver</code> NaN 수정과 종료 대기 수정(4절)이 바로 이 두 경우입니다.</p>
+<p><strong>위치 · 빈도 · 루프 보정</strong> (개선안 3 + 군집 먼저, 녹화 4개)</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>원본 ORB (12 실행)</th>
+<th>원본 ORB, 죽은 2번 뺌 (10 실행)</th>
+<th>수정 ORB (12)</th>
+<th>수정 ORB + 자이로 (12)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>맞음 / 잘못 합계</td>
+<td>94 / 0</td>
+<td>80 / 0</td>
+<td>95 / 3</td>
+<td><strong>96 / 0</strong></td>
+</tr>
+<tr>
+<td>기준까지 거리 중앙값</td>
+<td>3.6 cm</td>
+<td>3.2 cm</td>
+<td>2.7 cm</td>
+<td><strong>2.4 cm</strong></td>
+</tr>
+<tr>
+<td>거리 평균 · 90%</td>
+<td>4.2 · 7.3 cm</td>
+<td>4.0 · 7.0 cm</td>
+<td>3.4 · 7.0 cm</td>
+<td>3.4 · 7.0 cm</td>
+</tr>
+<tr>
+<td>10 cm 넘은 물체</td>
+<td>4 / 94</td>
+<td>4 / 80</td>
+<td>5 / 96</td>
+<td>6 / 96</td>
+</tr>
+<tr>
+<td>인식 빈도</td>
+<td>6.55 Hz</td>
+<td>6.55 Hz</td>
+<td>6.50 Hz</td>
+<td>6.48 Hz</td>
+</tr>
+<tr>
+<td>실행 중 매 순간 점수 평균</td>
+<td>60.8 ± 22.5%</td>
+<td>70.3 ± 8.3%</td>
+<td>71.7 ± 7.5%</td>
+<td>71.8 ± 6.8%</td>
+</tr>
+<tr>
+<td>가장 큰 루프 보정 중앙값 / 평균 / 최대</td>
+<td>10.3 / 11.6 / 19.7 cm</td>
+<td><strong>9.1 / 10.4 / 17.1 cm</strong></td>
+<td>13.6 / 18.9 / 70.2 cm</td>
+<td><strong>9.6 / 10.7 / 17.0 cm</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>녹화별 가장 큰 루프 보정 (cm):</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화</th>
+<th>원본 0.5 + 원본 ORB</th>
+<th>개선안 3 + 원본 ORB (1 · 2 · 3회)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>eightcircle</td>
+<td>5.8</td>
+<td>6.9 · 5.7 · 5.6</td>
+</tr>
+<tr>
+<td>bigeightcircle</td>
+<td>27.3</td>
+<td>17.1 · 14.8 · 8.5</td>
+</tr>
+<tr>
+<td>digut</td>
+<td>9.5</td>
+<td>11.1 · 8.1 · 9.6</td>
+</tr>
+<tr>
+<td>longcircle</td>
+<td>10.8</td>
+<td>16.4 · 19.7† · 15.3†</td>
+</tr>
+</tbody>
+</table></div>
+<p>† 실행 도중 죽기 전까지의 값입니다.</p>
+<ul>
+<li>같은 녹화 · 같은 회차끼리(죽은 2번 뺀 10쌍) 원본 ORB 의 루프 보정은 자이로 없는 수정 ORB 보다 작은 것 6쌍, 큰 것 3쌍, 거의 같은 것 1쌍입니다. 수정 ORB + 자이로와는 작은 것 5쌍, 큰 것 4쌍, 같은 것 1쌍이라 비슷합니다.</li>
+</ul>
+<h3>2.5 수정 ORB 최신 빌드 확인 (2026-10-18 19:00)</h3>
+<p>원본 비교가 끝난 뒤 Mac 의 수정 ORB 를 최신 소스로 다시 빌드했습니다(4.2절). eightcircle 을 개선안 3 + 군집 먼저로 한 번씩 돌렸습니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>실행</th>
+<th>맞음 / 잘못</th>
+<th>빈도</th>
+<th>가장 큰 루프 보정</th>
+<th>실행 중 점수</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>수정 ORB (<code>..._hyb3cf_orb_newbuild</code>)</td>
+<td>7 / 1 (milk 가 기준에서 20 cm 넘게 떨어짐)</td>
+<td>5.56 Hz</td>
+<td>6.9 cm</td>
+<td>71.0%</td>
+</tr>
+<tr>
+<td>수정 ORB + 자이로 (<code>..._hyb3cf_orbgyro_newbuild</code>)</td>
+<td>8 / 0</td>
+<td>5.49 Hz</td>
+<td>9.4 cm</td>
+<td>70.6%</td>
+</tr>
+</tbody>
+</table></div>
+<p>두 실행 모두 4,536 프레임을 놓친 것 없이 처리했습니다. 자이로 실행은 모든 프레임에 자이로가 들어갔습니다(자세 사전 9,070개, 키프레임 간선 27,075개). 이전 빌드의 eightcircle 결과(2.1 · 2.3절)와 같은 범위입니다.</p>
 <h2>3. 해석</h2>
 <ul>
 <li><strong>우리 기술은 원본보다 확실히 낫습니다.</strong> 맞음 19 → 31~32, 잘못 15 → 0~1, 빈도 4.4배입니다. 반복 3번 모두 같은 결과라 우연이 아닙니다.</li>
 <li><strong>자이로 보정은 SLAM 궤적을 안정시킵니다.</strong> 루프 보정의 평균이 절반 정도(18.9 → 10.7 cm)로 줄고, 자이로 없이 가끔 나오던 큰 보정(28.8 · 70.2 cm)이 사라졌습니다. 자이로는 회전을 직접 재므로 8자 경로의 회전 구간에서 생기는 방향 오차가 줄고, 잘못된 루프(회전이 자이로와 맞지 않는 장소 인식)도 거릅니다(4절).</li>
 <li><strong>물체 위치에서는 차이가 작습니다.</strong> 루프 보정이 끝난 최종 지도에서는 자이로가 없어도 궤적이 대부분 바로잡히기 때문입니다. 위치 오차로 생긴 잘못은 자이로 없는 실행에서 1개(longcircle 1회 milk 22 cm)뿐입니다. 잘못 0개 대 3개 중 2개는 인식 오류(Sauce_high)라, 자이로가 물체 오류를 없앴다고 말하기는 어렵습니다.</li>
+<li><strong>원본 ORB-SLAM3 와 비교하면 그림이 달라집니다.</strong> 원본 ORB 는 죽지 않을 때 루프 보정이 자이로를 켠 수정 ORB 만큼 작습니다. 자이로 없는 수정 ORB 의 큰 보정(28.8 · 70.2 cm)은 루프 임계값 완화(4절) 때문에 생긴 것으로 보입니다. 완화는 루프를 더 쉽게 받아들이게 하므로, 조금 틀린 루프도 받아 궤적을 크게 옮길 수 있습니다. 자이로 루프 거부가 그런 루프를 다시 걸러 냅니다. 따라서 "자이로가 원본보다 루프 보정을 줄인다" 고 말할 수는 없습니다. 말할 수 있는 것은 다음 세 가지입니다.</li>
+<li>수정 ORB + 자이로는 원본만큼 궤적이 안정적이면서 <strong>한 번도 죽지 않습니다</strong>(원본은 16번 중 3번, 그중 2번은 실행 도중).</li>
+<li>물체 위치는 수정 ORB + 자이로가 가장 정확합니다(거리 중앙값 2.4 대 원본 3.2 cm). 차이는 작습니다.</li>
+<li>인식 빈도는 세 SLAM 이 같습니다(6.5 Hz). SLAM 이 인식 속도의 병목이 아닙니다.</li>
 <li><strong>정리:</strong> 자이로 보정은 "물체 지도가 더 정확해진다" 보다 <strong>"SLAM 이 덜 틀어지고 실행마다 덜 흔들린다"</strong> 로 주장하는 것이 데이터에 맞습니다. 물체 결과는 같거나 조금 낫습니다.</li>
 </ul>
 <h2>4. 수정 ORB-SLAM3 소스를 저장소로 (Mac → <code>objpose/mac_slam/</code>)</h2>
@@ -325,6 +569,11 @@ a{color:var(--acc);word-break:break-all}
 <td>예</td>
 </tr>
 <tr>
+<td><strong>루프 임계값 완화</strong>: BoW 공통 단어 비율 0.8 → 0.5, 연속 일치 3 → 1, BoW 매칭 20 → 12, BoW 인라이어 15 → 8, Sim3 인라이어 20 → 12, 투영 매칭 50 → 30, 투영 최적화 매칭 80 → 40. 저장소 첫 커밋부터 들어 있음 (2026-10-18 추가 기재: 처음 판에서 빠뜨림)</td>
+<td><code>KeyFrameDatabase.cc</code>, <code>LoopClosing.cc</code></td>
+<td>예</td>
+</tr>
+<tr>
 <td>루프 보정량 로그</td>
 <td><code>LoopClosing.cc</code></td>
 <td>예</td>
@@ -336,10 +585,106 @@ a{color:var(--acc);word-break:break-all}
 </tr>
 </tbody>
 </table></div>
+<h3>4.1 원본 ORB-SLAM3 빌드 (Mac, 2026-10-18)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>소스</td>
+<td>UZ-SLAMLab/ORB_SLAM3 4452a3c4 (<code>~/objpose/ORB_SLAM3_upstream</code>). <code>v1.0-release</code>(0df83dd) 이후 문서만 바뀐 커밋이라 <code>src</code> · <code>include</code> 가 v1.0-release 와 같음</td>
+</tr>
+<tr>
+<td>소스 수정</td>
+<td>하나뿐: <code>MapPoint::ComputeDistinctiveDescriptors</code> 의 N×N 배열을 스택에서 힙으로(값은 같음). macOS 보조 스레드 스택이 512 KB 라 긴 실행에서 SIGBUS 로 죽기 때문. .106 OpenLORIS 원본 빌드(<code>orbslam_ws/openloris/build.sh</code>)와 같은 수정이고, <code>MapPoint.cc</code> 가 그 빌드와 똑같음을 확인. tr1 · <code>stdint-gcc.h</code> 는 <code>mac_slam/compat/</code> 이 대신함</td>
+</tr>
+<tr>
+<td>빌드</td>
+<td><code>mac_slam/build_upstream_mac.sh</code> → <code>~/objpose/build_upstream</code>. 수정 ORB 와 같은 CMakeLists · 컴파일 옵션 · 의존성</td>
+</tr>
+<tr>
+<td>slam_stream</td>
+<td>같은 <code>slam_stream.cc</code> 를 <code>-DOBJPOSE_UPSTREAM_ORB</code> 로 컴파일. 자이로 호출(<code>SetFrameGyro</code>)과 수정판에만 있는 <code>GetAllMapPointsWorld</code> 만 빠지고, 원본 빌드에서 <code>--gyro</code> 를 주면 거부함</td>
+</tr>
+<tr>
+<td>실행</td>
+<td><code>~/objpose/run_slam_upstream.sh</code> (<code>run_slam.sh</code> 에서 빌드 폴더만 바꿈). hub <code>--mac-runner ~/objpose/run_slam_upstream.sh</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>첫 원본 빌드는 MapPoint 수정 없이 만들었다가, .106 의 원본 빌드와 맞추려고 실행 1번 뒤 멈추고 다시 빌드했습니다. 그 실행(eightcircle 원본 0.5)의 진행 기록은 <code>progress_orbup_aborted_nomapfix.log</code> 에 남겼고, 실행 폴더는 다시 돌린 실행이 덮어썼습니다.</p>
+<h3>4.2 수정 ORB-SLAM3 최신 빌드 (Mac, 2026-10-18 19:00)</h3>
+<p>hub 가 쓰는 <code>~/objpose/ORB_SLAM3_src</code> 는 9월 판이라, .106 저장소(<code>orbslam_ws/src/ORB_SLAM3</code>)에 10월 18일 들어간 크래시 수정 2건이 없었습니다. 1~3절의 수정 ORB 실행은 모두 이 이전 판입니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>수정</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MapPoint.cc</code></td>
+<td>위 4.1 과 같은 스택 → 힙 (SIGBUS)</td>
+</tr>
+<tr>
+<td><code>LocalMapping.cc</code></td>
+<td><code>Release()</code> 가 대기 중 키프레임을 지울 때, 이미 지도에 들어간 RGB-D 첫 키프레임까지 지워서 다음 <code>ResetActiveMap</code> 이 해제된 mutex 를 잠그던 문제</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>방법: .106 저장소 소스에 01 패치를 얹은 것과 <code>~/objpose/ORB_SLAM3_src</code> 를 비교해, 다른 파일이 이 둘뿐임을 확인하고 두 파일만 바꿨습니다. <code>slam_stream.cc</code> 에는 .106 저장소 쪽에 있던 오프라인 지도점 저장(<code>.mappoints.xyz</code>)을 합쳤습니다.</li>
+<li>이전 판은 <code>~/objpose/build.prev_261018</code>, <code>~/objpose/ORB_SLAM3_src.prev_261018</code>, <code>~/objpose/src/slam_stream.cc.prev_261018</code> 로 남겼습니다.</li>
+<li>확인 실행은 2.5절입니다.</li>
+</ul>
 <h2>5. 주의</h2>
 <ul>
-<li>이 문서의 "ORB" 는 수정 ORB-SLAM3(자이로 끔)입니다. 논문에서 "원본 ORB-SLAM3" 와 비교하려면 03 패치 없이 빌드해 따로 돌려야 합니다.</li>
+<li>1~3절의 "ORB" 는 수정 ORB-SLAM3(자이로 끔, 9월 판)입니다. 원본 ORB-SLAM3 결과는 2.4절입니다.</li>
+<li>원본 ORB 는 반복 3번 중 2번 같은 녹화(longcircle)에서 죽었습니다. 죽은 실행을 넣은 값과 뺀 값을 둘 다 적었습니다.</li>
 <li>기준 위치는 모두 자이로 없는 ORB 실행에서 나왔고, digut · longcircle 은 우리 배포 인식기 실행이 기준입니다. 우리 기술 쪽에 유리할 수 있습니다(27 문서와 같은 한계).</li>
 <li>녹화는 한 날(260901), 한 장소, 물체 8개입니다. 자이로가 있는 다른 녹화가 생기면 더 확인해야 합니다.</li>
 <li>실시간 실행이라 반복마다 처리한 프레임과 루프 시점이 달라집니다. 흔들림은 2.3 절의 반복 3번으로 보였습니다.</li>
+<li>루프 임계값 완화가 큰 루프 보정의 원인이라는 것은 추정입니다. 완화만 되돌린 수정 ORB 로 돌려 봐야 확인됩니다.</li>
+</ul>
+<h2>6. .106 의 OpenLORIS-Scene 비교 (참고)</h2>
+<p>.106 에는 2026-10-17 ~ 18 에 원본 · 수정본 · 수정본 + 자이로를 공개 데이터셋 OpenLORIS-Scene(RealSense D435i, 모션캡처 · 라이다 GT)에서 비교한 실험이 있습니다(.106 <code>orbslam_ws/openloris/report_261018.md</code>, 커밋 c185c84b · 8b16355d · 56b37f75). 1배속 live, Sim(3) ATE, 3회 평균:</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>장면</th>
+<th>원본</th>
+<th>수정본</th>
+<th>수정본 + 자이로</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>office (7 시퀀스)</td>
+<td>3.29 cm</td>
+<td>2.98 cm</td>
+<td><strong>2.08 cm</strong> (−30%)</td>
+</tr>
+<tr>
+<td>home (5)</td>
+<td>13.70 cm (원본은 home1-4 가 3번 모두 죽어 4개 평균)</td>
+<td>12.84 cm</td>
+<td><strong>11.00 cm</strong> (−14%)</td>
+</tr>
+<tr>
+<td>corridor (5)</td>
+<td>62.7 cm</td>
+<td>63.8 cm</td>
+<td><strong>42.5 cm</strong> (−33%)</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>원본과 수정본(자이로 없음)의 차이는 반복 편차 안입니다. 추적 시간은 수정본이 약 40% 짧습니다.</li>
+<li>원본은 11번 죽었고(Sim3Solver NaN 8, 종료 mutex 3), 수정본은 0번입니다. 이 문서의 원본 실행에서 죽은 원인도 같은 두 가지입니다.</li>
+<li>이 문서와 같이, 자이로의 효과는 GT 가 있는 OpenLORIS 에서 위치 오차로 더 분명히 보입니다. 우리 녹화에는 GT 가 없어 루프 보정 크기와 물체 위치로만 봤습니다.</li>
 </ul></main></body></html>

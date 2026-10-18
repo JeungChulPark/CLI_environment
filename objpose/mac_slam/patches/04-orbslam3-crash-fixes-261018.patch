@@ -1,0 +1,43 @@
+Two crash fixes from the Mac's orbslam_ws/src/ORB_SLAM3 (2026-10-18, commit 8b16355d there), applied to ~/objpose/ORB_SLAM3_src
+on 2026-10-18 19:00 on top of 03 (paper_etrij_261003 doc 30 section 4.2):
+  MapPoint::ComputeDistinctiveDescriptors: N x N distance array moved from the stack to the heap (SIGBUS on 512 KB macOS thread stacks)
+  LocalMapping::Release(): no longer deletes queued keyframes, one of which can already be in the map (use-after-free in ResetActiveMap)
+  cd ORB_SLAM3 && patch -p1 < 04-orbslam3-crash-fixes-261018.patch
+
+diff -ruN a/src/LocalMapping.cc b/src/LocalMapping.cc
+--- a/src/LocalMapping.cc	2026-10-18 19:09:05
++++ b/src/LocalMapping.cc	2026-10-18 19:09:05
+@@ -863,8 +863,9 @@
+         return;
+     mbStopped = false;
+     mbStopRequested = false;
+-    for(list<KeyFrame*>::iterator lit = mlNewKeyFrames.begin(), lend=mlNewKeyFrames.end(); lit!=lend; lit++)
+-        delete *lit;
++    // Drop the queue but do not delete: a queued keyframe can already be in the map (the RGB-D/stereo initial KF is
++    // added by Tracking before it is queued) and Tracking/MapPoints still point to it. Deleting it left a dangling
++    // pointer in Map::mspKeyFrames, and the next ResetActiveMap -> Map::clear() locked a freed mutex (OpenLORIS corridor).
+     mlNewKeyFrames.clear();
+ 
+     cout << "Local Mapping RELEASE" << endl;
+diff -ruN a/src/MapPoint.cc b/src/MapPoint.cc
+--- a/src/MapPoint.cc	2026-10-18 19:09:05
++++ b/src/MapPoint.cc	2026-10-18 19:09:05
+@@ -389,7 +389,8 @@
+     // Compute distances between them
+     const size_t N = vDescriptors.size();
+ 
+-    float Distances[N][N];
++    // Heap, not a stack VLA: N*N floats overflow a 512 KB macOS secondary-thread stack once N > ~360 observations.
++    std::vector<std::vector<float> > Distances(N, std::vector<float>(N));
+     for(size_t i=0;i<N;i++)
+     {
+         Distances[i][i]=0;
+@@ -406,7 +407,7 @@
+     int BestIdx = 0;
+     for(size_t i=0;i<N;i++)
+     {
+-        vector<int> vDists(Distances[i],Distances[i]+N);
++        vector<int> vDists(Distances[i].begin(),Distances[i].end());
+         sort(vDists.begin(),vDists.end());
+         int median = vDists[0.5*(N-1)];
+ 

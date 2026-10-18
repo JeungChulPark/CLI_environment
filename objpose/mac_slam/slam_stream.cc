@@ -52,6 +52,16 @@
 #include "KeyFrame.h"
 #include "Tracking.h"
 
+// -DOBJPOSE_UPSTREAM_ORB: built against unmodified ORB-SLAM3 V1.0 (~/objpose/build_upstream, see
+// build_upstream_mac.sh), which has no gyro hooks; --gyro is refused there.
+#ifdef OBJPOSE_UPSTREAM_ORB
+#define GYRO_PRIOR_EDGES 0L
+#define GYRO_KF_EDGES 0L
+#else
+#define GYRO_PRIOR_EDGES ORB_SLAM3::Optimizer::sGyroPriorEdges
+#define GYRO_KF_EDGES ORB_SLAM3::Optimizer::sGyroKFEdges
+#endif
+
 // Atlas/current-map id is only reachable through System's private mpAtlas. Explicit
 // template instantiation is exempt from access checks, which gives a read-only accessor
 // without patching ORB-SLAM3 (reports exact map switches to the hub).
@@ -291,6 +301,9 @@ int main(int argc, char** argv) {
   }
   GyroAid gyro;
   bool use_gyro = !a.gyro_rig.empty();
+#ifdef OBJPOSE_UPSTREAM_ORB
+  if (use_gyro) throw std::runtime_error("--gyro: this slam_stream is built against unmodified ORB-SLAM3");
+#endif
   if (use_gyro) {
     if (a.imu_dir.empty()) a.imu_dir = s.dir + "/../imu";
     if (a.gyro_rig.find('/') == std::string::npos) {   // bare file name: next to the settings yaml
@@ -372,7 +385,9 @@ int main(int argc, char** argv) {
     if (use_gyro) {
       Eigen::Matrix3f R_gc;
       gyro_now = gyro.advance(f.t_ns, R_gc);
+      #ifndef OBJPOSE_UPSTREAM_ORB
       if (gyro_now) { slam.SetFrameGyro(R_gc, gyro.epoch); ++gyro_frames; } else ++gyro_missing;
+#endif
     }
     Sophus::SE3f Tcw = slam.TrackRGBD(color, depth_aligned, double(f.t_ns) * 1e-9);
     auto t2 = Clock::now();
@@ -474,8 +489,8 @@ int main(int argc, char** argv) {
         {"gyro", use_gyro ? json{{"rig", a.gyro_rig}, {"imu", gyro.db3}, {"topic", gyro.topic}, {"rate_hz", gyro.rate_hz},
                                  {"bias_cam_rad_s_final", {gyro.bias_cam.x(), gyro.bias_cam.y(), gyro.bias_cam.z()}}, {"zero_rate_updates", gyro.zupt_updates},
                                  {"imu_minus_cam_ms", gyro.tau_ns * 1e-6}, {"frames_with_gyro", gyro_frames},
-                                 {"frames_without_gyro", gyro_missing}, {"prior_edges", ORB_SLAM3::Optimizer::sGyroPriorEdges},
-                                 {"kf_edges", ORB_SLAM3::Optimizer::sGyroKFEdges}}
+                                 {"frames_without_gyro", gyro_missing}, {"prior_edges", GYRO_PRIOR_EDGES},
+                                 {"kf_edges", GYRO_KF_EDGES}}
                         : json(nullptr)},
         {"ok_not_vo_frames", ok_map_count},
         {"ok_not_vo_ratio", processed ? double(ok_map_count) / processed : 0.0},
@@ -650,13 +665,18 @@ int main(int argc, char** argv) {
   if (use_gyro)
     fprintf(stderr, "[slam_stream] gyro aid: %lld frames with gyro, %lld without | %ld pose priors, %ld keyframe edges | "
                     "%d zero-rate updates, final bias %.5f %.5f %.5f rad/s\n",
-            gyro_frames, gyro_missing, ORB_SLAM3::Optimizer::sGyroPriorEdges, ORB_SLAM3::Optimizer::sGyroKFEdges,
+            gyro_frames, gyro_missing, GYRO_PRIOR_EDGES, GYRO_KF_EDGES,
             gyro.zupt_updates, gyro.bias_cam.x(), gyro.bias_cam.y(), gyro.bias_cam.z());
   slam.Shutdown();
   if (a.mode == "offline" && !a.localization) {
     // Live per-frame poses never receive later loop-closure / GBA corrections; the
     // optimized trajectory (keyframe-anchored, after shutdown) does. Use it for RT fits.
     slam.SaveTrajectoryTUM(a.out + ".optimized.txt");
+#ifndef OBJPOSE_UPSTREAM_ORB
+    // the active map's points after the final optimisation, same world frame as the optimized trajectory
+    std::ofstream mp(a.out + ".mappoints.xyz");
+    for (const auto& p : slam.GetAllMapPointsWorld()) mp << p.x() << " " << p.y() << " " << p.z() << "\n";
+#endif
   }
   if (settings != a.settings) unlink(settings.c_str());
   if (!cam_settings.empty() && cam_settings != settings) unlink(cam_settings.c_str());
