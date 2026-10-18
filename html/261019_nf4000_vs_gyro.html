@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>수정 ORB-SLAM3: NF4000 vs NF2000 + 자이로(주력), 실데이터 (2026-10-19)</title><style>
+:root{--paper:#EDF1F6;--surface:#FFFFFF;--surface-2:#F6F9FC;--line:#C6D2DE;--line-soft:#DDE5EC;--ink:#11202F;--ink-2:#425568;
+--muted:#5A6D80;--accent:#2a78d6;--accent-fill:#E3EEFA;--code:#EEF2F6;
+--sans:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",-apple-system,"Helvetica Neue",Arial,sans-serif;
+--mono:ui-monospace,SFMono-Regular,Menlo,"Cascadia Mono",Consolas,"D2Coding",monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0D1620;--surface:#15202C;--surface-2:#1A2734;--line:#28394A;
+--line-soft:#223142;--ink:#E3EBF3;--ink-2:#B3C3D1;--muted:#90A4B6;--accent:#5A9FEA;--accent-fill:#16283B;--code:#1E2C3A}}
+:root[data-theme="dark"]{--paper:#0D1620;--surface:#15202C;--surface-2:#1A2734;--line:#28394A;--line-soft:#223142;--ink:#E3EBF3;
+--ink-2:#B3C3D1;--muted:#90A4B6;--accent:#5A9FEA;--accent-fill:#16283B;--code:#1E2C3A}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.7 var(--sans)}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 16px 64px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px}
+nav{position:sticky;top:16px;align-self:start;font-size:13px;max-height:calc(100vh - 32px);overflow:auto}
+nav b{display:block;color:var(--muted);font-weight:600;margin-bottom:6px}
+nav a{display:block;color:var(--ink-2);text-decoration:none;padding:3px 8px;border-left:2px solid var(--line-soft)}
+nav a:hover{color:var(--accent);border-left-color:var(--accent)}
+nav .back{margin-bottom:12px;border:0;padding-left:0;color:var(--accent)}
+main{background:var(--surface);border:1px solid var(--line-soft);border-radius:10px;padding:28px 36px;min-width:0}
+h1{font-size:26px;line-height:1.35;margin:0 0 18px;padding-bottom:14px;border-bottom:2px solid var(--line)}
+h2{font-size:20px;margin:40px 0 12px;padding-top:6px;border-top:1px solid var(--line-soft)}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--ink-2)}
+p,li{color:var(--ink)}strong{color:var(--ink)}a{color:var(--accent)}
+code{font:13px/1.5 var(--mono);background:var(--code);padding:1px 5px;border-radius:4px;word-break:break-word}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow:auto}pre code{background:none;padding:0}
+.tbl{overflow-x:auto;margin:12px 0 18px;border:1px solid var(--line-soft);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th{background:var(--surface-2);color:var(--ink-2);font-weight:600;text-align:left;white-space:nowrap}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+tr:last-child td{border-bottom:0}td strong{color:var(--accent)}
+img{max-width:100%;height:auto;border:1px solid var(--line-soft);border-radius:8px;background:#fff;margin:8px 0}
+blockquote{margin:12px 0;padding:8px 14px;border-left:3px solid var(--accent);background:var(--accent-fill);border-radius:0 6px 6px 0}
+.meta{color:var(--muted);font-size:13px;margin:-8px 0 18px}
+@media (max-width:860px){.wrap{grid-template-columns:1fr}nav{position:static;max-height:none}main{padding:20px 16px}}
+</style></head>
+<body><div class="wrap"><nav><a class="back" href="261018_index.html">← 문서 목록</a><b>목차</b><a href="#1-요약">1. 요약</a><a href="#2-세션별-결과-3회-평균-표준편차-최대-오차는-3회-값">2. 세션별 결과 (3회 평균 ± 표준편차; 최대 오차는 3회 값)</a><a href="#3-bigeightcircle-nf4000-3회차-잘못된-루프">3. bigeightcircle NF4000 3회차: 잘못된 루프</a><a href="#4-해석">4. 해석</a><a href="#5-남은-것">5. 남은 것</a></nav>
+<main><h1>수정 ORB-SLAM3: NF4000 vs NF2000 + 자이로(주력), 실데이터 (2026-10-19)</h1>
+<p>특징점을 두 배(4000개)로 늘리는 것과, 2000개에 자이로 보조를 더하는 것(주력) 중 어느 쪽이 나은지 실데이터로 비교했다.</p>
+<ul>
+<li>데이터: 260901_cbnu 네 세션(eightcircle, digut, longcircle, bigeightcircle). Xsens 자이로가 있는 유일한 녹화다.</li>
+<li>기준: 라이다 pseudo-GT(<code>rt/gt/out/&lt;세션&gt;/pgo_tum.txt</code>, 방법은 <code>own_gt_261017.md</code>)</li>
+<li>실행: <code>rt/bench/run_nf4000_vs_gyro.sh</code>. 같은 빌드(<code>~/objpose/build/slam_stream</code>, 2026-10-18 19:00 빌드), 30 Hz 실시간 재생(<code>--pace 1.0</code>),
+  세션·조건마다 3회. 자이로는 세션별 rig(<code>rt/260901/rtab_odom/rigs/rig_&lt;세션&gt;.json</code>)를 쓴다.</li>
+<li>채점: <code>rt/bench/map_eval.py</code>(§6–8과 같은 채점기) → <code>rt/bench/out_nf/&lt;세션&gt;/map_eval.json</code>,
+  표는 <code>rt/bench/score_nf4000_vs_gyro.py</code> → <code>rt/bench/nf4000_vs_gyro.csv</code></li>
+<li>원자료: <code>rt/bench/out_nf/&lt;세션&gt;/{nf4000,nf2000_gyro}/rep{1,2,3}/</code></li>
+</ul>
+<h2 id="1-요약">1. 요약</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>세션</th>
+<th>live ATE cm (NF4000 → 주력)</th>
+<th>live 최대 cm (중앙값)</th>
+<th>final ATE cm</th>
+<th>track 평균 ms</th>
+<th>track p99 ms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>eightcircle</td>
+<td>3.71 → <strong>3.46</strong> (−7%)</td>
+<td>11.2 → <strong>10.1</strong> (−10%)</td>
+<td>2.59 → <strong>2.29</strong> (−12%)</td>
+<td>13.5 → <strong>9.0</strong></td>
+<td>19.2 → <strong>12.5</strong></td>
+</tr>
+<tr>
+<td>digut</td>
+<td>5.07 → <strong>4.15</strong> (−18%)</td>
+<td>15.9 → <strong>10.9</strong> (−32%)</td>
+<td>4.17 → <strong>3.50</strong> (−16%)</td>
+<td>14.7 → <strong>9.6</strong></td>
+<td>24.1 → <strong>14.4</strong></td>
+</tr>
+<tr>
+<td>longcircle</td>
+<td>4.35 → <strong>3.62</strong> (−17%)</td>
+<td>15.0 → <strong>11.7</strong> (−22%)</td>
+<td>2.83 → 2.79 (−1%)</td>
+<td>13.0 → <strong>8.9</strong></td>
+<td>20.2 → <strong>12.2</strong></td>
+</tr>
+<tr>
+<td>bigeightcircle</td>
+<td>53.37 → <strong>3.95</strong> (잘못된 루프 1회, §3)</td>
+<td>12.4 → <strong>10.9</strong> (−13%)</td>
+<td>2.50 → <strong>2.30</strong> (−8%)</td>
+<td>13.2 → <strong>9.4</strong></td>
+<td>19.0 → <strong>13.1</strong></td>
+</tr>
+<tr>
+<td>bigeightcircle, 잘못된 루프 실행 제외</td>
+<td>4.36 → <strong>3.95</strong> (−9%)</td>
+<td>12.0 → 10.9</td>
+<td><strong>2.18</strong> → 2.30 (+6%)</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>주력이 특징점 4000개보다 정확하면서 약 1/3 빠르다.</strong></li>
+<li>live ATE가 세 세션(회전이 있는 세션)에서 7–18% 작다.</li>
+<li>live 최대 오차는 10–32% 작다.</li>
+<li>트래킹 시간은 평균 29–34%, p99는 31–40% 짧다.</li>
+<li><strong>NF4000은 실시간 여유가 줄어든다.</strong></li>
+<li>33 ms를 넘는 프레임이 digut에서 실행마다 14–17개 나왔다. 주력은 전 실행 0개다.</li>
+<li>이번 실행은 오프라인 재생이라 늦은 프레임도 처리했다. 실제 카메라였다면 그 프레임들은 버려진다.</li>
+<li><strong>최종(final) 궤적의 차이는 작다.</strong></li>
+<li>digut(−16%)과 eightcircle(−12%)은 주력이 낫다.</li>
+<li>longcircle은 같은 수준이다.</li>
+<li>bigeightcircle은 잘못된 루프 실행을 빼면 NF4000이 0.12 cm 낫다.</li>
+<li><strong>지도 정확도는 같다.</strong> 같은 깊이 영상을 final 궤적으로 쌓은 지도의 오차 중앙값 차이는 0.03 cm 이하다.
+  ORB 맵포인트 수는 NF4000이 약 1.4배 많다.</li>
+<li><strong>실패:</strong></li>
+<li>NF4000은 12회 중 1회(bigeightcircle 3회차)에서 잘못된 루프를 받아 live 궤적이 1.5 m 이상 틀어졌다(§3).</li>
+<li>주력은 12회 모두 정상이었다.</li>
+<li>모든 실행이 맵 1개, 트래킹 OK 100%였다.</li>
+</ul>
+<h2 id="2-세션별-결과-3회-평균-표준편차-최대-오차는-3회-값">2. 세션별 결과 (3회 평균 ± 표준편차; 최대 오차는 3회 값)</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>세션</th>
+<th>지표</th>
+<th>NF4000</th>
+<th>NF2000+자이로 (주력)</th>
+<th>변화</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>eightcircle</td>
+<td>live ATE cm</td>
+<td>3.71 ± 0.18</td>
+<td><strong>3.46 ± 0.14</strong></td>
+<td>−7%</td>
+</tr>
+<tr>
+<td></td>
+<td>live 최대 cm</td>
+<td>11.2 / 11.5 / 9.6</td>
+<td><strong>9.0 / 10.3 / 10.1</strong></td>
+<td>−10% (중앙값)</td>
+</tr>
+<tr>
+<td></td>
+<td>live 최대 회전 °</td>
+<td>2.3 / 1.5 / 1.5</td>
+<td><strong>1.4 / 1.4 / 1.4</strong></td>
+<td>−10% (중앙값)</td>
+</tr>
+<tr>
+<td></td>
+<td>live RPE 1 s cm</td>
+<td>1.81 ± 0.06</td>
+<td><strong>1.71 ± 0.03</strong></td>
+<td>−6%</td>
+</tr>
+<tr>
+<td></td>
+<td>final ATE cm</td>
+<td>2.59 ± 0.13</td>
+<td><strong>2.29 ± 0.06</strong></td>
+<td>−12%</td>
+</tr>
+<tr>
+<td></td>
+<td>final 최대 cm</td>
+<td>8.2 / 8.0 / 6.8</td>
+<td><strong>6.2 / 8.2 / 6.9</strong></td>
+<td>−14% (중앙값)</td>
+</tr>
+<tr>
+<td></td>
+<td>깊이 영상 지도 중앙값 cm</td>
+<td>2.09 ± 0.02</td>
+<td>2.06 ± 0.02</td>
+<td>−2%</td>
+</tr>
+<tr>
+<td></td>
+<td>ORB 맵포인트 수</td>
+<td>27484</td>
+<td>19093</td>
+<td>−31%</td>
+</tr>
+<tr>
+<td></td>
+<td>track 평균 / p99 ms</td>
+<td>13.50 / 19.22</td>
+<td><strong>9.04 / 12.51</strong></td>
+<td>−33% / −35%</td>
+</tr>
+<tr>
+<td></td>
+<td>33 ms 넘은 프레임 (3회)</td>
+<td>0 / 5 / 0</td>
+<td>0 / 0 / 0</td>
+<td></td>
+</tr>
+<tr>
+<td>digut</td>
+<td>live ATE cm</td>
+<td>5.07 ± 0.06</td>
+<td><strong>4.15 ± 0.03</strong></td>
+<td>−18%</td>
+</tr>
+<tr>
+<td></td>
+<td>live 최대 cm</td>
+<td>15.9 / 15.5 / 20.4</td>
+<td><strong>10.9 / 10.8 / 11.3</strong></td>
+<td>−32% (중앙값)</td>
+</tr>
+<tr>
+<td></td>
+<td>live 최대 회전 °</td>
+<td>2.9 / 2.9 / 2.8</td>
+<td><strong>2.0 / 1.9 / 2.3</strong></td>
+<td>−30% (중앙값)</td>
+</tr>
+<tr>
+<td></td>
+<td>live RPE 1 s cm</td>
+<td>2.50 ± 0.28</td>
+<td><strong>1.77 ± 0.02</strong></td>
+<td>−29%</td>
+</tr>
+<tr>
+<td></td>
+<td>final ATE cm</td>
+<td>4.17 ± 0.06</td>
+<td><strong>3.50 ± 0.15</strong></td>
+<td>−16%</td>
+</tr>
+<tr>
+<td></td>
+<td>final 최대 cm</td>
+<td>10.3 / 13.0 / 11.4</td>
+<td><strong>8.0 / 7.9 / 7.9</strong></td>
+<td>−31% (중앙값)</td>
+</tr>
+<tr>
+<td></td>
+<td>깊이 영상 지도 중앙값 cm</td>
+<td>2.20 ± 0.01</td>
+<td>2.16 ± 0.01</td>
+<td>−2%</td>
+</tr>
+<tr>
+<td></td>
+<td>ORB 맵포인트 수</td>
+<td>44704</td>
+<td>31655</td>
+<td>−29%</td>
+</tr>
+<tr>
+<td></td>
+<td>track 평균 / p99 ms</td>
+<td>14.68 / 24.07</td>
+<td><strong>9.64 / 14.36</strong></td>
+<td>−34% / −40%</td>
+</tr>
+<tr>
+<td></td>
+<td>33 ms 넘은 프레임 (3회 평균)</td>
+<td>15.3</td>
+<td><strong>0</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>longcircle</td>
+<td>live ATE cm</td>
+<td>4.35 ± 0.06</td>
+<td><strong>3.62 ± 0.06</strong></td>
+<td>−17%</td>
+</tr>
+<tr>
+<td></td>
+<td>live 최대 cm</td>
+<td>14.9 / 15.0 / 15.2</td>
+<td><strong>11.7 / 12.6 / 11.4</strong></td>
+<td>−22% (중앙값)</td>
+</tr>
+<tr>
+<td></td>
+<td>live 최대 회전 °</td>
+<td>2.0 / 2.3 / 2.3</td>
+<td><strong>1.6 / 1.7 / 1.6</strong></td>
+<td>−30% (중앙값)</td>
+</tr>
+<tr>
+<td></td>
+<td>live RPE 1 s cm</td>
+<td>1.94 ± 0.08</td>
+<td><strong>1.69 ± 0.02</strong></td>
+<td>−13%</td>
+</tr>
+<tr>
+<td></td>
+<td>final ATE cm</td>
+<td>2.83 ± 0.10</td>
+<td>2.79 ± 0.19</td>
+<td>−1%</td>
+</tr>
+<tr>
+<td></td>
+<td>final 최대 cm</td>
+<td>7.0 / 7.0 / 6.7</td>
+<td>6.8 / 6.5 / 6.3</td>
+<td>−7% (중앙값)</td>
+</tr>
+<tr>
+<td></td>
+<td>깊이 영상 지도 중앙값 cm</td>
+<td>3.22 ± 0.02</td>
+<td>3.25 ± 0.04</td>
+<td>+1%</td>
+</tr>
+<tr>
+<td></td>
+<td>ORB 맵포인트 수</td>
+<td>24250</td>
+<td>17190</td>
+<td>−29%</td>
+</tr>
+<tr>
+<td></td>
+<td>track 평균 / p99 ms</td>
+<td>12.98 / 20.20</td>
+<td><strong>8.87 / 12.21</strong></td>
+<td>−32% / −40%</td>
+</tr>
+<tr>
+<td></td>
+<td>33 ms 넘은 프레임</td>
+<td>0</td>
+<td>0</td>
+<td></td>
+</tr>
+<tr>
+<td>bigeightcircle</td>
+<td>live ATE cm</td>
+<td>4.44 / 4.27 / <strong>151.4</strong></td>
+<td>3.61 / 4.23 / 4.01</td>
+<td>3회차는 §3</td>
+</tr>
+<tr>
+<td></td>
+<td>live 최대 cm</td>
+<td>12.4 / 11.5 / 190.1</td>
+<td>9.6 / 12.5 / 10.9</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>live 최대 회전 °</td>
+<td>1.1 / 1.3 / 1.9</td>
+<td>1.1 / 1.3 / 1.1</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>live RPE 1 s cm</td>
+<td>6.54 ± 9.00</td>
+<td><strong>1.45 ± 0.01</strong></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>final ATE cm</td>
+<td>2.22 / 2.14 / 3.13</td>
+<td>2.32 / 2.22 / 2.37</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>final 최대 cm</td>
+<td>6.8 / 7.0 / 29.5</td>
+<td>7.2 / 7.1 / 7.1</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>깊이 영상 지도 중앙값 cm</td>
+<td>2.28 ± 0.09</td>
+<td>2.25 ± 0.01</td>
+<td>−1%</td>
+</tr>
+<tr>
+<td></td>
+<td>ORB 맵포인트 수</td>
+<td>33353</td>
+<td>22577</td>
+<td>−32%</td>
+</tr>
+<tr>
+<td></td>
+<td>track 평균 / p99 ms</td>
+<td>13.23 / 18.98</td>
+<td><strong>9.43 / 13.12</strong></td>
+<td>−29% / −31%</td>
+</tr>
+<tr>
+<td></td>
+<td>33 ms 넘은 프레임 (3회)</td>
+<td>1 / 0 / 1</td>
+<td>0 / 0 / 0</td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="3-bigeightcircle-nf4000-3회차-잘못된-루프">3. bigeightcircle NF4000 3회차: 잘못된 루프</h2>
+<ul>
+<li>이 실행에서는 루프가 두 번 검출됐다. 다른 실행 23회는 모두 한 번이다(시작점으로 돌아올 때).</li>
+<li>두 번째 루프(<code>LOOP_GAP cur_id=351 matched_id=237</code>)는 75 s 떨어진 두 키프레임을 같은 곳으로 묶었다.
+  ORB-SLAM3가 고친 양은 3.05 m(<code>corr_m</code>)다.</li>
+<li>pseudo-GT에서 두 시각의 라이다 위치는 <strong>3.21 m 떨어져 있다.</strong> 같은 장소가 아니므로 잘못된 루프다.
+  8자 경로에서 모양이 비슷한 다른 구간을 같은 곳으로 인식한 것으로 보인다.</li>
+<li>결과:</li>
+<li>live ATE가 151 cm, 최대 190 cm로 커졌다.</li>
+<li>final 궤적은 이후 전역 최적화로 ATE 3.13 cm까지 돌아왔지만, 최대 오차 29.5 cm, 최대 회전 오차 12.8°가 남았다.</li>
+<li>주력 실행에도 같은 루프 판정 단계가 있다. 자이로 빌드는 루프마다 <code>GYRO_LOOP_CHECK</code>(루프 회전 vs 자이로 적분 회전)를 기록한다.
+  이번 12회에서는 모든 루프가 <code>verdict=ok</code>였고, 잘못된 루프 후보 자체가 나오지 않았다.</li>
+<li><strong>한 번의 사례라 원인을 특징점 수로 단정할 수는 없다.</strong></li>
+<li>특징점이 많으면 BoW 유사도가 높아져 비슷한 장면끼리 후보가 되기 쉽다는 가설은 있지만, 시험하지 않았다.</li>
+<li>자이로 루프 검사(<code>Gyro.LoopVetoDeg</code> 5°)는 회전만 보므로, 이 루프처럼 위치만 3 m 틀린 경우를 막는다고 할 수도 없다.</li>
+</ul>
+<h2 id="4-해석">4. 해석</h2>
+<ul>
+<li><strong>특징점을 늘리는 것보다 자이로를 쓰는 편이 live 정확도에 더 효과적이다.</strong></li>
+<li>두 방법 모두 빠른 회전 구간의 회전 추정을 안정시키려는 것이다.</li>
+<li>특징점을 두 배로 늘려도 회전 구간의 큰 오차(live 최대 15–20 cm)가 남는다.</li>
+<li>자이로를 쓰면 같은 구간이 10–12 cm로 줄었다.</li>
+<li>참고로 같은 세션의 이전 NF2000(자이로 없음) 결과(§8 of <code>slam_bench_261018.md</code>)는 다음과 같다.</li>
+<li>digut live ATE: 4.84 cm (이번 NF4000은 5.07 cm)</li>
+<li>longcircle live ATE: 4.18 cm (이번 NF4000은 4.35 cm)</li>
+<li>즉 NF4000이 NF2000보다 낫지 않다. 다만 그 실행은 이전 빌드라, 같은 빌드로 다시 확인해야 한다.</li>
+<li><strong>비용은 주력이 훨씬 싸다.</strong></li>
+<li>자이로 처리 비용은 트래킹 시간에 거의 보이지 않는다(NF2000+자이로 평균 8.9–9.6 ms).</li>
+<li>NF4000은 ORB 추출과 매칭이 늘어 평균 13–15 ms, p99 19–24 ms다.</li>
+<li>실시간(33 ms) 안에 들지만, 다른 작업(객체 인식 등)과 CPU를 나누면 여유가 줄어든다.</li>
+<li><strong>final 궤적에서는 차이가 줄어든다.</strong> 전역 최적화 뒤에는 특징점이 많은 쪽의 정밀도와 자이로의 이득이 비슷해진다.
+  live 포즈를 바로 쓰는 실시간 파이프라인에서 주력의 이득이 가장 크다.</li>
+</ul>
+<h2 id="5-남은-것">5. 남은 것</h2>
+<ul>
+<li>같은 빌드에서 NF2000(자이로 없음)과 NF4000+자이로를 돌려 2×2 비교를 완성하기
+  (특징점 수 효과와 자이로 효과를 분리)</li>
+<li>잘못된 루프가 NF4000에서 더 잘 생기는지, 반복 수를 늘려 확인하기</li>
+<li>실시간 카메라 조건(늦은 프레임을 버리는 <code>--mode live</code>)에서 NF4000의 정확도 확인하기</li>
+</ul><p class="meta">원본: <code>objpose/docs/slam_nf4000_vs_gyro_261019.md</code></p></main></div></body></html>

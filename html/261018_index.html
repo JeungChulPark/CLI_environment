@@ -25,6 +25,10 @@ a.card small{display:block;color:var(--muted);font-size:12.5px;margin-top:6px}
 <span>원본 ORB-SLAM3 vs 수정본 vs 수정본+자이로. 모션캡처·라이다 GT로 office·home·corridor를 평가했다. 자이로를 켜면 Sim(3) ATE가 office −30%, home −14~21%, corridor −19~33% 줄었다. 크래시 수정과 한계도 정리했다.</span>
 <small>원본 orbslam_ws/openloris/report_261018.md</small></a>
 
+<a class="card" href="261019_nf4000_vs_gyro.html"><b>수정 ORB-SLAM3: NF4000 vs NF2000 + 자이로(주력), 실데이터</b>
+<span>260901 네 세션, 각 3회, 라이다 pseudo-GT 기준. 주력이 live ATE −7~−18%, live 최대 오차 −10~−32%이면서 트래킹이 약 1/3 빠르다. NF4000은 12회 중 1회 잘못된 루프를 받았다.</span>
+<small>원본 objpose/docs/slam_nf4000_vs_gyro_261019.md</small></a>
+
 <a class="card" href="261018_slam_benchmark.html"><b>실데이터 SLAM 비교: ORB-SLAM3 · RTAB-Map · hdl_graph_slam · KISS-ICP</b>
 <span>라이다가 있는 실데이터 16개 세션 비교표, 수정본과 원본 ORB의 차이, 260901 자이로 효과, ORB vs RTAB 위치 추정·지도 비교(네 세션 3회 반복), RTAB에서 IMU 효과가 없는 이유, hdl_graph_slam 오차 분석</span>
 <small>원본 objpose/docs/slam_bench_261018.md</small></a>
