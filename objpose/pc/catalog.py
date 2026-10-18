@@ -86,6 +86,11 @@ BY_ID = {b.id: b for b in BACKENDS}
 # whatever settings file it is given, so the nf2000 settings serve every size.
 FEATURES = (2000, 3000, 4000)
 DEFAULT_FEATURES = 2000
+# The backend a dataset runs on by default (viewer "기본" tag, run_web.sh): the modified
+# ORB-SLAM3 with gyro aid where the Mac has the recording's imu/ and a rig file, else the
+# modified ORB-SLAM3 alone (paper_etrij_261003 doc 30: no crashes, loop corrections as small
+# as upstream v1.0, best object positions).
+DEFAULT_BACKENDS = ("orbslam3_imu", "orbslam3")
 
 
 def date_of(name: str) -> str:
@@ -156,14 +161,34 @@ def backend_state(name: str, here: set[str], there: set[str] | None, b: Backend)
         why = ("Mac 에 연결할 수 없어 KISS 궤적/rig 를 확인할 수 없음" if there is None else
                f"Mac 에 {name} 의 KISS 궤적 또는 rig_*.json 없음 (rt/260901/rtab_odom)")
     elif b.gyro:
-        if "imu" not in here:
-            why = f"이 PC 에 {name}/imu 없음"
+        # the gyro is read on the Mac (slam_stream --imu <MAC_ROOT>/<dataset>/imu); the PC needs no copy
+        if there is None:
+            why = "Mac 에 연결할 수 없어 imu 를 확인할 수 없음"
+        elif "imu" not in there:
+            why = f"Mac 에 {name}/imu 없음"
         elif not (SETTINGS / f"rig_{date_of(name)}_gyro.json").exists():
             why = f"settings/rig_{date_of(name)}_gyro.json 없음"
     return {"id": b.id, "label": b.label, "runnable": why is None, "reason": why,
             "lidar_world": b.lidar_world, "sized": b.sized,
             "extrinsic": str(x.relative_to(REPO)) if x else None,
             "extrinsic_provenance": provenance}
+
+
+def with_default(states: list[dict]) -> list[dict]:
+    """Mark the first runnable backend of DEFAULT_BACKENDS as this dataset's default."""
+    by_id = {s["id"]: s for s in states}
+    pick = next((by_id[i] for i in DEFAULT_BACKENDS if i in by_id and by_id[i]["runnable"]), None)
+    for s in states:
+        s["default"] = s is pick
+    return states
+
+
+def default_backend(dataset: str, there_all: dict[str, set[str]] | None) -> str | None:
+    """The default backend id for one dataset (None if neither default can run on it)."""
+    d = DATASET_ROOT / dataset
+    there = there_all.get(dataset, set()) if there_all is not None else None
+    states = with_default([backend_state(dataset, streams(d), there, b) for b in BACKENDS])
+    return next((s["id"] for s in states if s["default"]), None)
 
 
 def scan(there_all: dict[str, set[str]] | None = None) -> dict:
@@ -187,14 +212,17 @@ def scan(there_all: dict[str, set[str]] | None = None) -> dict:
             "streams": sorted(here),
             "mac_streams": sorted(there) if there is not None else None,
             "duration_s": round(dur, 1) if dur else None,
-            "backends": [backend_state(d.name, here, there, b) for b in BACKENDS],
+            "backends": with_default([backend_state(d.name, here, there, b) for b in BACKENDS]),
         })
     return {"mac_reachable": there_all is not None, "features": list(FEATURES),
             "dates": [{"date": k, "datasets": v} for k, v in sorted(dates.items(), reverse=True)]}
 
 
-def hub_args(dataset: str, backend_id: str, features: int = DEFAULT_FEATURES) -> list[str]:
-    """The hub.py argv that runs this dataset on this backend (features: camera backends only)."""
+def hub_args(dataset: str, backend_id: str, features: int = DEFAULT_FEATURES, run_tag: str = "") -> list[str]:
+    """The hub.py argv that runs this dataset on this backend (features: camera backends only).
+
+    run_tag is appended to the output name. The viewer's runs pass one (_web<time>) so that a
+    click never overwrites live_<dataset>_<backend>, which several scorers use as a reference."""
     b = BY_ID[backend_id]
     if b.unbuilt:                        # the viewer disables these, but /run takes any known id
         raise ValueError(f"{b.label}: {b.unbuilt}")
@@ -212,7 +240,7 @@ def hub_args(dataset: str, backend_id: str, features: int = DEFAULT_FEATURES) ->
             "--sam-session", str(d / "SAM"),
             "--slam-session", str(d / b.source),
             "--mac-slam-session", f"{MAC_ROOT}/{dataset}/{b.source}",
-            "--out", str(REPO / "objpose" / "output" / f"live_{dataset}_{backend_id}{tag}")]
+            "--out", str(REPO / "objpose" / "output" / f"live_{dataset}_{backend_id}{tag}{run_tag}")]
     if sized:
         args += ["--features", str(features)]
     date = date_of(dataset)
