@@ -1,0 +1,345 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>30. 실 데이터 객체 위치 추정 — 원본 ORB vs 우리 기술 ORB vs 우리 기술 ORB + 자이로 (RTX 5090 Laptop, 2026-10-18)</title><style>
+:root{--bg:#fff;--fg:#1b1b1b;--mut:#5a5a5a;--line:#e3e3e3;--head:#f5f7fa;--acc:#1f5fa8;--code:#f4f4f4}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--fg:#e8e8e8;--mut:#a8a8a8;--line:#333;--head:#202428;--acc:#6aa8f0;--code:#222}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+main{max-width:1100px;margin:0 auto;padding:28px 16px 60px}
+h1{font-size:26px;border-bottom:3px solid var(--acc);padding-bottom:8px}
+h2{font-size:21px;margin-top:40px;border-left:5px solid var(--acc);padding-left:10px}
+h3{font-size:17px;margin-top:26px;color:var(--acc)}
+.tw{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--head)}
+tr:nth-child(even) td{background:color-mix(in srgb,var(--head) 45%,transparent)}
+img{max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:4px}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:13px}
+pre{background:var(--code);padding:12px;border-radius:6px;overflow-x:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+li{margin:3px 0}
+
+a{color:var(--acc);word-break:break-all}
+</style></head><body><main><h1>30. 실 데이터 객체 위치 추정 — 원본 ORB vs 우리 기술 ORB vs 우리 기술 ORB + 자이로 (RTX 5090 Laptop, 2026-10-18)</h1>
+<blockquote>
+<p>자이로(IMU) 데이터가 있는 실 데이터 녹화 4개(260901 cbnu)에서 세 구성을 비교했습니다. 인식은 노트북(RTX 5090 Laptop)에서, SLAM 은 Mac(192.168.219.106)에서 실시간으로 돌렸습니다. 세 구성은 원본 0.5 + ORB, 개선안 3 + 군집 먼저 + ORB, 개선안 3 + 군집 먼저 + ORB + 자이로 보정입니다. 우리 기술 두 구성은 녹화마다 3번씩 반복했습니다. 함께 Mac 에만 있던 수정 ORB-SLAM3 소스를 저장소로 가져왔습니다(4절). 실행 스크립트 · 채점 코드 · 결과는 <code>src/realdata/logs_gyro_261018/</code> 에 있습니다(<code>run_gyro_l5090.sh</code>, <code>score_gyro.py</code>, <code>results_gyro_l5090.json</code>).</p>
+</blockquote>
+<h2>0. 요약</h2>
+<ul>
+<li><strong>최종 지도 맞음 / 잘못(녹화 4개, 기준 32개):</strong></li>
+<li>원본 0.5 + ORB: <strong>19 / 15</strong></li>
+<li>개선안 3 + ORB: 3번 반복 모두 <strong>31~32 / 1</strong></li>
+<li>개선안 3 + ORB + 자이로: 3번 반복 모두 <strong>32 / 0</strong></li>
+<li><strong>우리 기술 vs 원본:</strong></li>
+<li>인식 빈도: 1.49 → 6.5 Hz (4.4배)</li>
+<li>기준까지 거리 중앙값: 5.7 → 2.4~2.7 cm</li>
+<li>10 cm 넘은 물체 비율: 43% → 5~6%</li>
+<li>27 문서의 다른 녹화 12개와 같은 결과입니다.</li>
+<li><strong>자이로 보정의 효과는 주로 SLAM 궤적에서 보입니다.</strong> 녹화마다 가장 큰 루프 보정이 자이로 없이 중앙값 13.6 cm · 평균 18.9 cm · 최대 70.2 cm 에서, 자이로를 켜면 9.6 cm · 10.7 cm · 17.0 cm 로 줄었습니다. 같은 녹화를 반복했을 때 흔들림도 작아졌습니다(digut: 7.5 ~ 70.2 cm → 7.5 ~ 17.0 cm).</li>
+<li><strong>물체 결과의 차이는 작습니다.</strong></li>
+<li>잘못은 자이로 없이 12번 실행 중 3개, 자이로를 켜면 0개입니다.</li>
+<li>3개 중 2개는 장면에 없는 소스(Sauce_high)를 다른 물체 자리에 올린 인식 오류라 SLAM 과 직접 관계가 없습니다. 나머지 1개(longcircle 1회차 milk, 기준에서 22 cm)는 위치 오차입니다.</li>
+<li>기준까지 거리(중앙값 2.7 → 2.4 cm, 평균 3.4 → 3.4 cm)와 실행 중 점수 평균(71.7 → 71.8%)은 거의 같습니다.</li>
+<li><strong>SLAM 구분:</strong> 이 문서의 "ORB" 는 원본 ORB-SLAM3 가 아니라 <strong>Mac 의 수정 ORB-SLAM3 에서 자이로만 끈 것</strong>입니다. 자이로와 상관없이 원본 버그 수정과 메모리 할당 개선이 들어 있습니다(4절). 2026-10-18 부터 Mac 실행은 자이로가 있는 녹화는 수정 ORB + 자이로, 없는 녹화는 수정 ORB 를 기본으로 합니다.</li>
+</ul>
+<h2>1. 데이터와 실행 조건</h2>
+<h3>1.1 녹화</h3>
+<p>Mac 의 녹화 중 IMU(Xsens, <code>/xsens/imu/data</code>) 폴더가 있고 카메라-IMU 리그 보정 파일(<code>rig_260901_gyro.json</code>)이 있는 것은 260901 cbnu 4개뿐입니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화</th>
+<th>길이</th>
+<th>기준 위치</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>260901_cbnu_eightcircle</td>
+<td>151 s</td>
+<td>이전 배포 ORB 실행 <code>live_260901_cbnu_eightcircle_orbslam3</code> (22~24 문서와 같음)</td>
+</tr>
+<tr>
+<td>260901_cbnu_bigeightcircle</td>
+<td>314 s</td>
+<td>이전 배포 ORB 실행 3개의 중앙값 (eval_real.REF_RUNS)</td>
+</tr>
+<tr>
+<td>260901_cbnu_digut</td>
+<td>229 s</td>
+<td>이 노트북의 배포 인식기 실행 <code>ref_260901_cbnu_digut_ours_l5090</code> (27 문서)</td>
+</tr>
+<tr>
+<td>260901_cbnu_longcircle</td>
+<td>134 s</td>
+<td>이 노트북에서 새로 돌린 배포 인식기 실행 <code>ref_260901_cbnu_longcircle_ours_l5090</code> (이전 기준 실행이 이 노트북에 없음)</td>
+</tr>
+</tbody>
+</table></div>
+<p>물체는 8개(saffron · Febreze_high · Dinosaur · Bear · milk · choco_hazelnut_high · Mugcup_high · Sikhye_high)입니다.</p>
+<h3>1.2 구성</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>인식기</th>
+<th>SLAM (Mac)</th>
+<th>실행 이름</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 0.5 + ORB</td>
+<td>원본 SAM-6D, DINOv2 ViT-L, 임계값 0.5 (22 문서)</td>
+<td>수정 ORB-SLAM3, 자이로 끔</td>
+<td><code>live_261018_&lt;녹화&gt;_l5090_origL05_orb</code></td>
+</tr>
+<tr>
+<td>개선안 3 + ORB</td>
+<td>개선안 3 + 군집 먼저 (24 문서)</td>
+<td>수정 ORB-SLAM3, 자이로 끔</td>
+<td><code>..._hyb3cf_orb[_r2, _r3]</code></td>
+</tr>
+<tr>
+<td>개선안 3 + ORB + 자이로</td>
+<td>개선안 3 + 군집 먼저</td>
+<td>수정 ORB-SLAM3 + 자이로 보정 (<code>--gyro rig_260901_gyro.json --imu &lt;녹화&gt;/imu</code>, catalog 백엔드 <code>orbslam3_imu</code>)</td>
+<td><code>..._hyb3cf_orbgyro[_r2, _r3]</code></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>공통: Mac ORB-SLAM3 실시간 1배속, 특징점 2000개(<code>orbslam3_260901_slam_nf2000.yaml</code>), 노트북 허브(<code>objpose/pc/hub.py</code>). 실행 방법은 27 문서와 같습니다(ssh <code>LD_LIBRARY_PATH</code> 우회 포함).</li>
+<li>자이로 보정 실행 12개는 모두 SLAM 시작 메시지에 <code>gyro: True</code> 가 찍힌 것을 확인했습니다. 자이로 없는 실행은 <code>gyro: False</code> 입니다.</li>
+<li>반복: 우리 기술 두 구성은 녹화마다 3번(1회차 13:25~, 2회차 15:38~, 3회차 16:10~) 돌렸습니다. 원본 0.5 는 차이가 커서 한 번만 돌렸습니다.</li>
+</ul>
+<h3>1.3 채점</h3>
+<p>27 문서의 <code>score_unused.py</code> 규칙을 그대로 씁니다(<code>score_gyro.py</code>). 같은 종류이고 기준 위치에서 20 cm 안이면 맞음이고, 종류마다 하나만 셉니다. 나머지 지도 항목은 모두 잘못입니다. 점수는 맞음 / (8 + 잘못) 입니다.</p>
+<h2>2. 결과</h2>
+<h3>2.1 녹화별 최종 지도 (맞음 / 잘못)</h3>
+<p>우리 기술 두 구성은 1회 · 2회 · 3회 순서입니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화</th>
+<th>원본 0.5 + ORB</th>
+<th>개선안 3 + ORB</th>
+<th>개선안 3 + ORB + 자이로</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>eightcircle</td>
+<td>4 / 5</td>
+<td>8/0 · 8/1 · 8/1</td>
+<td>8/0 · 8/0 · 8/0</td>
+</tr>
+<tr>
+<td>bigeightcircle</td>
+<td>1 / 7</td>
+<td>8/0 · 8/0 · 8/0</td>
+<td>8/0 · 8/0 · 8/0</td>
+</tr>
+<tr>
+<td>digut</td>
+<td>7 / 1</td>
+<td>8/0 · 8/0 · 8/0</td>
+<td>8/0 · 8/0 · 8/0</td>
+</tr>
+<tr>
+<td>longcircle</td>
+<td>7 / 2</td>
+<td>7/1 · 8/0 · 8/0</td>
+<td>8/0 · 8/0 · 8/0</td>
+</tr>
+<tr>
+<td><strong>합계 (반복마다)</strong></td>
+<td><strong>19 / 15</strong></td>
+<td><strong>31/1 · 32/1 · 32/1</strong></td>
+<td><strong>32/0 · 32/0 · 32/0</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>개선안 3 + ORB 의 잘못 3개:</p>
+<ul>
+<li>eightcircle 2회 · 3회: 장면에 없는 Sauce_high 를 다른 물체 자리에 올림(종류 오류). 08 · 27 문서에서 본 원본 0.5 의 주된 오류와 같은 종류입니다.</li>
+<li>longcircle 1회: milk 를 기준에서 22.2 cm 떨어진 곳에 올림(위치 오차, 20 cm 기준을 넘어 놓침 + 잘못).</li>
+</ul>
+<h3>2.2 위치 · 빈도 · 실행 중 점수 (녹화 4개, 실행 전체)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>원본 0.5 + ORB (4 실행)</th>
+<th>개선안 3 + ORB (12 실행)</th>
+<th>개선안 3 + ORB + 자이로 (12 실행)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>기준까지 거리 중앙값</td>
+<td>5.7 cm</td>
+<td>2.7 cm</td>
+<td><strong>2.4 cm</strong></td>
+</tr>
+<tr>
+<td>거리 평균</td>
+<td>17.9 cm</td>
+<td>3.4 cm</td>
+<td>3.4 cm</td>
+</tr>
+<tr>
+<td>거리 90%</td>
+<td>43.4 cm</td>
+<td>7.0 cm</td>
+<td>7.0 cm</td>
+</tr>
+<tr>
+<td>10 cm 넘은 물체</td>
+<td>13 / 30</td>
+<td>5 / 96</td>
+<td>6 / 96</td>
+</tr>
+<tr>
+<td>인식 빈도</td>
+<td>1.49 Hz</td>
+<td>6.50 Hz</td>
+<td>6.48 Hz</td>
+</tr>
+<tr>
+<td>실행 중 매 순간 점수 평균</td>
+<td>57.9 ± 8.8%</td>
+<td>71.7 ± 7.5%</td>
+<td>71.8 ± 6.8%</td>
+</tr>
+</tbody>
+</table></div>
+<h3>2.3 SLAM 의 가장 큰 루프 보정 (실행마다, cm)</h3>
+<p>루프를 닫을 때 키프레임이 가장 많이 옮겨진 거리(<code>kf_max_correction_cm</code>)입니다. 클수록 그 전까지 궤적이 많이 틀어져 있었다는 뜻입니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화</th>
+<th>원본 0.5 + ORB</th>
+<th>개선안 3 + ORB (1 · 2 · 3회)</th>
+<th>개선안 3 + ORB + 자이로 (1 · 2 · 3회)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>eightcircle</td>
+<td>10.8</td>
+<td>28.8 · 15.4 · 12.4</td>
+<td>11.0 · 6.6 · 13.0</td>
+</tr>
+<tr>
+<td>bigeightcircle</td>
+<td><strong>302.1</strong></td>
+<td>14.2 · 17.8 · 16.2</td>
+<td>14.3 · 6.8 · 13.4</td>
+</tr>
+<tr>
+<td>digut</td>
+<td>12.4</td>
+<td>7.5 · <strong>70.2</strong> · 9.1</td>
+<td>7.5 · 15.2 · 17.0</td>
+</tr>
+<tr>
+<td>longcircle</td>
+<td>10.8</td>
+<td>12.9 · 11.3 · 11.4</td>
+<td>7.1 · 8.2 · 7.7</td>
+</tr>
+<tr>
+<td><strong>중앙값 / 평균 / 최대</strong></td>
+<td>—</td>
+<td>13.6 / 18.9 / 70.2</td>
+<td><strong>9.6 / 10.7 / 17.0</strong></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>같은 녹화 · 같은 회차끼리 12쌍을 비교하면 자이로 쪽이 작은 것 8쌍, 큰 것 2쌍(eightcircle 3회 12.4 → 13.0, digut 3회 9.1 → 17.0), 거의 같은 것 2쌍(bigeightcircle 1회 14.2 · 14.3, digut 1회 7.5 · 7.5)입니다.</li>
+<li>자이로 없이 생긴 큰 보정(eightcircle 1회 28.8 cm, digut 2회 70.2 cm)이 자이로를 켠 실행에서는 한 번도 나오지 않았습니다(최대 17.0 cm).</li>
+<li>원본 0.5 의 bigeightcircle 302.1 cm 는 그 실행에서 SLAM 이 프레임 6개를 놓치며 크게 틀어진 것입니다. 원본 0.5 의 1/7 은 인식기만의 결과로 보면 안 됩니다.</li>
+</ul>
+<h2>3. 해석</h2>
+<ul>
+<li><strong>우리 기술은 원본보다 확실히 낫습니다.</strong> 맞음 19 → 31~32, 잘못 15 → 0~1, 빈도 4.4배입니다. 반복 3번 모두 같은 결과라 우연이 아닙니다.</li>
+<li><strong>자이로 보정은 SLAM 궤적을 안정시킵니다.</strong> 루프 보정의 평균이 절반 정도(18.9 → 10.7 cm)로 줄고, 자이로 없이 가끔 나오던 큰 보정(28.8 · 70.2 cm)이 사라졌습니다. 자이로는 회전을 직접 재므로 8자 경로의 회전 구간에서 생기는 방향 오차가 줄고, 잘못된 루프(회전이 자이로와 맞지 않는 장소 인식)도 거릅니다(4절).</li>
+<li><strong>물체 위치에서는 차이가 작습니다.</strong> 루프 보정이 끝난 최종 지도에서는 자이로가 없어도 궤적이 대부분 바로잡히기 때문입니다. 위치 오차로 생긴 잘못은 자이로 없는 실행에서 1개(longcircle 1회 milk 22 cm)뿐입니다. 잘못 0개 대 3개 중 2개는 인식 오류(Sauce_high)라, 자이로가 물체 오류를 없앴다고 말하기는 어렵습니다.</li>
+<li><strong>정리:</strong> 자이로 보정은 "물체 지도가 더 정확해진다" 보다 <strong>"SLAM 이 덜 틀어지고 실행마다 덜 흔들린다"</strong> 로 주장하는 것이 데이터에 맞습니다. 물체 결과는 같거나 조금 낫습니다.</li>
+</ul>
+<h2>4. 수정 ORB-SLAM3 소스를 저장소로 (Mac → <code>objpose/mac_slam/</code>)</h2>
+<p>지금까지 수정 ORB-SLAM3 와 자이로 보정 코드(<code>gyro_aid.h</code> 등)는 Mac(<code>~/objpose/src</code>, <code>~/objpose/ORB_SLAM3_src</code>)에만 있었고, 저장소 <code>objpose/mac_slam/</code> 은 9/13 판이었습니다. 2026-10-18 Mac 에서 그대로 가져왔습니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>저장소 파일</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mac_slam/gyro_aid.h</code> (새 파일)</td>
+<td>IMU 각속도에서 바이어스를 빼고 적분해 카메라 시각의 자이로 회전을 줌. 카메라가 거의 돌지 않는 구간에서 영상 회전과 비교해 바이어스를 계속 갱신</td>
+</tr>
+<tr>
+<td><code>mac_slam/slam_stream.cc</code>, <code>raw_session.h</code>, <code>rtab_stream.cc</code>, <code>lidar_source.h</code>, <code>rtab_aux.h</code>, <code>build_from_repo_mac.sh</code></td>
+<td>Mac 최신 판으로 갱신 (<code>--gyro RIG --imu DIR</code> 옵션 등)</td>
+</tr>
+<tr>
+<td><code>mac_slam/patches/03-orbslam3-objpose-full-260918.patch</code> (새 파일)</td>
+<td>Mac ORB-SLAM3 전체 수정. 원본 UZ-SLAMLab/ORB_SLAM3 V1.0(커밋 4452a3c4)에 적용하면 Mac 소스와 모든 파일이 같아지는 것을 확인. 01 · 02 패치를 포함</td>
+</tr>
+</tbody>
+</table></div>
+<p>ORB-SLAM3 수정 내용(03 패치):</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>종류</th>
+<th>파일</th>
+<th>자이로 끌 때도 동작</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>자이로 보정: 다음 프레임 초기 자세를 자이로 회전으로 돌림, 프레임 자세 최적화에 자이로 회전 제약, 지역 BA 에서 연속 키프레임을 자이로 회전으로 묶음</td>
+<td><code>Tracking.cc</code>, <code>Optimizer.cc</code>, <code>GyroEdges.h</code>, <code>Frame</code> · <code>KeyFrame</code></td>
+<td>아니요 (<code>Gyro.Use</code>)</td>
+</tr>
+<tr>
+<td>자이로 루프 거부: 루프가 요구하는 회전이 자이로와 맞지 않으면 그 루프를 받지 않음</td>
+<td><code>LoopClosing.cc</code></td>
+<td>아니요</td>
+</tr>
+<tr>
+<td>원본 버그 수정: 지도 점 삭제 중 반복자 무효화, 회전 0 일 때 NaN 으로 프로그램 종료, 종료 시 스레드 대기 빠짐, 루프 후보 반복문</td>
+<td><code>Map.cc</code>, <code>Sim3Solver.cc</code>, <code>System.cc</code>, <code>KeyFrameDatabase.cc</code></td>
+<td>예</td>
+</tr>
+<tr>
+<td>메모리 할당 줄이기(결과 같음)</td>
+<td><code>ORBextractor</code>, <code>ORBmatcher</code>, <code>MapPoint</code></td>
+<td>예</td>
+</tr>
+<tr>
+<td>루프 보정량 로그</td>
+<td><code>LoopClosing.cc</code></td>
+<td>예</td>
+</tr>
+<tr>
+<td>macOS 빌드</td>
+<td><code>CMakeLists.txt</code></td>
+<td>예</td>
+</tr>
+</tbody>
+</table></div>
+<h2>5. 주의</h2>
+<ul>
+<li>이 문서의 "ORB" 는 수정 ORB-SLAM3(자이로 끔)입니다. 논문에서 "원본 ORB-SLAM3" 와 비교하려면 03 패치 없이 빌드해 따로 돌려야 합니다.</li>
+<li>기준 위치는 모두 자이로 없는 ORB 실행에서 나왔고, digut · longcircle 은 우리 배포 인식기 실행이 기준입니다. 우리 기술 쪽에 유리할 수 있습니다(27 문서와 같은 한계).</li>
+<li>녹화는 한 날(260901), 한 장소, 물체 8개입니다. 자이로가 있는 다른 녹화가 생기면 더 확인해야 합니다.</li>
+<li>실시간 실행이라 반복마다 처리한 프레임과 루프 시점이 달라집니다. 흔들림은 2.3 절의 반복 3번으로 보였습니다.</li>
+</ul></main></body></html>

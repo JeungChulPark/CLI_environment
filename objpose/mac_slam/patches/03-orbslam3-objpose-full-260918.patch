@@ -1,0 +1,2000 @@
+ORB-SLAM3 as built on the Mac (~/objpose/ORB_SLAM3_src, copied 2026-10-18) against upstream UZ-SLAMLab/ORB_SLAM3
+4452a3c4ab75b1cde34e5505a36ec3f9edcdc4c4 (V1.0). Supersedes 01/02. Gyro aid (Gyro.Use / slam_stream --gyro: Tracking,
+Optimizer, GyroEdges.h, gyro loop veto in LoopClosing) plus changes that are always on: upstream crash fixes
+(Map iterator invalidation, Sim3Solver NaN, System shutdown wait, KeyFrameDatabase candidate loop), allocation
+fixes (ORBextractor, ORBmatcher, MapPoint), loop-correction logging, macOS CMake.
+  cd ORB_SLAM3 && patch -p1 < 03-orbslam3-objpose-full-260918.patch
+
+diff -ruN a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2026-10-18 16:14:28.651255483 +0900
++++ b/CMakeLists.txt	2026-10-18 16:14:28.657255483 +0900
+@@ -1,5 +1,8 @@
+-cmake_minimum_required(VERSION 2.8)
+-project(ORB_SLAM3)
++cmake_minimum_required(VERSION 3.5)
++project(orbslam3_core)
++
++find_package(ament_cmake REQUIRED)
++set(ORB_SLAM3_TARGET ORB_SLAM3)
+ 
+ IF(NOT CMAKE_BUILD_TYPE)
+   SET(CMAKE_BUILD_TYPE Release)
+@@ -12,20 +15,66 @@
+ set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -march=native")
+ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=native")
+ 
+-# Check C++11 or C++0x support
++# ---------------------------------------------------------------------------
++# Performance / profiling options
++# ---------------------------------------------------------------------------
++# Flags deliberately NOT enabled, and why:
++#  * -ffast-math / -funsafe-math-optimizations: UNSAFE for this codebase. It
++#    implies -ffinite-math-only, letting the compiler assume no NaN/Inf.
++#    ORB-SLAM3 and g2o gate outlier rejection on chi2 and NaN comparisons,
++#    so this can silently turn outlier rejection into a no-op. Do not use.
++#  * -mavx512f and friends: the target CPU (i9-12900HK, Alder Lake) has NO
++#    AVX-512 - it is fused off. Forcing it yields SIGILL. -march=native
++#    already selects AVX2 + FMA + POPCNT, which is what this code benefits
++#    from (see ORBmatcher::DescriptorDistance).
++#  * -flto: safe, but ORB_SLAM3 is a shared library consumed through a
++#    prebuilt .so path, so cross-TU inlining stops at the library boundary.
++#    Little upside for a long rebuild; enable only if measured to help.
++
++# Per-stage tracking timers. The #ifdef REGISTER_TIMES instrumentation
++# already present in Tracking.cc / Frame.cc was never switched on.
++option(ORBSLAM3_REGISTER_TIMES "Enable stock per-stage tracking timers" OFF)
++if(ORBSLAM3_REGISTER_TIMES)
++  add_definitions(-DREGISTER_TIMES)
++  message(STATUS "REGISTER_TIMES enabled")
++endif()
++
++# Fine-grained per-frame profiler (include/StageTimer.h). Prints a per-frame
++# breakdown plus p50/p95/max, which is what a hard 33.33 ms budget needs.
++option(ORBSLAM3_PROFILE "Enable per-frame stage profiler" OFF)
++if(ORBSLAM3_PROFILE)
++  add_definitions(-DORBSLAM3_PROFILE)
++  message(STATUS "ORBSLAM3_PROFILE enabled (per-frame stage breakdown)")
++endif()
++
++# Parallel ORB extraction across pyramid levels. Keep this well below the
++# core count: LocalMapping and LoopClosing need cores too, and oversubscribing
++# makes tracking p95 worse even when the mean improves.
++set(ORBEXTRACTOR_OMP_THREADS "4" CACHE STRING
++    "Threads for per-pyramid-level ORB extraction (unset/1 = serial)")
++find_package(OpenMP)
++if(OpenMP_CXX_FOUND)
++  add_definitions(-DORBEXTRACTOR_OMP_THREADS=${ORBEXTRACTOR_OMP_THREADS})
++  message(STATUS "OpenMP found; ORB extraction threads = ${ORBEXTRACTOR_OMP_THREADS}")
++else()
++  message(STATUS "OpenMP NOT found; ORB extraction stays serial")
++endif()
++
++# Require C++14. This is the unique standard that works here:
++#  - conda Pangolin/sigslot headers need C++14 type traits (std::decay_t etc.),
++#    so C++11 fails to compile them;
++#  - ORB-SLAM3 source uses bool increment (operator++ on bool) which is removed
++#    in C++17, so C++17 fails. C++14 satisfies both. gcc 14 has full C++14.
+ include(CheckCXXCompilerFlag)
+-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+-CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+-if(COMPILER_SUPPORTS_CXX11)
+-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
++CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
++if(COMPILER_SUPPORTS_CXX14)
++   set(CMAKE_CXX_STANDARD 14)
++   set(CMAKE_CXX_STANDARD_REQUIRED ON)
++   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+    add_definitions(-DCOMPILEDWITHC11)
+-   message(STATUS "Using flag -std=c++11.")
+-elseif(COMPILER_SUPPORTS_CXX0X)
+-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+-   add_definitions(-DCOMPILEDWITHC0X)
+-   message(STATUS "Using flag -std=c++0x.")
++   message(STATUS "Using flag -std=c++14.")
+ else()
+-   message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
++   message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++14 support. Please use a different C++ compiler.")
+ endif()
+ 
+ LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
+@@ -39,6 +88,10 @@
+ MESSAGE(${OpenCV_VERSION})
+ 
+ find_package(Eigen3 3.1.0 REQUIRED)
++if((NOT OPENGL_opengl_LIBRARY OR OPENGL_opengl_LIBRARY MATCHES "NOTFOUND") AND DEFINED ENV{CONDA_PREFIX} AND EXISTS "$ENV{CONDA_PREFIX}/lib/libOpenGL.so.0")
++   set(OPENGL_opengl_LIBRARY "$ENV{CONDA_PREFIX}/lib/libOpenGL.so.0" CACHE FILEPATH "OpenGL library" FORCE)
++endif()
++find_package(OpenGL REQUIRED COMPONENTS OpenGL EGL)
+ find_package(Pangolin REQUIRED)
+ find_package(realsense2)
+ 
+@@ -53,7 +106,7 @@
+ 
+ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
+ 
+-add_library(${PROJECT_NAME} SHARED
++add_library(${ORB_SLAM3_TARGET} SHARED
+ src/System.cc
+ src/Tracking.cc
+ src/LocalMapping.cc
+@@ -113,28 +166,35 @@
+ include/Config.h
+ include/Settings.h)
+ 
++add_subdirectory(Thirdparty/DBoW2)
+ add_subdirectory(Thirdparty/g2o)
+ 
+-target_link_libraries(${PROJECT_NAME}
++target_link_libraries(${ORB_SLAM3_TARGET}
+ ${OpenCV_LIBS}
+ ${EIGEN3_LIBS}
+ ${Pangolin_LIBRARIES}
+-${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
+-${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
++DBoW2
++g2o
+ -lboost_serialization
+ -lcrypto
+ )
+ 
++if(OpenMP_CXX_FOUND)
++  target_link_libraries(${ORB_SLAM3_TARGET} OpenMP::OpenMP_CXX)
++endif()
++
+ # If RealSense SDK is found the library is added and its examples compiled
+ if(realsense2_FOUND)
+-    include_directories(${PROJECT_NAME}
++    include_directories(${ORB_SLAM3_TARGET}
+     ${realsense_INCLUDE_DIR}
+     )
+-    target_link_libraries(${PROJECT_NAME}
++    target_link_libraries(${ORB_SLAM3_TARGET}
+     ${realsense2_LIBRARY}
+     )
+ endif()
+ 
++option(BUILD_ORB_SLAM3_EXAMPLES "Build ORB-SLAM3 standalone examples" OFF)
++if(BUILD_ORB_SLAM3_EXAMPLES)
+ 
+ # Build examples
+ 
+@@ -388,3 +448,7 @@
+             Examples_old/Stereo-Inertial/stereo_inertial_realsense_D435i.cc)
+     target_link_libraries(stereo_inertial_realsense_D435i_old ${PROJECT_NAME})
+ endif()
++endif()
++
++install(FILES package.xml DESTINATION share/orbslam3_core)
++ament_package()
+diff -ruN a/include/Frame.h b/include/Frame.h
+--- a/include/Frame.h	2026-10-18 16:14:28.651255483 +0900
++++ b/include/Frame.h	2026-10-18 16:14:28.659255482 +0900
+@@ -164,6 +164,18 @@
+ 
+ 
+ 
++    // GYRO AID (objpose, 2026-09-18). Optional external gyro for the non-inertial sensor modes (RGB-D):
++    //   mRgc           camera orientation at this frame's stamp from integrating the gyro alone, R_(gyro world <- camera).
++    //                  Only differences between frames are used (R_ci_cj = mRgc_i^T * mRgc_j), never the absolute value.
++    //   mRcwPrior      rotation prior for Optimizer::PoseOptimization = (gyro rotation since the last frame) * R_cw(last frame),
++    //                  with information mRotPriorInfo (1/rad^2) on each axis. Set by Tracking::Track().
++    bool mbHasGyro = false;
++    int mnGyroEpoch = 0;          // gyro integration restarts (IMU gap) bump this: no tie across epochs
++    Eigen::Matrix3f mRgc = Eigen::Matrix3f::Identity();
++    bool mbHasRotPrior = false;
++    Eigen::Matrix3d mRcwPrior = Eigen::Matrix3d::Identity();
++    double mRotPriorInfo = 0.0;
++
+ private:
+     //Sophus/Eigen migration
+     Sophus::SE3<float> mTcw;
+diff -ruN a/include/GyroEdges.h b/include/GyroEdges.h
+--- a/include/GyroEdges.h	1970-01-01 09:00:00.000000000 +0900
++++ b/include/GyroEdges.h	2026-10-18 16:14:28.659255482 +0900
+@@ -0,0 +1,67 @@
++/**
++ * GYRO AID (objpose, 2026-09-18) — rotation-only constraints from an external gyro for the NON-inertial
++ * sensor modes (RGB-D / stereo / mono). This is not ORB-SLAM3's visual-inertial mode: no accelerometer,
++ * no velocity / bias / gravity states, no IMU initialisation. The caller integrates the gyro (bias removed,
++ * rotated into the camera frame) and hands each frame its gyro-only orientation (Frame::mRgc); only the
++ * relative rotation between two stamps is ever used, so gyro drift enters through the time gap alone.
++ *
++ *   EdgeGyroRotPrior     unary, PoseOptimization:      R_cw  ~  R_(c <- last, gyro) * R_(last,w)
++ *   EdgeGyroRelRot       binary, LocalBundleAdjustment: R_ciw * R_cjw^T  ~  R_(ci <- cj, gyro)
++ *
++ * Both use g2o's numeric Jacobians (one unary edge per frame, a few tens of binary edges per local BA).
++ */
++#ifndef ORB_SLAM3_GYROEDGES_H
++#define ORB_SLAM3_GYROEDGES_H
++
++#include "Thirdparty/g2o/g2o/core/base_unary_edge.h"
++#include "Thirdparty/g2o/g2o/core/base_binary_edge.h"
++#include "Thirdparty/g2o/g2o/types/types_six_dof_expmap.h"
++
++#include <Eigen/Core>
++#include <Eigen/Geometry>
++
++namespace ORB_SLAM3
++{
++
++inline Eigen::Vector3d GyroLogSO3(const Eigen::Matrix3d &R)
++{
++    Eigen::AngleAxisd aa(R);
++    return aa.angle() * aa.axis();
++}
++
++// error = Log( R_prior^T * R_cw )
++class EdgeGyroRotPrior : public g2o::BaseUnaryEdge<3, Eigen::Matrix3d, g2o::VertexSE3Expmap>
++{
++public:
++    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
++    EdgeGyroRotPrior() {}
++    virtual bool read(std::istream&) { return false; }
++    virtual bool write(std::ostream&) const { return false; }
++    void computeError()
++    {
++        const g2o::VertexSE3Expmap* v = static_cast<const g2o::VertexSE3Expmap*>(_vertices[0]);
++        _error = GyroLogSO3(_measurement.transpose() * v->estimate().rotation().toRotationMatrix());
++    }
++};
++
++// measurement = R_(ci <- cj) from the gyro; error = Log( meas^T * R_ciw * R_cjw^T )
++class EdgeGyroRelRot : public g2o::BaseBinaryEdge<3, Eigen::Matrix3d, g2o::VertexSE3Expmap, g2o::VertexSE3Expmap>
++{
++public:
++    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
++    EdgeGyroRelRot() {}
++    virtual bool read(std::istream&) { return false; }
++    virtual bool write(std::ostream&) const { return false; }
++    void computeError()
++    {
++        const g2o::VertexSE3Expmap* vi = static_cast<const g2o::VertexSE3Expmap*>(_vertices[0]);
++        const g2o::VertexSE3Expmap* vj = static_cast<const g2o::VertexSE3Expmap*>(_vertices[1]);
++        const Eigen::Matrix3d Rij = vi->estimate().rotation().toRotationMatrix() *
++                                    vj->estimate().rotation().toRotationMatrix().transpose();
++        _error = GyroLogSO3(_measurement.transpose() * Rij);
++    }
++};
++
++} // namespace ORB_SLAM3
++
++#endif
+diff -ruN a/include/KeyFrame.h b/include/KeyFrame.h
+--- a/include/KeyFrame.h	2026-10-18 16:14:28.651255483 +0900
++++ b/include/KeyFrame.h	2026-10-18 16:14:28.659255482 +0900
+@@ -33,6 +33,7 @@
+ #include "SerializationUtils.h"
+ 
+ #include <mutex>
++#include <atomic>
+ 
+ #include <boost/serialization/base_object.hpp>
+ #include <boost/serialization/vector.hpp>
+@@ -161,7 +162,7 @@
+         // Bad flags
+         ar & mbNotErase;
+         ar & mbToBeErased;
+-        ar & mbBad;
++        bool bBad = mbBad; ar & bBad; mbBad = bBad;   // std::atomic is not serialisable directly
+ 
+         ar & mHalfBaseline;
+ 
+@@ -412,6 +413,12 @@
+     IMU::Preintegrated* mpImuPreintegrated;
+     IMU::Calib mImuCalib;
+ 
++    // GYRO AID (objpose): gyro-only camera orientation at this keyframe's stamp (copied from the Frame);
++    // LocalBundleAdjustment ties temporally consecutive keyframes with R_ci_cj = mRgc_i^T * mRgc_j. Not serialised.
++    bool mbHasGyro = false;
++    int mnGyroEpoch = 0;
++    Eigen::Matrix3f mRgc = Eigen::Matrix3f::Identity();
++
+     unsigned int mnOriginMapId;
+ 
+     string mNameFile;
+@@ -478,7 +485,7 @@
+     // Bad flags
+     bool mbNotErase;
+     bool mbToBeErased;
+-    bool mbBad;    
++    std::atomic<bool> mbBad;   // atomic: isBad() reads it without mMutexConnections (deadlock fix, 2026-09-18)
+ 
+     float mHalfBaseline; // Only for visualization
+ 
+diff -ruN a/include/MapPoint.h b/include/MapPoint.h
+--- a/include/MapPoint.h	2026-10-18 16:14:28.651255483 +0900
++++ b/include/MapPoint.h	2026-10-18 16:14:28.659255482 +0900
+@@ -120,6 +120,28 @@
+     KeyFrame* GetReferenceKeyFrame();
+ 
+     std::map<KeyFrame*,std::tuple<int,int>> GetObservations();
++
++    // PERF: Tracking::UpdateLocalKeyFrames() only needs to tally which
++    // KeyFrames observe this point. GetObservations() returns the whole
++    // std::map BY VALUE - a full red-black-tree deep copy, one node
++    // allocation per observation, for every matched map point every
++    // frame. This accumulates in place under the same lock, allocating
++    // nothing. No other lock is taken inside, so it cannot deadlock.
++    void AccumulateObservingKeyFrames(std::map<KeyFrame*,int> &counter);
++
++    // PERF: Frame::isInFrustum() reads world position, both scale-invariance
++    // distances and the normal -- four separate calls that each take the SAME
++    // mMutexPos. At nFeatures=2000 the local map reaches several thousand points
++    // and this runs per point per frame, so it is thousands of redundant
++    // lock/unlock pairs. Fetching all four under one lock is bit-identical:
++    // the four members are only ever written together under the same mutex.
++    void GetFrustumData(Eigen::Vector3f &pos, Eigen::Vector3f &normal,
++                        float &minDistance, float &maxDistance);
++
++    // PERF: non-allocating variant of GetDescriptor() for match loops.
++    // Copies the 32 descriptor bytes into caller-provided storage.
++    void CopyDescriptorTo(unsigned char *dst32);
++
+     int Observations();
+ 
+     void AddObservation(KeyFrame* pKF,int idx);
+diff -ruN a/include/ORBextractor.h b/include/ORBextractor.h
+--- a/include/ORBextractor.h	2026-10-18 16:14:28.651255483 +0900
++++ b/include/ORBextractor.h	2026-10-18 16:14:28.659255482 +0900
+@@ -82,6 +82,13 @@
+ 
+     std::vector<cv::Mat> mvImagePyramid;
+ 
++    // PERF: persistent per-level scratch buffers for the pre-descriptor
++    // Gaussian blur. The original allocated a fresh clone() per level per
++    // frame. copyTo() into a buffer of identical size/type reuses the
++    // allocation and, exactly like clone(), yields a standalone Mat - so
++    // BORDER_REFLECT_101 stays ROI-isolated and descriptors stay identical.
++    std::vector<cv::Mat> mvBlurBuffer;
++
+ protected:
+ 
+     void ComputePyramid(cv::Mat image);
+diff -ruN a/include/ORBmatcher.h b/include/ORBmatcher.h
+--- a/include/ORBmatcher.h	2026-10-18 16:14:28.651255483 +0900
++++ b/include/ORBmatcher.h	2026-10-18 16:14:28.659255482 +0900
+@@ -42,6 +42,11 @@
+         // Computes the Hamming distance between two ORB descriptors
+         static int DescriptorDistance(const cv::Mat &a, const cv::Mat &b);
+ 
++        // PERF: raw-pointer overload for hot inner loops. Avoids constructing a
++        // cv::Mat header (and its atomic refcount inc/dec) per comparison.
++        // Both pointers must address 32 contiguous bytes (one ORB descriptor).
++        static int DescriptorDistance(const unsigned char *pa, const unsigned char *pb);
++
+         // Search matches between Frame keypoints and projected MapPoints. Returns number of matches
+         // Used to track the local map (Tracking)
+         int SearchByProjection(Frame &F, const std::vector<MapPoint*> &vpMapPoints, const float th=3, const bool bFarPoints = false, const float thFarPoints = 50.0f);
+diff -ruN a/include/Optimizer.h b/include/Optimizer.h
+--- a/include/Optimizer.h	2026-10-18 16:14:28.651255483 +0900
++++ b/include/Optimizer.h	2026-10-18 16:14:28.659255482 +0900
+@@ -56,6 +56,44 @@
+ 
+     void static LocalBundleAdjustment(KeyFrame* pKF, bool *pbStopFlag, Map *pMap, int& num_fixedKF, int& num_OptKF, int& num_MPs, int& num_edges);
+ 
++    // PERF: PoseOptimization() runs 4 rounds of 10 Levenberg-Marquardt
++    // iterations (40 total) and is called 2-3 times per frame, which dominates
++    // tracking cost once the local map grows (measured: 4.4 ms pose prediction +
++    // 9.0 ms local-map track per frame at nFeatures=2000).
++    //
++    // The later rounds start from an already-converged pose and mostly serve to
++    // re-classify outliers, so they need far fewer iterations. Two controls:
++    //   sPoseOptIters     - iterations per round (default {10,10,10,10})
++    //   sPoseOptEarlyExit - stop once the outlier set stops changing, after the
++    //                       robust kernel has been removed (round index >= 3)
++    // Both default to stock behaviour; Tracking sets them from the settings file
++    // so the change is opt-in and measurable.
++    static int  sPoseOptIters[4];
++    static bool sPoseOptEarlyExit;
++
++    // GYRO AID (objpose, 2026-09-18): rotation constraints from an external gyro in the non-inertial modes
++    // (see GyroEdges.h). Settings keys, read in the Tracking constructor:
++    //   Gyro.Use          1 enables it (frames must also carry a gyro orientation, System::SetFrameGyro)
++    //   Gyro.SigmaFrame   rad, 1-sigma of the gyro rotation between two consecutive frames (PoseOptimization prior)
++    //   keyframe-to-keyframe rotation (LocalBundleAdjustment), sigma^2 = SigmaKF^2 + SigmaARW^2*dt + (SigmaRate*dt)^2 + (SigmaScale*angle)^2
++    //   Gyro.SigmaKF      rad, floor (camera/IMU stamp jitter at both ends)
++    //   Gyro.SigmaARW     rad/sqrt(s), angle random walk
++    //   Gyro.SigmaRate    rad/s, residual bias after the caller's bias estimation
++    //   Gyro.SigmaScale   -, scale-factor error, times the rotation angle of the interval
++    //   Gyro.MaxGapS      s, keyframes further apart in time than this are not tied
++    static bool   sGyroUse;
++    static double sGyroSigmaFrame;
++    static double sGyroSigmaKF;
++    static double sGyroSigmaRate;
++    static double sGyroSigmaARW;
++    static double sGyroSigmaScale;
++    static double sGyroMaxGapS;
++    static double sGyroLoopVetoDeg;    // loop closure veto: allowed disagreement with the gyro, deg (+ rate*dt); <=0 disables
++    static double sGyroLoopVetoRate;   // deg/s
++    static long   sGyroLoopVetoed;
++    static long   sGyroPriorEdges;   // diagnostics: edges added so far
++    static long   sGyroKFEdges;
++
+     int static PoseOptimization(Frame* pFrame);
+     int static PoseInertialOptimizationLastKeyFrame(Frame* pFrame, bool bRecInit = false);
+     int static PoseInertialOptimizationLastFrame(Frame *pFrame, bool bRecInit = false);
+diff -ruN a/include/System.h b/include/System.h
+--- a/include/System.h	2026-10-18 16:14:28.651255483 +0900
++++ b/include/System.h	2026-10-18 16:14:28.659255482 +0900
+@@ -126,10 +126,20 @@
+     // This resumes local mapping thread and performs SLAM again.
+     void DeactivateLocalizationMode();
+ 
++    // True when the Atlas was loaded from a file (System.LoadAtlasFromFile).
++    // Localization-only tracking uses this to relocalize against the PRIOR map
++    // instead of initializing a fresh one (see Tracking::ActivatePriorMapForLocalization).
++    bool HasLoadedAtlas() const { return !mStrLoadAtlasFromFile.empty(); }
++
+     // Returns true if there have been a big map change (loop closure, global BA)
+     // since last call to this function
+     bool MapChanged();
+ 
++    // GYRO AID (objpose): gyro-only camera orientation R_(gyro world <- camera) at the stamp of the NEXT image
++    // handed to TrackRGBD/TrackStereo/TrackMonocular. Used only when the settings have Gyro.Use: 1.
++    // `epoch` changes whenever the caller restarted its integration (IMU gap): frames of different epochs are not tied.
++    void SetFrameGyro(const Eigen::Matrix3f &Rgc, int epoch = 0);
++
+     // Reset the system (clear Atlas or the active map)
+     void Reset();
+     void ResetActiveMap();
+@@ -176,6 +186,20 @@
+     int GetTrackingState();
+     std::vector<MapPoint*> GetTrackedMapPoints();
+     std::vector<cv::KeyPoint> GetTrackedKeyPointsUn();
++    std::vector<Eigen::Vector3f> GetAllMapPointsWorld();
++
++    // Keyframe anchoring, for attaching other estimates (e.g. object poses) to the map so they follow
++    // later loop closures and BA. Both use the bookkeeping SaveTrajectoryTUM uses, so
++    //   T_w_cam (as saved in CameraTrajectory.txt) = T_w_kf (GetKeyFramePoseWorld) * T_kf_cam (GetLastFrameReference)
++    // Reference keyframe of the last frame given to Track*() and that frame's pose relative to it.
++    // Call right after Track*(). Returns false before tracking starts or when the frame was lost.
++    bool GetLastFrameReference(unsigned long &kfId, Sophus::SE3f &Tkf_c);
++    // Current camera-to-world pose of a keyframe seen by GetLastFrameReference. A culled keyframe is
++    // resolved through the spanning tree, as SaveTrajectoryTUM does; `culled` reports that case.
++    bool GetKeyFramePoseWorld(unsigned long kfId, Sophus::SE3f &Tw_kf, double &stamp, bool &culled);
++    std::vector<unsigned long> GetReferencedKeyFrameIds();
++    // Save loop-closure edges as world-position pairs (c1x c1y c1z c2x c2y c2z)
++    void SaveLoopEdges(const std::string &filename);
+ 
+     // For debugging
+     double GetTimeFromIMUInit();
+@@ -255,6 +279,10 @@
+     std::vector<cv::KeyPoint> mTrackedKeyPointsUn;
+     std::mutex mMutexState;
+ 
++    // keyframes handed out by GetLastFrameReference (keyframes are never freed, only flagged bad)
++    std::map<unsigned long, KeyFrame*> mReferencedKFs;
++    std::mutex mMutexReferencedKFs;
++
+     //
+     string mStrLoadAtlasFromFile;
+     string mStrSaveAtlasToFile;
+diff -ruN a/include/Tracking.h b/include/Tracking.h
+--- a/include/Tracking.h	2026-10-18 16:14:28.651255483 +0900
++++ b/include/Tracking.h	2026-10-18 16:14:28.659255482 +0900
+@@ -88,6 +88,9 @@
+     // Use this function if you have deactivated local mapping and you only want to localize the camera.
+     void InformOnlyTracking(const bool &flag);
+ 
++    // GYRO AID (objpose): see System::SetFrameGyro / GyroEdges.h
++    void SetNextFrameGyro(const Eigen::Matrix3f &Rgc, int epoch = 0);
++
+     void UpdateFrameIMU(const float s, const IMU::Bias &b, KeyFrame* pCurrentKeyFrame);
+     KeyFrame* GetLastKeyFrame()
+     {
+@@ -200,6 +203,21 @@
+     // Map initialization for stereo and RGB-D
+     void StereoInitialization();
+ 
++    // Localization-only on a PRIOR map: when the Atlas was loaded from file the
++    // System constructor leaves an EMPTY map active (System.cc CreateNewMap after
++    // LoadAtlas), so StereoInitialization would start a brand new map at identity
++    // and Relocalization could never find candidates (DetectRelocalizationCandidates
++    // filters by current map). This switches the active map to the loaded one and
++    // hands the next frame to Relocalization instead. Mapping runs are untouched:
++    // it only fires when mbOnlyTracking is set AND an Atlas was loaded from file.
++    bool ActivatePriorMapForLocalization();
++
++    // True while this run is "estimate my pose inside a previously built map":
++    // localization-only tracking (local mapping stopped) on an Atlas loaded from
++    // file. In that mode the map must never be abandoned or rebuilt -- losing
++    // tracking means "keep relocalizing", not "start a new map".
++    bool IsLocalizingOnPriorMap() const;
++
+     // Map initialization for monocular
+     void MonocularInitialization();
+     //void CreateNewMapPoints();
+@@ -208,6 +226,14 @@
+     void CheckReplacedInLastFrame();
+     bool TrackReferenceKeyFrame();
+     void UpdateLastFrame();
++
++    // GYRO AID
++    void ApplyPendingGyro();          // move the pending gyro orientation into mCurrentFrame
++    bool GyroDeltaFromLast(Eigen::Matrix3f &Rcl) const;   // gyro rotation current <- last frame, if both have one
++    void SetGyroRotPrior();           // mCurrentFrame.mRcwPrior from mLastFrame's pose (call after UpdateLastFrame)
++    bool mbNextGyro{false};
++    int mnNextGyroEpoch{0};
++    Eigen::Matrix3f mNextRgc;
+     bool TrackWithMotionModel();
+     bool PredictStateIMU();
+ 
+diff -ruN a/src/Frame.cc b/src/Frame.cc
+--- a/src/Frame.cc	2026-10-18 16:14:28.650255483 +0900
++++ b/src/Frame.cc	2026-10-18 16:14:28.658255483 +0900
+@@ -91,6 +91,14 @@
+     mmProjectPoints = frame.mmProjectPoints;
+     mmMatchedInImage = frame.mmMatchedInImage;
+ 
++    // GYRO AID: members with in-class defaults are not copied by this hand-written constructor unless listed
++    mbHasGyro = frame.mbHasGyro;
++    mnGyroEpoch = frame.mnGyroEpoch;
++    mRgc = frame.mRgc;
++    mbHasRotPrior = frame.mbHasRotPrior;
++    mRcwPrior = frame.mRcwPrior;
++    mRotPriorInfo = frame.mRotPriorInfo;
++
+ #ifdef REGISTER_TIMES
+     mTimeStereoMatch = frame.mTimeStereoMatch;
+     mTimeORB_Ext = frame.mTimeORB_Ext;
+@@ -516,8 +524,14 @@
+         pMP->mTrackProjX = -1;
+         pMP->mTrackProjY = -1;
+ 
+-        // 3D in absolute coordinates
+-        Eigen::Matrix<float,3,1> P = pMP->GetWorldPos();
++        // PERF: one lock instead of four. GetWorldPos / GetMaxDistanceInvariance /
++        // GetMinDistanceInvariance / GetNormal all take the same mMutexPos, and
++        // this function runs once per local map point per frame. Values and order
++        // of use are unchanged, so the result is bit-identical.
++        Eigen::Matrix<float,3,1> P;
++        Eigen::Vector3f Pn;
++        float minDistance, maxDistance;
++        pMP->GetFrustumData(P, Pn, minDistance, maxDistance);
+ 
+         // 3D in camera coordinates
+         const Eigen::Matrix<float,3,1> Pc = mRcw * P + mtcw;
+@@ -540,17 +554,14 @@
+         pMP->mTrackProjY = uv(1);
+ 
+         // Check distance is in the scale invariance region of the MapPoint
+-        const float maxDistance = pMP->GetMaxDistanceInvariance();
+-        const float minDistance = pMP->GetMinDistanceInvariance();
++        // (fetched above, together with the position and normal, under one lock)
+         const Eigen::Vector3f PO = P - mOw;
+         const float dist = PO.norm();
+ 
+         if(dist<minDistance || dist>maxDistance)
+             return false;
+ 
+-        // Check viewing angle
+-        Eigen::Vector3f Pn = pMP->GetNormal();
+-
++        // Check viewing angle (normal fetched above under the same lock)
+         const float viewCos = PO.dot(Pn)/dist;
+ 
+         if(viewCos<viewingCosLimit)
+@@ -657,7 +668,10 @@
+ vector<size_t> Frame::GetFeaturesInArea(const float &x, const float  &y, const float  &r, const int minLevel, const int maxLevel, const bool bRight) const
+ {
+     vector<size_t> vIndices;
+-    vIndices.reserve(N);
++    // PERF: called once per visible local MapPoint per frame (~1-3k calls).
++    // reserve(N) heap-allocated N*8 bytes on every call, although a search
++    // window realistically returns O(10) indices.
++    vIndices.reserve(32);
+ 
+     float factorX = r;
+     float factorY = r;
+@@ -692,7 +706,9 @@
+     {
+         for(int iy = nMinCellY; iy<=nMaxCellY; iy++)
+         {
+-            const vector<size_t> vCell = (!bRight) ? mGrid[ix][iy] : mGridRight[ix][iy];
++            // PERF: was a by-value copy of the grid cell (the '&' was missing),
++            // i.e. one heap allocation per visited cell, ~9-25 cells per call.
++            const vector<size_t> &vCell = (!bRight) ? mGrid[ix][iy] : mGridRight[ix][iy];
+             if(vCell.empty())
+                 continue;
+ 
+diff -ruN a/src/KeyFrame.cc b/src/KeyFrame.cc
+--- a/src/KeyFrame.cc	2026-10-18 16:14:28.650255483 +0900
++++ b/src/KeyFrame.cc	2026-10-18 16:14:28.658255483 +0900
+@@ -61,6 +61,10 @@
+     mvLeftToRightMatch(F.mvLeftToRightMatch),mvRightToLeftMatch(F.mvRightToLeftMatch), mTlr(F.GetRelativePoseTlr()),
+     mvKeysRight(F.mvKeysRight), NLeft(F.Nleft), NRight(F.Nright), mTrl(F.GetRelativePoseTrl()), mnNumberOfOpt(0), mbHasVelocity(false)
+ {
++    mbHasGyro = F.mbHasGyro;   // GYRO AID
++    mnGyroEpoch = F.mnGyroEpoch;
++    mRgc = F.mRgc;
++
+     mnId=nNextId++;
+ 
+     mGrid.resize(mnGridCols);
+@@ -680,8 +684,10 @@
+ 
+ bool KeyFrame::isBad()
+ {
+-    unique_lock<mutex> lock(mMutexConnections);
+-    return mbBad;
++    // DEADLOCK FIX (objpose 2026-09-18): no lock. UpdateBestCovisibles() calls isBad() on every neighbour while holding
++    // this keyframe's mMutexConnections; two concurrent SetBadFlag() (LocalMapping culling + LoopClosing SetErase) on
++    // connected keyframes then locked each other's mutex in opposite order and froze the whole system (Tracking too).
++    return mbBad.load();
+ }
+ 
+ void KeyFrame::EraseConnection(KeyFrame* pKF)
+diff -ruN a/src/KeyFrameDatabase.cc b/src/KeyFrameDatabase.cc
+--- a/src/KeyFrameDatabase.cc	2026-10-18 16:14:28.650255483 +0900
++++ b/src/KeyFrameDatabase.cc	2026-10-18 16:14:28.658255483 +0900
+@@ -146,7 +146,7 @@
+             maxCommonWords=(*lit)->mnLoopWords;
+     }
+ 
+-    int minCommonWords = maxCommonWords*0.8f;
++    int minCommonWords = maxCommonWords*0.5f;  // RELAXED (was 0.8): admit loop candidates sharing fewer words
+ 
+     int nscores=0;
+ 
+@@ -287,7 +287,7 @@
+                 maxCommonWords=(*lit)->mnLoopWords;
+         }
+ 
+-        int minCommonWords = maxCommonWords*0.8f;
++        int minCommonWords = maxCommonWords*0.5f;  // RELAXED (was 0.8): admit loop candidates sharing fewer words
+ 
+         int nscores=0;
+ 
+@@ -375,7 +375,7 @@
+                 maxCommonWords=(*lit)->mnMergeWords;
+         }
+ 
+-        int minCommonWords = maxCommonWords*0.8f;
++        int minCommonWords = maxCommonWords*0.5f;  // RELAXED (was 0.8): admit loop candidates sharing fewer words
+ 
+         int nscores=0;
+ 
+@@ -509,7 +509,7 @@
+             maxCommonWords=(*lit)->mnPlaceRecognitionWords;
+     }
+ 
+-    int minCommonWords = maxCommonWords*0.8f;
++    int minCommonWords = maxCommonWords*0.5f;  // RELAXED (was 0.8): admit loop candidates sharing fewer words
+ 
+     if(minCommonWords < nMinWords)
+     {
+@@ -645,7 +645,7 @@
+             maxCommonWords=(*lit)->mnPlaceRecognitionWords;
+     }
+ 
+-    int minCommonWords = maxCommonWords*0.8f;
++    int minCommonWords = maxCommonWords*0.5f;  // RELAXED (was 0.8): admit loop candidates sharing fewer words
+ 
+     list<pair<float,KeyFrame*> > lScoreAndMatch;
+ 
+@@ -710,7 +710,15 @@
+     {
+         KeyFrame* pKFi = it->second;
+         if(pKFi->isBad())
++        {
++            // FIX (objpose 2026-09-18): upstream `continue` never advanced i/it, so a candidate culled by
++            // LocalMapping between the two phases of this function spun the LoopClosing thread forever
++            // (isBad() lock/unlock at 100 % CPU, no loop closure for the rest of the run, and a livelock of
++            // the other threads on that keyframe's mutex). Seen in 2 of 3 real-time runs of 260901 bigeightcircle.
++            i++;
++            it++;
+             continue;
++        }
+ 
+         if(!spAlreadyAddedKF.count(pKFi))
+         {
+@@ -766,7 +774,7 @@
+             maxCommonWords=(*lit)->mnRelocWords;
+     }
+ 
+-    int minCommonWords = maxCommonWords*0.8f;
++    int minCommonWords = maxCommonWords*0.5f;  // RELAXED (was 0.8): admit loop candidates sharing fewer words
+ 
+     list<pair<float,KeyFrame*> > lScoreAndMatch;
+ 
+diff -ruN a/src/LoopClosing.cc b/src/LoopClosing.cc
+--- a/src/LoopClosing.cc	2026-10-18 16:14:28.650255483 +0900
++++ b/src/LoopClosing.cc	2026-10-18 16:14:28.658255483 +0900
+@@ -18,6 +18,7 @@
+ 
+ 
+ #include "LoopClosing.h"
++#include <cmath>
+ 
+ #include "Sim3Solver.h"
+ #include "Converter.h"
+@@ -27,6 +28,7 @@
+ 
+ #include<mutex>
+ #include<thread>
++#include<iomanip>
+ 
+ 
+ namespace ORB_SLAM3
+@@ -261,10 +263,71 @@
+ 
+                     }
+ 
++                    // GYRO LOOP VETO (objpose 2026-09-18): the loop implies a relative rotation between the matched keyframe
++                    // and the (corrected) current keyframe; the gyro knows that rotation to a fraction of a degree even
++                    // 100 s apart. A loop that disagrees is a wrong place-recognition match (figure-8 crossing) -> refuse it.
++                    if (bGoodLoop && Optimizer::sGyroUse && Optimizer::sGyroLoopVetoDeg > 0 &&
++                        mpCurrentKF->mbHasGyro && mpLoopMatchedKF->mbHasGyro &&
++                        mpCurrentKF->mnGyroEpoch == mpLoopMatchedKF->mnGyroEpoch)
++                    {
++                        Eigen::Matrix3d Rcw_loop = mg2oLoopScw.rotation().toRotationMatrix();
++                        Eigen::Matrix3d Rmw = mpLoopMatchedKF->GetRotation().cast<double>();
++                        Eigen::Matrix3d Rcm_loop = Rcw_loop * Rmw.transpose();
++                        Eigen::Matrix3d Rcm_gyro = (mpCurrentKF->mRgc.transpose() * mpLoopMatchedKF->mRgc).cast<double>();
++                        Eigen::AngleAxisd aa(Rcm_gyro.transpose() * Rcm_loop);
++                        const double ang = aa.angle() * 180.0 / M_PI;
++                        const double dt = fabs(mpCurrentKF->mTimeStamp - mpLoopMatchedKF->mTimeStamp);
++                        const double lim = Optimizer::sGyroLoopVetoDeg + Optimizer::sGyroLoopVetoRate * dt;
++                        Eigen::Matrix3d Rcm_now = mpCurrentKF->GetRotation().cast<double>() * Rmw.transpose();
++                        const double ang_now = Eigen::AngleAxisd(Rcm_gyro.transpose() * Rcm_now).angle() * 180.0 / M_PI;
++                        std::cout << std::fixed << std::setprecision(3) << "GYRO_LOOP_CHECK|cur_id=" << mpCurrentKF->mnId
++                                  << "|matched_id=" << mpLoopMatchedKF->mnId << "|dt_s=" << dt
++                                  << "|loop_vs_gyro_deg=" << ang << "|current_vs_gyro_deg=" << ang_now
++                                  << "|limit_deg=" << lim << "|verdict=" << (ang > lim ? "VETO" : "ok") << std::endl;
++                        if (ang > lim)
++                        {
++                            bGoodLoop = false;
++                            Optimizer::sGyroLoopVetoed++;
++                        }
++                    }
++
+                     if (bGoodLoop) {
+ 
+                         mvpLoopMapPoints = mvpLoopMPs;
+ 
++                        // [METRIC#2 / method A] Pre-correction loop-closure gap log.
++                        // Camera-center distance between current & matched KF BEFORE
++                        // CorrectLoop() = accumulated drift the loop must absorb.
++                        {
++                            Eigen::Vector3f cc = mpCurrentKF->GetCameraCenter();
++                            Eigen::Vector3f mc = mpLoopMatchedKF->GetCameraCenter();
++                            Eigen::Vector3d s3t = mg2oLoopScw.translation();
++                            double gap = (cc - mc).norm();
++                            // Where CorrectLoop() is about to put this keyframe. Scw maps
++                            // world to camera (x_c = s*R*x_w + t), so the corrected camera
++                            // centre is -R^T t / s. The magnitude of s3t on its own is just
++                            // that centre's distance from the map origin, which tracks where
++                            // the MATCHED keyframe sits rather than how far the closure moves
++                            // anything, so it cannot judge a closure. corr_m can.
++                            Eigen::Matrix3d Rcorr = mg2oLoopScw.rotation().toRotationMatrix();
++                            Eigen::Vector3d Ccorr = -(Rcorr.transpose() * s3t) / mg2oLoopScw.scale();
++                            double corr = (Ccorr.cast<float>() - cc).norm();
++                            double resid = (Ccorr.cast<float>() - mc).norm();
++                            std::cout << std::fixed << std::setprecision(6)
++                                      << "LOOP_GAP|cur_id=" << mpCurrentKF->mnId
++                                      << "|matched_id=" << mpLoopMatchedKF->mnId
++                                      << "|ts_cur=" << mpCurrentKF->mTimeStamp
++                                      << "|ts_matched=" << mpLoopMatchedKF->mTimeStamp
++                                      << "|cur_xyz=" << cc(0) << "," << cc(1) << "," << cc(2)
++                                      << "|matched_xyz=" << mc(0) << "," << mc(1) << "," << mc(2)
++                                      << "|gap_m=" << gap
++                                      << "|sim3t=" << s3t(0) << "," << s3t(1) << "," << s3t(2)
++                                      << "|sim3_scale=" << mg2oLoopScw.scale()
++                                      << "|corr_m=" << corr
++                                      << "|resid_m=" << resid
++                                      << std::endl;
++                        }
++
+ #ifdef REGISTER_TIMES
+                         std::chrono::steady_clock::time_point time_StartLoop = std::chrono::steady_clock::now();
+ 
+@@ -393,7 +456,7 @@
+             mvpLoopMatchedMPs = vpMatchedMPs;
+ 
+ 
+-            mbLoopDetected = mnLoopNumCoincidences >= 3;
++            mbLoopDetected = mnLoopNumCoincidences >= 1;  // RELAXED (was 3): accept loop on first geometric verification
+             mnLoopNumNotFound = 0;
+ 
+             if(!mbLoopDetected)
+@@ -578,11 +641,11 @@
+ bool LoopClosing::DetectCommonRegionsFromBoW(std::vector<KeyFrame*> &vpBowCand, KeyFrame* &pMatchedKF2, KeyFrame* &pLastCurrentKF, g2o::Sim3 &g2oScw,
+                                              int &nNumCoincidences, std::vector<MapPoint*> &vpMPs, std::vector<MapPoint*> &vpMatchedMPs)
+ {
+-    int nBoWMatches = 20;
+-    int nBoWInliers = 15;
+-    int nSim3Inliers = 20;
+-    int nProjMatches = 50;
+-    int nProjOptMatches = 80;
++    int nBoWMatches = 12;     // RELAXED (was 20)
++    int nBoWInliers = 8;      // RELAXED (was 15)
++    int nSim3Inliers = 12;    // RELAXED (was 20)
++    int nProjMatches = 30;    // RELAXED (was 50)
++    int nProjOptMatches = 40; // RELAXED (was 80)
+ 
+     set<KeyFrame*> spConnectedKeyFrames = mpCurrentKF->GetConnectedKeyFrames();
+ 
+@@ -877,7 +940,7 @@
+         vpMPs = vpBestMapPoints;
+         vpMatchedMPs = vpBestMatchedMapPoints;
+ 
+-        return nNumCoincidences >= 3;
++        return nNumCoincidences >= 1;  // RELAXED (was 3): accept BoW common-region on first coincidence
+     }
+     else
+     {
+diff -ruN a/src/Map.cc b/src/Map.cc
+--- a/src/Map.cc	2026-10-18 16:14:28.650255483 +0900
++++ b/src/Map.cc	2026-10-18 16:14:28.658255483 +0900
+@@ -359,7 +359,22 @@
+ void Map::PreSave(std::set<GeometricCamera*> &spCams)
+ {
+     int nMPWithoutObs = 0;
+-    for(MapPoint* pMPi : mspMapPoints)
++
++    // UPSTREAM BUG FIX (iterator invalidation) --------------------------------
++    // The loop below calls MapPoint::EraseObservation(), which drops the point's
++    // observation count; at <= 2 observations it calls SetBadFlag() ->
++    // Map::EraseMapPoint() -> mspMapPoints.erase(pMP). Erasing from the very set
++    // that the range-for is iterating invalidates the iterator, and the next ++
++    // walks a freed red-black-tree node:
++    //     std::_Rb_tree_increment  <-  Map::PreSave (this line)  <-  Atlas::PreSave
++    //     <- System::SaveAtlas  <-  System::Shutdown        (SIGSEGV, map lost)
++    // Observed in 2 of 3 mapping runs; whether it fires depends on how many points
++    // fall below the observation threshold while saving, hence the intermittency.
++    // Iterating a snapshot is safe: EraseMapPoint() only removes the pointer from
++    // the set (see its own TODO), the MapPoint object itself is not deleted, and
++    // the isBad() check below skips anything that goes bad during the loop.
++    const std::set<MapPoint*> spMapPointsAtEntry = mspMapPoints;
++    for(MapPoint* pMPi : spMapPointsAtEntry)
+     {
+         if(!pMPi || pMPi->isBad())
+             continue;
+diff -ruN a/src/MapPoint.cc b/src/MapPoint.cc
+--- a/src/MapPoint.cc	2026-10-18 16:14:28.650255483 +0900
++++ b/src/MapPoint.cc	2026-10-18 16:14:28.658255483 +0900
+@@ -17,6 +17,8 @@
+ */
+ 
+ #include "MapPoint.h"
++
++#include <cstring>   // PERF: memcpy in CopyDescriptorTo
+ #include "ORBmatcher.h"
+ 
+ #include<mutex>
+@@ -131,6 +133,17 @@
+     return mNormalVector;
+ }
+ 
++void MapPoint::GetFrustumData(Eigen::Vector3f &pos, Eigen::Vector3f &normal,
++                              float &minDistance, float &maxDistance)
++{
++    unique_lock<mutex> lock(mMutexPos);
++    pos = mWorldPos;
++    normal = mNormalVector;
++    minDistance = 0.8f*mfMinDistance;
++    maxDistance = 1.2f*mfMaxDistance;
++}
++
++
+ 
+ KeyFrame* MapPoint::GetReferenceKeyFrame()
+ {
+@@ -207,6 +220,14 @@
+     return mObservations;
+ }
+ 
++void MapPoint::AccumulateObservingKeyFrames(std::map<KeyFrame*,int> &counter)
++{
++    unique_lock<mutex> lock(mMutexFeatures);
++    for(std::map<KeyFrame*,std::tuple<int,int>>::const_iterator it=mObservations.begin(),
++            itend=mObservations.end(); it!=itend; it++)
++        counter[it->first]++;
++}
++
+ int MapPoint::Observations()
+ {
+     unique_lock<mutex> lock(mMutexFeatures);
+@@ -408,6 +429,13 @@
+     return mDescriptor.clone();
+ }
+ 
++void MapPoint::CopyDescriptorTo(unsigned char *dst32)
++{
++    unique_lock<mutex> lock(mMutexFeatures);
++    // mDescriptor is always 1x32 CV_8U (see ComputeDistinctiveDescriptors).
++    memcpy(dst32, mDescriptor.ptr<unsigned char>(), 32);
++}
++
+ tuple<int,int> MapPoint::GetIndexInKeyFrame(KeyFrame *pKF)
+ {
+     unique_lock<mutex> lock(mMutexFeatures);
+diff -ruN a/src/ORBextractor.cc b/src/ORBextractor.cc
+--- a/src/ORBextractor.cc	2026-10-18 16:14:28.650255483 +0900
++++ b/src/ORBextractor.cc	2026-10-18 16:14:28.658255483 +0900
+@@ -430,6 +430,7 @@
+         }
+ 
+         mvImagePyramid.resize(nlevels);
++        mvBlurBuffer.resize(nlevels);
+ 
+         mnFeaturesPerLevel.resize(nlevels);
+         float factor = 1.0f / scaleFactor;
+@@ -487,25 +488,34 @@
+         n1.UR = cv::Point2i(UL.x+halfX,UL.y);
+         n1.BL = cv::Point2i(UL.x,UL.y+halfY);
+         n1.BR = cv::Point2i(UL.x+halfX,UL.y+halfY);
+-        n1.vKeys.reserve(vKeys.size());
++        // PERF: each child receives on average a quarter of the parent's keys,
++        // so reserving the parent's full size in all four children over-allocates
++        // 4x on every node split, and DistributeOctTree performs hundreds of
++        // splits per pyramid level per frame. reserve() only sets capacity, so
++        // the resulting keypoints are bit-identical.
++        // MEASURED (standalone replica, 640x480, 8 levels, nFeatures=1250):
++        //   1.398 ms -> 1.320 ms/frame; at nFeatures=2000: 2.684 -> 2.346 ms.
++        // Removing the reserve entirely is WORSE (1.632 ms) - keep a hint.
++        const size_t nChildReserve = vKeys.size()/4 + 8;
++        n1.vKeys.reserve(nChildReserve);
+ 
+         n2.UL = n1.UR;
+         n2.UR = UR;
+         n2.BL = n1.BR;
+         n2.BR = cv::Point2i(UR.x,UL.y+halfY);
+-        n2.vKeys.reserve(vKeys.size());
++        n2.vKeys.reserve(nChildReserve);
+ 
+         n3.UL = n1.BL;
+         n3.UR = n1.BR;
+         n3.BL = BL;
+         n3.BR = cv::Point2i(n1.BR.x,BL.y);
+-        n3.vKeys.reserve(vKeys.size());
++        n3.vKeys.reserve(nChildReserve);
+ 
+         n4.UL = n3.UR;
+         n4.UR = n2.BR;
+         n4.BL = n3.BR;
+         n4.BR = BR;
+-        n4.vKeys.reserve(vKeys.size());
++        n4.vKeys.reserve(nChildReserve);
+ 
+         //Associate points to childs
+         for(size_t i=0;i<vKeys.size();i++)
+@@ -784,6 +794,15 @@
+ 
+         const float W = 35;
+ 
++        // PERF: each iteration reads only mvImagePyramid[level] and writes only
++        // allKeypoints[level]; DistributeOctTree() mutates no member state. The
++        // levels are therefore fully independent. FAST + octree distribution
++        // dominate extraction cost, so this is the best parallelization point
++        // in the extractor. allKeypoints is pre-sized above, so no reallocation
++        // races are possible.
++#if defined(_OPENMP) && defined(ORBEXTRACTOR_OMP_THREADS)
++#pragma omp parallel for schedule(dynamic) num_threads(ORBEXTRACTOR_OMP_THREADS)
++#endif
+         for (int level = 0; level < nlevels; ++level)
+         {
+             const int minBorderX = EDGE_THRESHOLD-3;
+@@ -891,6 +910,11 @@
+         }
+ 
+         // compute orientations
++        // PERF: computeOrientation() is a free function reading the image and
++        // writing only allKeypoints[level] -> independent per level.
++#if defined(_OPENMP) && defined(ORBEXTRACTOR_OMP_THREADS)
++#pragma omp parallel for schedule(dynamic) num_threads(ORBEXTRACTOR_OMP_THREADS)
++#endif
+         for (int level = 0; level < nlevels; ++level)
+             computeOrientation(mvImagePyramid[level], allKeypoints[level], umax);
+     }
+@@ -1120,6 +1144,32 @@
+         int offset = 0;
+         //Modified for speeding up stereo fisheye matching
+         int monoIndex = 0, stereoIndex = nkeypoints-1;
++
++        // PERF pass 1 (parallel): the per-level Gaussian blur and descriptor
++        // computation are independent. Only the scatter in pass 2 carries state
++        // across levels (offset / monoIndex / stereoIndex), so that stays serial.
++        vector<Mat> vLevelDesc(nlevels);
++#if defined(_OPENMP) && defined(ORBEXTRACTOR_OMP_THREADS)
++#pragma omp parallel for schedule(dynamic) num_threads(ORBEXTRACTOR_OMP_THREADS)
++#endif
++        for (int level = 0; level < nlevels; ++level)
++        {
++            const int nkeypointsLevel = (int)allKeypoints[level].size();
++            if(nkeypointsLevel==0)
++                continue;
++
++            // preprocess the resized image.
++            // copyTo() into the persistent buffer replaces clone(): it reuses the
++            // allocation across frames and still yields a standalone Mat, so
++            // BORDER_REFLECT_101 remains ROI-isolated exactly as before.
++            mvImagePyramid[level].copyTo(mvBlurBuffer[level]);
++            GaussianBlur(mvBlurBuffer[level], mvBlurBuffer[level], Size(7, 7), 2, 2, BORDER_REFLECT_101);
++
++            vLevelDesc[level] = cv::Mat(nkeypointsLevel, 32, CV_8U);
++            computeDescriptors(mvBlurBuffer[level], allKeypoints[level], vLevelDesc[level], pattern);
++        }
++
++        // PERF pass 2 (serial): keypoint rescaling and scatter into the output.
+         for (int level = 0; level < nlevels; ++level)
+         {
+             vector<KeyPoint>& keypoints = allKeypoints[level];
+@@ -1128,14 +1178,7 @@
+             if(nkeypointsLevel==0)
+                 continue;
+ 
+-            // preprocess the resized image
+-            Mat workingMat = mvImagePyramid[level].clone();
+-            GaussianBlur(workingMat, workingMat, Size(7, 7), 2, 2, BORDER_REFLECT_101);
+-
+-            // Compute the descriptors
+-            //Mat desc = descriptors.rowRange(offset, offset + nkeypointsLevel);
+-            Mat desc = cv::Mat(nkeypointsLevel, 32, CV_8U);
+-            computeDescriptors(workingMat, keypoints, desc, pattern);
++            Mat &desc = vLevelDesc[level];
+ 
+             offset += nkeypointsLevel;
+ 
+diff -ruN a/src/ORBmatcher.cc b/src/ORBmatcher.cc
+--- a/src/ORBmatcher.cc	2026-10-18 16:14:28.650255483 +0900
++++ b/src/ORBmatcher.cc	2026-10-18 16:14:28.658255483 +0900
+@@ -19,6 +19,9 @@
+ 
+ #include "ORBmatcher.h"
+ 
++#include <cstring>   // PERF: memcpy in DescriptorDistance
++#include <cstdint>
++
+ #include<limits.h>
+ 
+ #include<opencv2/core/core.hpp>
+@@ -72,7 +75,12 @@
+                         F.GetFeaturesInArea(pMP->mTrackProjX,pMP->mTrackProjY,r*F.mvScaleFactors[nPredictedLevel],nPredictedLevel-1,nPredictedLevel);
+ 
+                 if(!vIndices.empty()){
+-                    const cv::Mat MPdescriptor = pMP->GetDescriptor();
++                    // PERF: MapPoint::GetDescriptor() returns mDescriptor.clone(),
++                    // i.e. a heap allocation per visible map point per frame. Copy
++                    // the 32 bytes into a stack buffer under the same lock instead.
++                    unsigned char aMPdesc[32];
++                    pMP->CopyDescriptorTo(aMPdesc);
++                    const unsigned char *pMPdesc = aMPdesc;
+ 
+                     int bestDist=256;
+                     int bestLevel= -1;
+@@ -96,9 +104,9 @@
+                                 continue;
+                         }
+ 
+-                        const cv::Mat &d = F.mDescriptors.row(idx);
+-
+-                        const int dist = DescriptorDistance(MPdescriptor,d);
++                        // PERF: Mat::row() builds a cv::Mat header per comparison,
++                        // including an atomic refcount inc/dec. Use the raw row.
++                        const int dist = DescriptorDistance(pMPdesc, F.mDescriptors.ptr<unsigned char>(idx));
+ 
+                         if(dist<bestDist)
+                         {
+@@ -2053,24 +2061,28 @@
+     }
+ 
+ 
+-// Bit set count operation from
++// PERF: the original used the SWAR bit-hack popcount from
+ // http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
+-    int ORBmatcher::DescriptorDistance(const cv::Mat &a, const cv::Mat &b)
++// The target CPU has hardware POPCNT (already selected by -march=native), so
++// __builtin_popcountll lowers to 4 POPCNT instructions instead of ~40 ALU ops.
++// The result is bit-identical. This is the hottest function in the system:
++// it is reached from 20 call sites and runs millions of times per second.
++    int ORBmatcher::DescriptorDistance(const unsigned char *pa, const unsigned char *pb)
+     {
+-        const int *pa = a.ptr<int32_t>();
+-        const int *pb = b.ptr<int32_t>();
+-
+-        int dist=0;
+-
+-        for(int i=0; i<8; i++, pa++, pb++)
+-        {
+-            unsigned  int v = *pa ^ *pb;
+-            v = v - ((v >> 1) & 0x55555555);
+-            v = (v & 0x33333333) + ((v >> 2) & 0x33333333);
+-            dist += (((v + (v >> 4)) & 0xF0F0F0F) * 0x1010101) >> 24;
+-        }
++        // A 32-byte ORB descriptor read as 4 x uint64. memcpy is the portable
++        // spelling of a possibly-unaligned load; gcc/clang lower it to movq.
++        uint64_t va[4], vb[4];
++        memcpy(va, pa, 32);
++        memcpy(vb, pb, 32);
++        return __builtin_popcountll(va[0] ^ vb[0])
++             + __builtin_popcountll(va[1] ^ vb[1])
++             + __builtin_popcountll(va[2] ^ vb[2])
++             + __builtin_popcountll(va[3] ^ vb[3]);
++    }
+ 
+-        return dist;
++    int ORBmatcher::DescriptorDistance(const cv::Mat &a, const cv::Mat &b)
++    {
++        return DescriptorDistance(a.ptr<unsigned char>(), b.ptr<unsigned char>());
+     }
+ 
+ } //namespace ORB_SLAM
+diff -ruN a/src/Optimizer.cc b/src/Optimizer.cc
+--- a/src/Optimizer.cc	2026-10-18 16:14:28.650255483 +0900
++++ b/src/Optimizer.cc	2026-10-18 16:14:28.658255483 +0900
+@@ -35,6 +35,7 @@
+ #include "Thirdparty/g2o/g2o/core/robust_kernel_impl.h"
+ #include "Thirdparty/g2o/g2o/solvers/linear_solver_dense.h"
+ #include "G2oTypes.h"
++#include "GyroEdges.h"
+ #include "Converter.h"
+ 
+ #include<mutex>
+@@ -44,6 +45,23 @@
+ 
+ namespace ORB_SLAM3
+ {
++
++int  Optimizer::sPoseOptIters[4] = {10, 10, 10, 10};
++bool Optimizer::sPoseOptEarlyExit = false;
++
++// GYRO AID defaults (off unless Gyro.Use: 1)
++bool   Optimizer::sGyroUse = false;
++double Optimizer::sGyroSigmaFrame = 5e-4;    // 0.03 deg per frame
++double Optimizer::sGyroSigmaKF = 5e-4;       // 0.03 deg
++double Optimizer::sGyroSigmaARW = 2e-4;      // 0.011 deg/sqrt(s)
++double Optimizer::sGyroSigmaRate = 1e-4;     // 0.006 deg/s
++double Optimizer::sGyroSigmaScale = 1e-3;    // 0.1 %
++double Optimizer::sGyroMaxGapS = 10.0;
++double Optimizer::sGyroLoopVetoDeg = 5.0;   // genuine loops measured 1.3-2.6 deg at 42 s (roll/pitch included); false ones >> 10 deg
++double Optimizer::sGyroLoopVetoRate = 0.02;
++long   Optimizer::sGyroLoopVetoed = 0;
++long   Optimizer::sGyroPriorEdges = 0;
++long   Optimizer::sGyroKFEdges = 0;
+ bool sortByVal(const pair<MapPoint*, int> &a, const pair<MapPoint*, int> &b)
+ {
+     return (a.second < b.second);
+@@ -996,11 +1014,25 @@
+     if(nInitialCorrespondences<3)
+         return 0;
+ 
++    // GYRO AID: rotation prior from the gyro rotation since the last frame (no robust kernel: the gyro has no
++    // outliers, and the visual edges keep their Huber kernel). Level 0, so it takes part in all four rounds.
++    if(sGyroUse && pFrame->mbHasRotPrior && pFrame->mRotPriorInfo>0)
++    {
++        EdgeGyroRotPrior* eg = new EdgeGyroRotPrior();
++        eg->setVertex(0, dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(0)));
++        eg->setMeasurement(pFrame->mRcwPrior);
++        eg->setInformation(Eigen::Matrix3d::Identity()*pFrame->mRotPriorInfo);
++        optimizer.addEdge(eg);
++        sGyroPriorEdges++;
++    }
++
+     // We perform 4 optimizations, after each optimization we classify observation as inlier/outlier
+     // At the next optimization, outliers are not included, but at the end they can be classified as inliers again.
+     const float chi2Mono[4]={5.991,5.991,5.991,5.991};
+     const float chi2Stereo[4]={7.815,7.815,7.815, 7.815};
+-    const int its[4]={10,10,10,10};    
++    // PERF: iteration schedule is configurable; stock is {10,10,10,10}.
++    const int its[4]={sPoseOptIters[0],sPoseOptIters[1],sPoseOptIters[2],sPoseOptIters[3]};
++    int nBadPrev=-1;
+ 
+     int nBad=0;
+     for(size_t it=0; it<4; it++)
+@@ -1101,6 +1133,14 @@
+ 
+         if(optimizer.edges().size()<10)
+             break;
++
++        // PERF: once the robust kernel is gone (set at it==2) and the inlier /
++        // outlier split has stopped moving, another round re-optimises an
++        // already-converged pose over an identical edge set. Skipping it changes
++        // the result only by the residual LM step on a converged system.
++        if(sPoseOptEarlyExit && it>=2 && nBad==nBadPrev)
++            break;
++        nBadPrev=nBad;
+     }    
+ 
+     // Recover optimized pose and return number of inliers
+@@ -1242,6 +1282,43 @@
+         pCurrentMap->msFixedKFs.insert(pKFi->mnId);
+     }
+ 
++    // GYRO AID: tie temporally consecutive keyframes of this window (optimised or fixed) with the gyro's
++    // relative rotation. The window is a covisibility set, not a time window, so after sorting by stamp only
++    // neighbours closer than sGyroMaxGapS are tied; sigma grows with the gap (residual gyro bias).
++    if(sGyroUse)
++    {
++        vector<KeyFrame*> vGyroKFs;
++        vGyroKFs.reserve(lLocalKeyFrames.size()+lFixedCameras.size());
++        for(list<KeyFrame*>::iterator lit=lLocalKeyFrames.begin(), lend=lLocalKeyFrames.end(); lit!=lend; lit++)
++            if((*lit)->mbHasGyro) vGyroKFs.push_back(*lit);
++        for(list<KeyFrame*>::iterator lit=lFixedCameras.begin(), lend=lFixedCameras.end(); lit!=lend; lit++)
++            if((*lit)->mbHasGyro) vGyroKFs.push_back(*lit);
++        sort(vGyroKFs.begin(), vGyroKFs.end(), [](KeyFrame* x, KeyFrame* y){ return x->mTimeStamp < y->mTimeStamp; });
++        for(size_t k=0; k+1<vGyroKFs.size(); k++)
++        {
++            KeyFrame* pKi = vGyroKFs[k];
++            KeyFrame* pKj = vGyroKFs[k+1];
++            const double dtg = pKj->mTimeStamp - pKi->mTimeStamp;
++            if(dtg<=0 || dtg>sGyroMaxGapS || pKi->mnGyroEpoch!=pKj->mnGyroEpoch)
++                continue;
++            g2o::OptimizableGraph::Vertex* vi = dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(pKi->mnId));
++            g2o::OptimizableGraph::Vertex* vj = dynamic_cast<g2o::OptimizableGraph::Vertex*>(optimizer.vertex(pKj->mnId));
++            if(!vi || !vj || (vi->fixed() && vj->fixed()))
++                continue;
++            EdgeGyroRelRot* eg = new EdgeGyroRelRot();
++            eg->setVertex(0, vi);
++            eg->setVertex(1, vj);
++            const Eigen::Matrix3d Rij = (pKi->mRgc.transpose()*pKj->mRgc).cast<double>();   // R_(ci <- cj)
++            eg->setMeasurement(Rij);
++            const double ang = Eigen::AngleAxisd(Rij).angle();
++            const double sig2 = sGyroSigmaKF*sGyroSigmaKF + sGyroSigmaARW*sGyroSigmaARW*dtg
++                              + sGyroSigmaRate*sGyroSigmaRate*dtg*dtg + sGyroSigmaScale*sGyroSigmaScale*ang*ang;
++            eg->setInformation(Eigen::Matrix3d::Identity()/sig2);
++            optimizer.addEdge(eg);
++            sGyroKFEdges++;
++        }
++    }
++
+     // Set MapPoint vertices
+     const int nExpectedSize = (lLocalKeyFrames.size()+lFixedCameras.size())*lLocalMapPoints.size();
+ 
+diff -ruN a/src/Sim3Solver.cc b/src/Sim3Solver.cc
+--- a/src/Sim3Solver.cc	2026-10-18 16:14:28.650255483 +0900
++++ b/src/Sim3Solver.cc	2026-10-18 16:14:28.658255483 +0900
+@@ -361,11 +361,34 @@
+ 
+     Eigen::Vector3f vec = evec.block<3,1>(1,maxIndex); //extract imaginary part of the quaternion (sin*axis)
+ 
+-    // Rotation angle. sin is the norm of the imaginary part, cos is the real part
+-    double ang=atan2(vec.norm(),evec(0,maxIndex));
++    // UPSTREAM BUG GUARD -------------------------------------------------------
++    // The line "vec = 2*ang*vec/vec.norm()" divides by the norm of the quaternion's
++    // imaginary part. That norm is EXACTLY zero whenever the optimal rotation
++    // between the two point sets is the identity: then M is symmetric, so
++    // N12=N13=N14=0 and the leading eigenvector is exactly (1,0,0,0). 0/0 -> NaN,
++    // and Sophus::SO3f::exp(NaN) calls ensure() which ABORTS THE WHOLE PROCESS
++    // ("SO3::exp failed! omega: -nan -nan -nan"). An identity rotation is a
++    // perfectly legitimate outcome -- it is what revisiting a place with the same
++    // heading looks like -- so it must not kill the run.
++    // Reachable only from LoopClosing (loop/merge Sim3 verification), which is why
++    // this only ever crashed MAPPING runs, never localization-only runs.
++    const float vecNorm = vec.norm();
++    if(!std::isfinite(vecNorm) || vecNorm < 1e-7f || !evec.allFinite())
++    {
++        std::cout << "[sim3-guard] ComputeSim3: degenerate/identity rotation "
++                  << "(|imag|=" << vecNorm << ") -> using R = I "
++                  << "(upstream would divide by zero and abort)" << std::endl;
++        mR12i = Eigen::Matrix3f::Identity();
++    }
++    else
++    {
++        // Rotation angle. sin is the norm of the imaginary part, cos is the real part
++        double ang=atan2(vecNorm,evec(0,maxIndex));
+ 
+-    vec = 2*ang*vec/vec.norm(); //Angle-axis representation. quaternion angle is the half
+-    mR12i = Sophus::SO3f::exp(vec).matrix();
++        vec = 2*ang*vec/vecNorm; //Angle-axis representation. quaternion angle is the half
++        mR12i = Sophus::SO3f::exp(vec).matrix();
++    }
++    // --------------------------------------------------------------------------
+ 
+     // Step 5: Rotate set 2
+     Eigen::Matrix3f P3 = mR12i*Pr2;
+diff -ruN a/src/System.cc b/src/System.cc
+--- a/src/System.cc	2026-10-18 16:14:28.650255483 +0900
++++ b/src/System.cc	2026-10-18 16:14:28.658255483 +0900
+@@ -487,6 +487,11 @@
+     mbDeactivateLocalizationMode = true;
+ }
+ 
++void System::SetFrameGyro(const Eigen::Matrix3f &Rgc, int epoch)
++{
++    mpTracker->SetNextFrameGyro(Rgc, epoch);
++}
++
+ bool System::MapChanged()
+ {
+     static int n=0;
+@@ -530,20 +535,48 @@
+             usleep(5000);
+     }*/
+ 
+-    // Wait until all thread have effectively stopped
+-    /*while(!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished() || mpLoopCloser->isRunningGBA())
+-    {
+-        if(!mpLocalMapper->isFinished())
+-            cout << "mpLocalMapper is not finished" << endl;*/
+-        /*if(!mpLoopCloser->isFinished())
+-            cout << "mpLoopCloser is not finished" << endl;
+-        if(mpLoopCloser->isRunningGBA()){
+-            cout << "mpLoopCloser is running GBA" << endl;
+-            cout << "break anyway..." << endl;
+-            break;
+-        }*/
+-        /*usleep(5000);
+-    }*/
++    // Wait until all threads have effectively stopped.
++    //
++    // UPSTREAM BUG: this loop ships COMMENTED OUT, so RequestFinish() only raises a
++    // flag and Shutdown() walks straight into SaveAtlas() while Local Mapping and
++    // Loop Closing are still inserting/culling keyframes and running global BA on
++    // the very maps being serialised. Atlas::PreSave() then dereferences objects
++    // another thread is deleting -> intermittent SIGSEGV right after "Shutdown" and
++    // before "Starting to write the save binary file" (observed 4 times in ~10
++    // mapping runs; it disappears under gdb because the timing changes). Even when
++    // it does not crash, the map can be serialised from a half-modified Atlas.
++    // Waiting here is what upstream intended; the timeout keeps a stuck GBA from
++    // hanging the shutdown forever.
++    {
++        const int wait_timeout_ms = 30000;
++        const int poll_ms = 5;
++        int waited_ms = 0;
++        bool reported = false;
++        while(!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished() ||
++              mpLoopCloser->isRunningGBA())
++        {
++            if(!reported)
++            {
++                cout << "Shutdown: waiting for background threads"
++                     << " (localMapper=" << (mpLocalMapper->isFinished() ? "done" : "busy")
++                     << ", loopCloser=" << (mpLoopCloser->isFinished() ? "done" : "busy")
++                     << ", GBA=" << (mpLoopCloser->isRunningGBA() ? "running" : "idle")
++                     << ") ..." << endl;
++                reported = true;
++            }
++            usleep(poll_ms * 1000);
++            waited_ms += poll_ms;
++            if(waited_ms >= wait_timeout_ms)
++            {
++                cout << "Shutdown: WARNING - background threads still busy after "
++                     << (wait_timeout_ms / 1000) << " s; saving anyway." << endl;
++                break;
++            }
++        }
++        if(reported)
++            cout << "Shutdown: background threads stopped after "
++                 << waited_ms << " ms." << endl;
++    }
+ 
+     if(!mStrSaveAtlasToFile.empty())
+     {
+@@ -1330,6 +1363,113 @@
+     return mTrackedMapPoints;
+ }
+ 
++vector<Eigen::Vector3f> System::GetAllMapPointsWorld()
++{
++    vector<Eigen::Vector3f> points;
++
++    Map* pCurrentMap = mpAtlas->GetCurrentMap();
++    if (!pCurrentMap)
++        return points;
++
++    vector<MapPoint*> vpMPs = pCurrentMap->GetAllMapPoints();
++    points.reserve(vpMPs.size());
++
++    for (MapPoint* pMP : vpMPs)
++    {
++        if (!pMP || pMP->isBad())
++            continue;
++
++        points.push_back(pMP->GetWorldPos());
++    }
++
++    return points;
++}
++
++bool System::GetLastFrameReference(unsigned long &kfId, Sophus::SE3f &Tkf_c)
++{
++    // the tracker's lists are appended by Track*() on this same thread
++    if(mpTracker->mlpReferences.empty() || !mpTracker->mlpReferences.back())
++        return false;
++    KeyFrame* pKF = mpTracker->mlpReferences.back();
++    kfId = pKF->mnId;
++    Tkf_c = mpTracker->mlRelativeFramePoses.back().inverse();  // stored as T_c_kf
++    {
++        unique_lock<mutex> lock(mMutexReferencedKFs);
++        mReferencedKFs[kfId] = pKF;
++    }
++    return !mpTracker->mlbLost.back();
++}
++
++bool System::GetKeyFramePoseWorld(unsigned long kfId, Sophus::SE3f &Tw_kf, double &stamp, bool &culled)
++{
++    KeyFrame* pKF;
++    {
++        unique_lock<mutex> lock(mMutexReferencedKFs);
++        auto it = mReferencedKFs.find(kfId);
++        if(it == mReferencedKFs.end())
++            return false;
++        pKF = it->second;
++    }
++    stamp = pKF->mTimeStamp;
++    culled = pKF->isBad();
++
++    // same origin as SaveTrajectoryTUM: the first keyframe of the atlas
++    vector<KeyFrame*> vpKFs = mpAtlas->GetAllKeyFrames();
++    if(vpKFs.empty())
++        return false;
++    Sophus::SE3f Two = (*min_element(vpKFs.begin(), vpKFs.end(), KeyFrame::lId))->GetPoseInverse();
++
++    Sophus::SE3f Tkf_r;  // culled keyframe -> nearest good ancestor
++    while(pKF->isBad())
++    {
++        Tkf_r = Tkf_r * pKF->mTcp;
++        pKF = pKF->GetParent();
++        if(!pKF)
++            return false;
++    }
++    Tw_kf = (Tkf_r * pKF->GetPose() * Two).inverse();
++    return true;
++}
++
++vector<unsigned long> System::GetReferencedKeyFrameIds()
++{
++    unique_lock<mutex> lock(mMutexReferencedKFs);
++    vector<unsigned long> ids;
++    ids.reserve(mReferencedKFs.size());
++    for(const auto &kv : mReferencedKFs)
++        ids.push_back(kv.first);
++    return ids;
++}
++
++void System::SaveLoopEdges(const string &filename)
++{
++    ofstream f(filename.c_str());
++    f << fixed;
++    Map* pCurrentMap = mpAtlas->GetCurrentMap();
++    if (!pCurrentMap)
++        return;
++    vector<KeyFrame*> vpKFs = pCurrentMap->GetAllKeyFrames();
++    for (KeyFrame* pKF : vpKFs)
++    {
++        if (!pKF || pKF->isBad())
++            continue;
++        set<KeyFrame*> edges = pKF->GetLoopEdges();
++        for (KeyFrame* pKF2 : edges)
++        {
++            if (!pKF2 || pKF2->isBad())
++                continue;
++            if (pKF2->mnId <= pKF->mnId)
++                continue;  // dedup undirected edge
++            Eigen::Vector3f c1 = pKF->GetCameraCenter();
++            Eigen::Vector3f c2 = pKF2->GetCameraCenter();
++            f << setprecision(6)
++              << c1(0) << " " << c1(1) << " " << c1(2) << " "
++              << c2(0) << " " << c2(1) << " " << c2(2) << endl;
++        }
++    }
++    f.close();
++}
++
+ vector<cv::KeyPoint> System::GetTrackedKeyPointsUn()
+ {
+     unique_lock<mutex> lock(mMutexState);
+diff -ruN a/src/Tracking.cc b/src/Tracking.cc
+--- a/src/Tracking.cc	2026-10-18 16:14:28.650255483 +0900
++++ b/src/Tracking.cc	2026-10-18 16:14:28.658255483 +0900
+@@ -48,6 +48,57 @@
+     mpFrameDrawer(pFrameDrawer), mpMapDrawer(pMapDrawer), mpAtlas(pAtlas), mnLastRelocFrameId(0), time_recently_lost(5.0),
+     mnInitialFrameId(0), mbCreatedMap(false), mnFirstFrameId(0), mpCamera2(nullptr), mpLastKeyFrame(static_cast<KeyFrame*>(NULL))
+ {
++    // PERF: pose-optimisation tuning, read here so it covers both the Settings
++    // path and the legacy parser. Absent keys leave stock behaviour intact.
++    //   Optimizer.PoseIterations : 4 ints, LM iterations per round (stock 10 10 10 10)
++    //   Optimizer.PoseEarlyExit  : 1 to stop once the outlier set is stable
++    {
++        cv::FileStorage fPerf(strSettingPath, cv::FileStorage::READ);
++        if(fPerf.isOpened())
++        {
++            cv::FileNode nIt = fPerf["Optimizer.PoseIterations"];
++            if(!nIt.empty() && nIt.isSeq() && nIt.size()==4)
++            {
++                for(int k=0;k<4;k++)
++                {
++                    int v = (int)nIt[k];
++                    if(v>0) Optimizer::sPoseOptIters[k]=v;
++                }
++                std::cout << "PoseOptimization iterations: "
++                          << Optimizer::sPoseOptIters[0] << " "
++                          << Optimizer::sPoseOptIters[1] << " "
++                          << Optimizer::sPoseOptIters[2] << " "
++                          << Optimizer::sPoseOptIters[3] << std::endl;
++            }
++            // GYRO AID: see Optimizer.h
++            cv::FileNode nGu = fPerf["Gyro.Use"];
++            if(!nGu.empty() && nGu.isInt())
++                Optimizer::sGyroUse = ((int)nGu != 0);
++            cv::FileNode nG;
++            nG = fPerf["Gyro.SigmaFrame"]; if(!nG.empty() && nG.isReal()) Optimizer::sGyroSigmaFrame = (double)nG;
++            nG = fPerf["Gyro.SigmaKF"];    if(!nG.empty() && nG.isReal()) Optimizer::sGyroSigmaKF = (double)nG;
++            nG = fPerf["Gyro.SigmaRate"];  if(!nG.empty() && nG.isReal()) Optimizer::sGyroSigmaRate = (double)nG;
++            nG = fPerf["Gyro.SigmaARW"];   if(!nG.empty() && nG.isReal()) Optimizer::sGyroSigmaARW = (double)nG;
++            nG = fPerf["Gyro.SigmaScale"]; if(!nG.empty() && nG.isReal()) Optimizer::sGyroSigmaScale = (double)nG;
++            nG = fPerf["Gyro.MaxGapS"];    if(!nG.empty() && nG.isReal()) Optimizer::sGyroMaxGapS = (double)nG;
++            nG = fPerf["Gyro.LoopVetoDeg"];  if(!nG.empty() && nG.isReal()) Optimizer::sGyroLoopVetoDeg = (double)nG;
++            nG = fPerf["Gyro.LoopVetoRate"]; if(!nG.empty() && nG.isReal()) Optimizer::sGyroLoopVetoRate = (double)nG;
++            if(Optimizer::sGyroUse)
++                std::cout << "Gyro aid: on, sigma frame " << Optimizer::sGyroSigmaFrame << " rad, keyframe "
++                          << Optimizer::sGyroSigmaKF << " rad + " << Optimizer::sGyroSigmaARW << " rad/sqrt(s) + "
++                          << Optimizer::sGyroSigmaRate << " rad/s + " << Optimizer::sGyroSigmaScale << " x angle, max gap "
++                          << Optimizer::sGyroMaxGapS << " s" << std::endl;
++
++            cv::FileNode nEe = fPerf["Optimizer.PoseEarlyExit"];
++            if(!nEe.empty() && nEe.isInt())
++            {
++                Optimizer::sPoseOptEarlyExit = ((int)nEe != 0);
++                std::cout << "PoseOptimization early exit: "
++                          << (Optimizer::sPoseOptEarlyExit?"on":"off") << std::endl;
++            }
++        }
++    }
++
+     // Load camera parameters from settings file
+     if(settings){
+         newParameterLoader(settings);
+@@ -1510,6 +1561,7 @@
+ #endif
+ 
+     //cout << "Tracking start" << endl;
++    ApplyPendingGyro();   // GYRO AID
+     Track();
+     //cout << "Tracking end" << endl;
+ 
+@@ -1557,6 +1609,7 @@
+     vdORBExtract_ms.push_back(mCurrentFrame.mTimeORB_Ext);
+ #endif
+ 
++    ApplyPendingGyro();   // GYRO AID
+     Track();
+ 
+     return mCurrentFrame.GetPose();
+@@ -1609,6 +1662,7 @@
+ #endif
+ 
+     lastID = mCurrentFrame.mnId;
++    ApplyPendingGyro();   // GYRO AID
+     Track();
+ 
+     return mCurrentFrame.GetPose();
+@@ -1898,6 +1952,14 @@
+ 
+     if(mState==NOT_INITIALIZED)
+     {
++        // Localization-only on a prior (loaded) map: adopt that map and let the
++        // NEXT frame relocalize into it, instead of initializing a new map here.
++        if(ActivatePriorMapForLocalization())
++        {
++            mLastFrame = Frame(mCurrentFrame);
++            return;
++        }
++
+         if(mSensor==System::STEREO || mSensor==System::RGBD || mSensor==System::IMU_STEREO || mSensor==System::IMU_RGBD)
+         {
+             StereoInitialization();
+@@ -2036,11 +2098,37 @@
+         else
+         {
+             // Localization Mode: Local Mapping is deactivated (TODO Not available in inertial mode)
+-            if(mState==LOST)
++            //
++            // mbVO == true means "fewer than 10 matches to MAP points", i.e. the
++            // camera is no longer anchored to the prior map and stock ORB-SLAM3
++            // dead-reckons on temporal matches (its "pass through unmapped area"
++            // feature). For "where am I inside this known map?" that fallback is
++            // harmful: the pose silently stops being a map pose and drifts (0807
++            // sessions diverged to hundreds of km, and it never re-anchored).
++            // On a prior map we would rather have NO pose than a fictional one,
++            // so treat unanchored as LOST and keep relocalizing.
++            const bool bUnanchored = mbVO && IsLocalizingOnPriorMap();
++            // RECENTLY_LOST has no exit in this branch (only the mapping branch escalates
++            // it to LOST), so a single failed track would stall tracking for the rest of
++            // the session. On a prior map, go straight back to relocalization instead.
++            const bool bRecentlyLostOnPrior = (mState==RECENTLY_LOST) && IsLocalizingOnPriorMap();
++            if(mState==LOST || bUnanchored || bRecentlyLostOnPrior)
+             {
+                 if(mSensor == System::IMU_MONOCULAR || mSensor == System::IMU_STEREO || mSensor == System::IMU_RGBD)
+                     Verbose::PrintMess("IMU. State LOST", Verbose::VERBOSITY_NORMAL);
++                if(bUnanchored && mState!=LOST)
++                {
++                    mState = LOST;
++                    cout << "[ORB-SLAM3] localization-only: lost anchor to the prior map "
++                         << "(VO fallback suppressed); relocalizing..." << endl;
++                }
+                 bOK = Relocalization();
++                // A successful relocalization IS anchored to the map. Without this the
++                // stale mbVO=true skips TrackLocalMap() below (the only place mbVO is
++                // re-evaluated) and the next frame is declared unanchored again, so the
++                // camera relocalizes from scratch on every frame and never tracks.
++                if(bOK)
++                    mbVO = false;
+             }
+             else
+             {
+@@ -2197,10 +2285,20 @@
+         vdLMTrack_ms.push_back(timeLMTrack);
+ #endif
+ 
+-        // Update drawer
+-        mpFrameDrawer->Update(this);
+-        if(mCurrentFrame.isSet())
+-            mpMapDrawer->SetCurrentCameraPose(mCurrentFrame.GetPose());
++        // PERF: FrameDrawer::Update() deep-copies the entire Frame (descriptor
++        // clone + all 64*48 grid cell vectors + mmProjectPoints/mmMatchedInImage
++        // maps) plus the whole local map point vector, every single frame.
++        // Nothing reads any of it when the Pangolin viewer is disabled, which is
++        // this project's configuration (config/no_cli_rgbd.yaml has
++        // visualization.enabled=false). mpViewer stays NULL unless System was
++        // constructed with bUseViewer=true (System.cc:229-236).
++        if(mpViewer)
++        {
++            // Update drawer
++            mpFrameDrawer->Update(this);
++            if(mCurrentFrame.isSet())
++                mpMapDrawer->SetCurrentCameraPose(mCurrentFrame.GetPose());
++        }
+ 
+         if(bOK || mState==RECENTLY_LOST)
+         {
+@@ -2270,6 +2368,19 @@
+         // Reset if the camera get lost soon after initialization
+         if(mState==LOST)
+         {
++            // Localization-only on a PRIOR map: never abandon or rebuild that map.
++            // Staying LOST sends the next frame back into Relocalization(), which is
++            // the desired "keep looking for where I am inside the known map"
++            // behaviour. Without this the stock escalation below (CreateMapInAtlas /
++            // ResetActiveMap) starts fresh maps whose poses are meaningless in the
++            // prior map frame, and fights ActivatePriorMapForLocalization frame
++            // after frame.
++            if(IsLocalizingOnPriorMap())
++            {
++                mLastFrame = Frame(mCurrentFrame);
++                return;
++            }
++
+             if(pCurrentMap->KeyFramesInMap()<=10)
+             {
+                 mpSystem->ResetActiveMap();
+@@ -2332,6 +2443,51 @@
+ }
+ 
+ 
++bool Tracking::IsLocalizingOnPriorMap() const
++{
++    return mbOnlyTracking && mpSystem && mpSystem->HasLoadedAtlas();
++}
++
++bool Tracking::ActivatePriorMapForLocalization()
++{
++    // Only for localization-only runs on an Atlas loaded from file.
++    if(!IsLocalizingOnPriorMap())
++        return false;
++
++    // If the active map already holds keyframes we are not on the empty map that
++    // System created after loading -> nothing to do (also makes this idempotent).
++    Map* pCurrent = mpAtlas->GetCurrentMap();
++    if(pCurrent && !pCurrent->GetAllKeyFrames().empty())
++        return false;
++
++    // Adopt the largest loaded map as the active one.
++    Map* pBest = static_cast<Map*>(NULL);
++    size_t nBest = 0;
++    vector<Map*> vpMaps = mpAtlas->GetAllMaps();
++    for(size_t i = 0; i < vpMaps.size(); i++)
++    {
++        const size_t nKFs = vpMaps[i]->GetAllKeyFrames().size();
++        if(nKFs > nBest)
++        {
++            nBest = nKFs;
++            pBest = vpMaps[i];
++        }
++    }
++    if(!pBest)
++    {
++        cout << "[ORB-SLAM3] localization-only: no prior map with keyframes found "
++             << "in the loaded Atlas." << endl;
++        return false;
++    }
++
++    mpAtlas->ChangeMap(pBest);
++    mState = LOST;   // next frame goes through Relocalization() against this map
++    cout << "[ORB-SLAM3] localization-only: activated prior map id=" << pBest->GetId()
++         << " (" << nBest << " keyframes, "
++         << pBest->GetAllMapPoints().size() << " map points); relocalizing..." << endl;
++    return true;
++}
++
+ void Tracking::StereoInitialization()
+ {
+     if(mCurrentFrame.N>500)
+@@ -2717,6 +2873,51 @@
+ }
+ 
+ 
++// ---- GYRO AID (objpose, 2026-09-18) ---------------------------------------------------------------
++void Tracking::SetNextFrameGyro(const Eigen::Matrix3f &Rgc, int epoch)
++{
++    mNextRgc = Rgc;
++    mnNextGyroEpoch = epoch;
++    mbNextGyro = true;
++}
++
++void Tracking::ApplyPendingGyro()
++{
++    if(mbNextGyro)
++    {
++        mCurrentFrame.mbHasGyro = true;
++        mCurrentFrame.mnGyroEpoch = mnNextGyroEpoch;
++        mCurrentFrame.mRgc = mNextRgc;
++        mbNextGyro = false;
++    }
++}
++
++bool Tracking::GyroDeltaFromLast(Eigen::Matrix3f &Rcl) const
++{
++    if(!Optimizer::sGyroUse || !mCurrentFrame.mbHasGyro || !mLastFrame.mbHasGyro || mCurrentFrame.mnGyroEpoch!=mLastFrame.mnGyroEpoch)
++        return false;
++    const double dt = mCurrentFrame.mTimeStamp - mLastFrame.mTimeStamp;
++    if(dt<=0 || dt>0.5)
++        return false;
++    Rcl = mCurrentFrame.mRgc.transpose() * mLastFrame.mRgc;   // R_(c <- g) * R_(g <- l)
++    return true;
++}
++
++void Tracking::SetGyroRotPrior()
++{
++    mCurrentFrame.mbHasRotPrior = false;
++    Eigen::Matrix3f Rcl;
++    if(!mLastFrame.HasPose() || !GyroDeltaFromLast(Rcl))
++        return;
++    mCurrentFrame.mRcwPrior = (Rcl * mLastFrame.GetPose().rotationMatrix()).cast<double>();
++    // per-frame sigma; frames skipped by a live feed integrate proportionally more gyro noise
++    const double dt = mCurrentFrame.mTimeStamp - mLastFrame.mTimeStamp;
++    const double nfr = std::max(1.0, dt*30.0);
++    mCurrentFrame.mRotPriorInfo = 1.0/(Optimizer::sGyroSigmaFrame*Optimizer::sGyroSigmaFrame*nfr);
++    mCurrentFrame.mbHasRotPrior = true;
++}
++// ---------------------------------------------------------------------------------------------------
++
+ bool Tracking::TrackReferenceKeyFrame()
+ {
+     // Compute Bag of Words vector
+@@ -2737,6 +2938,16 @@
+ 
+     mCurrentFrame.mvpMapPoints = vpMapPointMatches;
+     mCurrentFrame.SetPose(mLastFrame.GetPose());
++    {
++        // GYRO AID: start from the last pose turned by the gyro (camera centre unchanged), and keep the prior
++        Eigen::Matrix3f Rcl;
++        if(GyroDeltaFromLast(Rcl))
++        {
++            const Sophus::SE3f Tlw = mLastFrame.GetPose();
++            mCurrentFrame.SetPose(Sophus::SE3f(Eigen::Quaternionf(Rcl*Tlw.rotationMatrix()).normalized(), Rcl*Tlw.translation()));
++        }
++        SetGyroRotPrior();
++    }
+ 
+     //mCurrentFrame.PrintPointDistribution();
+ 
+@@ -2867,7 +3078,17 @@
+     }
+     else
+     {
+-        mCurrentFrame.SetPose(mVelocity * mLastFrame.GetPose());
++        // GYRO AID: the constant-velocity model keeps the camera-centre motion, the rotation comes from the gyro
++        Eigen::Matrix3f Rcl;
++        if(GyroDeltaFromLast(Rcl))
++        {
++            const Eigen::Vector3f cl = -(mVelocity.rotationMatrix().transpose()*mVelocity.translation());   // centre in last frame
++            const Sophus::SE3f Tcl(Eigen::Quaternionf(Rcl).normalized(), -(Rcl*cl));
++            mCurrentFrame.SetPose(Tcl * mLastFrame.GetPose());
++        }
++        else
++            mCurrentFrame.SetPose(mVelocity * mLastFrame.GetPose());
++        SetGyroRotPrior();
+     }
+ 
+ 
+@@ -3379,7 +3600,10 @@
+             pMP->IncreaseVisible();
+             nToMatch++;
+         }
+-        if(pMP->mbTrackInView)
++        // PERF: mmProjectPoints' only consumer is FrameDrawer (FrameDrawer.cc:89
++        // and :393). One red-black-tree insert per visible local map point per
++        // frame, then deep-copied again by every Frame copy. Waste when headless.
++        if(mpViewer && pMP->mbTrackInView)
+         {
+             mCurrentFrame.mmProjectPoints[pMP->mnId] = cv::Point2f(pMP->mTrackProjX, pMP->mTrackProjY);
+         }
+@@ -3467,9 +3691,8 @@
+             {
+                 if(!pMP->isBad())
+                 {
+-                    const map<KeyFrame*,tuple<int,int>> observations = pMP->GetObservations();
+-                    for(map<KeyFrame*,tuple<int,int>>::const_iterator it=observations.begin(), itend=observations.end(); it!=itend; it++)
+-                        keyframeCounter[it->first]++;
++                    // PERF: was a full std::map deep copy per map point per frame.
++                    pMP->AccumulateObservingKeyFrames(keyframeCounter);
+                 }
+                 else
+                 {
+@@ -3490,9 +3713,8 @@
+                     continue;
+                 if(!pMP->isBad())
+                 {
+-                    const map<KeyFrame*,tuple<int,int>> observations = pMP->GetObservations();
+-                    for(map<KeyFrame*,tuple<int,int>>::const_iterator it=observations.begin(), itend=observations.end(); it!=itend; it++)
+-                        keyframeCounter[it->first]++;
++                    // PERF: was a full std::map deep copy per map point per frame.
++                    pMP->AccumulateObservingKeyFrames(keyframeCounter);
+                 }
+                 else
+                 {
+@@ -3616,16 +3838,51 @@
+     // Track Lost: Query KeyFrame Database for keyframe candidates for relocalisation
+     vector<KeyFrame*> vpCandidateKFs = mpKeyFrameDB->DetectRelocalizationCandidates(&mCurrentFrame, mpAtlas->GetCurrentMap());
+ 
++    // --- diagnosis instrumentation ----------------------------------------
++    // Which stage loses a relocalization attempt?
++    //   noCandidate      : the map holds no keyframe that looks like this view
++    //                      (-> the MAP is too thin / this place was never mapped)
++    //   candFewMatches   : BoW says "similar place" but < 15 feature matches
++    //   geomFail         : PnP RANSAC found no pose with >= 50 inliers
++    //   success          : relocalized
++    static long nRelocCall = 0, nRelocNoCand = 0, nRelocFewMatch = 0,
++                nRelocGeomFail = 0, nRelocOk = 0, nCandSum = 0;
++    static long nGeomNoPose = 0, nGeomLt10 = 0, nGeomLt20 = 0, nGeomLt30 = 0,
++                nGeomGe30 = 0, nGeomBestSum = 0;
++    ++nRelocCall;
++    nCandSum += static_cast<long>(vpCandidateKFs.size());
++    if(nRelocCall % 200 == 0)
++        cout << "[reloc-stats] calls=" << nRelocCall
++             << " noCandidate=" << nRelocNoCand
++             << " candFewMatches=" << nRelocFewMatch
++             << " geomFail=" << nRelocGeomFail
++             << " success=" << nRelocOk
++             << " avgCandidates=" << (double)nCandSum / (double)nRelocCall << endl;
++
+     if(vpCandidateKFs.empty()) {
++        ++nRelocNoCand;
+         Verbose::PrintMess("There are not candidates", Verbose::VERBOSITY_NORMAL);
+         return false;
+     }
+ 
+     const int nKFs = vpCandidateKFs.size();
+ 
++    // Relocalization gates. Stock ORB-SLAM3 tunes these for "recover from a brief
++    // loss inside the map you are currently building", where the query view is
++    // almost identical to a recent keyframe. Localizing a LATER session in a prior
++    // map is harder (different route/lighting/layout), and the 0807 diagnosis showed
++    // 77% of attempts dying at the feature-matching gate while BoW always returned
++    // ~43 candidates -- i.e. the place IS in the map, the gates are just tight.
++    // Relaxed only for prior-map localization; normal SLAM keeps stock values.
++    const bool bPriorMapLoc = IsLocalizingOnPriorMap();
++    const float fMatchRatio = bPriorMapLoc ? 0.90f : 0.75f;
++    const int   nMinMatches = bPriorMapLoc ? 12    : 15;
++    const int   nMinInliers = bPriorMapLoc ? 30    : 50;
++    const int   nRefineFloor = nMinInliers * 3 / 5;   // 18 relaxed / 30 stock
++
+     // We perform first an ORB matching with each candidate
+     // If enough matches are found we setup a PnP solver
+-    ORBmatcher matcher(0.75,true);
++    ORBmatcher matcher(fMatchRatio,true);
+ 
+     vector<MLPnPsolver*> vpMLPnPsolvers;
+     vpMLPnPsolvers.resize(nKFs);
+@@ -3646,7 +3903,7 @@
+         else
+         {
+             int nmatches = matcher.SearchByBoW(pKF,mCurrentFrame,vvpMapPointMatches[i]);
+-            if(nmatches<15)
++            if(nmatches<nMinMatches)
+             {
+                 vbDiscarded[i] = true;
+                 continue;
+@@ -3661,6 +3918,16 @@
+         }
+     }
+ 
++    // How many BoW candidates survived the feature-matching stage? (nCandidates is
++    // decremented later by the RANSAC loop, so snapshot it for the diagnosis.)
++    const int nCandAfterBoW = nCandidates;
++
++    // How far do FAILING attempts get? nBestGoodThisCall = most inliers any
++    // candidate reached. Near nMinInliers -> the gate is the problem; near zero
++    // -> there are no true correspondences to be found (appearance changed).
++    int nBestGoodThisCall = 0;
++    int nPoseFromRansac = 0;
++
+     // Alternatively perform some iterations of P4P RANSAC
+     // Until we found a camera pose supported by enough inliers
+     bool bMatch = false;
+@@ -3711,7 +3978,9 @@
+                         mCurrentFrame.mvpMapPoints[j]=NULL;
+                 }
+ 
++                ++nPoseFromRansac;
+                 int nGood = Optimizer::PoseOptimization(&mCurrentFrame);
++                if(nGood>nBestGoodThisCall) nBestGoodThisCall = nGood;
+ 
+                 if(nGood<10)
+                     continue;
+@@ -3721,17 +3990,17 @@
+                         mCurrentFrame.mvpMapPoints[io]=static_cast<MapPoint*>(NULL);
+ 
+                 // If few inliers, search by projection in a coarse window and optimize again
+-                if(nGood<50)
++                if(nGood<nMinInliers)
+                 {
+                     int nadditional =matcher2.SearchByProjection(mCurrentFrame,vpCandidateKFs[i],sFound,10,100);
+ 
+-                    if(nadditional+nGood>=50)
++                    if(nadditional+nGood>=nMinInliers)
+                     {
+                         nGood = Optimizer::PoseOptimization(&mCurrentFrame);
+ 
+                         // If many inliers but still not enough, search by projection again in a narrower window
+                         // the camera has been already optimized with many points
+-                        if(nGood>30 && nGood<50)
++                        if(nGood>nRefineFloor && nGood<nMinInliers)
+                         {
+                             sFound.clear();
+                             for(int ip =0; ip<mCurrentFrame.N; ip++)
+@@ -3740,7 +4009,7 @@
+                             nadditional =matcher2.SearchByProjection(mCurrentFrame,vpCandidateKFs[i],sFound,3,64);
+ 
+                             // Final optimization
+-                            if(nGood+nadditional>=50)
++                            if(nGood+nadditional>=nMinInliers)
+                             {
+                                 nGood = Optimizer::PoseOptimization(&mCurrentFrame);
+ 
+@@ -3753,8 +4022,10 @@
+                 }
+ 
+ 
++                if(nGood>nBestGoodThisCall) nBestGoodThisCall = nGood;
++
+                 // If the pose is supported by enough inliers stop ransacs and continue
+-                if(nGood>=50)
++                if(nGood>=nMinInliers)
+                 {
+                     bMatch = true;
+                     break;
+@@ -3765,10 +4036,31 @@
+ 
+     if(!bMatch)
+     {
++        if(nCandAfterBoW == 0)
++            ++nRelocFewMatch;   // BoW-similar keyframes existed but matched too few features
++        else
++        {
++            ++nRelocGeomFail;   // matches existed but no pose reached nMinInliers
++            // how close did the best attempt get?
++            if(nPoseFromRansac == 0)      ++nGeomNoPose;   // RANSAC never even found a pose
++            else if(nBestGoodThisCall<10) ++nGeomLt10;
++            else if(nBestGoodThisCall<20) ++nGeomLt20;
++            else if(nBestGoodThisCall<30) ++nGeomLt30;
++            else                          ++nGeomGe30;
++            nGeomBestSum += nBestGoodThisCall;
++            if(nRelocGeomFail % 500 == 0)
++                cout << "[reloc-inliers] geomFail=" << nRelocGeomFail
++                     << " | noPose=" << nGeomNoPose
++                     << " <10=" << nGeomLt10 << " 10-19=" << nGeomLt20
++                     << " 20-29=" << nGeomLt30 << " >=30=" << nGeomGe30
++                     << " | avgBestInliers=" << (double)nGeomBestSum/(double)nRelocGeomFail
++                     << " (need " << nMinInliers << ")" << endl;
++        }
+         return false;
+     }
+     else
+     {
++        ++nRelocOk;
+         mnLastRelocFrameId = mCurrentFrame.mnId;
+         cout << "Relocalized!!" << endl;
+         return true;

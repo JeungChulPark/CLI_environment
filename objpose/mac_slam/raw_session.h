@@ -34,6 +34,16 @@
 #include <opencv2/core.hpp>
 #include <sqlite3.h>
 
+// A rosbag2 .db3 left in WAL mode cannot be opened read-only unless its -wal/-shm companions are
+// present: sqlite needs the shared-memory index and may not create it without write access. Most of
+// the 260901 bags have no companions (only bigeightcircle does, from an earlier read-write open), so
+// a plain SQLITE_OPEN_READONLY fails on them with "unable to open database file" — which surfaces as
+// "has no topic", since has_topic() reports a failed open the same way as a missing topic.
+// immutable=1 tells sqlite the file cannot change, so it skips locking and the journal entirely.
+// gyro_aid.h already opened its bag this way; these helpers did not.
+static inline std::string ro_uri(const std::string& path) { return "file:" + path + "?immutable=1"; }
+
+
 using json = nlohmann::json;
 
 // ---------------------------------------------------------------- raw bag reading
@@ -44,7 +54,7 @@ struct Blob {
 class Bag {
  public:
   explicit Bag(const std::string& path) {
-    if (sqlite3_open_v2(path.c_str(), &db_, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK)
+    if (sqlite3_open_v2(ro_uri(path).c_str(), &db_, SQLITE_OPEN_READONLY | SQLITE_OPEN_URI, nullptr) != SQLITE_OK)
       throw std::runtime_error("cannot open " + path);
     sqlite3_prepare_v2(db_, "SELECT data FROM messages WHERE id=?", -1, &by_id_, nullptr);
   }
@@ -258,7 +268,7 @@ struct CdrReader {
 
 static bool has_topic(const std::string& db3, const char* topic) {
   sqlite3* db = nullptr;
-  if (sqlite3_open_v2(db3.c_str(), &db, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK) return false;
+  if (sqlite3_open_v2(ro_uri(db3).c_str(), &db, SQLITE_OPEN_READONLY | SQLITE_OPEN_URI, nullptr) != SQLITE_OK) return false;
   sqlite3_stmt* st;
   sqlite3_prepare_v2(db, "SELECT 1 FROM topics WHERE name=?", -1, &st, nullptr);
   sqlite3_bind_text(st, 1, topic, -1, SQLITE_TRANSIENT);
@@ -272,7 +282,7 @@ static bool has_topic(const std::string& db3, const char* topic) {
 static std::vector<std::pair<long long, long long>> header_stamps(const std::string& db3, const char* topic) {
   std::vector<std::pair<long long, long long>> out;
   sqlite3* db = nullptr;
-  sqlite3_open_v2(db3.c_str(), &db, SQLITE_OPEN_READONLY, nullptr);
+  sqlite3_open_v2(ro_uri(db3).c_str(), &db, SQLITE_OPEN_READONLY | SQLITE_OPEN_URI, nullptr);
   sqlite3_stmt* st;
   sqlite3_prepare_v2(db,
                      "SELECT m.id, substr(m.data,1,16) FROM messages m JOIN topics t ON t.id=m.topic_id "
@@ -386,7 +396,7 @@ static Session load_session(const std::string& dir_in, long long offset_ns, cons
     auto topic_ids = [&](const char* topic, bool with_data, std::vector<long long>& ids,
                          std::vector<std::string>* payloads) {
       sqlite3* db = nullptr;
-      sqlite3_open_v2(s.db3.c_str(), &db, SQLITE_OPEN_READONLY, nullptr);
+      sqlite3_open_v2(ro_uri(s.db3).c_str(), &db, SQLITE_OPEN_READONLY | SQLITE_OPEN_URI, nullptr);
       sqlite3_stmt* st;
       std::string q = std::string("SELECT m.id") + (with_data ? ", m.data" : "") +
                       " FROM messages m JOIN topics t ON t.id=m.topic_id WHERE t.name=? ORDER BY m.id";
