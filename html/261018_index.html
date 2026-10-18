@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SLAM 실험 문서</title>
+<style>
+:root{--paper:#EDF1F6;--surface:#FFFFFF;--line-soft:#DDE5EC;--ink:#11202F;--ink-2:#425568;--muted:#5A6D80;--accent:#2a78d6;
+--sans:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",-apple-system,"Helvetica Neue",Arial,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0D1620;--surface:#15202C;--line-soft:#223142;--ink:#E3EBF3;
+--ink-2:#B3C3D1;--muted:#90A4B6;--accent:#5A9FEA}}
+:root[data-theme="dark"]{--paper:#0D1620;--surface:#15202C;--line-soft:#223142;--ink:#E3EBF3;--ink-2:#B3C3D1;--muted:#90A4B6;--accent:#5A9FEA}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.65 var(--sans)}
+.wrap{max-width:860px;margin:0 auto;padding:36px 16px 64px}
+h1{font-size:24px;margin:0 0 6px}.sub{color:var(--muted);margin:0 0 26px}
+a.card{display:block;background:var(--surface);border:1px solid var(--line-soft);border-radius:10px;padding:16px 20px;margin:0 0 12px;
+color:inherit;text-decoration:none}
+a.card:hover{border-color:var(--accent)}
+a.card b{display:block;font-size:16.5px;color:var(--accent);margin-bottom:4px}
+a.card span{color:var(--ink-2);font-size:14px}
+a.card small{display:block;color:var(--muted);font-size:12.5px;margin-top:6px}
+</style></head>
+<body><div class="wrap">
+<h1>SLAM 실험 문서</h1>
+<p class="sub">2026-10-17 ~ 18 · ORB-SLAM3 수정본·자이로 보조 검증, 실데이터 SLAM 비교</p>
+
+<a class="card" href="261018_openloris_gyro_report.html"><b>OpenLORIS-Scene 실험 보고서</b>
+<span>원본 ORB-SLAM3 vs 수정본 vs 수정본+자이로. 모션캡처·라이다 GT로 office·home·corridor를 평가했다. 자이로를 켜면 Sim(3) ATE가 office −30%, home −14~21%, corridor −19~33% 줄었다. 크래시 수정과 한계도 정리했다.</span>
+<small>원본 orbslam_ws/openloris/report_261018.md</small></a>
+
+<a class="card" href="261018_slam_benchmark.html"><b>실데이터 SLAM 비교: ORB-SLAM3 · RTAB-Map · hdl_graph_slam · KISS-ICP</b>
+<span>라이다가 있는 실데이터 16개 세션 비교표, 260901 자이로 효과, ORB vs RTAB 위치 추정·지도 비교(bigeightcircle·eightcircle 3회 반복)</span>
+<small>원본 objpose/docs/slam_bench_261018.md</small></a>
+
+<a class="card" href="261017_lidar_pseudo_gt.html"><b>라이다 pseudo-GT 만들기와 진짜 GT 계획</b>
+<span>KISS-ICP 오도메트리, 루프 확인(양방향 ICP), 포즈 그래프 최적화로 기준 궤적을 만든다. GT 없이 기준 품질을 재는 다섯 가지 검사와 앞으로 GT를 얻는 방법도 다룬다.</span>
+<small>원본 objpose/docs/own_gt_261017.md</small></a>
+
+<a class="card" href="261018_openloris_howto.html"><b>OpenLORIS-Scene 실험: 실행 방법과 결과 요약</b>
+<span>데이터 받기, 빌드, 실행, 평가 스크립트 사용법과 맵 구간별 평가 방식</span>
+<small>원본 orbslam_ws/openloris/README.md</small></a>
+</div></body></html>

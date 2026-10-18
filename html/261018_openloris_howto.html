@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenLORIS-Scene 실험: 실행 방법과 결과 요약</title><style>
+:root{--paper:#EDF1F6;--surface:#FFFFFF;--surface-2:#F6F9FC;--line:#C6D2DE;--line-soft:#DDE5EC;--ink:#11202F;--ink-2:#425568;
+--muted:#5A6D80;--accent:#2a78d6;--accent-fill:#E3EEFA;--code:#EEF2F6;
+--sans:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",-apple-system,"Helvetica Neue",Arial,sans-serif;
+--mono:ui-monospace,SFMono-Regular,Menlo,"Cascadia Mono",Consolas,"D2Coding",monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0D1620;--surface:#15202C;--surface-2:#1A2734;--line:#28394A;
+--line-soft:#223142;--ink:#E3EBF3;--ink-2:#B3C3D1;--muted:#90A4B6;--accent:#5A9FEA;--accent-fill:#16283B;--code:#1E2C3A}}
+:root[data-theme="dark"]{--paper:#0D1620;--surface:#15202C;--surface-2:#1A2734;--line:#28394A;--line-soft:#223142;--ink:#E3EBF3;
+--ink-2:#B3C3D1;--muted:#90A4B6;--accent:#5A9FEA;--accent-fill:#16283B;--code:#1E2C3A}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.7 var(--sans)}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 16px 64px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px}
+nav{position:sticky;top:16px;align-self:start;font-size:13px;max-height:calc(100vh - 32px);overflow:auto}
+nav b{display:block;color:var(--muted);font-weight:600;margin-bottom:6px}
+nav a{display:block;color:var(--ink-2);text-decoration:none;padding:3px 8px;border-left:2px solid var(--line-soft)}
+nav a:hover{color:var(--accent);border-left-color:var(--accent)}
+nav .back{margin-bottom:12px;border:0;padding-left:0;color:var(--accent)}
+main{background:var(--surface);border:1px solid var(--line-soft);border-radius:10px;padding:28px 36px;min-width:0}
+h1{font-size:26px;line-height:1.35;margin:0 0 18px;padding-bottom:14px;border-bottom:2px solid var(--line)}
+h2{font-size:20px;margin:40px 0 12px;padding-top:6px;border-top:1px solid var(--line-soft)}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--ink-2)}
+p,li{color:var(--ink)}strong{color:var(--ink)}a{color:var(--accent)}
+code{font:13px/1.5 var(--mono);background:var(--code);padding:1px 5px;border-radius:4px;word-break:break-word}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow:auto}pre code{background:none;padding:0}
+.tbl{overflow-x:auto;margin:12px 0 18px;border:1px solid var(--line-soft);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th{background:var(--surface-2);color:var(--ink-2);font-weight:600;text-align:left;white-space:nowrap}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+tr:last-child td{border-bottom:0}td strong{color:var(--accent)}
+img{max-width:100%;height:auto;border:1px solid var(--line-soft);border-radius:8px;background:#fff;margin:8px 0}
+blockquote{margin:12px 0;padding:8px 14px;border-left:3px solid var(--accent);background:var(--accent-fill);border-radius:0 6px 6px 0}
+.meta{color:var(--muted);font-size:13px;margin:-8px 0 18px}
+@media (max-width:860px){.wrap{grid-template-columns:1fr}nav{position:static;max-height:none}main{padding:20px 16px}}
+</style></head>
+<body><div class="wrap"><nav><a class="back" href="261018_index.html">← 문서 목록</a><b>목차</b><a href="#데이터">데이터</a><a href="#비교-대상">비교 대상</a><a href="#실행">실행</a><a href="#평가-eval_openloris-py">평가 (eval_openloris.py)</a><a href="#결과-office-7개-시퀀스-3회-반복-2026-10-17-mac-m4-pro">결과: office 7개 시퀀스, 3회 반복 (2026-10-17, Mac M4 Pro)</a><a href="#결과-home-5개-corridor-5개-시퀀스-3회-반복-2026-10-17-18">결과: home 5개, corridor 5개 시퀀스, 3회 반복 (2026-10-17~18)</a></nav>
+<main><h1>OpenLORIS-Scene: 원본 ORB-SLAM3 vs 수정본 (GT 비교)</h1>
+<p>GT가 있는 공개 데이터셋에서 원본 ORB-SLAM3 v1.0과 이 저장소의 수정본을 같은 조건으로 비교한다.
+OpenLORIS-Scene은 지상 로봇에 RealSense D435i(RGB-D + IMU)를 단 데이터라 우리 구성과 거의 같고,
+자이로 보조를 실험할 수 있다.</p>
+<h2 id="데이터">데이터</h2>
+<ul>
+<li>받는 곳: Hugging Face 미러 <code>shixuesong/openloris-scene</code> (로그인 불필요). 공식 페이지는 등록 양식 작성을 요청한다:
+  https://lifelong-robotic-vision.github.io/dataset/scene.html</li>
+<li>위치: <code>~/Documents/DefenseMeta/Dataset/openloris/</code></li>
+<li><code>office/office1-1 … office1-7</code> (package 형식: <code>color/</code>, <code>aligned_depth/</code>, <code>color.txt</code>, <code>aligned_depth.txt</code>,
+    <code>d400_gyroscope.txt</code> 400 Hz, <code>trans_matrix.yaml</code>, <code>sensors.yaml</code>)</li>
+<li><code>gt/per-scene/gt_&lt;scene&gt;_1.txt</code> (공식 평가용), <code>gt/per-sequence/&lt;seq&gt;/groundtruth.txt</code></li>
+<li>GT: office = OptiTrack 모션캡처, corridor/home/cafe/market = 오프라인 라이다 SLAM. GT 프레임은 <code>base_link</code>.</li>
+<li>다른 장면(package): corridor 33.6 GB, home 19.0 GB, cafe 7.5 GB, market 41.5 GB.</li>
+</ul>
+<h2 id="비교-대상">비교 대상</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>이름</th>
+<th>빌드</th>
+<th>설정</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>upstream</code></td>
+<td>UZ-SLAMLab/ORB_SLAM3 <code>v1.0-release</code> + macOS 이식 수정 2개(g2o <code>tr1</code>, <code>stdint-gcc.h</code>)</td>
+<td><code>openloris_d400.yaml</code></td>
+</tr>
+<tr>
+<td><code>ours</code></td>
+<td><code>orbslam_ws/src/ORB_SLAM3</code></td>
+<td>같은 yaml + 실시간 설정 C (<code>Optimizer.PoseIterations [10,5,5,5]</code>, <code>PoseEarlyExit 1</code>)</td>
+</tr>
+<tr>
+<td><code>ours_gyro</code></td>
+<td>같은 빌드</td>
+<td><code>ours</code> + D435i 자이로 보조 (<code>--gyro</code>, <code>make_rig.py</code>)</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>세 버전 모두 같은 실행기(<code>openloris_rgbd.cc</code>), 같은 컴파일 옵션, 같은 의존성(OpenMP 포함)으로 빌드한다.</li>
+<li>주의: 저장소의 "초기 커밋"(a4aff56d)은 원본이 아니다. 루프 검출 임계값이 이미 완화돼 있다
+  (BoW 0.8→0.5, 연속 일치 3→1, 매칭 수 20→12 등, <code>KeyFrameDatabase.cc</code>, <code>LoopClosing.cc</code>). 그래서 기준은 v1.0 태그다.</li>
+</ul>
+<h2 id="실행">실행</h2>
+<pre><code class="language-bash">orbslam_ws/openloris/build.sh                       # output/openloris/build_{upstream,ours}/openloris_rgbd
+python3 -m venv orbslam_ws/output/openloris/venv &amp;&amp; orbslam_ws/output/openloris/venv/bin/pip install \
+    numpy matplotlib transformations opencv-python-headless
+git clone https://github.com/lifelong-robotic-vision/openloris-scene-tools.git orbslam_ws/output/openloris/tools
+orbslam_ws/openloris/run_openloris.sh ~/Documents/DefenseMeta/Dataset/openloris/office \
+    orbslam_ws/output/openloris/runs/office_nf1000 3 1000
+</code></pre>
+<ul>
+<li>기본은 실시간 재생이다. 30 Hz 벽시계로 프레임을 내보내고, 추적이 못 따라가면 KEEP_LAST(5) 큐에서 오래된 프레임을 버린다.
+  <code>REALTIME=0</code>이면 모든 프레임을 차례로 처리한다(일반 오프라인 벤치마크 방식).</li>
+<li>반복은 버전을 번갈아 돌린다(rep1의 세 버전 → rep2 …). 기계 부하 변화가 한쪽에만 걸리지 않게 하려는 것이다.</li>
+<li>중단 후 다시 실행하면 끝난 실행은 건너뛴다.</li>
+</ul>
+<h2 id="평가-eval_openloris-py">평가 (<code>eval_openloris.py</code>)</h2>
+<p>공식 평가 도구(<code>openloris-scene-tools/benchmark/evaluate.py</code>)를 그대로 호출한다. ROS의 <code>tf.transformations</code>는
+<code>tf_shim/</code>으로 대신한다. pip <code>transformations</code> 패키지와 쿼터니언 순서가 달라서(ROS [x,y,z,w], pip [w,x,y,z]) shim에서 바꿔 준다.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>뜻</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ate_rmse</code></td>
+<td>공식 ATE. GT(base_link)를 d400_color로 변환한 뒤 SE(3) 정렬</td>
+</tr>
+<tr>
+<td><code>ate_rmse_sim3</code></td>
+<td>같은 계산에 스케일까지 맞춘 값(공식 <code>--scale</code>)</td>
+</tr>
+<tr>
+<td><code>aoe_rmse</code></td>
+<td>방향 오차 [deg]</td>
+</tr>
+<tr>
+<td><code>cr</code>, <code>cr_0.1m_5deg</code></td>
+<td>공식 correct rate. 포즈가 있는 시간 비율, 그리고 0.1 m·5° 안에 든 시간 비율</td>
+</tr>
+<tr>
+<td><code>live</code> / <code>final</code></td>
+<td>프레임마다 그 순간 돌려준 포즈 / 종료 후 최적화 궤적</td>
+</tr>
+<tr>
+<td><code>seg_*</code></td>
+<td>맵 구간별 평가(아래 home/corridor 절 참고)</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>office1-1 시험 실행에서 모든 버전의 궤적이 GT보다 일정하게 약 5% 작았다(1/3/5초 구간 이동 거리 비 1.045–1.052).
+  D435i depth나 GT 쪽 스케일 문제로 보이며 모든 버전에 똑같이 작용한다. 이 때문에 SE(3) ATE는 약 8 cm,
+  Sim(3) ATE는 약 1 cm로 나온다. 시간 오프셋은 원인이 아니다(±0.3 s 범위에서 ATE 변화 1 cm 미만).</li>
+</ul>
+<p>전체 실험 보고서(해석, 한계, 그림 포함): <a href="report_261018.md"><code>report_261018.md</code></a></p>
+<h2 id="결과-office-7개-시퀀스-3회-반복-2026-10-17-mac-m4-pro">결과: office 7개 시퀀스, 3회 반복 (2026-10-17, Mac M4 Pro)</h2>
+<p>조건: nf1000, 30 Hz 실시간 재생. 2배·3배 = <code>STRIDE=k RATE=k</code>(k장마다 1장, 30 Hz) → 프레임 간 움직임 k배.
+원자료: <code>results/office_nf1000{,_x2,_x3}.csv</code> (실행마다 한 줄, <code>eval_openloris.py</code> 출력).
+값은 7개 시퀀스 평균, ± = 반복 3회 사이 표준편차.</p>
+<p>Sim(3) ATE [cm] (스케일까지 맞춘 궤적 모양 오차)</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>조건</th>
+<th>포즈</th>
+<th>upstream</th>
+<th>ours</th>
+<th>ours_gyro</th>
+<th>gyro 효과(ours 대비)</th>
+<th>gyro가 나은 시퀀스</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1배</td>
+<td>live</td>
+<td>3.29 ± 0.70</td>
+<td>2.98 ± 0.37</td>
+<td><strong>2.08 ± 0.16</strong></td>
+<td>−30 %</td>
+<td>6/7</td>
+</tr>
+<tr>
+<td>2배</td>
+<td>live</td>
+<td>3.12 ± 0.51</td>
+<td>3.06 ± 0.40</td>
+<td><strong>2.03 ± 0.07</strong></td>
+<td>−34 %</td>
+<td>6/7</td>
+</tr>
+<tr>
+<td>3배</td>
+<td>live</td>
+<td>2.30 ± 0.79</td>
+<td>2.55 ± 0.11</td>
+<td><strong>1.81 ± 0.07</strong></td>
+<td>−29 %</td>
+<td>5/7</td>
+</tr>
+<tr>
+<td>1배</td>
+<td>final</td>
+<td>2.90 ± 0.78</td>
+<td>2.55 ± 0.46</td>
+<td><strong>1.84 ± 0.19</strong></td>
+<td>−28 %</td>
+<td>5/7</td>
+</tr>
+<tr>
+<td>2배</td>
+<td>final</td>
+<td>2.67 ± 0.57</td>
+<td>2.53 ± 0.22</td>
+<td><strong>1.74 ± 0.07</strong></td>
+<td>−31 %</td>
+<td>5/7</td>
+</tr>
+<tr>
+<td>3배</td>
+<td>final</td>
+<td>2.00 ± 0.77</td>
+<td>2.30 ± 0.15</td>
+<td><strong>1.55 ± 0.09</strong></td>
+<td>−33 %</td>
+<td>5/7</td>
+</tr>
+</tbody>
+</table></div>
+<p>1배 live, 그 밖의 지표: 공식 SE(3) ATE 7.87 / 7.70 / 7.26 cm, 최대 오차 16.0 / 15.3 / 12.5 cm,
+AOE 2.18 / 2.08 / 1.84°, CR(0.1 m, 5°) 0.77 / 0.79 / 0.81, 추적 시간 평균 7.9 / 4.6 / 4.6 ms.</p>
+<ul>
+<li>같은 시퀀스를 반복했을 때의 편차는 중앙값 0.05 cm, 자이로에 따른 차이는 시퀀스당 평균 0.7–1.0 cm다.</li>
+<li>공식 SE(3) ATE에서는 자이로 효과가 −6 %로 작게 보인다. 데이터셋 공통의 약 5 % 스케일 편향이 그 지표를 지배하기 때문이다.</li>
+<li>upstream과 ours(자이로 없음)의 정확도 차이는 반복 편차 안이다. 속도 개선(추적 시간 −40 %)은 정확도를 바꾸지 않았다.</li>
+<li>1배·2배·3배 모두 추적 실패 0, 프레임 손실 0. office는 로봇이 느려서(최대 0.4 m/s) 3배에서도 영상 추적이 무너지지 않는다.</li>
+</ul>
+<p>비정상 종료: upstream 63회 중 4회, ours·ours_gyro 126회 중 0회.
+- 종료 중 <code>mutex lock failed</code> 3회 (2배 office1-2, office1-7 ×2): 원본 <code>System::Shutdown()</code>이 스레드 종료를 기다리지 않는다.
+- 실행 중 <code>SO3::exp failed! omega: nan</code> 1회 (3배 office1-5, 530프레임 중 422번째): 원본 <code>Sim3Solver</code>의 0/0 → NaN.
+- 둘 다 수정본에서 고친 버그다. 실패한 실행은 위 표의 upstream 평균에서 빠져 있다(2배 n=19, 3배 n=20; 나머지 n=21).</p>
+<h2 id="결과-home-5개-corridor-5개-시퀀스-3회-반복-2026-10-17-18">결과: home 5개, corridor 5개 시퀀스, 3회 반복 (2026-10-17~18)</h2>
+<p>GT: home·corridor는 2D 라이다(Hokuyo) Hector SLAM이다. 평면 3자유도이고 오차가 cm 수준이라 office 모션캡처보다 거칠다.
+home1-3에서는 GT 시간을 +0.3 s 옮기면 ATE가 16 → 13 cm로 줄었다. 세 버전에 똑같이 작용하므로 버전 비교는 유효하지만,
+절대값은 office와 직접 비교하지 않는다. 원자료는 <code>results/{home,corridor}_nf1000{,_x2}.csv</code>.</p>
+<h3 id="평가-방식-맵-구간별-seg_-열">평가 방식: 맵 구간별 (<code>seg_*</code> 열)</h3>
+<p>두 장면 모두 추적을 잃고 새 맵을 만든다(시퀀스당 1–7개). 새 맵마다 원점이 달라서, 공식 단일 정렬로는 ATE가 수 m,
+AOE가 약 180°로 나와 의미가 없다. 수정본은 루프 임계값이 완화돼 있어 끊긴 맵을 옛 맵에 병합하기도 한다.
+이때 live 포즈가 옛 맵 좌표계로 점프한다.
+그래서 새 맵이 시작될 때와 포즈가 0.25 m 넘게 점프할 때 궤적을 나눈다. 그다음 5초 이상인 조각을 각각 Sim(3)로 정렬하고,
+모든 포즈에 대한 RMSE로 합친다(<code>seg_ate_sim3</code>). <code>seg_cr</code>은 점수를 매긴 조각이 덮는 시간 비율이다.
+office는 맵이 하나라 이 값이 공식 값과 같다.</p>
+<h3 id="sim-3-ate-맵-구간별-평가-cm-5개-시퀀스-평균-각-3회-평균">Sim(3) ATE, 맵 구간별 평가 [cm], 5개 시퀀스 평균 (각 3회 평균)</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>장면</th>
+<th>조건</th>
+<th>포즈</th>
+<th>upstream</th>
+<th>ours</th>
+<th>ours_gyro</th>
+<th>gyro 효과(ours 대비)</th>
+<th>gyro가 나은 시퀀스</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>home</td>
+<td>1배</td>
+<td>live</td>
+<td>13.70*</td>
+<td>12.84</td>
+<td><strong>11.00</strong></td>
+<td>−14 %</td>
+<td>4/5</td>
+</tr>
+<tr>
+<td>home</td>
+<td>1배</td>
+<td>final</td>
+<td>13.86*</td>
+<td>13.01</td>
+<td><strong>11.27</strong></td>
+<td>−13 %</td>
+<td>4/5</td>
+</tr>
+<tr>
+<td>home</td>
+<td>2배</td>
+<td>live</td>
+<td>13.66</td>
+<td>13.31</td>
+<td><strong>10.57</strong></td>
+<td>−21 %</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>home</td>
+<td>2배</td>
+<td>final</td>
+<td>13.70</td>
+<td>13.54</td>
+<td><strong>10.90</strong></td>
+<td>−20 %</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>corridor</td>
+<td>1배</td>
+<td>live</td>
+<td>62.7</td>
+<td>63.8</td>
+<td><strong>42.5</strong></td>
+<td>−33 %</td>
+<td>4/5</td>
+</tr>
+<tr>
+<td>corridor</td>
+<td>1배</td>
+<td>final</td>
+<td>61.4</td>
+<td>51.4</td>
+<td><strong>41.5</strong></td>
+<td>−19 %</td>
+<td>4/5</td>
+</tr>
+<tr>
+<td>corridor</td>
+<td>2배</td>
+<td>live</td>
+<td>55.4</td>
+<td>52.7</td>
+<td><strong>42.0</strong></td>
+<td>−20 %</td>
+<td>4/5</td>
+</tr>
+<tr>
+<td>corridor</td>
+<td>2배</td>
+<td>final</td>
+<td>51.1</td>
+<td>49.7</td>
+<td><strong>40.5</strong></td>
+<td>−19 %</td>
+<td>4/5</td>
+</tr>
+</tbody>
+</table></div>
+<p>* home1-4 upstream 1배는 3회 모두 크래시했다(Sim3Solver NaN). 그래서 4개 시퀀스 평균이다.</p>
+<ul>
+<li>자이로 효과는 세 장면 모두에서 같은 방향이다(office −30 %, home −14~21 %, corridor −19~33 %).
+  corridor1-5(150 → 75 cm)와 corridor1-4(43 → 25 cm)처럼 오차가 큰 시퀀스에서 가장 크다.</li>
+<li>자이로가 낫지 않은 시퀀스는 home1-4 1배(10.6 vs 11.0)와 corridor1-1(31 vs 31–34)이다.</li>
+<li>추적 구간 비율(<code>seg_cr</code>, 약 0.90)은 버전 사이에 거의 같다. 자이로는 추적 상실 자체를 막지는 못하고, 추적 중인 구간의 정확도를 높인다.</li>
+<li>추적 시간: upstream 7.5–8.0 ms, ours·ours_gyro 4.6–5.1 ms.</li>
+</ul>
+<h3 id="크래시와-수정">크래시와 수정</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>원인</th>
+<th>영향</th>
+<th>조치</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MapPoint::ComputeDistinctiveDescriptors</code>의 N×N 스택 배열. macOS 보조 스레드 스택은 512 KB라 N &gt; 약 360이면 SIGBUS가 난다</td>
+<td>corridor, 세 버전 모두 37회</td>
+<td>힙으로 옮김. 수정본 소스를 고쳤고 upstream에는 <code>build.sh</code> prep()의 이식 수정으로 적용. 해당 실행은 재실행</td>
+</tr>
+<tr>
+<td>upstream <code>Sim3Solver</code> 0/0 → NaN (<code>SO3::exp failed</code>)</td>
+<td>upstream만 7회 (home 4, corridor 3)</td>
+<td>수정본에서 이미 고친 버그. 실패한 실행은 평균에서 제외</td>
+</tr>
+<tr>
+<td><code>LocalMapping::Release()</code>가 대기열 키프레임을 <code>delete</code>. RGB-D 초기 KF는 이미 맵에 있어서, 다음 <code>ResetActiveMap</code> → <code>Map::clear()</code>가 해제된 mutex를 잠근다</td>
+<td>ours corridor1-1 1회 (원본 코드에서 물려받은 버그)</td>
+<td>수정본에서 delete를 제거하고 재실행</td>
+</tr>
+</tbody>
+</table></div>
+<p>남은 것: 자이로 효과가 없는 시퀀스의 원인, home GT 시간 오프셋 보정,
+루프 임계값 완화·조기 종료를 원본 값으로 되돌린 분리 실험.</p><p class="meta">원본: <code>orbslam_ws/openloris/README.md</code></p></main></div></body></html>

@@ -1,0 +1,12 @@
+[rtab_stream] /Users/user/Documents/DefenseMeta/Dataset/260901_cbnu_digut/SLAM/SLAM_0.db3 | 6893 frames | time-source=header domain=colour header stamp offset_ns=0 non_monotonic=0
+[rtab_stream] RTAB-Map 0.23.8 params: {"Icp/CorrespondenceRatio":"0.1","Icp/Iterations":"30","Icp/MaxCorrespondenceDistance":"0.05","Icp/MaxTranslation":"0.2","Icp/PointToPlane":"false","Icp/Strategy":"0","Icp/VoxelSize":"0.05","Kp/DetectorStrategy":"6","Kp/MaxFeatures":"500","Mem/IncrementalMemory":"true","Mem/STMSize":"10","Odom/ResetCountdown":"0","Odom/Strategy":"0","OdomF2M/MaxSize":"2000","Optimizer/Strategy":"1","RGBD/AngularUpdate":"0.1","RGBD/LinearUpdate":"0.1","RGBD/ProximityBySpace":"true","Reg/Strategy":"0","Rtabmap/DetectionRate":"1","Rtabmap/TimeThr":"0","Vis/CorType":"0","Vis/FeatureType":"6","Vis/MaxFeatures":"1000","Vis/MinInliers":"20"} | overrides:
+[rtab_stream] imu: /Users/user/Documents/DefenseMeta/Dataset/260901_cbnu_digut/imu/xsens_20260901_164335.db3 /xsens/imu/data | 45990 samples 200.0 Hz | imu-cam -1.88 ms | T_base_imu xyz=0.000000,0.000000,0.000000 rpy=-3.132513,0.002516,0.000567
+[rtab_stream] gravity over 4599 stillest samples: imu frame (0.525 -0.093 -9.768) |9.783| -> base frame (0.550 0.005 9.767); base must be about (0 0 +9.8)
+[rtab_stream] 1000/6893 ok=1000 loops=0 nodes=31
+[rtab_stream] 2000/6893 ok=2000 loops=2 nodes=64
+[rtab_stream] 3000/6893 ok=3000 loops=9 nodes=97
+[rtab_stream] 4000/6893 ok=4000 loops=11 nodes=131
+[rtab_stream] 5000/6893 ok=5000 loops=34 nodes=164
+[rtab_stream] 6000/6893 ok=6000 loops=44 nodes=197
+[rtab_stream] odom link covariance handed to the mapper: ON | n=230  lin var min 4.03e-05 med 0.000627 max 1e+04  (sigma med 0.0250 m) | unlinked(>=9999) 1
+[rtab_stream] done: 6893 processed, 6893 ok, loops 45, nodes 226, wall 109.5 s

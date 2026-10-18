@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리 데이터의 기준 궤적(pseudo-GT) 만들기와 진짜 GT 계획 (2026-10-17)</title><style>
+:root{--paper:#EDF1F6;--surface:#FFFFFF;--surface-2:#F6F9FC;--line:#C6D2DE;--line-soft:#DDE5EC;--ink:#11202F;--ink-2:#425568;
+--muted:#5A6D80;--accent:#2a78d6;--accent-fill:#E3EEFA;--code:#EEF2F6;
+--sans:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",-apple-system,"Helvetica Neue",Arial,sans-serif;
+--mono:ui-monospace,SFMono-Regular,Menlo,"Cascadia Mono",Consolas,"D2Coding",monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0D1620;--surface:#15202C;--surface-2:#1A2734;--line:#28394A;
+--line-soft:#223142;--ink:#E3EBF3;--ink-2:#B3C3D1;--muted:#90A4B6;--accent:#5A9FEA;--accent-fill:#16283B;--code:#1E2C3A}}
+:root[data-theme="dark"]{--paper:#0D1620;--surface:#15202C;--surface-2:#1A2734;--line:#28394A;--line-soft:#223142;--ink:#E3EBF3;
+--ink-2:#B3C3D1;--muted:#90A4B6;--accent:#5A9FEA;--accent-fill:#16283B;--code:#1E2C3A}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.7 var(--sans)}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 16px 64px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px}
+nav{position:sticky;top:16px;align-self:start;font-size:13px;max-height:calc(100vh - 32px);overflow:auto}
+nav b{display:block;color:var(--muted);font-weight:600;margin-bottom:6px}
+nav a{display:block;color:var(--ink-2);text-decoration:none;padding:3px 8px;border-left:2px solid var(--line-soft)}
+nav a:hover{color:var(--accent);border-left-color:var(--accent)}
+nav .back{margin-bottom:12px;border:0;padding-left:0;color:var(--accent)}
+main{background:var(--surface);border:1px solid var(--line-soft);border-radius:10px;padding:28px 36px;min-width:0}
+h1{font-size:26px;line-height:1.35;margin:0 0 18px;padding-bottom:14px;border-bottom:2px solid var(--line)}
+h2{font-size:20px;margin:40px 0 12px;padding-top:6px;border-top:1px solid var(--line-soft)}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--ink-2)}
+p,li{color:var(--ink)}strong{color:var(--ink)}a{color:var(--accent)}
+code{font:13px/1.5 var(--mono);background:var(--code);padding:1px 5px;border-radius:4px;word-break:break-word}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow:auto}pre code{background:none;padding:0}
+.tbl{overflow-x:auto;margin:12px 0 18px;border:1px solid var(--line-soft);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th{background:var(--surface-2);color:var(--ink-2);font-weight:600;text-align:left;white-space:nowrap}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+tr:last-child td{border-bottom:0}td strong{color:var(--accent)}
+img{max-width:100%;height:auto;border:1px solid var(--line-soft);border-radius:8px;background:#fff;margin:8px 0}
+blockquote{margin:12px 0;padding:8px 14px;border-left:3px solid var(--accent);background:var(--accent-fill);border-radius:0 6px 6px 0}
+.meta{color:var(--muted);font-size:13px;margin:-8px 0 18px}
+@media (max-width:860px){.wrap{grid-template-columns:1fr}nav{position:static;max-height:none}main{padding:20px 16px}}
+</style></head>
+<body><div class="wrap"><nav><a class="back" href="261018_index.html">← 문서 목록</a><b>목차</b><a href="#1-방법-pseudo_gt-py">1. 방법 — pseudo_gt.py</a><a href="#2-gt-없이-기준의-오차를-재는-방법">2. GT 없이 기준의 오차를 재는 방법</a><a href="#3-결과-260901-네-세션">3. 결과 — 260901 네 세션</a><a href="#4-그래서-이-기준으로-무엇을-말할-수-있나">4. 그래서 이 기준으로 무엇을 말할 수 있나</a><a href="#5-해-본-변형-bigeightcircle">5. 해 본 변형 (bigeightcircle)</a><a href="#6-한계">6. 한계</a><a href="#7-진짜-gt-를-얻는-방법-앞으로의-녹화">7. 진짜 GT 를 얻는 방법 (앞으로의 녹화)</a></nav>
+<main><h1>우리 데이터의 기준 궤적(pseudo-GT) 만들기와 진짜 GT 계획 (2026-10-17)</h1>
+<p>지금까지 260901·260915 세션의 ORB-SLAM3 채점 기준은 <strong>KISS-ICP 라이다 오도메트리 한 번</strong>(<code>rt/260901/bigeight/kiss_gt.py</code>)이었다.
+루프 클로저가 없는 인과적(causal) 오도메트리라 오차가 거리와 함께 쌓이고, 문서(<code>orb_imu_260918.md</code>)에 "귀환 오차 15 cm,
+pitch/roll 약함"이라고 적혀 있었다. 이 문서는 (1) 같은 라이다로 <strong>오프라인·비인과적</strong> 기준 궤적을 새로 만들고,
+(2) 그 기준이 얼마나 믿을 만한지 GT 없이 재는 방법과 결과, (3) 앞으로 진짜 GT 를 얻는 방법을 정리한다.</p>
+<p>코드 <code>objpose/rt/gt/</code> · 결과 <code>objpose/rt/gt/out/&lt;세션&gt;/</code> (<code>pgo_tum.txt</code> = 새 기준, <code>odom_tum.txt</code> = KISS 와 같은 오도메트리,
+<code>loops.json</code>, <code>summary.json</code>) · 재채점 <code>out/rescore_*.json</code></p>
+<pre><code class="language-bash">bash objpose/rt/gt/run_all.sh                       # 260901 네 세션 (세션당 3~6 분, nice 10, 3 스레드)
+~/objpose/lidar/venv/bin/python objpose/rt/gt/table.py     # 아래 표 1
+~/objpose/lidar/venv/bin/python objpose/rt/gt/rescore.py --runs &lt;ORB 결과 폴더&gt; --kiss &lt;kiss_tum.txt&gt; \
+    --pgo objpose/rt/gt/out/&lt;세션&gt;/pgo_tum.txt --out &lt;json&gt; [--refit]   # 표 2
+</code></pre>
+<h2 id="1-방법-pseudo_gt-py">1. 방법 — <code>pseudo_gt.py</code></h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>단계</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. 오도메트리</td>
+<td>KISS-ICP 1.3, <code>kiss_gt.py</code> 와 같은 설정(0.5~30 m, voxel 0.10, 2-pass deskew). 출력 <code>odom_tum.txt</code> 는 기존 KISS 기준과 같은 궤적. 스캔마다 deskew 된 점군(voxel 0.10)을 저장. <code>--deskew imu</code> 는 xsens 자이로 회전으로 deskew(아래 §5).</td>
+</tr>
+<tr>
+<td>2. 루프</td>
+<td>키프레임 1 m / 10°마다(bigeightcircle 157개). 키프레임마다 ±1 s(21 스캔)를 오도메트리로 이어 붙인 서브맵. 후보 = 15 s 이상, 주행 5 m 이상 떨어졌고 오도메트리상 4 m 이내, 재방문 한 번에 상대 하나. <strong>양방향 ICP</strong>(KISS 정합기, 1.5 → 0.6 → 0.3 m 3단)로 확인하고 inlier(15 cm) ≥ 50 %, inlier RMS ≤ 8 cm, 정·역 정합 불일치 ≤ 5 cm / 0.5°, 보정량 ≤ 2 m / 15° 일 때만 받아들임.</td>
+</tr>
+<tr>
+<td>3. 포즈 그래프</td>
+<td>키프레임 노드, 오도메트리 에지(σ_t = 0.5 cm + 1 %·거리, σ_r = 0.1° + 0.5 %·각도) + 루프 에지(σ = 2 cm, 0.15°). scipy <code>least_squares</code>(희소, 증분 파라미터) + 루프 에지 Cauchy 재가중 4회. 모든 스캔은 앞뒤 키프레임 보정량을 보간해 다시 놓음. 출력 <code>pgo_tum.txt</code> (kiss_gt 와 같은 규약: T_world_velodyne, world = 첫 스캔, velodyne 헤더 스탬프) → <code>eval_traj.py</code> 를 그대로 쓴다.</td>
+</tr>
+<tr>
+<td>4. 검사</td>
+<td>아래 §2 의 다섯 가지.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="2-gt-없이-기준의-오차를-재는-방법">2. GT 없이 기준의 오차를 재는 방법</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>검사</th>
+<th>무엇을 보나</th>
+<th>독립성</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>보류(held-out) 루프</strong></td>
+<td>받아들인 루프 에지를 5 묶음으로 나눠, 한 묶음을 빼고 최적화한 궤적이 빠진 에지(ICP 측정)를 얼마나 맞히나. 오도메트리(KISS)로도 같은 에지를 예측해 비교</td>
+<td>쓰지 않은 측정으로 검증. 단 ICP 자체 오차(정·역 불일치 0.5~0.8 cm)가 바닥</td>
+</tr>
+<tr>
+<td><strong>시작·끝 보류</strong></td>
+<td>처음 20 s 와 마지막 20 s 사이 루프만 빼고 최적화 → 그 에지 예측 오차</td>
+<td>가장 긴 구간의 누적 오차</td>
+</tr>
+<tr>
+<td><strong>다른 회차 평면 잔차</strong></td>
+<td>지도 점마다, <strong>15 s 이상 다른 시각</strong>의 점들로 맞춘 국소 평면까지의 거리(같은 회차 ±1 s 로 맞춘 값 = 센서 잡음 바닥)</td>
+<td>지도의 회차 간 겹침(선명도)</td>
+</tr>
+<tr>
+<td><strong>가속도계 중력</strong></td>
+<td>궤적이 말하는 중력 방향 vs 가속도계(궤적의 가속도 제거, ±0.5 s 평균). 장착 기울기 2 자유도 한 번 맞춘 뒤 잔차</td>
+<td>라이다와 독립(IMU). 단 진동·미보정 가속도로 바닥 ≈ 0.4°</td>
+</tr>
+<tr>
+<td><strong>ORB-SLAM3 와의 일치</strong></td>
+<td>저장된 Mac ORB 실행(기본/자이로, live/opt)을 두 기준으로 같은 채점기·같은 rig 로 채점</td>
+<td>카메라 = 완전히 다른 센서</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="3-결과-260901-네-세션">3. 결과 — 260901 네 세션</h2>
+<h3 id="표-1-기준-자체의-일관성-kiss-pseudo-gt">표 1. 기준 자체의 일관성 (KISS → pseudo-GT)</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>세션</th>
+<th>경로 / 시간</th>
+<th>루프 수락/후보</th>
+<th>보류 루프 위치 오차 cm med / p90 / max</th>
+<th>보류 루프 회전 ° p90</th>
+<th>시작·끝 보류 cm</th>
+<th>다른 회차 평면 잔차 cm med / p90 (센서 바닥)</th>
+<th>중력 대비 기울기 ° med / p90</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bigeightcircle</td>
+<td>63.9 m / 315 s</td>
+<td>233/274</td>
+<td>0.90 / 4.52 / 11.9 → <strong>0.74 / 2.53 / 5.6</strong></td>
+<td>1.43 → <strong>0.47</strong></td>
+<td>3.71 → <strong>2.08</strong></td>
+<td>1.05 / 2.93 → 1.01 / 2.56 (0.53 / 1.52)</td>
+<td>0.77 / 1.29 → <strong>0.42 / 0.81</strong></td>
+</tr>
+<tr>
+<td>eightcircle</td>
+<td>51.6 m / 152 s</td>
+<td>195/216</td>
+<td>0.96 / 4.87 / 7.9 → <strong>0.69 / 1.79 / 4.9</strong></td>
+<td>1.08 → <strong>0.54</strong></td>
+<td>4.78 → <strong>3.39</strong></td>
+<td>1.03 / 2.99 → 0.97 / 2.48 (0.55 / 1.54)</td>
+<td>0.87 / 1.35 → <strong>0.53 / 0.88</strong></td>
+</tr>
+<tr>
+<td>longcircle</td>
+<td>46.7 m / 135 s</td>
+<td>143/161</td>
+<td>1.19 / 3.50 / 7.0 → <strong>0.69 / 1.53 / 4.0</strong></td>
+<td>1.07 → <strong>0.58</strong></td>
+<td>2.79 → <strong>0.68</strong></td>
+<td>0.99 / 2.69 → 0.99 / 2.61 (0.54 / 1.51)</td>
+<td>0.56 / 0.99 → 0.50 / 0.91</td>
+</tr>
+<tr>
+<td>digut</td>
+<td>53.0 m / 230 s</td>
+<td>271/339</td>
+<td>1.33 / 4.22 / 8.6 → <strong>0.79 / 1.89 / 6.1</strong></td>
+<td>0.77 → <strong>0.42</strong></td>
+<td>0.39 → 0.44</td>
+<td>0.96 / 2.64 → 0.95 / 2.50 (0.56 / 1.60)</td>
+<td>1.19 / 1.72 → 0.94 / 1.46</td>
+</tr>
+</tbody>
+</table></div>
+<p>(ICP 정·역 불일치 중앙값 0.49~0.78 cm, 0.05~0.10°. pseudo-GT 가 KISS 를 옮긴 양: 중앙값 1.6~3.5 cm, 최대 3.5~7.1 cm.
+루프 에지는 네 세션 모두 Cauchy 재가중에서 버려진 것이 0 개.)</p>
+<p>읽는 법
+- <strong>KISS 는 이미 위치로는 cm 수준이다.</strong> 재방문 지점에서 오도메트리가 틀린 양이 중앙값 0.9~1.3 cm, 최대 7~12 cm.
+  pseudo-GT 는 그 꼬리(p90 3.5~4.9 → 1.5~2.5 cm)와 <strong>회전</strong>(p90 0.8~1.4° → 0.4~0.6°)을 줄인다.
+- <strong>"귀환 오차 15 cm"는 드리프트가 아니었다.</strong> bigeightcircle 의 시작·끝 위치 차는 pseudo-GT 에서도 15.6 cm 이고,
+  시작·끝 루프를 빼고 예측하면 KISS 의 실제 누적 오차는 3.7 cm, pseudo-GT 는 2.1 cm 다. 로봇이 출발점에서 13~15 cm
+  떨어진 곳에 섰다는 뜻이다(longcircle 45 cm, digut 36 cm, eightcircle 13 cm 도 마찬가지로 실제 정지 위치).
+  → <code>orb_imu_260918.md</code> §1 의 "귀환 오차 15 cm" 는 기준의 오차로 읽으면 안 된다.
+- <strong>기울기(pitch/roll)가 가장 크게 좋아졌다.</strong> IMU 중력과의 차이 중앙값 0.77 → 0.42°(bigeightcircle), 0.87 → 0.53°(eightcircle).
+  아래 표 2 의 ORB 기울기 오차(1.2 → 0.5°)와 같은 방향이다 — 두 개의 독립 센서가 같은 말을 한다.
+- longcircle·digut 는 지도 선명도와 중력 기울기의 개선이 작다(원래 오도메트리가 덜 틀렸다).</p>
+<h3 id="표-2-저장된-mac-orb-slam3-실행을-두-기준으로-다시-채점-같은-eval_traj-py-같은-rig-rig_260901_bigeight-json">표 2. 저장된 Mac ORB-SLAM3 실행을 두 기준으로 다시 채점 (같은 <code>eval_traj.py</code>, 같은 rig <code>rig_260901_bigeight.json</code>)</h3>
+<p>정상 실행 평균(잘못된 루프로 15 cm 이상 틀어진 base 2회차 두 개 제외). ATE cm / ATE 회전 ° / 기울기 RMSE ° / yaw RMSE ° / RPE 10 s cm.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>세션 (실행 수)</th>
+<th>포즈</th>
+<th>KISS 기준</th>
+<th>pseudo-GT 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bigeightcircle Mac (3)</td>
+<td>opt</td>
+<td>2.82 / 0.82 / 1.20 / 0.16 / 3.28</td>
+<td><strong>2.27 / 0.46 / 0.51</strong> / 0.19 / <strong>2.98</strong></td>
+</tr>
+<tr>
+<td>bigeightcircle Mac v3 (6)</td>
+<td>opt</td>
+<td>3.02 / 0.82 / 1.16 / 0.21 / 3.46</td>
+<td><strong>2.55 / 0.46 / 0.50</strong> / 0.25 / <strong>3.18</strong></td>
+</tr>
+<tr>
+<td>eightcircle Mac (3)</td>
+<td>opt</td>
+<td>3.51 / 0.89 / 0.99 / 0.20 / 5.10</td>
+<td><strong>2.99 / 0.51 / 0.64</strong> / 0.25 / <strong>4.32</strong></td>
+</tr>
+<tr>
+<td>longcircle Mac (4)</td>
+<td>opt</td>
+<td>3.26 / 0.64 / 0.68 / 0.18 / 4.86</td>
+<td>3.44 / <strong>0.52 / 0.58</strong> / 0.19 / 4.84</td>
+</tr>
+<tr>
+<td>digut Mac (4)</td>
+<td>opt</td>
+<td>4.40 / 1.09 / 1.33 / 0.27 / 5.98</td>
+<td>4.48 / <strong>0.86 / 1.14</strong> / 0.31 / <strong>5.49</strong></td>
+</tr>
+<tr>
+<td>bigeightcircle Mac (3)</td>
+<td>live</td>
+<td>4.42 / 0.85 / 1.10 / 0.27 / 3.98</td>
+<td><strong>4.05 / 0.57 / 0.53</strong> / 0.38 / 3.81</td>
+</tr>
+<tr>
+<td>eightcircle Mac (3)</td>
+<td>live</td>
+<td>4.30 / 0.95 / 0.97 / 0.34 / 6.43</td>
+<td><strong>3.92 / 0.65 / 0.66</strong> / 0.39 / 5.92</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>회전은 네 세션 모두 좋아졌다</strong>(ATE 회전 −19~−44 %, 기울기 −14~−57 %, RPE 10 s 대부분 감소). ORB 는 라이다와
+  독립이므로, 이 감소는 기준의 회전 오차가 줄었다는 가장 직접적인 증거다.</li>
+<li><strong>위치 ATE 는 둘로 갈린다</strong>: 8자 두 세션은 −0.4~−0.6 cm, longcircle·digut 는 +0.1~+0.2 cm. 세션별로 rig 를 다시 맞추면
+  (<code>--refit</code>, hand-eye 를 각 기준으로) longcircle 2.32 vs 2.57 cm, digut 3.60 vs 4.19 cm 로 KISS 쪽이 ORB 와 더 가깝다.
+  rig 자체가 bigeightcircle 에서 KISS 로 맞춘 것이라 KISS 쪽에 유리한 편향이 있을 수 있지만, <strong>이 두 세션에서 pseudo-GT 의
+  위치가 더 정확하다고 주장할 근거는 없다.</strong> ORB 자체 오차(2~4 cm)가 기준 차이(1.6~2.7 cm 중앙값)보다 커서 ORB 로는
+  가를 수 없는 크기다.</li>
+<li><strong>yaw RMSE(처음 15 s 에 맞춘 뒤의 방향 오차)는 일관되게 0.01~0.11° 나빠진다.</strong> 원인을 확인하지 못했다(앵커 구간의 보간된
+  보정이 의심). 0.1° 미만이라 결론을 바꾸지는 않지만 미해결로 남긴다.</li>
+<li><strong>기본 vs 자이로 결론은 그대로다.</strong> 예: bigeightcircle Mac opt 평균 KISS 2.80(자이로) / pseudo-GT 2.24, live 자이로 4.36 → 3.98.
+  두 방식의 차이 방향과 크기는 기준을 바꿔도 같다.</li>
+</ul>
+<h2 id="4-그래서-이-기준으로-무엇을-말할-수-있나">4. 그래서 이 기준으로 무엇을 말할 수 있나</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>양</th>
+<th>pseudo-GT 의 (국소·재방문) 오차 수준</th>
+<th>의미 있는 차이</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>위치</td>
+<td>보류 루프 중앙값 0.7~0.8 cm, p90 1.5~2.5 cm (ICP 바닥 0.5~0.8 cm 포함)</td>
+<td>실행 간 <strong>ATE 차이 1 cm 이상</strong>, 최대 오차 차이 5 cm 이상</td>
+</tr>
+<tr>
+<td>회전</td>
+<td>보류 루프 p90 0.4~0.6°, 중력 대비 0.4~0.9°(IMU 바닥 ≈ 0.4°)</td>
+<td>ATE 회전·기울기 0.3° 이상</td>
+</tr>
+<tr>
+<td>yaw (방향 드리프트)</td>
+<td>위 회전과 같은 수준이나 §3 의 미해결 0.01~0.11° 편차</td>
+<td>0.2° 이상</td>
+</tr>
+</tbody>
+</table></div>
+<p>KISS 기준에서는 같은 표가 위치 p90 3.5~4.9 cm, 회전 p90 0.8~1.4° 였다.</p>
+<p>이 검사가 <strong>잡지 못하는 것</strong>: 모든 회차가 같이 가진 계통 오차(라이다 거리 스케일, 재방문이 없는 구간의 높이 드리프트,
+rig 의 수직 lever arm — 평면 주행이라 관측 불가), 그리고 <strong>절대 정확도</strong>. 보류 검사는 "다시 온 곳에서 스스로 맞는가"만 본다.</p>
+<h2 id="5-해-본-변형-bigeightcircle">5. 해 본 변형 (bigeightcircle)</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>변형</th>
+<th>결과</th>
+<th>판단</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--deskew imu</code> (자이로 회전 deskew + 등속 이동)</td>
+<td>지도 평면 잔차 1.03 / 2.61 vs 1.01 / 2.56 cm, 보류 루프 0.79 / 2.41 vs 0.74 / 2.53 cm, ORB opt(자이로) ATE 2.21 vs 2.24 cm</td>
+<td>차이 없음. 로봇이 느려서(0.2 m/s, 평균 5°/s) 10 Hz 스윕 안의 등속 가정이 충분하다. 기본은 <code>cv</code></td>
+</tr>
+<tr>
+<td><code>--gravity</code> (가속도계 중력 prior, σ 0.5°, 장착 기울기 먼저 추정)</td>
+<td>중력 대비 0.42 → 0.38°(맞춘 값이라 독립 검사 아님), ORB opt(자이로) ATE 2.24 → 2.23 cm</td>
+<td>미미. 기본은 끔</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="6-한계">6. 한계</h2>
+<ul>
+<li>네 세션 모두 같은 로봇·같은 장소(260901 cbnu). 260915 세션(IMU 없음)은 아직 돌리지 않았다 — <code>run_all.sh 260915_eight_middle …</code>
+  로 그대로 돌릴 수 있고, 중력 검사만 빠진다.</li>
+<li>rig(<code>T_lidar_cam</code>)는 bigeightcircle 에서 KISS 로 맞춘 것 하나를 네 세션에 쓴다. longcircle·digut 는 세션별로 다시 맞추면
+  ORB ATE 가 0.8~0.9 cm 떨어진다 → <strong>위치 ATE 의 상당 부분이 rig 오차</strong>다. 세션별 rig 가 필요하다.</li>
+<li>pseudo-GT 는 라이다가 보는 구조물에 의존한다. 개활지·긴 복도처럼 기하가 퇴화한 곳에서는 ICP 가 미끄러질 수 있다(이번
+  네 세션에서는 받아들인 루프 중 재가중으로 버려진 것이 0 개).</li>
+</ul>
+<h2 id="7-진짜-gt-를-얻는-방법-앞으로의-녹화">7. 진짜 GT 를 얻는 방법 (앞으로의 녹화)</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>정확도(대략)</th>
+<th>비용·수고</th>
+<th>맞는 상황</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>모션캡처실</strong> (OptiTrack/Vicon 8~12 대)</td>
+<td>&lt; 1 mm, 0.1°, 100 Hz+, 6 자유도</td>
+<td>장비 수천만 원 이상 → 보유 기관(학내 로봇 실험실 등) 대여가 현실적</td>
+<td>실내 10 × 10 m 안</td>
+<td>TUM RGB-D·OpenLORIS office 와 같은 방식. 8자·원 주행을 그 공간 크기로 줄여야 함</td>
+</tr>
+<tr>
+<td><strong>로보틱 토탈스테이션 + 360° 프리즘</strong></td>
+<td>정지 1~3 mm, 주행 중 약 5 mm~1 cm(지연·동기 오차), 위치만 3 자유도, 10~20 Hz</td>
+<td>측량 장비 일 단위 대여(수십만 원) + 측량 인력</td>
+<td>실내외, 수백 m</td>
+<td>방향은 안 나옴(프리즘 2개면 yaw 일부). 시간 동기를 위해 기록 PC 와 같은 시계로 로그를 남겨야 함</td>
+</tr>
+<tr>
+<td><strong>바닥 기준점(측량) + 정지</strong></td>
+<td>기준점 5 mm~1 cm (레이저 거리측정기·줄자로 삼변측량, 또는 토탈스테이션으로 한 번 측량)</td>
+<td>가장 싸다(레이저 거리측정기 수십만 원, 마커)</td>
+<td>어디든</td>
+<td><strong>드문드문한 절대 GT</strong>: 로봇을 기준점마다 3~5 s 세워 그 순간 위치를 채점. 시작·끝을 같은 표시 위에 같은 방향으로 → 진짜 귀환 오차</td>
+</tr>
+<tr>
+<td><strong>AprilTag 보드 (위치 측량)</strong></td>
+<td>카메라 거리 1~3 m 에서 수 mm~1 cm, 6 자유도, 보일 때만</td>
+<td>보드 인쇄 + 보드 위치 측량</td>
+<td>실내</td>
+<td>카메라 SLAM 에 직접 6 자유도 검증점. 보드가 SLAM 특징점이 되어 결과를 바꿀 수 있음에 주의</td>
+</tr>
+<tr>
+<td><strong>RTK-GNSS</strong> (u-blox F9P 급 + 국토지리정보원 NTRIP)</td>
+<td>수평 1~2 cm, 수직 2~3 cm, 10~20 Hz, 위치만</td>
+<td>수신기 수십만 원, NTRIP 무료</td>
+<td><strong>실외 개활지만</strong></td>
+<td>건물·나무 근처는 멀티패스로 수 cm~수 m. 안테나-라이다 lever arm 측정 필요</td>
+</tr>
+<tr>
+<td><strong>지상 레이저 스캐너(TLS) 지도 + 정합</strong></td>
+<td>지도 mm 급, 궤적 1~2 cm·0.1°</td>
+<td>스캐너 대여(일 단위) + 정합 작업</td>
+<td>실내외 고정 구조물</td>
+<td>Hilti·Newer College 데이터셋 방식. 각 라이다 스캔을 TLS 지도에 정합 → 지금 파이프라인의 루프 대신 절대 정합. 우리 코드에 가장 쉽게 붙는다</td>
+</tr>
+</tbody>
+</table></div>
+<p>권장 순서
+1. <strong>바로 할 수 있는 것 — 녹화 규칙</strong>: 시작 10 s 정지(IMU 바이어스), 출발·도착을 바닥 표시 위 같은 방향으로,
+   경로 위 기준점 4~6 개를 레이저 거리측정기로 측량하고 지날 때마다 3~5 s 정지. 이것만으로 지금 pseudo-GT 의 <strong>절대 오차</strong>를
+   기준점에서 잴 수 있다.
+2. <strong>보정 시퀀스를 따로 녹화</strong>: 제자리 회전 + 경사로/요철(수직 lever arm 과 pitch/roll 이 관측되도록) → rig 를 세션마다가
+   아니라 하드웨어마다 한 번 정확히.
+3. 논문용 수치가 필요하면 <strong>TLS 지도 정합</strong>(실내외 공통, 지금 코드 재사용) 또는 <strong>모션캡처실 대여</strong>(실내, 가장 강력).
+   실외 cbnu 경로라면 RTK-GNSS 를 같이 붙인다.</p><p class="meta">원본: <code>objpose/docs/own_gt_261017.md</code></p></main></div></body></html>
