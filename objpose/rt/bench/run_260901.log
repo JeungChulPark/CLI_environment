@@ -1,0 +1,20 @@
+== [06:05:55] 260901_cbnu_bigeightcircle  (settings /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260901_cbnu_bigeightcircle/orbslam3_260901_slam_nf2000_260901_cbnu_bigeightcircle.yaml)
+   orb:     9445 live poses,     9445 final  [06:11:37]
+   orb_gyro:     9445 live poses,     9445 final  [06:17:15]
+   rtab:     9445 live poses,     9445 final  [06:20:16]
+   hdl:     3124 live poses,     3124 final  [06:25:47]
+== [06:25:47] 260901_cbnu_digut  (settings /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260901_cbnu_digut/orbslam3_260901_slam_nf2000_260901_cbnu_digut.yaml)
+   orb:     6893 live poses,     6893 final  [06:29:56]
+   orb_gyro:     6893 live poses,     6893 final  [06:33:53]
+   rtab:     6893 live poses,     6893 final  [06:35:47]
+   hdl:     2280 live poses,     2280 final  [06:39:49]
+== [06:39:49] 260901_cbnu_eightcircle  (settings /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260901_cbnu_eightcircle/orbslam3_260901_slam_nf2000_260901_cbnu_eightcircle.yaml)
+   orb:     4551 live poses,     4551 final  [06:42:33]
+   orb_gyro:     4551 live poses,     4551 final  [06:45:11]
+   rtab:     4551 live poses,     4551 final  [06:46:24]
+   hdl:     1504 live poses,     1504 final  [06:49:07]
+== [06:49:07] 260901_cbnu_longcircle  (settings /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260901_cbnu_longcircle/orbslam3_260901_slam_nf2000_260901_cbnu_longcircle.yaml)
+   orb:     4056 live poses,     4056 final  [06:51:34]
+   orb_gyro:     4056 live poses,     4056 final  [06:53:55]
+   rtab:     4056 live poses,     4056 final  [06:55:02]
+   hdl:     1341 live poses,     1341 final  [06:57:28]

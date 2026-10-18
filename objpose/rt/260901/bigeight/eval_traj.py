@@ -71,11 +71,14 @@ def evaluate(name, path, tg, Tg_cam, up, a, xyz_post=None):
 
     # --- RPE
     for d in a.rpe_s:
-        n = int(round(d / np.median(np.diff(tg))))
-        i = np.arange(0, len(t) - n)
-        good = np.abs((t[i + n] - t[i]) - d) < 0.06
-        i = i[good]
-        dG = inv(G[i]) @ G[i + n]; dQ = inv(Q[i]) @ Q[i + n]
+        # pair each sample with the one closest to d seconds later (by time, not index: some LiDAR bags have
+        # irregular header stamps, e.g. 260915, where a fixed index step never lands on d)
+        j = np.searchsorted(t, t + d).clip(0, len(t) - 1)
+        jm = (j - 1).clip(0)
+        j = np.where(np.abs(t[jm] - t - d) < np.abs(t[j] - t - d), jm, j)
+        good = np.abs((t[j] - t) - d) < 0.06
+        i, j = np.nonzero(good)[0], j[good]
+        dG = inv(G[i]) @ G[j]; dQ = inv(Q[i]) @ Q[j]
         Eerr = inv(dG) @ dQ
         res[f"rpe_{d:g}s"] = {"n": int(len(i)), "trans_cm": {k: v * 100 for k, v in stats(np.linalg.norm(Eerr[:, :3, 3], axis=1)).items()},
                               "rot_deg": stats(np.degrees(np.linalg.norm(rotvec(Eerr[:, :3, :3]), axis=1)))}

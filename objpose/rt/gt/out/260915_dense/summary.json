@@ -1,0 +1,106 @@
+{
+ "session": "/Users/user/Documents/DefenseMeta/Dataset/260915_dense",
+ "args": {
+  "session": "/Users/user/Documents/DefenseMeta/Dataset/260915_dense",
+  "out": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/out/260915_dense",
+  "rig": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/rig_260901_bigeight.json",
+  "deskew": "cv",
+  "gravity": false,
+  "gravity_sigma_deg": 0.5,
+  "threads": 3,
+  "submap_w": 10,
+  "loop_radius": 4.0,
+  "loop_gap_s": 15.0,
+  "min_inlier": 0.5,
+  "max_rms": 0.08,
+  "redo_odom": false,
+  "no_checks": false
+ },
+ "odometry": {
+  "messages": 5414,
+  "scans": 2707,
+  "deskew": "cv",
+  "ms_per_scan": 90.87
+ },
+ "path_m": 30.38,
+ "duration_s": 136.5,
+ "keyframes": 114,
+ "loops": {
+  "candidates": 90,
+  "accepted": 84,
+  "fwbw_cm_median": 0.54,
+  "fwbw_deg_median": 0.069,
+  "corr_cm_median": 0.9,
+  "corr_cm_max": 6.1,
+  "downweighted": 0
+ },
+ "pgo_minus_odom_cm": {
+  "median": 2.4,
+  "max": 4.4,
+  "end": 1.9
+ },
+ "start_end_gap_cm": {
+  "odom": 27.1,
+  "pgo": 28.8
+ },
+ "heldout_loops": {
+  "pgo_heldout_cm": {
+   "n": 84,
+   "median": 0.79,
+   "rms": 1.4,
+   "p90": 2.45,
+   "max": 4.91
+  },
+  "pgo_heldout_deg": {
+   "n": 84,
+   "median": 0.11,
+   "rms": 0.2,
+   "p90": 0.33,
+   "max": 0.6
+  },
+  "odom_cm": {
+   "n": 84,
+   "median": 0.94,
+   "rms": 1.91,
+   "p90": 3.61,
+   "max": 6.13
+  },
+  "odom_deg": {
+   "n": 84,
+   "median": 0.13,
+   "rms": 0.35,
+   "p90": 0.66,
+   "max": 1.08
+  }
+ },
+ "start_end_heldout_cm": {
+  "edges": 1,
+  "pgo_median": 1.43,
+  "odom_median": 1.06
+ },
+ "planes_odom": {
+  "other_pass": {
+   "n": 7088,
+   "median_cm": 1.21,
+   "p90_cm": 3.24
+  },
+  "same_pass": {
+   "n": 8349,
+   "median_cm": 0.65,
+   "p90_cm": 1.97
+  }
+ },
+ "planes_pgo": {
+  "other_pass": {
+   "n": 7350,
+   "median_cm": 1.09,
+   "p90_cm": 2.83
+  },
+  "same_pass": {
+   "n": 8352,
+   "median_cm": 0.64,
+   "p90_cm": 1.97
+  }
+ },
+ "wall_s": 398.2
+}

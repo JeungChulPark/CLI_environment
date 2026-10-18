@@ -1,0 +1,6 @@
+[rtab_stream] /Users/user/Documents/DefenseMeta/Dataset/260915_outlong_fast/SLAM/SLAM_0.db3 | 2791 frames | time-source=header domain=colour header stamp offset_ns=0 non_monotonic=0
+[rtab_stream] RTAB-Map 0.23.8 params: {"Icp/CorrespondenceRatio":"0.1","Icp/Iterations":"30","Icp/MaxCorrespondenceDistance":"0.05","Icp/MaxTranslation":"0.2","Icp/PointToPlane":"false","Icp/Strategy":"0","Icp/VoxelSize":"0.05","Kp/DetectorStrategy":"6","Kp/MaxFeatures":"500","Mem/IncrementalMemory":"true","Mem/STMSize":"10","Odom/ResetCountdown":"0","Odom/Strategy":"0","OdomF2M/MaxSize":"2000","Optimizer/Strategy":"1","RGBD/AngularUpdate":"0.1","RGBD/LinearUpdate":"0.1","RGBD/ProximityBySpace":"true","Reg/Strategy":"0","Rtabmap/DetectionRate":"1","Rtabmap/TimeThr":"0","Vis/CorType":"0","Vis/FeatureType":"6","Vis/MaxFeatures":"1000","Vis/MinInliers":"20"} | overrides:
+[rtab_stream] 1000/2791 ok=1000 loops=0 nodes=19
+[rtab_stream] 2000/2791 ok=2000 loops=10 nodes=51
+[rtab_stream] odom link covariance handed to the mapper: ON | n=92  lin var min 3.79e-05 med 0.00016 max 1e+04  (sigma med 0.0126 m) | unlinked(>=9999) 1
+[rtab_stream] done: 2791 processed, 2791 ok, loops 31, nodes 75, wall 40.3 s

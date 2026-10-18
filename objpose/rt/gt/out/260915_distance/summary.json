@@ -1,0 +1,101 @@
+{
+ "session": "/Users/user/Documents/DefenseMeta/Dataset/260915_distance",
+ "args": {
+  "session": "/Users/user/Documents/DefenseMeta/Dataset/260915_distance",
+  "out": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/out/260915_distance",
+  "rig": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/rig_260901_bigeight.json",
+  "deskew": "cv",
+  "gravity": false,
+  "gravity_sigma_deg": 0.5,
+  "threads": 3,
+  "submap_w": 10,
+  "loop_radius": 4.0,
+  "loop_gap_s": 15.0,
+  "min_inlier": 0.5,
+  "max_rms": 0.08,
+  "redo_odom": false,
+  "no_checks": false
+ },
+ "odometry": {
+  "messages": 7548,
+  "scans": 3774,
+  "deskew": "cv",
+  "ms_per_scan": 70.28
+ },
+ "path_m": 36.38,
+ "duration_s": 190.2,
+ "keyframes": 75,
+ "loops": {
+  "candidates": 66,
+  "accepted": 65,
+  "fwbw_cm_median": 0.6,
+  "fwbw_deg_median": 0.126,
+  "corr_cm_median": 1.1,
+  "corr_cm_max": 2.0,
+  "downweighted": 0
+ },
+ "pgo_minus_odom_cm": {
+  "median": 0.6,
+  "max": 1.4,
+  "end": 0.5
+ },
+ "start_end_gap_cm": {
+  "odom": 27.3,
+  "pgo": 27.5
+ },
+ "heldout_loops": {
+  "pgo_heldout_cm": {
+   "n": 65,
+   "median": 0.68,
+   "rms": 0.81,
+   "p90": 1.21,
+   "max": 2.14
+  },
+  "pgo_heldout_deg": {
+   "n": 65,
+   "median": 0.11,
+   "rms": 0.16,
+   "p90": 0.22,
+   "max": 0.42
+  },
+  "odom_cm": {
+   "n": 65,
+   "median": 1.1,
+   "rms": 1.17,
+   "p90": 1.64,
+   "max": 2.02
+  },
+  "odom_deg": {
+   "n": 65,
+   "median": 0.24,
+   "rms": 0.27,
+   "p90": 0.39,
+   "max": 0.57
+  }
+ },
+ "planes_odom": {
+  "other_pass": {
+   "n": 7456,
+   "median_cm": 0.91,
+   "p90_cm": 2.4
+  },
+  "same_pass": {
+   "n": 8253,
+   "median_cm": 0.64,
+   "p90_cm": 1.97
+  }
+ },
+ "planes_pgo": {
+  "other_pass": {
+   "n": 7448,
+   "median_cm": 0.92,
+   "p90_cm": 2.42
+  },
+  "same_pass": {
+   "n": 8256,
+   "median_cm": 0.64,
+   "p90_cm": 1.97
+  }
+ },
+ "wall_s": 509.8
+}

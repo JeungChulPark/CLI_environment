@@ -657,6 +657,9 @@ int main(int argc, char** argv) {
     // Live per-frame poses never receive later loop-closure / GBA corrections; the
     // optimized trajectory (keyframe-anchored, after shutdown) does. Use it for RT fits.
     slam.SaveTrajectoryTUM(a.out + ".optimized.txt");
+    // the active map's points after the final optimisation, same world frame as the optimized trajectory
+    std::ofstream mp(a.out + ".mappoints.xyz");
+    for (const auto& p : slam.GetAllMapPointsWorld()) mp << p.x() << " " << p.y() << " " << p.z() << "\n";
   }
   if (settings != a.settings) unlink(settings.c_str());
   if (!cam_settings.empty() && cam_settings != settings) unlink(cam_settings.c_str());

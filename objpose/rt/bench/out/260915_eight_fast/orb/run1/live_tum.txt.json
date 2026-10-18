@@ -1,0 +1,51 @@
+{
+ "anchored_segments": [
+  {
+   "first_t_ns": 1789462247428049152,
+   "frames": 2003,
+   "last_t_ns": 1789462314181287680
+  }
+ ],
+ "db3": "/Users/user/Documents/DefenseMeta/Dataset/260915_eight_fast/SLAM/SLAM_0.db3",
+ "features": 2000,
+ "frames": 2003,
+ "gyro": null,
+ "input_kind": "converted",
+ "load_atlas": "",
+ "localization": false,
+ "map_segments": [
+  {
+   "first_t_ns": 1789462247428049152,
+   "last_t_ns": 1789462314181287680,
+   "map_id": 0,
+   "ok_frames": 2003
+  }
+ ],
+ "non_monotonic": 0,
+ "offset_ns": 0,
+ "ok_frames": 2003,
+ "ok_not_vo_frames": 2003,
+ "ok_not_vo_ratio": 1.0,
+ "ok_ratio": 1.0,
+ "pace": 1.0,
+ "prep_ms_mean": 0.38470080479281077,
+ "processed": 2003,
+ "save_atlas": "",
+ "session": "/Users/user/Documents/DefenseMeta/Dataset/260915_eight_fast/SLAM",
+ "settings": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260915_eight_fast/orbslam3_260915_slam_nf2000_260915_eight_fast.yaml",
+ "states": {
+  "OK": 2003
+ },
+ "time_domain": "colour header stamp",
+ "time_source": "header",
+ "track_ms": {
+  "max": 16.120541,
+  "mean": 9.3946374178732,
+  "over_33ms": 0,
+  "p50": 9.342333,
+  "p95": 11.123125,
+  "p99": 12.184625
+ },
+ "trajectory": "TUM T_world_camera, state OK only, clock = time_source (+ offset_ns)",
+ "wall_s": 66.770230125
+}

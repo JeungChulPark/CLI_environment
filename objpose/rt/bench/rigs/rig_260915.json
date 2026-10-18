@@ -1,0 +1,54 @@
+{
+ "cam": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260915_eightcircle/orb/run1/final_tum.txt",
+ "lidar": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/out/260915_eightcircle/pgo_tum.txt",
+ "imu": "",
+ "T_lidar_cam": [
+  [
+   0.3630435101083498,
+   0.03960279073674955,
+   0.93093019541428,
+   0.33270511219728627
+  ],
+  [
+   -0.9312986010900539,
+   0.04727265910639844,
+   0.361176149972169,
+   0.14663766301850853
+  ],
+  [
+   -0.029703962293219477,
+   -0.9980966459551255,
+   0.05404405570653931,
+   0.09963910180740625
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "T_lidar_cam_fit": {
+  "windows": 452,
+  "win_s": 2.0,
+  "rot_resid_deg_rms": 0.37143052354961364,
+  "trans_resid_m_rms": 0.017197185549445704,
+  "note": "lever arm along the (vertical) rotation axis is unobservable in planar motion; regularised to 0",
+  "cam_z_in_lidar": [
+   0.93093019541428,
+   0.361176149972169,
+   0.05404405570653931
+  ],
+  "cam_y_in_lidar": [
+   0.03960279073674955,
+   0.04727265910639844,
+   -0.9980966459551255
+  ]
+ },
+ "time": {
+  "lidar_minus_cam_s": 0.0,
+  "corr_cl": null,
+  "note": "fixed to 0: camera and LiDAR stamped on the same host (info.json clock offset < 2 ms); the |w| cross-correlation gave +70 ms at corr 0.79 because the 260915 velodyne header stamps are irregular",
+  "rejected_estimate_s": 0.06988177528054952
+ }
+}

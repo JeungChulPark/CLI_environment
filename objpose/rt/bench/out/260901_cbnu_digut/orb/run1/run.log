@@ -1,0 +1,82 @@
+[slam_stream] time-source=header domain=colour header stamp offset_ns=0 non_monotonic=0
+[slam_stream] /Users/user/Documents/DefenseMeta/Dataset/260901_cbnu_digut/SLAM/SLAM_0.db3 | 6893 frames | color 640x480 fx=385.238 | depth fx=385.238 | t=(0.000000,0.000000,0.000000) | units=0.001
+[slam_stream] converted bag: 6893 pairs (inexact 0, max dt 0.000 ms, unpaired colour 0 depth 0) K fx=385.238 fy=384.667 cx=320.789 cy=243.438 D=[-0.055259 0.068334 -0.000608 -0.000944 -0.022290] plumb_bob, depth pre-aligned
+
+ORB-SLAM3 Copyright (C) 2017-2020 Carlos Campos, Richard Elvira, Juan J. Gómez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+ORB-SLAM2 Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+This program comes with ABSOLUTELY NO WARRANTY;
+This is free software, and you are welcome to redistribute it
+under certain conditions. See LICENSE.txt.
+
+Input sensor was set to: RGB-D
+Loading settings from /tmp/slam_stream_91316_settings.yaml
+	-Loaded camera 1
+Camera.newHeight optional parameter does not exist...
+Camera.newWidth optional parameter does not exist...
+	-Loaded image info
+	-Loaded RGB-D calibration
+	-Loaded ORB settings
+Viewer.imageViewScale optional parameter does not exist...
+	-Loaded viewer settings
+System.LoadAtlasFromFile optional parameter does not exist...
+System.SaveAtlasToFile optional parameter does not exist...
+	-Loaded Atlas settings
+System.thFarPoints optional parameter does not exist...
+	-Loaded misc parameters
+----------------------------------
+SLAM settings: 
+	-Camera 1 parameters (Pinhole): [ 385.238 384.667 320.789 243.438 ]
+	-Camera 1 distortion parameters: [  -0.055259 0.068334 -0.000608 -0.000944 -0.02229 ]
+	-Original image size: [ 640 , 480 ]
+	-Current image size: [ 640 , 480 ]
+	-Sequence FPS: 30
+	-RGB-D depth map factor: 1000
+	-Features per image: 2000
+	-ORB scale factor: 1.2
+	-ORB number of scales: 8
+	-Initial FAST threshold: 20
+	-Min FAST threshold: 7
+
+
+Loading ORB Vocabulary. This could take a while...
+Vocabulary loaded!
+
+Initialization of Atlas from scratch 
+Creation of new map with id: 0
+Creation of new map with last KF id: 0
+Seq. Name: 
+There are 1 cameras in the atlas
+Camera 0 is pinhole
+First KF:0; Map init KF:0
+New Map created with 1815 points
+[slam_stream] 500/6893 ok=500 track mean 9.48 ms
+[slam_stream] 1000/6893 ok=1000 track mean 8.95 ms
+[slam_stream] 1500/6893 ok=1500 track mean 8.77 ms
+[slam_stream] 2000/6893 ok=2000 track mean 8.59 ms
+[slam_stream] 2500/6893 ok=2500 track mean 8.65 ms
+[slam_stream] 3000/6893 ok=3000 track mean 8.57 ms
+*Loop detected
+LOOP_GAP|cur_id=452|matched_id=2|ts_cur=1788248749.919081|ts_matched=1788248639.628224|cur_xyz=-0.361463,-0.007349,-0.428878|matched_xyz=0.012699,0.010169,0.267397|gap_m=0.790635|sim3t=-0.095586,0.032863,0.483312|sim3_scale=1.000000|corr_m=0.074010|resid_m=0.729209
+Local Mapping STOP
+[slam_stream] 3500/6893 ok=3500 track mean 8.58 ms
+Local Mapping RELEASE
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] 4000/6893 ok=4000 track mean 8.75 ms
+[slam_stream] 4500/6893 ok=4500 track mean 8.89 ms
+*Loop detected
+LOOP_GAP|cur_id=670|matched_id=313|ts_cur=1788248789.795832|ts_matched=1788248724.914074|cur_xyz=-2.928053,0.205020,3.534459|matched_xyz=-3.887805,0.155292,3.224148|gap_m=1.009896|sim3t=-2.515929,0.210508,3.917158|sim3_scale=1.000000|corr_m=0.066442|resid_m=0.979954
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] 5000/6893 ok=5000 track mean 9.14 ms
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] 5500/6893 ok=5500 track mean 9.27 ms
+[slam_stream] 6000/6893 ok=6000 track mean 9.30 ms
+[slam_stream] 6500/6893 ok=6500 track mean 9.53 ms
+[slam_stream] done: 6893 processed, 6893 ok, wall 229.9 s
+Shutdown
+Shutdown: waiting for background threads (localMapper=busy, loopCloser=busy, GBA=idle) ...
+Shutdown: background threads stopped after 1690 ms.
+
+Saving camera trajectory to /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260901_cbnu_digut/orb/run1/live_tum.txt.optimized.txt ...

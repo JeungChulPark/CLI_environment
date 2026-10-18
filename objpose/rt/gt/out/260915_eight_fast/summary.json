@@ -1,0 +1,106 @@
+{
+ "session": "/Users/user/Documents/DefenseMeta/Dataset/260915_eight_fast",
+ "args": {
+  "session": "/Users/user/Documents/DefenseMeta/Dataset/260915_eight_fast",
+  "out": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/out/260915_eight_fast",
+  "rig": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/rig_260901_bigeight.json",
+  "deskew": "cv",
+  "gravity": false,
+  "gravity_sigma_deg": 0.5,
+  "threads": 3,
+  "submap_w": 10,
+  "loop_radius": 4.0,
+  "loop_gap_s": 15.0,
+  "min_inlier": 0.5,
+  "max_rms": 0.08,
+  "redo_odom": false,
+  "no_checks": false
+ },
+ "odometry": {
+  "messages": 665,
+  "scans": 665,
+  "deskew": "cv",
+  "ms_per_scan": 43.53
+ },
+ "path_m": 24.14,
+ "duration_s": 67.0,
+ "keyframes": 104,
+ "loops": {
+  "candidates": 83,
+  "accepted": 80,
+  "fwbw_cm_median": 0.56,
+  "fwbw_deg_median": 0.09,
+  "corr_cm_median": 0.6,
+  "corr_cm_max": 2.8,
+  "downweighted": 0
+ },
+ "pgo_minus_odom_cm": {
+  "median": 1.3,
+  "max": 1.8,
+  "end": 1.1
+ },
+ "start_end_gap_cm": {
+  "odom": 13.4,
+  "pgo": 14.3
+ },
+ "heldout_loops": {
+  "pgo_heldout_cm": {
+   "n": 80,
+   "median": 0.52,
+   "rms": 0.79,
+   "p90": 1.25,
+   "max": 2.41
+  },
+  "pgo_heldout_deg": {
+   "n": 80,
+   "median": 0.1,
+   "rms": 0.14,
+   "p90": 0.23,
+   "max": 0.32
+  },
+  "odom_cm": {
+   "n": 80,
+   "median": 0.6,
+   "rms": 0.93,
+   "p90": 1.35,
+   "max": 2.81
+  },
+  "odom_deg": {
+   "n": 80,
+   "median": 0.12,
+   "rms": 0.18,
+   "p90": 0.31,
+   "max": 0.49
+  }
+ },
+ "start_end_heldout_cm": {
+  "edges": 4,
+  "pgo_median": 1.58,
+  "odom_median": 0.58
+ },
+ "planes_odom": {
+  "other_pass": {
+   "n": 7671,
+   "median_cm": 0.88,
+   "p90_cm": 2.47
+  },
+  "same_pass": {
+   "n": 8373,
+   "median_cm": 0.62,
+   "p90_cm": 1.94
+  }
+ },
+ "planes_pgo": {
+  "other_pass": {
+   "n": 7745,
+   "median_cm": 0.83,
+   "p90_cm": 2.32
+  },
+  "same_pass": {
+   "n": 8379,
+   "median_cm": 0.62,
+   "p90_cm": 1.95
+  }
+ },
+ "wall_s": 68.0
+}

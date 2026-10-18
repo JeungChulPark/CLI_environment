@@ -1,0 +1,4 @@
+[hub_record] listening on 127.0.0.1:17101
+[hub_record] hello from lidar_hdl_graph_slam: 1196 frames
+[hub_record] end: {"type": "end", "stopped": false, "processed": 1196, "dropped": 0, "poses": 1196, "kf_updates": 62, "keyframes": 104, "loops": 12, "world_anchored_poses": 14}
+[hub_record] 1260 lines, 1196 OK poses (1182 re-anchored), 104 keyframes -> /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260915_outlong_middle/hdl/run1

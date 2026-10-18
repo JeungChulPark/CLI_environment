@@ -1,0 +1,122 @@
+  odom 0/1007
+  odom 500/1007
+  odom 1000/1007
+[pseudo_gt] 1007 scans, 107 keyframes, path 23.7 m
+  loop candidates: 85
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/pseudo_gt.py:225: RuntimeWarning: divide by zero encountered in matmul
+  parts.append(q @ T[:3, :3].T + T[:3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/pseudo_gt.py:225: RuntimeWarning: overflow encountered in matmul
+  parts.append(q @ T[:3, :3].T + T[:3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/pseudo_gt.py:225: RuntimeWarning: invalid value encountered in matmul
+  parts.append(q @ T[:3, :3].T + T[:3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/pseudo_gt.py:243: RuntimeWarning: divide by zero encountered in matmul
+  q = src @ T[:3, :3].T + T[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/pseudo_gt.py:243: RuntimeWarning: overflow encountered in matmul
+  q = src @ T[:3, :3].T + T[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/pseudo_gt.py:243: RuntimeWarning: invalid value encountered in matmul
+  q = src @ T[:3, :3].T + T[:3, 3]
+  loop 0/85 accepted so far 1
+  loop 50/85 accepted so far 50
+[pseudo_gt] loops {'candidates': 85, 'accepted': 78, 'fwbw_cm_median': 0.68, 'fwbw_deg_median': 0.103, 'corr_cm_median': 0.7, 'corr_cm_max': 3.6}
+  GN round 0: cost 18.9  loop edges w<0.1: 0/78
+  GN round 1: cost 18.3  loop edges w<0.1: 0/78
+  GN round 2: cost 18.2  loop edges w<0.1: 0/78
+  GN round 3: cost 18.2  loop edges w<0.1: 0/78
+[pseudo_gt] checks: held-out loops
+[pseudo_gt] checks: cross-pass planes
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/pseudo_gt.py:408: RuntimeWarning: divide by zero encountered in matmul
+  P_.append(q @ T[k, :3, :3].T + T[k, :3, 3]); Ts_.append(np.full(len(q), t_s[k]))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/pseudo_gt.py:408: RuntimeWarning: overflow encountered in matmul
+  P_.append(q @ T[k, :3, :3].T + T[k, :3, 3]); Ts_.append(np.full(len(q), t_s[k]))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/pseudo_gt.py:408: RuntimeWarning: invalid value encountered in matmul
+  P_.append(q @ T[k, :3, :3].T + T[k, :3, 3]); Ts_.append(np.full(len(q), t_s[k]))
+{
+ "session": "/Users/user/Documents/DefenseMeta/Dataset/260915_eight_middle",
+ "odometry": {
+  "messages": 1007,
+  "scans": 1007,
+  "deskew": "cv",
+  "ms_per_scan": 44.98
+ },
+ "path_m": 23.71,
+ "duration_s": 101.5,
+ "keyframes": 107,
+ "loops": {
+  "candidates": 85,
+  "accepted": 78,
+  "fwbw_cm_median": 0.68,
+  "fwbw_deg_median": 0.103,
+  "corr_cm_median": 0.7,
+  "corr_cm_max": 3.6,
+  "downweighted": 0
+ },
+ "pgo_minus_odom_cm": {
+  "median": 1.5,
+  "max": 2.4,
+  "end": 0.6
+ },
+ "start_end_gap_cm": {
+  "odom": 4.5,
+  "pgo": 4.8
+ },
+ "heldout_loops": {
+  "pgo_heldout_cm": {
+   "n": 78,
+   "median": 0.66,
+   "rms": 0.85,
+   "p90": 1.22,
+   "max": 2.34
+  },
+  "pgo_heldout_deg": {
+   "n": 78,
+   "median": 0.09,
+   "rms": 0.13,
+   "p90": 0.19,
+   "max": 0.41
+  },
+  "odom_cm": {
+   "n": 78,
+   "median": 0.71,
+   "rms": 1.43,
+   "p90": 2.45,
+   "max": 3.63
+  },
+  "odom_deg": {
+   "n": 78,
+   "median": 0.14,
+   "rms": 0.21,
+   "p90": 0.36,
+   "max": 0.61
+  }
+ },
+ "start_end_heldout_cm": {
+  "edges": 3,
+  "pgo_median": 1.33,
+  "odom_median": 0.2
+ },
+ "planes_odom": {
+  "other_pass": {
+   "n": 7640,
+   "median_cm": 0.87,
+   "p90_cm": 2.34
+  },
+  "same_pass": {
+   "n": 8374,
+   "median_cm": 0.62,
+   "p90_cm": 1.93
+  }
+ },
+ "planes_pgo": {
+  "other_pass": {
+   "n": 7691,
+   "median_cm": 0.83,
+   "p90_cm": 2.3
+  },
+  "same_pass": {
+   "n": 8376,
+   "median_cm": 0.62,
+   "p90_cm": 1.93
+  }
+ },
+ "wall_s": 103.2
+}

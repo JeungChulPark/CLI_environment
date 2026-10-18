@@ -1,0 +1,48 @@
+== [06:57:42] 260910_object  (settings /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260910_object/orbslam3_260915_slam_nf2000_260910_object.yaml)
+   orb:     4787 live poses,     4787 final  [07:00:35]
+   rtab:     4787 live poses,     4787 final  [07:01:52]
+   hdl:     1583 live poses,     1583 final  [07:04:42]
+== [07:04:42] 260915_dense  (settings /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260915_dense/orbslam3_260915_slam_nf2000_260915_dense.yaml)
+   orb:     4093 live poses,     4093 final  [07:07:10]
+   rtab:     4093 live poses,     4093 final  [07:08:18]
+   hdl:     2707 live poses,     2707 final  [07:10:49]
+== [07:10:49] 260915_distance  (settings /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260915_distance/orbslam3_260915_slam_nf2000_260915_distance.yaml)
+   orb:     5710 live poses,     5710 final  [07:14:17]
+   rtab:     5710 live poses,     5710 final  [07:15:54]
+   hdl:     3774 live poses,     3774 final  [07:19:20]
+== [07:19:20] 260915_eightcircle  (settings /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260915_eightcircle/orbslam3_260915_slam_nf2000_260915_eightcircle.yaml)
+   orb:     3860 live poses,     3860 final  [07:21:40]
+   rtab:     3860 live poses,     3860 final  [07:22:39]
+   hdl:     2463 live poses,     2463 final  [07:25:02]
+== [07:25:02] 260915_height  (settings /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260915_height/orbslam3_260915_slam_nf2000_260915_height.yaml)
+   orb:     3468 live poses,     3468 final  [07:27:08]
+   rtab:     3468 live poses,     3468 final  [07:28:01]
+   hdl:     2293 live poses,     2293 final  [07:30:09]
+== [07:30:09] 260915_longcircle  (settings /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260915_longcircle/orbslam3_260915_slam_nf2000_260915_longcircle.yaml)
+   orb:     2867 live poses,     2867 final  [07:31:54]
+   rtab:     2867 live poses,     2867 final  [07:32:39]
+   hdl:     1896 live poses,     1896 final  [07:34:27]
+== [07:34:27] 260915_eight_fast  (settings /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260915_eight_fast/orbslam3_260915_slam_nf2000_260915_eight_fast.yaml)
+   orb:     2003 live poses,     2003 final  [07:35:41]
+   rtab:     2003 live poses,     2003 final  [07:36:14]
+   hdl:      665 live poses,      665 final  [07:37:31]
+== [07:37:31] 260915_eight_middle  (settings /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260915_eight_middle/orbslam3_260915_slam_nf2000_260915_eight_middle.yaml)
+   orb:     3038 live poses,     3038 final  [07:39:22]
+   rtab:     3038 live poses,     3038 final  [07:40:09]
+   hdl:     1007 live poses,     1007 final  [07:42:02]
+== [07:42:02] 260915_inlong_fast  (settings /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260915_inlong_fast/orbslam3_260915_slam_nf2000_260915_inlong_fast.yaml)
+   orb:     1643 live poses,     1643 final  [07:43:03]
+   rtab:     1643 live poses,     1643 final  [07:43:30]
+   hdl:      545 live poses,      545 final  [07:44:35]
+== [07:44:35] 260915_inlong_middle  (settings /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260915_inlong_middle/orbslam3_260915_slam_nf2000_260915_inlong_middle.yaml)
+   orb:     2750 live poses,     2750 final  [07:46:16]
+   rtab:     2750 live poses,     2750 final  [07:46:58]
+   hdl:      891 live poses,      891 final  [07:48:41]
+== [07:48:41] 260915_outlong_fast  (settings /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260915_outlong_fast/orbslam3_260915_slam_nf2000_260915_outlong_fast.yaml)
+   orb:     2791 live poses,     2791 final  [07:50:23]
+   rtab:     2791 live poses,     2791 final  [07:51:07]
+   hdl:     1846 live poses,     1846 final  [07:52:52]
+== [07:52:52] 260915_outlong_middle  (settings /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out/260915_outlong_middle/orbslam3_260915_slam_nf2000_260915_outlong_middle.yaml)
+   orb:     3614 live poses,     3614 final  [07:55:03]
+   rtab:     3614 live poses,     3614 final  [07:56:00]
+   hdl:     1196 live poses,     1196 final  [07:58:12]

@@ -1,0 +1,319 @@
+[07:58:26] orb rep1
+       9445 live,     9445 final,    22594 map points
+[08:04:06] orb_gyro rep1
+       9445 live,     9445 final,    22587 map points
+[08:09:31] rtab rep1
+objpose/rt/bench/run_orb_vs_rtab.sh: line 35: /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out_cmp/260901_cbnu_bigeightcircle/rtab/rep1/live_tum.txt.mappoints.xyz: No such file or directory
+       9445 live,     9445 final, - map points
+[08:12:17] rtab_imu rep1
+objpose/rt/bench/run_orb_vs_rtab.sh: line 35: /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out_cmp/260901_cbnu_bigeightcircle/rtab_imu/rep1/live_tum.txt.mappoints.xyz: No such file or directory
+       9445 live,     9445 final, - map points
+[08:15:13] orb rep2
+       9445 live,     9445 final,    22821 map points
+[08:20:38] orb_gyro rep2
+       9445 live,     9445 final,    22918 map points
+[08:26:03] rtab rep2
+objpose/rt/bench/run_orb_vs_rtab.sh: line 35: /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out_cmp/260901_cbnu_bigeightcircle/rtab/rep2/live_tum.txt.mappoints.xyz: No such file or directory
+       9445 live,     9445 final, - map points
+[08:28:50] rtab_imu rep2
+objpose/rt/bench/run_orb_vs_rtab.sh: line 35: /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out_cmp/260901_cbnu_bigeightcircle/rtab_imu/rep2/live_tum.txt.mappoints.xyz: No such file or directory
+       9445 live,     9445 final, - map points
+[08:31:49] orb rep3
+       9445 live,     9445 final,    22348 map points
+[08:37:15] orb_gyro rep3
+       9445 live,     9445 final,    22195 map points
+[08:42:39] rtab rep3
+objpose/rt/bench/run_orb_vs_rtab.sh: line 35: /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out_cmp/260901_cbnu_bigeightcircle/rtab/rep3/live_tum.txt.mappoints.xyz: No such file or directory
+       9445 live,     9445 final, - map points
+[08:45:29] rtab_imu rep3
+objpose/rt/bench/run_orb_vs_rtab.sh: line 35: /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/out_cmp/260901_cbnu_bigeightcircle/rtab_imu/rep3/live_tum.txt.mappoints.xyz: No such file or directory
+       9445 live,     9445 final, - map points
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:57: RuntimeWarning: divide by zero encountered in matmul
+  pts.append(q @ T[:3, :3].T + T[:3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:57: RuntimeWarning: overflow encountered in matmul
+  pts.append(q @ T[:3, :3].T + T[:3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:57: RuntimeWarning: invalid value encountered in matmul
+  pts.append(q @ T[:3, :3].T + T[:3, 3])
+reference map 467186 points, 630 depth frames
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: divide by zero encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: overflow encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: invalid value encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: divide by zero encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: overflow encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: invalid value encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: divide by zero encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: overflow encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: invalid value encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: divide by zero encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: overflow encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: invalid value encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: divide by zero encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: overflow encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: invalid value encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: divide by zero encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: overflow encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: invalid value encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+orb_rep1 {"loc_live": {"ate_cm": 4.103246957533019, "ate_max_cm": 11.01703416259691, "rot_deg": 0.5534281327796172, "rot_max_deg": 1.1983140294333714, "rpe1_cm": 1.5708481044697256, "rpe1_deg": 0.2623229244724982, "rpe10_cm": 3.8593469623683387, "coverage": 0.9996798975672215}, "loc_final": {"ate_cm": 2.4468923953877066, "ate_max_cm": 7.465400131143489, "rot_deg": 0.47850152598234813, "rot_max_deg": 1.2852178715527192, "rpe1_cm": 1.1603904402410268, "rpe1_deg": 0.25375698109907685, "rpe10_cm": 3.012809880479252, "coverage": 0.9996798975672215}, "native": {"points": 22594, "verified": 0.8915641320704611, "median_cm": 1.7852102689502602, "p90_cm": 12.200575457666908, "lt5cm": 0.7189237490071485}, "dense": {"points": 464527, "verified": 0.6739672828490055, "median_cm": 2.263350581397991, "p90_cm": 13.507591471259667, "lt5cm": 0.6767717742656735}}
+orb_rep2 {"loc_live": {"ate_cm": 3.7815901179548495, "ate_max_cm": 10.487262154142238, "rot_deg": 0.5643329921637359, "rot_max_deg": 1.2915684533746634, "rpe1_cm": 1.4409054301342206, "rpe1_deg": 0.2599648755416474, "rpe10_cm": 3.6707593465683246, "coverage": 0.9996798975672215}, "loc_final": {"ate_cm": 2.3220295958780843, "ate_max_cm": 7.05599182098285, "rot_deg": 0.4747013285650982, "rot_max_deg": 1.251505792365561, "rpe1_cm": 1.1487804733812736, "rpe1_deg": 0.2551813335052344, "rpe10_cm": 2.947987142904803, "coverage": 0.9996798975672215}, "native": {"points": 22821, "verified": 0.8912405240786995, "median_cm": 1.7165103186991684, "p90_cm": 12.048014291301085, "lt5cm": 0.7284035596637003}, "dense": {"points": 465074, "verified": 0.6739035078288617, "median_cm": 2.2449635948566136, "p90_cm": 13.474525830334185, "lt5cm": 0.6778233332801556}}
+orb_rep3 {"loc_live": {"ate_cm": 4.474189610898027, "ate_max_cm": 11.546937685378044, "rot_deg": 0.5619232515049486, "rot_max_deg": 1.1945530638209974, "rpe1_cm": 1.5198572229166283, "rpe1_deg": 0.2653297949245931, "rpe10_cm": 3.924705450328056, "coverage": 0.9996798975672215}, "loc_final": {"ate_cm": 2.3947771988946442, "ate_max_cm": 6.814205738613055, "rot_deg": 0.4842605884046187, "rot_max_deg": 1.380715493539318, "rpe1_cm": 1.1751328573608282, "rpe1_deg": 0.2559039503776168, "rpe10_cm": 2.9998727701400036, "coverage": 0.9996798975672215}, "native": {"points": 22348, "verified": 0.8903257562197959, "median_cm": 1.7147262500615164, "p90_cm": 12.031630625467804, "lt5cm": 0.72417952455144}, "dense": {"points": 465707, "verified": 0.6745335586538317, "median_cm": 2.2504219944731187, "p90_cm": 13.4907973758638, "lt5cm": 0.6778264122113105}}
+orb_gyro_rep1 {"loc_live": {"ate_cm": 4.347531727542979, "ate_max_cm": 11.984065623940847, "rot_deg": 0.5692039706200902, "rot_max_deg": 1.1711291634622938, "rpe1_cm": 1.4895046428061718, "rpe1_deg": 0.2557467142604497, "rpe10_cm": 3.8243111364253157, "coverage": 0.9996798975672215}, "loc_final": {"ate_cm": 2.2772505371285816, "ate_max_cm": 6.89613515192318, "rot_deg": 0.47289973322760714, "rot_max_deg": 1.2918050587651386, "rpe1_cm": 1.0966498610726005, "rpe1_deg": 0.24803433169416014, "rpe10_cm": 2.9077348296950025, "coverage": 0.9996798975672215}, "native": {"points": 22587, "verified": 0.8895825032098109, "median_cm": 1.7619507100691834, "p90_cm": 12.144045210934387, "lt5cm": 0.7281640372268949}, "dense": {"points": 464888, "verified": 0.6743064996300184, "median_cm": 2.2545614403910155, "p90_cm": 13.488537901359315, "lt5cm": 0.6778519636209355}}
+orb_gyro_rep2 {"loc_live": {"ate_cm": 4.205895363919436, "ate_max_cm": 37.92205025139378, "rot_deg": 0.5624161158183094, "rot_max_deg": 2.851545694041538, "rpe1_cm": 2.252859146011096, "rpe1_deg": 0.27615807770819256, "rpe10_cm": 4.249652587995177, "coverage": 0.9996798975672215}, "loc_final": {"ate_cm": 2.361312187460806, "ate_max_cm": 7.237339467367154, "rot_deg": 0.4819120886243072, "rot_max_deg": 1.3399047542054092, "rpe1_cm": 1.128105408408578, "rpe1_deg": 0.2512624157319726, "rpe10_cm": 2.897364893671869, "coverage": 0.9996798975672215}, "native": {"points": 22918, "verified": 0.8921808185705559, "median_cm": 1.758661639311876, "p90_cm": 11.98834645968758, "lt5cm": 0.7271482369051695}, "dense": {"points": 464987, "verified": 0.6739349702249741, "median_cm": 2.2558694317303316, "p90_cm": 13.513077435347201, "lt5cm": 0.6768080007403365}}
+orb_gyro_rep3 {"loc_live": {"ate_cm": 3.8036682845103984, "ate_max_cm": 9.463618255118545, "rot_deg": 0.5256948846047051, "rot_max_deg": 1.1198376907187093, "rpe1_cm": 1.461727984181736, "rpe1_deg": 0.25661215968613454, "rpe10_cm": 3.662054960203719, "coverage": 0.9996798975672215}, "loc_final": {"ate_cm": 2.6442723870018345, "ate_max_cm": 29.185810478121173, "rot_deg": 0.4705159730236643, "rot_max_deg": 1.3189333762244542, "rpe1_cm": 1.506963183479051, "rpe1_deg": 0.2504102443967485, "rpe10_cm": 3.167824742678821, "coverage": 0.9996798975672215}, "native": {"points": 22195, "verified": 0.8897499436810092, "median_cm": 1.786327090714511, "p90_cm": 12.041048442699056, "lt5cm": 0.7200222807372898}, "dense": {"points": 465150, "verified": 0.6738277974846824, "median_cm": 2.2747267950425107, "p90_cm": 13.543961105547517, "lt5cm": 0.6760499121018662}}
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: divide by zero encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: overflow encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: invalid value encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: divide by zero encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: overflow encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: invalid value encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: divide by zero encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: overflow encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: invalid value encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: divide by zero encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: overflow encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: invalid value encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+rtab_rep1 {"loc_live": {"ate_cm": 11.743092809675908, "ate_max_cm": 25.194927229905538, "rot_deg": 1.4601760186452315, "rot_max_deg": 4.697724384709839, "rpe1_cm": 2.7931823882586326, "rpe1_deg": 0.6282477685762325, "rpe10_cm": 8.114897268566498, "coverage": 0.9996798975672215}, "loc_final": {"ate_cm": 4.317968130693887, "ate_max_cm": 9.678393243411765, "rot_deg": 1.1052225343198074, "rot_max_deg": 2.776780877258224, "rpe1_cm": 1.42951923915595, "rpe1_deg": 0.5572989612029576, "rpe10_cm": 5.372335274817385, "coverage": 0.9996798975672215}, "native": {"points": 407475, "verified": 0.669906129210381, "median_cm": 2.7203543376563135, "p90_cm": 14.427349444136784, "lt5cm": 0.6378100157526468}, "dense": {"points": 511294, "verified": 0.6633834936455346, "median_cm": 2.994857356098113, "p90_cm": 14.947412518269216, "lt5cm": 0.6166800320769847}}
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: divide by zero encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: overflow encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: invalid value encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: divide by zero encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: overflow encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: invalid value encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: divide by zero encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: overflow encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: invalid value encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: divide by zero encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: overflow encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: invalid value encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: divide by zero encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: overflow encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: invalid value encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: divide by zero encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: overflow encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: invalid value encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: divide by zero encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: overflow encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: invalid value encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+rtab_rep2 {"loc_live": {"ate_cm": 8.471677688825165, "ate_max_cm": 25.24513596505425, "rot_deg": 1.4356585825394519, "rot_max_deg": 7.869401310435831, "rpe1_cm": 2.8562189538113287, "rpe1_deg": 0.8445727766035968, "rpe10_cm": 8.688730864004745, "coverage": 0.9996798975672215}, "loc_final": {"ate_cm": 5.535170641010195, "ate_max_cm": 10.190484498226501, "rot_deg": 1.8130610961742457, "rot_max_deg": 5.548386004638207, "rpe1_cm": 1.4489742583391347, "rpe1_deg": 0.6218590131189106, "rpe10_cm": 7.342976261878858, "coverage": 0.9996798975672215}, "native": {"points": 417673, "verified": 0.6746066899224992, "median_cm": 2.755257961781627, "p90_cm": 14.55499908498882, "lt5cm": 0.6368498571504623}, "dense": {"points": 526792, "verified": 0.6676866770945649, "median_cm": 3.072699381684225, "p90_cm": 15.050728334626298, "lt5cm": 0.6145076364959685}}
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: divide by zero encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: overflow encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: invalid value encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: divide by zero encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: overflow encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: invalid value encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: divide by zero encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: overflow encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: invalid value encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: divide by zero encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: overflow encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: invalid value encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: divide by zero encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: overflow encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: invalid value encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: divide by zero encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: overflow encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: invalid value encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: divide by zero encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: overflow encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: invalid value encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+rtab_rep3 {"loc_live": {"ate_cm": 8.15554692385178, "ate_max_cm": 19.64963153366348, "rot_deg": 1.3394996474936995, "rot_max_deg": 7.204194527563972, "rpe1_cm": 2.4797883407449968, "rpe1_deg": 0.5505510269457053, "rpe10_cm": 7.745665012482142, "coverage": 0.9996798975672215}, "loc_final": {"ate_cm": 4.4694587474432135, "ate_max_cm": 12.156906409686908, "rot_deg": 1.3709042197090935, "rot_max_deg": 5.074022314328402, "rpe1_cm": 1.42838992997104, "rpe1_deg": 0.5097423362375427, "rpe10_cm": 5.733360937377848, "coverage": 0.9996798975672215}, "native": {"points": 404690, "verified": 0.685492599273518, "median_cm": 2.5826652786459254, "p90_cm": 14.29553068173441, "lt5cm": 0.6434148486727322}, "dense": {"points": 508227, "verified": 0.6791905979021186, "median_cm": 2.8732049266144135, "p90_cm": 14.862436949277225, "lt5cm": 0.621765845942587}}
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: divide by zero encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: overflow encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: invalid value encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: divide by zero encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: overflow encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: invalid value encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: divide by zero encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: overflow encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: invalid value encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: divide by zero encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: overflow encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: invalid value encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: divide by zero encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: overflow encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: invalid value encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: divide by zero encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: overflow encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: invalid value encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: divide by zero encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: overflow encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: invalid value encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+rtab_imu_rep1 {"loc_live": {"ate_cm": 9.789519515019455, "ate_max_cm": 37.75917319363019, "rot_deg": 1.5138009654901885, "rot_max_deg": 8.179761938371906, "rpe1_cm": 3.236428387698267, "rpe1_deg": 0.6967236511563352, "rpe10_cm": 9.40413169078298, "coverage": 0.9996798975672215}, "loc_final": {"ate_cm": 4.588880843833654, "ate_max_cm": 30.228266213428924, "rot_deg": 1.4441503866415628, "rot_max_deg": 7.4199587731558045, "rpe1_cm": 1.9236842598689339, "rpe1_deg": 0.6478472745030921, "rpe10_cm": 6.853469123572538, "coverage": 0.9996798975672215}, "native": {"points": 414325, "verified": 0.6780715621794485, "median_cm": 2.6520189127710356, "p90_cm": 14.41105102421556, "lt5cm": 0.6389966612325676}, "dense": {"points": 520958, "verified": 0.6745956487855067, "median_cm": 2.9505728680770757, "p90_cm": 14.983392761334407, "lt5cm": 0.6182946539341445}}
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: divide by zero encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: overflow encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: invalid value encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: divide by zero encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: overflow encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: invalid value encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: divide by zero encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: overflow encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: invalid value encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: divide by zero encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: overflow encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: invalid value encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: divide by zero encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: overflow encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: invalid value encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: divide by zero encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: overflow encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: invalid value encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: divide by zero encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: overflow encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: invalid value encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+rtab_imu_rep2 {"loc_live": {"ate_cm": 9.448297745899415, "ate_max_cm": 22.243894855778848, "rot_deg": 1.6506934838712195, "rot_max_deg": 5.1921409429653655, "rpe1_cm": 3.2170467483999268, "rpe1_deg": 0.711436837986857, "rpe10_cm": 11.074807971459741, "coverage": 0.9996798975672215}, "loc_final": {"ate_cm": 5.146498802523569, "ate_max_cm": 15.352303047089535, "rot_deg": 1.4177402022361054, "rot_max_deg": 8.23212849056074, "rpe1_cm": 1.945098198249191, "rpe1_deg": 0.7936196496712952, "rpe10_cm": 6.81077300716773, "coverage": 0.9996798975672215}, "native": {"points": 408349, "verified": 0.6775797173496201, "median_cm": 2.829607863135228, "p90_cm": 14.631205321278774, "lt5cm": 0.6268301233514885}, "dense": {"points": 512659, "verified": 0.6714677787769258, "median_cm": 3.08830467500873, "p90_cm": 15.233199773012407, "lt5cm": 0.6076535147603084}}
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: divide by zero encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: overflow encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/trajlib.py:71: RuntimeWarning: invalid value encountered in matmul
+  H = (A - ca).T @ (B - cb)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: divide by zero encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: overflow encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:64: RuntimeWarning: invalid value encountered in matmul
+  yaw = np.degrees(rotvec(dRw) @ up)
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: divide by zero encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: overflow encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/eval_traj.py:65: RuntimeWarning: invalid value encountered in matmul
+  tilt = np.degrees(np.linalg.norm(rotvec(dRw) - np.outer(rotvec(dRw) @ up, up), axis=1))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: divide by zero encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: overflow encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:144: RuntimeWarning: invalid value encountered in matmul
+  return cloud @ R.T + t
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: divide by zero encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: overflow encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:185: RuntimeWarning: invalid value encountered in matmul
+  m = native @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: divide by zero encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: overflow encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:124: RuntimeWarning: invalid value encountered in matmul
+  out.append(p @ T[0, :3, :3].T + T[0, :3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: divide by zero encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: overflow encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/bench/map_eval.py:189: RuntimeWarning: invalid value encountered in matmul
+  m = dm @ S[:3, :3].T + S[:3, 3]
+rtab_imu_rep3 {"loc_live": {"ate_cm": 12.931299737005977, "ate_max_cm": 37.358669606910254, "rot_deg": 1.7019013934932277, "rot_max_deg": 7.388626451044154, "rpe1_cm": 3.809732527577439, "rpe1_deg": 0.8739253321296743, "rpe10_cm": 12.875185053713603, "coverage": 0.9996798975672215}, "loc_final": {"ate_cm": 5.478403963898847, "ate_max_cm": 13.070107319569324, "rot_deg": 1.5827867420386517, "rot_max_deg": 6.244286336705063, "rpe1_cm": 1.7500048700101165, "rpe1_deg": 0.6058579182967081, "rpe10_cm": 6.8436431852337, "coverage": 0.9996798975672215}, "native": {"points": 405921, "verified": 0.6884935738727487, "median_cm": 2.881304878319359, "p90_cm": 14.717092426535276, "lt5cm": 0.6214638928844901}, "dense": {"points": 509964, "verified": 0.6835815861511793, "median_cm": 3.1032981234448953, "p90_cm": 15.29422338170631, "lt5cm": 0.6064509096333355}}
