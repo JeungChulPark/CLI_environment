@@ -2,6 +2,7 @@
 # run_nf4000_vs_gyro.sh — modified ORB-SLAM3 at NF4000 (no gyro) vs NF2000 + gyro aid (주력), on the 260901 sessions,
 # REPS times each, same build, real-time paced; then map_eval.py against the LiDAR pseudo-GT.
 #   bash objpose/rt/bench/run_nf4000_vs_gyro.sh [REPS=3] [sessions...]
+# Env: SYSTEMS (default "nf4000 nf2000_gyro"; also nf4000_gyro, nf2000)
 set -u
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; REPO="$(cd "$HERE/../../.." && pwd)"
 REPS="${1:-3}"; shift || true
@@ -18,12 +19,14 @@ for S in "${SESSIONS[@]}"; do
       --time-source frame --mode offline --pace 1.0 "$@" --out "$r/live_tum.txt" > "$r/run.log" 2>&1
   }
   for rep in $(seq 1 "$REPS"); do
-    for sys in nf4000 nf2000_gyro; do
+    for sys in ${SYSTEMS:-nf4000 nf2000_gyro}; do
       r="$out/$sys/rep$rep"; [ -s "$r/final_tum.txt" ] && continue; mkdir -p "$r"
       echo "[$(date +%T)] $S $sys rep$rep"
       case $sys in
         nf4000)      orb "$r" 4000 ;;
+        nf2000)      orb "$r" 2000 ;;
         nf2000_gyro) orb "$r" 2000 --gyro "$rig" --imu "$d/imu" ;;
+        nf4000_gyro) orb "$r" 4000 --gyro "$rig" --imu "$d/imu" ;;
       esac
       [ -f "$r/live_tum.txt.optimized.txt" ] && mv "$r/live_tum.txt.optimized.txt" "$r/final_tum.txt"
       echo "   $(wc -l < "$r/live_tum.txt") live, $(wc -l < "$r/final_tum.txt" 2>/dev/null || echo 0) final, $(grep -o 'track mean [0-9.]* ms' "$r/run.log" | tail -1)"
