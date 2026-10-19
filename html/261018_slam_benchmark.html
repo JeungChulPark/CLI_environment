@@ -34,7 +34,7 @@ blockquote{margin:12px 0;padding:8px 14px;border-left:3px solid var(--accent);ba
 .meta{color:var(--muted);font-size:13px;margin:-8px 0 18px}
 @media (max-width:860px){.wrap{grid-template-columns:1fr}nav{position:static;max-height:none}main{padding:20px 16px}}
 </style></head>
-<body><div class="wrap"><nav><a class="back" href="261018_index.html">← 문서 목록</a><b>목차</b><a href="#1-비교-대상">1. 비교 대상</a><a href="#2-채점-방법과-주의점">2. 채점 방법과 주의점</a><a href="#3-요약-세션-평균-cm">3. 요약 (세션 평균, cm / °)</a><a href="#4-자이로-효과-260901-orb-slam3">4. 자이로 효과 (260901, ORB-SLAM3)</a><a href="#5-세션별-결과">5. 세션별 결과</a><a href="#6-orb-slam3-vs-rtab-map-위치-추정과-지도-bigeightcircle-3회-반복">6. ORB-SLAM3 vs RTAB-Map: 위치 추정과 지도 (bigeightcircle, 3회 반복)</a><a href="#7-같은-비교를-회전이-많은-세션에서-eightcircle-3회-반복">7. 같은 비교를 회전이 많은 세션에서 (eightcircle, 3회 반복)</a><a href="#8-네-세션-반복-결과-종합-260901-각-3회">8. 네 세션 반복 결과 종합 (260901, 각 3회)</a><a href="#9-rtab-map에서-imu-효과가-없는-이유">9. RTAB-Map에서 IMU 효과가 없는 이유</a><a href="#10-hdl_graph_slam은-왜-pseudo-gt와-2-3-cm-차이가-나나-260901">10. hdl_graph_slam은 왜 pseudo-GT와 2–3 cm 차이가 나나 (260901)</a></nav>
+<body><div class="wrap"><nav><a class="back" href="261018_index.html">← 문서 목록</a><b>목차</b><a href="#1-비교-대상">1. 비교 대상</a><a href="#2-채점-방법과-주의점">2. 채점 방법과 주의점</a><a href="#3-요약-세션-평균-cm">3. 요약 (세션 평균, cm / °)</a><a href="#4-자이로-효과-260901-orb-slam3">4. 자이로 효과 (260901, ORB-SLAM3)</a><a href="#5-세션별-결과">5. 세션별 결과</a><a href="#6-orb-slam3-vs-rtab-map-위치-추정과-지도-bigeightcircle-3회-반복">6. ORB-SLAM3 vs RTAB-Map: 위치 추정과 지도 (bigeightcircle, 3회 반복)</a><a href="#7-같은-비교를-회전이-많은-세션에서-eightcircle-3회-반복">7. 같은 비교를 회전이 많은 세션에서 (eightcircle, 3회 반복)</a><a href="#8-네-세션-반복-결과-종합-260901-각-3회">8. 네 세션 반복 결과 종합 (260901, 각 3회)</a><a href="#9-rtab-map에서-imu-효과가-없는-이유">9. RTAB-Map에서 IMU 효과가 없는 이유</a><a href="#10-hdl_graph_slam은-왜-pseudo-gt와-2-3-cm-차이가-나나-260901">10. hdl_graph_slam은 왜 pseudo-GT와 2–3 cm 차이가 나나 (260901)</a><a href="#11-특징점-수-자이로-2-2-260901-2026-10-19">11. 특징점 수 × 자이로 2×2 (260901, 2026-10-19)</a></nav>
 <main><h1>실데이터 SLAM 비교: ORB-SLAM3 · RTAB-Map · hdl_graph_slam · KISS-ICP (2026-10-18)</h1>
 <p>라이다가 있는 실데이터 16개 세션(260901 4개, 260910 1개, 260915 11개) 전부에서 SLAM 시스템 다섯 가지를 1회씩 돌렸다.
 기준은 라이다 pseudo-GT(<code>rt/gt</code>, 방법은 <code>own_gt_261017.md</code>)다.</p>
@@ -1207,4 +1207,62 @@ blockquote{margin:12px 0;padding:8px 14px;border-left:3px solid var(--accent);ba
 <li><strong>기준이 KISS 쪽에 유리하다.</strong> pseudo-GT의 1단계가 KISS-ICP라, 같은 전처리를 쓰는 방법일수록 기준과 가깝게 나온다.
   hdl의 2–3 cm 중 일부는 기준의 편향일 수 있다.</li>
 <li>확인하려면 왜곡을 보정한 스캔을 hdl에 넣어 다시 돌리거나, 독립된 GT가 있는 구간에서 hdl과 KISS를 비교해야 한다.</li>
+</ul>
+<h2 id="11-특징점-수-자이로-2-2-260901-2026-10-19">11. 특징점 수 × 자이로 2×2 (260901, 2026-10-19)</h2>
+<p>자세한 내용은 <code>slam_nf4000_vs_gyro_261019.md</code>에 있다. 수정 ORB-SLAM3를 NF2000 / NF4000 × 자이로 없음 / 있음으로 바꿔
+네 세션에서 3회씩(48회) 같은 빌드로 돌렸다. 원자료는 <code>rt/bench/out_nf/</code>다.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>live ATE cm (3회 평균)</th>
+<th>NF2000</th>
+<th>NF4000</th>
+<th>NF2000+자이로 (주력)</th>
+<th>NF4000+자이로</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>eightcircle</td>
+<td>3.70</td>
+<td>3.71</td>
+<td>3.46</td>
+<td><strong>3.33</strong></td>
+</tr>
+<tr>
+<td>digut</td>
+<td>4.77</td>
+<td>5.07</td>
+<td><strong>4.15</strong></td>
+<td>4.37</td>
+</tr>
+<tr>
+<td>longcircle</td>
+<td>4.23</td>
+<td>4.35</td>
+<td><strong>3.62</strong></td>
+<td>3.86</td>
+</tr>
+<tr>
+<td>bigeightcircle (잘못된 루프 1회 제외)</td>
+<td>4.01</td>
+<td>4.36</td>
+<td><strong>3.95</strong></td>
+<td>4.30</td>
+</tr>
+<tr>
+<td>track 평균 ms</td>
+<td>9</td>
+<td>13–15</td>
+<td>9</td>
+<td>13–15</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>특징점을 4000개로 늘려도 정확도는 같거나 조금 나빠지고(live ATE 0~+9%), 트래킹 시간은 약 1.5배다.</li>
+<li>자이로는 특징점 수와 상관없이 회전이 있는 세 세션의 live ATE를 7–14% 줄인다.</li>
+<li>잘못된 루프(실제로 3.2 m 떨어진 두 지점을 묶음)는 bigeightcircle의 NF4000 계열에서만 2회 나왔다.
+  자이로 루프 검사는 회전만 보므로 이 루프를 막지 못했다.</li>
+<li>결론: 주력 설정(NF2000 + 자이로)을 유지한다.</li>
 </ul><p class="meta">원본: <code>objpose/docs/slam_bench_261018.md</code></p></main></div></body></html>
