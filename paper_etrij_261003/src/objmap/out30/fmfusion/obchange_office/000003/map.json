@@ -1,0 +1,191 @@
+{
+ "units": "m",
+ "frame": "world",
+ "method": "FM-Fusion",
+ "dataset": "obchange_office",
+ "scene": 3,
+ "objects": [
+  {
+   "id": 0,
+   "label": "021_bleach_cleanser",
+   "points": "points/0.npy",
+   "score": 0.99,
+   "n_obs": 71
+  },
+  {
+   "id": 1,
+   "label": "004_sugar_box",
+   "points": "points/1.npy",
+   "score": 0.81,
+   "n_obs": 39
+  },
+  {
+   "id": 2,
+   "label": "052_extra_large_clamp",
+   "points": "points/2.npy",
+   "score": 0.97,
+   "n_obs": 4
+  },
+  {
+   "id": 3,
+   "label": "019_pitcher_base",
+   "points": "points/3.npy",
+   "score": 1.0,
+   "n_obs": 47
+  },
+  {
+   "id": 4,
+   "label": "009_gelatin_box",
+   "points": "points/4.npy",
+   "score": 0.79,
+   "n_obs": 68
+  },
+  {
+   "id": 5,
+   "label": "004_sugar_box",
+   "points": "points/5.npy",
+   "score": 1.0,
+   "n_obs": 39
+  },
+  {
+   "id": 6,
+   "label": "008_pudding_box",
+   "points": "points/6.npy",
+   "score": 1.0,
+   "n_obs": 26
+  },
+  {
+   "id": 7,
+   "label": "004_sugar_box",
+   "points": "points/7.npy",
+   "score": 0.9,
+   "n_obs": 18
+  },
+  {
+   "id": 8,
+   "label": "035_power_drill",
+   "points": "points/8.npy",
+   "score": 0.83,
+   "n_obs": 77
+  },
+  {
+   "id": 9,
+   "label": "019_pitcher_base",
+   "points": "points/9.npy",
+   "score": 1.0,
+   "n_obs": 47
+  },
+  {
+   "id": 10,
+   "label": "010_potted_meat_can",
+   "points": "points/10.npy",
+   "score": 1.0,
+   "n_obs": 12
+  },
+  {
+   "id": 11,
+   "label": "025_mug",
+   "points": "points/11.npy",
+   "score": 0.79,
+   "n_obs": 110
+  },
+  {
+   "id": 12,
+   "label": "004_sugar_box",
+   "points": "points/12.npy",
+   "score": 0.99,
+   "n_obs": 22
+  },
+  {
+   "id": 13,
+   "label": "036_wood_block",
+   "points": "points/13.npy",
+   "score": 0.71,
+   "n_obs": 13
+  },
+  {
+   "id": 14,
+   "label": "061_foam_brick",
+   "points": "points/14.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 15,
+   "label": "051_large_clamp",
+   "points": "points/15.npy",
+   "score": 0.71,
+   "n_obs": 4
+  },
+  {
+   "id": 16,
+   "label": "021_bleach_cleanser",
+   "points": "points/16.npy",
+   "score": 1.0,
+   "n_obs": 7
+  },
+  {
+   "id": 17,
+   "label": "019_pitcher_base",
+   "points": "points/17.npy",
+   "score": 1.0,
+   "n_obs": 98
+  },
+  {
+   "id": 18,
+   "label": "010_potted_meat_can",
+   "points": "points/18.npy",
+   "score": 0.94,
+   "n_obs": 34
+  },
+  {
+   "id": 19,
+   "label": "052_extra_large_clamp",
+   "points": "points/19.npy",
+   "score": 0.74,
+   "n_obs": 16
+  },
+  {
+   "id": 20,
+   "label": "051_large_clamp",
+   "points": "points/20.npy",
+   "score": 0.78,
+   "n_obs": 3
+  },
+  {
+   "id": 21,
+   "label": "003_cracker_box",
+   "points": "points/21.npy",
+   "score": 0.77,
+   "n_obs": 32
+  },
+  {
+   "id": 22,
+   "label": "025_mug",
+   "points": "points/22.npy",
+   "score": 0.93,
+   "n_obs": 5
+  },
+  {
+   "id": 23,
+   "label": "004_sugar_box",
+   "points": "points/23.npy",
+   "score": 1.0,
+   "n_obs": 5
+  },
+  {
+   "id": 24,
+   "label": "006_mustard_bottle",
+   "points": "points/24.npy",
+   "score": 0.75,
+   "n_obs": 7
+  },
+  {
+   "id": 25,
+   "label": "010_potted_meat_can",
+   "points": "points/25.npy",
+   "score": 1.0,
+   "n_obs": 7
+  }
+ ]
+}

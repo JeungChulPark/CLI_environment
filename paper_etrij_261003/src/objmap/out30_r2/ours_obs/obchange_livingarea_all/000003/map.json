@@ -1,0 +1,51 @@
+{
+ "units": "m",
+ "frame": "world",
+ "method": "ours",
+ "form": "observed",
+ "run": "/home/jucpark/DeepLearning/CLI_environment/paper_etrij_261003/src/objmap/out30_r2/ours_runs/obchange_livingarea_all_000006",
+ "objects": [
+  {
+   "id": 0,
+   "label": "ycbv_17",
+   "points": "points/0.npy",
+   "n_obs": 21
+  },
+  {
+   "id": 1,
+   "label": "ycbv_14",
+   "points": "points/1.npy",
+   "n_obs": 76
+  },
+  {
+   "id": 2,
+   "label": "ycbv_14",
+   "points": "points/2.npy",
+   "n_obs": 147
+  },
+  {
+   "id": 3,
+   "label": "ycbv_14",
+   "points": "points/3.npy",
+   "n_obs": 40
+  },
+  {
+   "id": 4,
+   "label": "ycbv_02",
+   "points": "points/4.npy",
+   "n_obs": 23
+  },
+  {
+   "id": 5,
+   "label": "ycbv_18",
+   "points": "points/5.npy",
+   "n_obs": 2
+  },
+  {
+   "id": 6,
+   "label": "ycbv_01",
+   "points": "points/6.npy",
+   "n_obs": 7
+  }
+ ]
+}

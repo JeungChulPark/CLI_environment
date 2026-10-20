@@ -3,6 +3,7 @@
 # then export each concrete map to out/<method>/ycbv/<scene>.
 # Usage: bash dualmap_run.sh 52 [48 49 ...]   (prepare first: python dualmap_prep.py)
 # Deviations from the repo defaults: class list = 21 YCB-V prompts + 'unknown', use_rerun=False.
+# DUALMAP_EXTRA: more hydra overrides (real-time condition: "stride=1" with DM_RT_INTERVAL=0.0333 exported).
 # DUALMAP_METHOD=dualmap_bgr also feeds YOLO-World/MobileSAM/FastSAM BGR images
 # (DualMap passes RGB arrays, which ultralytics reads as BGR); default 'dualmap' = as published.
 # timeout: an exception in the main thread leaves DualMap's worker threads alive (process hangs).
@@ -11,8 +12,14 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 DM=${DUALMAP_REPO:-$HOME/DeepLearning/baselines/DualMap}
 DATA=${DUALMAP_DATA:-$HOME/DeepLearning/Dataset/bop/ycbv_work/dualmap}
 METHOD=${DUALMAP_METHOD:-dualmap}
-DATASET=${DUALMAP_DATASET:-ycbv}      # ycbv | obchange_kitchen | obchange_kitchen_all | real (see common.seq_cameras)
-case $DATASET in ycbv) PFX=ycbv;; obchange_kitchen) PFX=obkv;; obchange_kitchen_all) PFX=obka;; real) PFX=real;; esac
+DATASET=${DUALMAP_DATASET:-ycbv}      # ycbv | obchange_<room> | obchange_<room>_all | real (see common.seq_cameras)
+# scene-id prefix = dualmap_prep.prefix(): ob<first letter of the room>v (each visit) / ...a (visits 1..k)
+case $DATASET in
+  ycbv) PFX=ycbv;; real) PFX=real;;
+  obchange_*_all) R=${DATASET#obchange_}; PFX=ob${R:0:1}a;;
+  obchange_*) R=${DATASET#obchange_}; PFX=ob${R:0:1}v;;
+  *) echo "unknown DUALMAP_DATASET $DATASET"; exit 1;;
+esac
 CLASSES=$DATA/ycbv_prompts.txt; [ "$DATASET" = real ] && CLASSES=$DATA/real_prompts.txt
 RUNS=${DUALMAP_RUNS:-$DM/output/ycbv_runs_$METHOD}
 LOCK=${GPU_LOCK:-}
@@ -24,10 +31,10 @@ cd "$DM"
 for s in "$@"; do
   sid=$(printf "${PFX}%06d" "$s")
   echo "== $METHOD $sid $(date +%T)"
-  ${LOCK:+flock $LOCK} timeout 1500 python -m applications.runner_dataset \
+  ${LOCK:+flock $LOCK} timeout ${DUALMAP_TIMEOUT:-1500} python -m applications.runner_dataset \
     dataset_name=ycbv scene_id=$sid dataset_path=$DATA/Replica \
     dataset_conf_path=$DATA/configs/$sid.yaml output_path=$RUNS/$sid \
-    yolo.given_classes_path=$CLASSES use_rerun=False \
+    yolo.given_classes_path=$CLASSES use_rerun=False ${DUALMAP_EXTRA:-} \
     > "$RUNS/$sid.log" 2>&1 || { echo "FAILED, see $RUNS/$sid.log"; tail -20 "$RUNS/$sid.log"; continue; }
   python "$HERE/dualmap_export.py" --scene "$s" --method "$METHOD" --dataset "$DATASET" --map "$RUNS/$sid/ycbv_$sid/map"
 done

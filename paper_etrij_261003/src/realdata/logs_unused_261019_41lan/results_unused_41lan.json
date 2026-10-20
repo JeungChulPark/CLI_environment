@@ -1,0 +1,1992 @@
+{
+ "260901_cbnu_digut": {
+  "reference": {
+   "saffron": [
+    -1.34,
+    0.324,
+    4.785
+   ],
+   "Bear": [
+    -1.347,
+    0.691,
+    4.956
+   ],
+   "Dinosaur": [
+    -1.357,
+    0.674,
+    4.739
+   ],
+   "Febreze_high": [
+    -1.306,
+    0.401,
+    4.956
+   ],
+   "choco_hazelnut_high": [
+    -2.245,
+    0.232,
+    1.592
+   ],
+   "milk": [
+    -2.242,
+    0.309,
+    1.312
+   ],
+   "Sikhye_high": [
+    -2.329,
+    0.497,
+    1.379
+   ],
+   "Mugcup_high": [
+    -2.25,
+    0.528,
+    1.541
+   ]
+  },
+  "not_reference": {},
+  "ref_other_classes": [],
+  "ref": {
+   "correct": 8,
+   "wrong": 0,
+   "of": 8,
+   "score_pct": 100.0,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 0,
+    "elsewhere": 0
+   },
+   "wrong_classes": [],
+   "rate_hz": 8.26,
+   "duration_s": 228.9,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     4,
+     0
+    ],
+    "60": [
+     4,
+     0
+    ],
+    "120": [
+     8,
+     1
+    ]
+   },
+   "mean_score_pct": 68.3,
+   "time_to_map_median_s": 59.5,
+   "dist_cm": {
+    "saffron": 0.0,
+    "Bear": 0.0,
+    "Dinosaur": 0.0,
+    "Febreze_high": 0.0,
+    "choco_hazelnut_high": 0.0,
+    "milk": 0.0,
+    "Sikhye_high": 0.0,
+    "Mugcup_high": 0.0
+   },
+   "kf_max_cm": 13.47,
+   "loops": 4,
+   "slam_dropped": 0,
+   "sam6d_frames": 1890
+  },
+  "origL05": {
+   "correct": 7,
+   "wrong": 1,
+   "of": 8,
+   "score_pct": 77.8,
+   "missed": [
+    "Dinosaur"
+   ],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 1,
+    "elsewhere": 0
+   },
+   "wrong_classes": [
+    "Sauce_high"
+   ],
+   "rate_hz": 4.85,
+   "duration_s": 228.9,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     3,
+     1
+    ],
+    "60": [
+     3,
+     2
+    ],
+    "120": [
+     6,
+     2
+    ]
+   },
+   "mean_score_pct": 45.9,
+   "time_to_map_median_s": null,
+   "dist_cm": {
+    "saffron": 1.7,
+    "Bear": 2.2,
+    "Febreze_high": 12.9,
+    "choco_hazelnut_high": 2.2,
+    "milk": 5.1,
+    "Sikhye_high": 1.1,
+    "Mugcup_high": 2.9
+   },
+   "kf_max_cm": 10.23,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 1111
+  },
+  "hyb3cf": {
+   "correct": 8,
+   "wrong": 0,
+   "of": 8,
+   "score_pct": 100.0,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 0,
+    "elsewhere": 0
+   },
+   "wrong_classes": [],
+   "rate_hz": 8.46,
+   "duration_s": 228.9,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     4,
+     0
+    ],
+    "60": [
+     4,
+     0
+    ],
+    "120": [
+     6,
+     0
+    ]
+   },
+   "mean_score_pct": 67.7,
+   "time_to_map_median_s": 60.1,
+   "dist_cm": {
+    "saffron": 3.1,
+    "Bear": 2.2,
+    "Dinosaur": 4.4,
+    "Febreze_high": 1.6,
+    "choco_hazelnut_high": 3.5,
+    "milk": 5.2,
+    "Sikhye_high": 2.3,
+    "Mugcup_high": 3.6
+   },
+   "kf_max_cm": 11.63,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 1936
+  }
+ },
+ "260915_longcircle": {
+  "reference": {
+   "milk": [
+    0.057,
+    0.465,
+    1.928
+   ],
+   "saffron": [
+    0.293,
+    0.256,
+    1.156
+   ],
+   "Sikhye_high": [
+    0.312,
+    0.336,
+    1.307
+   ],
+   "Mugcup_high": [
+    0.299,
+    0.38,
+    1.597
+   ],
+   "Febreze_high": [
+    0.337,
+    0.339,
+    1.862
+   ],
+   "Bear": [
+    -0.01,
+    0.394,
+    1.736
+   ],
+   "choco_hazelnut_high": [
+    -0.033,
+    0.373,
+    1.404
+   ],
+   "Dinosaur": [
+    -0.058,
+    0.333,
+    1.174
+   ]
+  },
+  "not_reference": {},
+  "ref_other_classes": [],
+  "ref": {
+   "correct": 8,
+   "wrong": 0,
+   "of": 8,
+   "score_pct": 100.0,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 0,
+    "elsewhere": 0
+   },
+   "wrong_classes": [],
+   "rate_hz": 6.67,
+   "duration_s": 94.8,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     4,
+     1
+    ],
+    "60": [
+     8,
+     0
+    ],
+    "120": [
+     8,
+     0
+    ]
+   },
+   "mean_score_pct": 70.1,
+   "time_to_map_median_s": 28.5,
+   "dist_cm": {
+    "milk": 0.0,
+    "saffron": 0.0,
+    "Sikhye_high": 0.0,
+    "Mugcup_high": 0.0,
+    "Febreze_high": 0.0,
+    "Bear": 0.0,
+    "choco_hazelnut_high": 0.0,
+    "Dinosaur": 0.0
+   },
+   "kf_max_cm": 10.88,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 632
+  },
+  "origL05": {
+   "correct": 5,
+   "wrong": 4,
+   "of": 8,
+   "score_pct": 41.7,
+   "missed": [
+    "Bear",
+    "Sikhye_high",
+    "choco_hazelnut_high"
+   ],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 4,
+    "elsewhere": 0
+   },
+   "wrong_classes": [
+    "Bear",
+    "Sauce_high",
+    "Sikhye_high",
+    "choco_hazelnut_high"
+   ],
+   "rate_hz": 2.35,
+   "duration_s": 94.8,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     4,
+     3
+    ],
+    "60": [
+     8,
+     2
+    ],
+    "120": [
+     8,
+     2
+    ]
+   },
+   "mean_score_pct": 56.8,
+   "time_to_map_median_s": 29.1,
+   "dist_cm": {
+    "milk": 0.8,
+    "saffron": 0.5,
+    "Sikhye_high": 73.1,
+    "Mugcup_high": 0.9,
+    "Febreze_high": 10.6,
+    "Bear": 55.8,
+    "choco_hazelnut_high": 37.9,
+    "Dinosaur": 1.3
+   },
+   "kf_max_cm": 13.99,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 223
+  },
+  "hyb3cf": {
+   "correct": 8,
+   "wrong": 0,
+   "of": 8,
+   "score_pct": 100.0,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 0,
+    "elsewhere": 0
+   },
+   "wrong_classes": [],
+   "rate_hz": 6.92,
+   "duration_s": 94.8,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     4,
+     0
+    ],
+    "60": [
+     8,
+     0
+    ],
+    "120": [
+     8,
+     0
+    ]
+   },
+   "mean_score_pct": 70.9,
+   "time_to_map_median_s": 28.2,
+   "dist_cm": {
+    "milk": 2.7,
+    "saffron": 3.2,
+    "Sikhye_high": 3.0,
+    "Mugcup_high": 7.1,
+    "Febreze_high": 2.0,
+    "Bear": 3.4,
+    "choco_hazelnut_high": 4.5,
+    "Dinosaur": 3.4
+   },
+   "kf_max_cm": 16.21,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 656
+  }
+ },
+ "260826_etri_longcircle_dark": {
+  "reference": {
+   "saffron": [
+    -0.788,
+    0.245,
+    0.622
+   ],
+   "Febreze_high": [
+    -0.769,
+    0.355,
+    0.843
+   ],
+   "Bear": [
+    -0.74,
+    0.352,
+    1.288
+   ],
+   "choco_hazelnut_high": [
+    -1.074,
+    0.378,
+    0.867
+   ],
+   "Dinosaur": [
+    -0.71,
+    0.382,
+    1.593
+   ],
+   "Mugcup_high": [
+    -1.078,
+    0.423,
+    1.566
+   ],
+   "Sikhye_high": [
+    -1.115,
+    0.395,
+    1.4
+   ],
+   "milk": [
+    -1.091,
+    0.408,
+    0.557
+   ]
+  },
+  "not_reference": {},
+  "ref_other_classes": [],
+  "ref": {
+   "correct": 8,
+   "wrong": 0,
+   "of": 8,
+   "score_pct": 100.0,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 0,
+    "elsewhere": 0
+   },
+   "wrong_classes": [],
+   "rate_hz": 3.28,
+   "duration_s": 135.9,
+   "at": {
+    "10": [
+     2,
+     0
+    ],
+    "30": [
+     5,
+     0
+    ],
+    "60": [
+     6,
+     0
+    ],
+    "120": [
+     8,
+     0
+    ]
+   },
+   "mean_score_pct": 72.7,
+   "time_to_map_median_s": 18.6,
+   "dist_cm": {
+    "saffron": 0.0,
+    "Febreze_high": 0.0,
+    "Bear": 0.0,
+    "choco_hazelnut_high": 0.0,
+    "Dinosaur": 0.0,
+    "Mugcup_high": 0.0,
+    "Sikhye_high": 0.0,
+    "milk": 0.0
+   },
+   "kf_max_cm": 9.12,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 445
+  },
+  "origL05": {
+   "correct": 8,
+   "wrong": 1,
+   "of": 8,
+   "score_pct": 88.9,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 1,
+    "elsewhere": 0
+   },
+   "wrong_classes": [
+    "Sauce_high"
+   ],
+   "rate_hz": 2.08,
+   "duration_s": 135.9,
+   "at": {
+    "10": [
+     2,
+     1
+    ],
+    "30": [
+     6,
+     2
+    ],
+    "60": [
+     8,
+     2
+    ],
+    "120": [
+     8,
+     2
+    ]
+   },
+   "mean_score_pct": 67.9,
+   "time_to_map_median_s": 19.5,
+   "dist_cm": {
+    "saffron": 1.8,
+    "Febreze_high": 4.1,
+    "Bear": 1.0,
+    "choco_hazelnut_high": 1.8,
+    "Dinosaur": 1.8,
+    "Mugcup_high": 6.1,
+    "Sikhye_high": 1.9,
+    "milk": 0.2
+   },
+   "kf_max_cm": 5.38,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 282
+  },
+  "hyb3cf": {
+   "correct": 7,
+   "wrong": 2,
+   "of": 8,
+   "score_pct": 70.0,
+   "missed": [
+    "Bear"
+   ],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 2,
+    "elsewhere": 0
+   },
+   "wrong_classes": [
+    "Bear",
+    "Sauce_high"
+   ],
+   "rate_hz": 6.27,
+   "duration_s": 135.9,
+   "at": {
+    "10": [
+     2,
+     0
+    ],
+    "30": [
+     5,
+     1
+    ],
+    "60": [
+     8,
+     0
+    ],
+    "120": [
+     8,
+     0
+    ]
+   },
+   "mean_score_pct": 77.8,
+   "time_to_map_median_s": 20.0,
+   "dist_cm": {
+    "saffron": 2.3,
+    "Febreze_high": 3.9,
+    "Bear": 30.6,
+    "choco_hazelnut_high": 1.1,
+    "Dinosaur": 0.4,
+    "Mugcup_high": 1.6,
+    "Sikhye_high": 5.3,
+    "milk": 0.8
+   },
+   "kf_max_cm": 7.67,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 852
+  }
+ },
+ "260915_inlong_fast": {
+  "reference": {
+   "milk": [
+    -0.348,
+    0.412,
+    0.968
+   ],
+   "saffron": [
+    -0.331,
+    0.281,
+    1.298
+   ],
+   "Febreze_high": [
+    0.067,
+    0.314,
+    0.991
+   ],
+   "choco_hazelnut_high": [
+    0.089,
+    0.367,
+    1.298
+   ],
+   "Bear": [
+    -0.287,
+    0.406,
+    1.854
+   ],
+   "Sikhye_high": [
+    0.077,
+    0.411,
+    1.962
+   ],
+   "Dinosaur": [
+    -0.298,
+    0.411,
+    2.135
+   ],
+   "Mugcup_high": [
+    0.091,
+    0.436,
+    2.149
+   ]
+  },
+  "not_reference": {},
+  "ref_other_classes": [],
+  "ref": {
+   "correct": 8,
+   "wrong": 0,
+   "of": 8,
+   "score_pct": 100.0,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 0,
+    "elsewhere": 0
+   },
+   "wrong_classes": [],
+   "rate_hz": 5.6,
+   "duration_s": 53.9,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     8,
+     4
+    ],
+    "60": [
+     8,
+     0
+    ],
+    "120": [
+     8,
+     0
+    ]
+   },
+   "mean_score_pct": 75.0,
+   "time_to_map_median_s": 14.4,
+   "dist_cm": {
+    "milk": 0.0,
+    "saffron": 0.0,
+    "Febreze_high": 0.0,
+    "choco_hazelnut_high": 0.0,
+    "Bear": 0.0,
+    "Sikhye_high": 0.0,
+    "Dinosaur": 0.0,
+    "Mugcup_high": 0.0
+   },
+   "kf_max_cm": 30.0,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 302
+  },
+  "origL05": {
+   "correct": 8,
+   "wrong": 1,
+   "of": 8,
+   "score_pct": 88.9,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 1,
+    "elsewhere": 0
+   },
+   "wrong_classes": [
+    "Sauce_high"
+   ],
+   "rate_hz": 2.28,
+   "duration_s": 53.9,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     8,
+     9
+    ],
+    "60": [
+     8,
+     2
+    ],
+    "120": [
+     8,
+     2
+    ]
+   },
+   "mean_score_pct": 58.4,
+   "time_to_map_median_s": 15.4,
+   "dist_cm": {
+    "milk": 3.1,
+    "saffron": 1.5,
+    "Febreze_high": 3.8,
+    "choco_hazelnut_high": 1.1,
+    "Bear": 1.4,
+    "Sikhye_high": 2.4,
+    "Dinosaur": 0.8,
+    "Mugcup_high": 5.8
+   },
+   "kf_max_cm": 29.36,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 123
+  },
+  "hyb3cf": {
+   "correct": 8,
+   "wrong": 0,
+   "of": 8,
+   "score_pct": 100.0,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 0,
+    "elsewhere": 0
+   },
+   "wrong_classes": [],
+   "rate_hz": 6.27,
+   "duration_s": 53.9,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     7,
+     6
+    ],
+    "60": [
+     8,
+     0
+    ],
+    "120": [
+     8,
+     0
+    ]
+   },
+   "mean_score_pct": 71.6,
+   "time_to_map_median_s": 14.7,
+   "dist_cm": {
+    "milk": 1.3,
+    "saffron": 2.8,
+    "Febreze_high": 1.8,
+    "choco_hazelnut_high": 1.1,
+    "Bear": 1.8,
+    "Sikhye_high": 7.7,
+    "Dinosaur": 1.1,
+    "Mugcup_high": 2.6
+   },
+   "kf_max_cm": 27.04,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 338
+  }
+ },
+ "260915_inlong_middle": {
+  "reference": {
+   "milk": [
+    -0.324,
+    0.395,
+    0.847
+   ],
+   "saffron": [
+    -0.33,
+    0.27,
+    1.166
+   ],
+   "Febreze_high": [
+    0.081,
+    0.294,
+    0.847
+   ],
+   "choco_hazelnut_high": [
+    0.116,
+    0.333,
+    1.151
+   ],
+   "Bear": [
+    -0.243,
+    0.389,
+    1.755
+   ],
+   "Sikhye_high": [
+    0.132,
+    0.378,
+    1.812
+   ],
+   "Dinosaur": [
+    -0.247,
+    0.392,
+    2.03
+   ],
+   "Mugcup_high": [
+    0.146,
+    0.418,
+    2.028
+   ]
+  },
+  "not_reference": {},
+  "ref_other_classes": [],
+  "ref": {
+   "correct": 8,
+   "wrong": 0,
+   "of": 8,
+   "score_pct": 100.0,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 0,
+    "elsewhere": 0
+   },
+   "wrong_classes": [],
+   "rate_hz": 3.67,
+   "duration_s": 90.9,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     8,
+     0
+    ],
+    "60": [
+     8,
+     0
+    ],
+    "120": [
+     8,
+     0
+    ]
+   },
+   "mean_score_pct": 74.3,
+   "time_to_map_median_s": 17.9,
+   "dist_cm": {
+    "milk": 0.0,
+    "saffron": 0.0,
+    "Febreze_high": 0.0,
+    "choco_hazelnut_high": 0.0,
+    "Bear": 0.0,
+    "Sikhye_high": 0.0,
+    "Dinosaur": 0.0,
+    "Mugcup_high": 0.0
+   },
+   "kf_max_cm": 34.36,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 334
+  },
+  "origL05": {
+   "correct": 8,
+   "wrong": 1,
+   "of": 8,
+   "score_pct": 88.9,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 1,
+    "elsewhere": 0
+   },
+   "wrong_classes": [
+    "Sauce_high"
+   ],
+   "rate_hz": 2.21,
+   "duration_s": 90.9,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     7,
+     1
+    ],
+    "60": [
+     8,
+     1
+    ],
+    "120": [
+     8,
+     2
+    ]
+   },
+   "mean_score_pct": 62.2,
+   "time_to_map_median_s": 17.0,
+   "dist_cm": {
+    "milk": 4.0,
+    "saffron": 3.4,
+    "Febreze_high": 4.1,
+    "choco_hazelnut_high": 2.9,
+    "Bear": 8.0,
+    "Sikhye_high": 7.3,
+    "Dinosaur": 2.2,
+    "Mugcup_high": 8.9
+   },
+   "kf_max_cm": 31.29,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 201
+  },
+  "hyb3cf": {
+   "correct": 8,
+   "wrong": 0,
+   "of": 8,
+   "score_pct": 100.0,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 0,
+    "elsewhere": 0
+   },
+   "wrong_classes": [],
+   "rate_hz": 5.99,
+   "duration_s": 90.9,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     7,
+     0
+    ],
+    "60": [
+     8,
+     0
+    ],
+    "120": [
+     8,
+     0
+    ]
+   },
+   "mean_score_pct": 72.2,
+   "time_to_map_median_s": 17.9,
+   "dist_cm": {
+    "milk": 0.6,
+    "saffron": 1.6,
+    "Febreze_high": 1.6,
+    "choco_hazelnut_high": 0.7,
+    "Bear": 1.4,
+    "Sikhye_high": 6.0,
+    "Dinosaur": 0.7,
+    "Mugcup_high": 0.7
+   },
+   "kf_max_cm": 31.65,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 544
+  }
+ },
+ "260915_outlong_fast": {
+  "reference": {
+   "milk": [
+    -0.277,
+    0.414,
+    0.882
+   ],
+   "saffron": [
+    -0.324,
+    0.287,
+    1.205
+   ],
+   "Febreze_high": [
+    0.139,
+    0.32,
+    0.938
+   ],
+   "choco_hazelnut_high": [
+    0.127,
+    0.36,
+    1.249
+   ],
+   "Bear": [
+    -0.278,
+    0.416,
+    1.8
+   ],
+   "Sikhye_high": [
+    0.11,
+    0.395,
+    1.881
+   ],
+   "Dinosaur": [
+    -0.287,
+    0.406,
+    2.087
+   ],
+   "Mugcup_high": [
+    0.094,
+    0.439,
+    2.107
+   ]
+  },
+  "not_reference": {},
+  "ref_other_classes": [],
+  "ref": {
+   "correct": 8,
+   "wrong": 0,
+   "of": 8,
+   "score_pct": 100.0,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 0,
+    "elsewhere": 0
+   },
+   "wrong_classes": [],
+   "rate_hz": 6.29,
+   "duration_s": 92.2,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     8,
+     1
+    ],
+    "60": [
+     8,
+     0
+    ],
+    "120": [
+     8,
+     0
+    ]
+   },
+   "mean_score_pct": 80.1,
+   "time_to_map_median_s": 19.2,
+   "dist_cm": {
+    "milk": 0.0,
+    "saffron": 0.0,
+    "Febreze_high": 0.0,
+    "choco_hazelnut_high": 0.0,
+    "Bear": 0.0,
+    "Sikhye_high": 0.0,
+    "Dinosaur": 0.0,
+    "Mugcup_high": 0.0
+   },
+   "kf_max_cm": 17.41,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 580
+  },
+  "origL05": {
+   "correct": 8,
+   "wrong": 1,
+   "of": 8,
+   "score_pct": 88.9,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 1,
+    "elsewhere": 0
+   },
+   "wrong_classes": [
+    "Sauce_high"
+   ],
+   "rate_hz": 2.84,
+   "duration_s": 92.2,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     8,
+     1
+    ],
+    "60": [
+     8,
+     1
+    ],
+    "120": [
+     8,
+     2
+    ]
+   },
+   "mean_score_pct": 69.0,
+   "time_to_map_median_s": 19.9,
+   "dist_cm": {
+    "milk": 3.0,
+    "saffron": 2.5,
+    "Febreze_high": 2.9,
+    "choco_hazelnut_high": 2.6,
+    "Bear": 3.4,
+    "Sikhye_high": 3.5,
+    "Dinosaur": 2.2,
+    "Mugcup_high": 2.2
+   },
+   "kf_max_cm": 19.09,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 262
+  },
+  "hyb3cf": {
+   "correct": 8,
+   "wrong": 0,
+   "of": 8,
+   "score_pct": 100.0,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 0,
+    "elsewhere": 0
+   },
+   "wrong_classes": [],
+   "rate_hz": 7.13,
+   "duration_s": 92.2,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     8,
+     1
+    ],
+    "60": [
+     8,
+     0
+    ],
+    "120": [
+     8,
+     0
+    ]
+   },
+   "mean_score_pct": 79.3,
+   "time_to_map_median_s": 19.4,
+   "dist_cm": {
+    "milk": 2.1,
+    "saffron": 2.5,
+    "Febreze_high": 2.8,
+    "choco_hazelnut_high": 2.4,
+    "Bear": 2.7,
+    "Sikhye_high": 7.2,
+    "Dinosaur": 1.5,
+    "Mugcup_high": 2.2
+   },
+   "kf_max_cm": 19.49,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 657
+  }
+ },
+ "260915_outlong_middle": {
+  "reference": {
+   "milk": [
+    -0.369,
+    0.416,
+    0.808
+   ],
+   "saffron": [
+    -0.387,
+    0.299,
+    1.127
+   ],
+   "Febreze_high": [
+    0.065,
+    0.324,
+    0.857
+   ],
+   "choco_hazelnut_high": [
+    0.051,
+    0.365,
+    1.168
+   ],
+   "Bear": [
+    -0.384,
+    0.416,
+    1.72
+   ],
+   "Sikhye_high": [
+    0.015,
+    0.393,
+    1.813
+   ],
+   "Mugcup_high": [
+    -0.025,
+    0.435,
+    2.044
+   ],
+   "Dinosaur": [
+    -0.414,
+    0.411,
+    2.002
+   ]
+  },
+  "not_reference": {},
+  "ref_other_classes": [],
+  "ref": {
+   "correct": 8,
+   "wrong": 0,
+   "of": 8,
+   "score_pct": 100.0,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 0,
+    "elsewhere": 0
+   },
+   "wrong_classes": [],
+   "rate_hz": 6.01,
+   "duration_s": 119.7,
+   "at": {
+    "10": [
+     2,
+     0
+    ],
+    "30": [
+     7,
+     1
+    ],
+    "60": [
+     8,
+     6
+    ],
+    "120": [
+     8,
+     0
+    ]
+   },
+   "mean_score_pct": 74.9,
+   "time_to_map_median_s": 13.3,
+   "dist_cm": {
+    "milk": 0.0,
+    "saffron": 0.0,
+    "Febreze_high": 0.0,
+    "choco_hazelnut_high": 0.0,
+    "Bear": 0.0,
+    "Sikhye_high": 0.0,
+    "Mugcup_high": 0.0,
+    "Dinosaur": 0.0
+   },
+   "kf_max_cm": 126.45,
+   "loops": 4,
+   "slam_dropped": 0,
+   "sam6d_frames": 719
+  },
+  "origL05": {
+   "correct": 7,
+   "wrong": 2,
+   "of": 8,
+   "score_pct": 70.0,
+   "missed": [
+    "saffron"
+   ],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 1,
+    "elsewhere": 1
+   },
+   "wrong_classes": [
+    "Sauce_high",
+    "saffron"
+   ],
+   "rate_hz": 2.57,
+   "duration_s": 119.7,
+   "at": {
+    "10": [
+     2,
+     0
+    ],
+    "30": [
+     6,
+     4
+    ],
+    "60": [
+     8,
+     12
+    ],
+    "120": [
+     8,
+     2
+    ]
+   },
+   "mean_score_pct": 57.8,
+   "time_to_map_median_s": 14.0,
+   "dist_cm": {
+    "milk": 3.2,
+    "saffron": 81.8,
+    "Febreze_high": 3.5,
+    "choco_hazelnut_high": 3.5,
+    "Bear": 7.2,
+    "Sikhye_high": 4.7,
+    "Mugcup_high": 2.4,
+    "Dinosaur": 2.6
+   },
+   "kf_max_cm": 110.21,
+   "loops": 4,
+   "slam_dropped": 0,
+   "sam6d_frames": 308
+  },
+  "hyb3cf": {
+   "correct": 8,
+   "wrong": 0,
+   "of": 8,
+   "score_pct": 100.0,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 0,
+    "elsewhere": 0
+   },
+   "wrong_classes": [],
+   "rate_hz": 6.68,
+   "duration_s": 119.7,
+   "at": {
+    "10": [
+     3,
+     0
+    ],
+    "30": [
+     6,
+     2
+    ],
+    "60": [
+     8,
+     6
+    ],
+    "120": [
+     8,
+     0
+    ]
+   },
+   "mean_score_pct": 74.9,
+   "time_to_map_median_s": 13.8,
+   "dist_cm": {
+    "milk": 1.2,
+    "saffron": 1.3,
+    "Febreze_high": 1.3,
+    "choco_hazelnut_high": 2.4,
+    "Bear": 0.8,
+    "Sikhye_high": 4.6,
+    "Mugcup_high": 3.8,
+    "Dinosaur": 1.1
+   },
+   "kf_max_cm": 147.82,
+   "loops": 4,
+   "slam_dropped": 0,
+   "sam6d_frames": 799
+  }
+ },
+ "260915_height": {
+  "reference": {
+   "milk": [
+    -0.249,
+    0.469,
+    2.002
+   ],
+   "choco_hazelnut_high": [
+    -0.427,
+    0.298,
+    0.662
+   ],
+   "saffron": [
+    -0.21,
+    0.03,
+    0.553
+   ],
+   "Sikhye_high": [
+    -0.206,
+    0.135,
+    0.8
+   ],
+   "Dinosaur": [
+    -0.015,
+    0.317,
+    0.649
+   ],
+   "Febreze_high": [
+    -0.105,
+    0.14,
+    2.268
+   ],
+   "Mugcup_high": [
+    -0.391,
+    0.187,
+    2.156
+   ],
+   "Bear": [
+    -0.301,
+    0.412,
+    2.299
+   ]
+  },
+  "not_reference": {},
+  "ref_other_classes": [
+   "Sauce_high"
+  ],
+  "ref": {
+   "correct": 8,
+   "wrong": 1,
+   "of": 8,
+   "score_pct": 88.9,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 1,
+    "elsewhere": 0
+   },
+   "wrong_classes": [
+    "Sauce_high"
+   ],
+   "rate_hz": 5.24,
+   "duration_s": 114.8,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     4,
+     3
+    ],
+    "60": [
+     8,
+     1
+    ],
+    "120": [
+     8,
+     0
+    ]
+   },
+   "mean_score_pct": 68.1,
+   "time_to_map_median_s": 31.9,
+   "dist_cm": {
+    "milk": 0.0,
+    "choco_hazelnut_high": 0.0,
+    "saffron": 0.0,
+    "Sikhye_high": 0.0,
+    "Dinosaur": 0.0,
+    "Febreze_high": 0.0,
+    "Mugcup_high": 0.0,
+    "Bear": 0.0
+   },
+   "kf_max_cm": 15.49,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 602
+  },
+  "origL05": {
+   "correct": 6,
+   "wrong": 3,
+   "of": 8,
+   "score_pct": 54.5,
+   "missed": [
+    "Bear",
+    "choco_hazelnut_high"
+   ],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 2,
+    "elsewhere": 1
+   },
+   "wrong_classes": [
+    "Bear",
+    "Sauce_high",
+    "choco_hazelnut_high"
+   ],
+   "rate_hz": 2.4,
+   "duration_s": 114.8,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     4,
+     1
+    ],
+    "60": [
+     7,
+     2
+    ],
+    "120": [
+     8,
+     1
+    ]
+   },
+   "mean_score_pct": 58.7,
+   "time_to_map_median_s": 34.6,
+   "dist_cm": {
+    "milk": 10.9,
+    "choco_hazelnut_high": 31.0,
+    "saffron": 7.9,
+    "Sikhye_high": 6.2,
+    "Dinosaur": 2.6,
+    "Febreze_high": 10.9,
+    "Mugcup_high": 1.5,
+    "Bear": 167.4
+   },
+   "kf_max_cm": 14.41,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 276
+  },
+  "hyb3cf": {
+   "correct": 7,
+   "wrong": 1,
+   "of": 8,
+   "score_pct": 77.8,
+   "missed": [
+    "milk"
+   ],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 1,
+    "elsewhere": 0
+   },
+   "wrong_classes": [
+    "milk"
+   ],
+   "rate_hz": 6.73,
+   "duration_s": 114.8,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     4,
+     1
+    ],
+    "60": [
+     8,
+     1
+    ],
+    "120": [
+     8,
+     0
+    ]
+   },
+   "mean_score_pct": 66.8,
+   "time_to_map_median_s": 40.7,
+   "dist_cm": {
+    "milk": 156.3,
+    "choco_hazelnut_high": 1.7,
+    "saffron": 2.0,
+    "Sikhye_high": 1.9,
+    "Dinosaur": 1.0,
+    "Febreze_high": 5.8,
+    "Mugcup_high": 1.3,
+    "Bear": 1.5
+   },
+   "kf_max_cm": 18.2,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 773
+  }
+ },
+ "260915_dense": {
+  "reference": {
+   "milk": [
+    0.007,
+    0.21,
+    1.352
+   ],
+   "choco_hazelnut_high": [
+    -0.005,
+    0.349,
+    1.149
+   ],
+   "Mugcup_high": [
+    0.038,
+    0.371,
+    1.461
+   ],
+   "Sikhye_high": [
+    0.016,
+    0.38,
+    1.552
+   ],
+   "saffron": [
+    -0.103,
+    0.295,
+    1.453
+   ],
+   "Febreze_high": [
+    -0.075,
+    0.363,
+    1.586
+   ],
+   "Bear": [
+    -0.091,
+    0.337,
+    1.153
+   ],
+   "Dinosaur": [
+    -0.101,
+    0.344,
+    1.313
+   ]
+  },
+  "not_reference": {},
+  "ref_other_classes": [],
+  "ref": {
+   "correct": 8,
+   "wrong": 0,
+   "of": 8,
+   "score_pct": 100.0,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 0,
+    "elsewhere": 0
+   },
+   "wrong_classes": [],
+   "rate_hz": 5.28,
+   "duration_s": 135.7,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     5,
+     1
+    ],
+    "60": [
+     7,
+     1
+    ],
+    "120": [
+     7,
+     1
+    ]
+   },
+   "mean_score_pct": 63.3,
+   "time_to_map_median_s": 22.5,
+   "dist_cm": {
+    "milk": 0.0,
+    "choco_hazelnut_high": 0.0,
+    "Mugcup_high": 0.0,
+    "Sikhye_high": 0.0,
+    "saffron": 0.0,
+    "Febreze_high": 0.0,
+    "Bear": 0.0,
+    "Dinosaur": 0.0
+   },
+   "kf_max_cm": 17.91,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 717
+  },
+  "origL05": {
+   "correct": 7,
+   "wrong": 2,
+   "of": 8,
+   "score_pct": 70.0,
+   "missed": [
+    "milk"
+   ],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 2,
+    "elsewhere": 0
+   },
+   "wrong_classes": [
+    "Sauce_high",
+    "milk"
+   ],
+   "rate_hz": 2.25,
+   "duration_s": 135.7,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     6,
+     1
+    ],
+    "60": [
+     7,
+     2
+    ],
+    "120": [
+     7,
+     3
+    ]
+   },
+   "mean_score_pct": 59.0,
+   "time_to_map_median_s": 19.7,
+   "dist_cm": {
+    "milk": 21.9,
+    "choco_hazelnut_high": 3.2,
+    "Mugcup_high": 4.6,
+    "Sikhye_high": 10.4,
+    "saffron": 4.1,
+    "Febreze_high": 1.4,
+    "Bear": 4.4,
+    "Dinosaur": 14.6
+   },
+   "kf_max_cm": 15.38,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 305
+  },
+  "hyb3cf": {
+   "correct": 7,
+   "wrong": 2,
+   "of": 8,
+   "score_pct": 70.0,
+   "missed": [
+    "milk"
+   ],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 2,
+    "elsewhere": 0
+   },
+   "wrong_classes": [
+    "Sauce_high",
+    "milk"
+   ],
+   "rate_hz": 6.17,
+   "duration_s": 135.7,
+   "at": {
+    "10": [
+     0,
+     0
+    ],
+    "30": [
+     6,
+     1
+    ],
+    "60": [
+     7,
+     1
+    ],
+    "120": [
+     7,
+     2
+    ]
+   },
+   "mean_score_pct": 64.4,
+   "time_to_map_median_s": null,
+   "dist_cm": {
+    "milk": 21.4,
+    "choco_hazelnut_high": 1.3,
+    "Mugcup_high": 1.5,
+    "Sikhye_high": 1.0,
+    "saffron": 2.7,
+    "Febreze_high": 0.9,
+    "Bear": 2.2,
+    "Dinosaur": 14.6
+   },
+   "kf_max_cm": 16.6,
+   "loops": 2,
+   "slam_dropped": 0,
+   "sam6d_frames": 837
+  }
+ },
+ "260915_distance": {
+  "reference": {
+   "Bear": [
+    -2.405,
+    0.309,
+    -0.521
+   ],
+   "milk": [
+    -2.411,
+    0.395,
+    -0.318
+   ],
+   "Febreze_high": [
+    -2.414,
+    0.303,
+    -0.153
+   ],
+   "Mugcup_high": [
+    -2.373,
+    0.362,
+    -0.003
+   ],
+   "Sikhye_high": [
+    -1.51,
+    0.362,
+    0.625
+   ],
+   "saffron": [
+    -1.314,
+    0.272,
+    0.626
+   ],
+   "choco_hazelnut_high": [
+    -0.86,
+    0.325,
+    0.557
+   ],
+   "Dinosaur": [
+    -1.094,
+    0.343,
+    0.603
+   ]
+  },
+  "not_reference": {},
+  "ref_other_classes": [],
+  "ref": {
+   "correct": 8,
+   "wrong": 0,
+   "of": 8,
+   "score_pct": 100.0,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 0,
+    "elsewhere": 0
+   },
+   "wrong_classes": [],
+   "rate_hz": 4.51,
+   "duration_s": 189.5,
+   "at": {
+    "10": [
+     2,
+     0
+    ],
+    "30": [
+     3,
+     0
+    ],
+    "60": [
+     6,
+     0
+    ],
+    "120": [
+     7,
+     0
+    ]
+   },
+   "mean_score_pct": 74.3,
+   "time_to_map_median_s": 47.7,
+   "dist_cm": {
+    "Bear": 0.0,
+    "milk": 0.0,
+    "Febreze_high": 0.0,
+    "Mugcup_high": 0.0,
+    "Sikhye_high": 0.0,
+    "saffron": 0.0,
+    "choco_hazelnut_high": 0.0,
+    "Dinosaur": 0.0
+   },
+   "kf_max_cm": 1.46,
+   "loops": 0,
+   "slam_dropped": 0,
+   "sam6d_frames": 855
+  },
+  "origL05": {
+   "correct": 7,
+   "wrong": 2,
+   "of": 8,
+   "score_pct": 70.0,
+   "missed": [
+    "Bear"
+   ],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 1,
+    "elsewhere": 1
+   },
+   "wrong_classes": [
+    "Bear",
+    "Sauce_high"
+   ],
+   "rate_hz": 2.19,
+   "duration_s": 189.5,
+   "at": {
+    "10": [
+     2,
+     0
+    ],
+    "30": [
+     2,
+     0
+    ],
+    "60": [
+     7,
+     0
+    ],
+    "120": [
+     7,
+     0
+    ]
+   },
+   "mean_score_pct": 70.0,
+   "time_to_map_median_s": 47.9,
+   "dist_cm": {
+    "Bear": 240.4,
+    "milk": 6.6,
+    "Febreze_high": 5.0,
+    "Mugcup_high": 0.5,
+    "Sikhye_high": 3.3,
+    "saffron": 0.2,
+    "choco_hazelnut_high": 12.7,
+    "Dinosaur": 4.1
+   },
+   "kf_max_cm": 1.76,
+   "loops": 0,
+   "slam_dropped": 0,
+   "sam6d_frames": 416
+  },
+  "hyb3cf": {
+   "correct": 8,
+   "wrong": 0,
+   "of": 8,
+   "score_pct": 100.0,
+   "missed": [],
+   "wrong_kinds": {
+    "duplicate": 0,
+    "label": 0,
+    "elsewhere": 0
+   },
+   "wrong_classes": [],
+   "rate_hz": 6.33,
+   "duration_s": 189.5,
+   "at": {
+    "10": [
+     1,
+     0
+    ],
+    "30": [
+     1,
+     0
+    ],
+    "60": [
+     7,
+     0
+    ],
+    "120": [
+     8,
+     0
+    ]
+   },
+   "mean_score_pct": 76.7,
+   "time_to_map_median_s": 53.7,
+   "dist_cm": {
+    "Bear": 5.7,
+    "milk": 9.3,
+    "Febreze_high": 3.6,
+    "Mugcup_high": 7.1,
+    "Sikhye_high": 5.0,
+    "saffron": 0.4,
+    "choco_hazelnut_high": 0.9,
+    "Dinosaur": 1.0
+   },
+   "kf_max_cm": 3.46,
+   "loops": 0,
+   "slam_dropped": 0,
+   "sam6d_frames": 1200
+  }
+ }
+}

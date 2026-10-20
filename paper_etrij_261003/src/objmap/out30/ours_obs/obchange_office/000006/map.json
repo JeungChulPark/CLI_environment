@@ -1,0 +1,39 @@
+{
+ "units": "m",
+ "frame": "world",
+ "method": "ours",
+ "form": "observed",
+ "run": "/home/jucpark/DeepLearning/CLI_environment/paper_etrij_261003/src/objmap/out30/ours_runs/obchange_office_000006",
+ "objects": [
+  {
+   "id": 0,
+   "label": "ycbv_02",
+   "points": "points/0.npy",
+   "n_obs": 136
+  },
+  {
+   "id": 1,
+   "label": "ycbv_16",
+   "points": "points/1.npy",
+   "n_obs": 8
+  },
+  {
+   "id": 2,
+   "label": "ycbv_14",
+   "points": "points/2.npy",
+   "n_obs": 176
+  },
+  {
+   "id": 3,
+   "label": "ycbv_10",
+   "points": "points/3.npy",
+   "n_obs": 13
+  },
+  {
+   "id": 4,
+   "label": "ycbv_17",
+   "points": "points/4.npy",
+   "n_obs": 2
+  }
+ ]
+}

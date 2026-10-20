@@ -391,7 +391,7 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 </tbody>
 </table></div>
 <h2>7. 4090 에서 실제로 걸린 것 (2026-10-12 추가)</h2>
-<p>이 PC(RTX 4090 ×4, 드라이버 575 → CUDA 12.9 까지)에서 2절 안내대로 옮겨 돌리다가 걸린 것들입니다. 5090/.41 에서도 같은 일이 생길 수 있어 적어 둡니다.</p>
+<p>이 PC(RTX 4090 ×4, 드라이버 575.57.08 → CUDA 12.9 까지; 2026-10-14 부터 580.178.04)에서 2절 안내대로 옮겨 돌리다가 걸린 것들입니다. 5090/.41 에서도 같은 일이 생길 수 있어 적어 둡니다.</p>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -455,6 +455,11 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 <td>GroundingDINO 적재</td>
 <td><code>'BertModel' object has no attribute 'get_extended_attention_mask'</code></td>
 <td><code>sam6d</code> 를 복제한 <code>fmfusion</code> 환경의 transformers 가 5.19. GroundingDINO 의 <code>bertwarper.py</code> 는 4.x API 를 씀 → <code>pip install transformers==4.44.2</code> (fmfusion 환경에만). YCB-V · ObChange 는 노트북 검출을 재사용해서 이 오류를 만나지 않았고, 실데이터는 궤적이 달라 검출부터 다시 돌려야 해서 드러남</td>
+</tr>
+<tr>
+<td>데스크톱 멈춤 (<code>fmf_detect</code>)</td>
+<td>10-13~14 에 FM-Fusion 검출(GroundingDINO + SAM, <code>fmfusion</code> 환경)을 돌리면 1~4분 안에 화면·VS Code·<code>nvidia-smi</code> 가 모두 멈추고 하드 리셋만 됨. 다섯 번 재현(GPU 0 · 3 두 장, 디스플레이 카드가 아닌 계산 카드에서), 제안 방법 체인(<code>sam6d</code> 환경, 같은 torch 2.7.1 cu12.9)은 멀쩡함</td>
+<td>커널 로그: Xid 62(마이크로컨트롤러 정지) · Xid 158(<code>NV_UFLUSH_FB_FLUSH</code> 시간 초과) 또는 Xid 없이 드라이버 전역 잠금(<code>os_acquire_rwlock_write</code>, nvidia-modeset 커널 스레드 D 상태)만 교착 → 계산 GPU 가 컨텍스트 정리 중 레지스터 읽기에 답하지 않고 CPU 쪽 드라이버(GSP 펌웨어 끔)가 잠금을 든 채 시간 초과를 반복하며 디스플레이까지 끌고 내려감. 전력 상한 280 W, GroundingDINO 컴파일 커널 대신 PyTorch 경로(<code>fmfusion_detect.py --msda pytorch</code>, 기본값) 모두 효과 없음. <strong>드라이버 575.57.08(<code>NVreg_EnableGpuFirmware=0</code>) → <code>nvidia-driver-580</code> 580.178.04, GSP 펌웨어 켬(modprobe 옵션 주석)</strong> 으로 올린 뒤 10-14 09:59~10:38 완주(27 문서 §7). 그 사이 자동 재시작으로 같은 작업을 다시 띄워 세 번째 멈춤을 만든 적이 있으니, 멈춤 뒤에는 원인을 보기 전까지 같은 GPU 작업을 다시 띄우지 말 것. 멈춤 중에는 <code>nvidia-smi</code> · <code>/proc/driver/nvidia</code> 읽기도 같이 걸림</td>
 </tr>
 </tbody>
 </table></div>

@@ -1,0 +1,52 @@
+[
+ {
+  "dataset": "obchange_livingarea",
+  "scene": 2,
+  "landmarks": 4,
+  "accepted_dets": 250,
+  "dets_assigned": 224,
+  "processed_frames": 769,
+  "video_frames": 2988,
+  "sam6d_hz": 7.744209466263847
+ },
+ {
+  "dataset": "obchange_livingarea",
+  "scene": 3,
+  "landmarks": 5,
+  "accepted_dets": 82,
+  "dets_assigned": 74,
+  "processed_frames": 790,
+  "video_frames": 3117,
+  "sam6d_hz": 7.625482625482626
+ },
+ {
+  "dataset": "obchange_livingarea",
+  "scene": 4,
+  "landmarks": 5,
+  "accepted_dets": 286,
+  "dets_assigned": 280,
+  "processed_frames": 738,
+  "video_frames": 2986,
+  "sam6d_hz": 7.439516129032258
+ },
+ {
+  "dataset": "obchange_livingarea",
+  "scene": 5,
+  "landmarks": 5,
+  "accepted_dets": 251,
+  "dets_assigned": 251,
+  "processed_frames": 762,
+  "video_frames": 2994,
+  "sam6d_hz": 7.658291457286432
+ },
+ {
+  "dataset": "obchange_livingarea",
+  "scene": 6,
+  "landmarks": 5,
+  "accepted_dets": 242,
+  "dets_assigned": 234,
+  "processed_frames": 743,
+  "video_frames": 2988,
+  "sam6d_hz": 7.482376636455187
+ }
+]

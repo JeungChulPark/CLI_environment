@@ -1,0 +1,52 @@
+[
+ {
+  "dataset": "obchange_office",
+  "scene": 2,
+  "landmarks": 6,
+  "accepted_dets": 297,
+  "dets_assigned": 282,
+  "processed_frames": 508,
+  "video_frames": 2089,
+  "sam6d_hz": 7.33044733044733
+ },
+ {
+  "dataset": "obchange_office",
+  "scene": 3,
+  "landmarks": 4,
+  "accepted_dets": 326,
+  "dets_assigned": 321,
+  "processed_frames": 508,
+  "video_frames": 2092,
+  "sam6d_hz": 7.3198847262247835
+ },
+ {
+  "dataset": "obchange_office",
+  "scene": 4,
+  "landmarks": 8,
+  "accepted_dets": 104,
+  "dets_assigned": 96,
+  "processed_frames": 518,
+  "video_frames": 2093,
+  "sam6d_hz": 7.463976945244956
+ },
+ {
+  "dataset": "obchange_office",
+  "scene": 5,
+  "landmarks": 7,
+  "accepted_dets": 91,
+  "dets_assigned": 83,
+  "processed_frames": 455,
+  "video_frames": 2090,
+  "sam6d_hz": 6.565656565656566
+ },
+ {
+  "dataset": "obchange_office",
+  "scene": 6,
+  "landmarks": 5,
+  "accepted_dets": 350,
+  "dets_assigned": 335,
+  "processed_frames": 498,
+  "video_frames": 2091,
+  "sam6d_hz": 7.17579250720461
+ }
+]

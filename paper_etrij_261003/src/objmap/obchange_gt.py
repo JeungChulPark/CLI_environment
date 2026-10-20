@@ -15,7 +15,9 @@ Output per visit k (2..6), gt/obchange_kitchen/<k:06d>/:
 Objects without a YCB-V CAD (027_skillet, 029_plate) are not scored; their labelled points go to
 excluded/<i>.npy, listed under `excluded` in map.json, and evaluate.py leaves out every prediction lying on them
 (don't-care regions, the same for every method). --excluded-only rewrites just these, keeping the fitted objects.
-Usage: python obchange_gt.py [--root ~/DeepLearning/Dataset/obchange/Kitchen]
+Other rooms (--room BigRoom|LivingArea|Office|SmallRoom; BigRoom has visits 2..7): the visits are the scene* folders
+of --root (default ~/DeepLearning/Datasets/ObChange/anno/<Room>), output gt/obchange_<room>/.
+Usage: python obchange_gt.py [--room Kitchen] [--root ~/DeepLearning/Dataset/obchange/Kitchen]
 """
 import argparse, itertools, json, re
 from pathlib import Path
@@ -50,7 +52,11 @@ def read_gt(path):
     for line in open(path):
         t = line.split()
         if t:
-            out.append((t[0], np.array([int(x) for x in t[1:-1]]), t[-1].lower() == 'true'))
+            # the flag is normally the last token; one LivingArea line (scene6 plane 2, 065-j_cups) has it in the
+            # middle ("... 380 true 26931"), so take the flag wherever it is and every integer as a point index
+            flags = [x.lower() for x in t[1:] if x.lower() in ('true', 'false')]
+            out.append((t[0], np.array([int(x) for x in t[1:] if x.lower() not in ('true', 'false')]),
+                        bool(flags) and flags[-1] == 'true'))
     return out
 
 
@@ -107,11 +113,13 @@ def fit_pose(Q, oid, T0):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--root', default=str(Path.home() / 'DeepLearning/Dataset/obchange/Kitchen'))
+    ap.add_argument('--room', default='Kitchen', help='Kitchen | BigRoom | LivingArea | Office | SmallRoom')
+    ap.add_argument('--root', default=None, help='annotation dir of the room (scene<k>/planes/...)')
     ap.add_argument('--excluded-only', action='store_true', help='rewrite only the excluded (don\'t-care) objects')
     a = ap.parse_args()
-    root = Path(a.root)
-    for scene in sorted(root.glob('scene*'), key=lambda p: int(p.name[5:])):
+    root = Path(a.root) if a.root else (Path.home() / 'DeepLearning/Dataset/obchange/Kitchen' if a.room == 'Kitchen'
+                                       else Path.home() / 'DeepLearning/Datasets/ObChange/anno' / a.room)
+    for scene in sorted((p for p in root.glob('scene*') if p.name[5:].isdigit()), key=lambda p: int(p.name[5:])):
         k = int(scene.name[5:])
         objs, excluded, fits = [], [], []
         for plane in sorted((scene / 'planes').iterdir(), key=lambda p: int(p.name)):
@@ -134,7 +142,7 @@ def main():
                              'residual_med_mm': round(float(np.median(d)) * 1000, 2),
                              'residual_p90_mm': round(float(np.percentile(d, 90)) * 1000, 2),
                              'inlier_5mm': round(float((d < 0.005).mean()), 3), 'start': start})
-        out = GT_DIR / 'obchange_kitchen' / f'{k:06d}'
+        out = GT_DIR / f'obchange_{a.room.lower()}' / f'{k:06d}'
         (out / 'excluded').mkdir(parents=True, exist_ok=True)
         for i, e in enumerate(excluded):
             np.save(out / 'excluded' / f'{i}.npy', np.asarray(e.pop('P'), np.float32))
@@ -146,7 +154,7 @@ def main():
             continue
         if not objs:
             continue
-        save_map(out, objs, {'dataset': 'ObChange-Kitchen', 'visit': k, 'excluded': excluded,
+        save_map(out, objs, {'dataset': f'ObChange-{a.room}', 'visit': k, 'excluded': excluded,
                              'source': 'pointwise labels on the ElasticFusion surface reconstruction'})
         json.dump(fits, open(out / 'fit.json', 'w'), indent=1)
         for f in fits:

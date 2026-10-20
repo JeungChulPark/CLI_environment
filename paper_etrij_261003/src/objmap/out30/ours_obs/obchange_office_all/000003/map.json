@@ -1,0 +1,81 @@
+{
+ "units": "m",
+ "frame": "world",
+ "method": "ours",
+ "form": "observed",
+ "run": "/home/jucpark/DeepLearning/CLI_environment/paper_etrij_261003/src/objmap/out30/ours_runs/obchange_office_all_000006",
+ "objects": [
+  {
+   "id": 0,
+   "label": "ycbv_16",
+   "points": "points/0.npy",
+   "n_obs": 13
+  },
+  {
+   "id": 1,
+   "label": "ycbv_10",
+   "points": "points/1.npy",
+   "n_obs": 16
+  },
+  {
+   "id": 2,
+   "label": "ycbv_16",
+   "points": "points/2.npy",
+   "n_obs": 7
+  },
+  {
+   "id": 3,
+   "label": "ycbv_21",
+   "points": "points/3.npy",
+   "n_obs": 6
+  },
+  {
+   "id": 4,
+   "label": "ycbv_14",
+   "points": "points/4.npy",
+   "n_obs": 226
+  },
+  {
+   "id": 5,
+   "label": "ycbv_11",
+   "points": "points/5.npy",
+   "n_obs": 40
+  },
+  {
+   "id": 6,
+   "label": "ycbv_16",
+   "points": "points/6.npy",
+   "n_obs": 3
+  },
+  {
+   "id": 7,
+   "label": "ycbv_07",
+   "points": "points/7.npy",
+   "n_obs": 2
+  },
+  {
+   "id": 8,
+   "label": "ycbv_14",
+   "points": "points/8.npy",
+   "n_obs": 147
+  },
+  {
+   "id": 9,
+   "label": "ycbv_11",
+   "points": "points/9.npy",
+   "n_obs": 144
+  },
+  {
+   "id": 10,
+   "label": "ycbv_17",
+   "points": "points/10.npy",
+   "n_obs": 2
+  },
+  {
+   "id": 11,
+   "label": "ycbv_17",
+   "points": "points/11.npy",
+   "n_obs": 2
+  }
+ ]
+}

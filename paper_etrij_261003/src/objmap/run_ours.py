@@ -22,6 +22,7 @@ sam6d_realtime/ run; cluster-first needs commit 0c539f3 or later.
 import argparse
 import json
 import os
+import shutil
 import signal
 import subprocess
 import time
@@ -30,7 +31,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from common import OUT, save_map, seq_cameras, seq_name, transform
+from common import OUT, fps, save_map, seq_cameras, seq_name, transform
 import seq_bags
 
 HERE = Path(__file__).resolve().parent
@@ -44,18 +45,19 @@ SHOWN = ("active", "lost", "remembered")
 ASSOC_GATE_M = 0.15
 # improvement 3 (ycbv_live/run_hybS05_r2.sh) + cluster-first
 RECOG_ENV = {"OBJPOSE_LIVE_MODE": "hybrid", "OBJPOSE_ORIG_DESC": "dinov2_vits14", "OBJPOSE_ORIG_THRESH": "0.5",
-             "FASTSAM_X": str(Path.home() / "DeepLearning/Dataset/bop/ycbv_work/FastSAM-x.pt")}
+             "FASTSAM_X": os.environ.get("FASTSAM_X", str(Path.home() / "DeepLearning/Dataset/bop/ycbv_work/FastSAM-x.pt"))}
 
 
 def snapshot_times(dataset, s):
     """Capture time of the last frame of every visit (continuous ObChange run), on the replay clock."""
-    if dataset != "obchange_kitchen_all":
+    if not dataset.endswith("_all"):
         return []
-    fr = sorted(seq_cameras(dataset, s)["frames"], key=lambda f: f["id"])
+    cams = seq_cameras(dataset, s)
+    fr = sorted(cams["frames"], key=lambda f: f["id"])
     last = {}
     for n, f in enumerate(fr):
         last[f["visit"]] = n
-    return [(v, T0 + int(round(n * 1e9 / 30))) for v, n in sorted(last.items())]
+    return [(v, T0 + int(round(n * 1e9 / fps(cams)))) for v, n in sorted(last.items())]
 
 
 def run_scene(s, http_port, slam_port, dataset="ycbv"):
@@ -72,6 +74,8 @@ def run_scene(s, http_port, slam_port, dataset="ycbv"):
                "--verify-cluster-first", "--exit-when-done",
                "--http-port", str(http_port), "--slam-port", str(slam_port)]
     snaps = snapshot_times(dataset, s)
+    cams = seq_cameras(dataset, s) if dataset != "ycbv" else None
+    wait_s = 3600 if cams is None else max(3600, 1.3 * len(cams["frames"]) / fps(cams) + 600)
     if snaps:
         hub_cmd += ["--memory-snapshots", ",".join(str(t) for _, t in snaps)]
     t = time.time()
@@ -80,13 +84,15 @@ def run_scene(s, http_port, slam_port, dataset="ycbv"):
         gt = subprocess.Popen([PY, "-u", str(HERE / "gt_pose_stream.py"), "--scene", str(s), "--dataset", dataset,
                                "--connect", f"127.0.0.1:{slam_port}"], stdout=lf, stderr=subprocess.STDOUT)
         try:
-            hub.wait(timeout=3600)
+            hub.wait(timeout=wait_s)
         except subprocess.TimeoutExpired:
             os.killpg(hub.pid, signal.SIGINT)
             hub.wait(60)
         gt.wait(30) if gt.poll() is None else None
     ok = (out / "summary.json").exists()
     print(f"{sc} {'ok' if ok else 'NO SUMMARY'} {time.time() - t:.0f} s", flush=True)
+    if dataset != "ycbv" and os.environ.get("SEQ_BAGS_DELETE"):   # 30 fps bags are 1.5 MB a frame: written per run
+        shutil.rmtree(bags, ignore_errors=True)
     return ok
 
 
@@ -111,11 +117,11 @@ def ism_mask(det, hw):
 
 
 def export_scene(s, step_px=2, dataset="ycbv"):
-    """One run -> the two common-format maps. A continuous ObChange run (obchange_kitchen_all, scene = last
-    visit) is exported once per visit snapshot, to out/<form>/obchange_kitchen_all/<visit>."""
+    """One run -> the two common-format maps. A continuous ObChange run (obchange_<room>_all, scene = last
+    visit) is exported once per visit snapshot, to out/<form>/obchange_<room>_all/<visit>."""
     run = RUNS / seq_name(dataset, s)
     summ = json.load(open(run / "summary.json"))
-    if dataset == "obchange_kitchen_all":
+    if dataset.endswith("_all"):
         snaps = dict((t, v) for v, t in snapshot_times(dataset, s))
         return [export_landmarks(run, summ, sn["landmarks"], dataset, snaps[int(sn["t_ns"])], s, step_px, sn["t_ns"])
                 for sn in summ["memory_snapshots"] if snaps[int(sn["t_ns"])] >= 2]
@@ -144,7 +150,7 @@ def export_landmarks(run, summ, landmarks, dataset, out_scene, run_scene_, step_
         n_det += 1
         if until_ns is not None and int(d["stamp_ns"]) > int(until_ns):
             continue
-        n = int(round((int(d["stamp_ns"]) - T0) * 30 / 1e9))
+        n = int(round((int(d["stamp_ns"]) - T0) * fps(cams) / 1e9))
         if not 0 <= n < len(frames):
             continue
         T_wc = np.array(frames[n]["T_wc"])
@@ -172,7 +178,7 @@ def export_landmarks(run, summ, landmarks, dataset, out_scene, run_scene_, step_
     fr = [json.loads(x) for x in open(run / "sam6d_frames.jsonl")]
     stat = {"dataset": dataset, "scene": out_scene, "landmarks": len(lms), "accepted_dets": n_det, "dets_assigned": n_used,
             "processed_frames": len(fr), "video_frames": len(frames),
-            "sam6d_hz": summ.get("sam6d_frames", len(fr)) / max(summ.get("duration_s") or len(frames) / 30, 1e-9)}
+            "sam6d_hz": summ.get("sam6d_frames", len(fr)) / max(summ.get("duration_s") or len(frames) / fps(cams), 1e-9)}
     print(json.dumps(stat), flush=True)
     return stat
 
@@ -181,15 +187,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd", choices=["run", "export"])
     ap.add_argument("--scenes", type=int, nargs="*", default=list(range(48, 60)))
-    ap.add_argument("--dataset", default="ycbv", help="ycbv | obchange_kitchen | obchange_kitchen_all (see common.seq_cameras)")
+    ap.add_argument("--dataset", default="ycbv", help="ycbv | obchange_<room> | obchange_<room>_all (see common.seq_cameras)")
     ap.add_argument("--http-port", type=int, default=8775)
     ap.add_argument("--slam-port", type=int, default=17011)
     a = ap.parse_args()
     if a.cmd == "run":
         for s in a.scenes:
-            if (RUNS / seq_name(a.dataset, s) / "summary.json").exists():   # resumable (2026-10-12)
-                print(f"{seq_name(a.dataset, s)} skip (summary.json exists)", flush=True)
-                continue
             run_scene(s, a.http_port, a.slam_port, a.dataset)
             time.sleep(5)     # let the ports and the shared-memory channel go
     else:

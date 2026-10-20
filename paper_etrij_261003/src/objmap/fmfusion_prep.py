@@ -27,7 +27,7 @@ from pathlib import Path
 
 import numpy as np
 
-from common import YCBV, classes, seq_cameras, seq_name
+from common import YCBV, classes, obchange_last_visit, obchange_room, seq_cameras, seq_name
 
 FMF_ROOT = Path(os.environ.get("FMFUSION_ROOT", Path.home() / "DeepLearning/baselines/FM-Fusion"))
 FMF_DATA = Path(os.environ.get("FMFUSION_DATA", Path.home() / "DeepLearning/Dataset/bop/ycbv_work/fmfusion"))
@@ -42,9 +42,13 @@ CHANGES = {
 
 
 def config_path(dataset):
-    """One FM-Fusion config per camera: YCB-V, ObChange (both ObChange sequence kinds share it), or a real
-    recording (one per scene: the recordings have their own K)."""
-    return FMF_DATA / {"ycbv": "config_ycbv.yaml", "real": "config_real.yaml"}.get(dataset, "config_obchange.yaml")
+    """One FM-Fusion config per camera: YCB-V, ObChange-Kitchen (config_obchange.yaml; both ObChange sequence kinds
+    share it), another ObChange room (config_obchange_<room>.yaml: BOP depth in 0.1 mm -> depth_scale 10000), or a
+    real recording (one per scene: the recordings have their own K)."""
+    if dataset in ("ycbv", "real"):
+        return FMF_DATA / f"config_{dataset}.yaml"
+    room = obchange_room(dataset)[0]
+    return FMF_DATA / ("config_obchange.yaml" if room == "kitchen" else f"config_obchange_{room}.yaml")
 
 
 def likelihood_path(dataset):
@@ -74,11 +78,13 @@ def write_config(K, dataset="ycbv", depth_scale_mm=0.1, path=None):
 
 def prep_scene(scene, dataset="ycbv"):
     """ObChange sequences keep the global frame ids of the continuous sequence; their detections live once,
-    in the scan of the whole sequence (obchange_kitchen_all, scene 6), and every other ObChange scan links
-    its prediction_no_augment/ there."""
+    in the scan of the whole sequence of the room (obchange_<room>_all, scene = last visit; Kitchen: 6), and every
+    other ObChange scan of that room links its prediction_no_augment/ there."""
     cams = seq_cameras(dataset, scene)
     d = FMF_DATA / "scans" / seq_name(dataset, scene)
-    shared = FMF_DATA / "scans" / seq_name("obchange_kitchen_all", 6) / "prediction_no_augment"
+    ob = obchange_room(dataset)
+    shared = (FMF_DATA / "scans" / seq_name(f"obchange_{ob[0]}_all", obchange_last_visit(ob[0])) / "prediction_no_augment"
+              if ob else None)
     for sub in ("color", "depth", "pose"):
         (d / sub).mkdir(parents=True, exist_ok=True)
     pred = d / "prediction_no_augment"

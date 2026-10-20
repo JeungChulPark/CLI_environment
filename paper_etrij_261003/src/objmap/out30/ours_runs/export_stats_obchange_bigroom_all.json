@@ -1,0 +1,64 @@
+[
+ [
+  {
+   "dataset": "obchange_bigroom_all",
+   "scene": 2,
+   "landmarks": 17,
+   "accepted_dets": 4689,
+   "dets_assigned": 687,
+   "processed_frames": 25224,
+   "video_frames": 98463,
+   "sam6d_hz": 7.686025961362667
+  },
+  {
+   "dataset": "obchange_bigroom_all",
+   "scene": 3,
+   "landmarks": 24,
+   "accepted_dets": 4689,
+   "dets_assigned": 1603,
+   "processed_frames": 25224,
+   "video_frames": 98463,
+   "sam6d_hz": 7.686025961362667
+  },
+  {
+   "dataset": "obchange_bigroom_all",
+   "scene": 4,
+   "landmarks": 23,
+   "accepted_dets": 4689,
+   "dets_assigned": 2353,
+   "processed_frames": 25224,
+   "video_frames": 98463,
+   "sam6d_hz": 7.686025961362667
+  },
+  {
+   "dataset": "obchange_bigroom_all",
+   "scene": 5,
+   "landmarks": 30,
+   "accepted_dets": 4689,
+   "dets_assigned": 2766,
+   "processed_frames": 25224,
+   "video_frames": 98463,
+   "sam6d_hz": 7.686025961362667
+  },
+  {
+   "dataset": "obchange_bigroom_all",
+   "scene": 6,
+   "landmarks": 37,
+   "accepted_dets": 4689,
+   "dets_assigned": 3442,
+   "processed_frames": 25224,
+   "video_frames": 98463,
+   "sam6d_hz": 7.686025961362667
+  },
+  {
+   "dataset": "obchange_bigroom_all",
+   "scene": 7,
+   "landmarks": 50,
+   "accepted_dets": 4689,
+   "dets_assigned": 4102,
+   "processed_frames": 25224,
+   "video_frames": 98463,
+   "sam6d_hz": 7.686025961362667
+  }
+ ]
+]

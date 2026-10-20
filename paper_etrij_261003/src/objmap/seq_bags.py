@@ -1,6 +1,6 @@
 """Converted rosbag2 session (as ycbv_live/make_bags.py writes for YCB-V) for any sequence of common.seq_cameras,
 so the live hub can replay it: /camera/camera/color/image_raw (bgr8), aligned depth (16UC1, mm), camera_info.
-Frame n of the sequence (sorted by id) is stamped T0 + n/30 s; gt_pose_stream.py uses the same clock.
+Frame n of the sequence (sorted by id) is stamped T0 + n/fps s (common.fps: 30, ObChange BOP rooms 10); gt_pose_stream.py uses the same clock.
 Output: <BAGS>/<seq_name>/SAM (and SLAM -> the same files, single-camera data).
 
     python seq_bags.py --dataset obchange_kitchen_all --scenes 6
@@ -12,7 +12,7 @@ import cv2
 import numpy as np
 from rosbags.rosbag2 import Writer
 
-from common import seq_cameras, seq_name
+from common import fps, seq_cameras, seq_name
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "ycbv_live"))
 from make_bags import COLOR, DEPTH, CINFO, ROI, T0, CameraInfo, Image, hdr, img_msg, ts  # noqa: E402
@@ -28,12 +28,13 @@ def write(dataset, scene):
     dst.parent.mkdir(parents=True, exist_ok=True)
     K = np.array(cams["K"], float); seq = Path(cams["seq_dir"]); scale = float(cams["depth_scale_mm"])
     frames = sorted(cams["frames"], key=lambda f: f["id"])
+    rate = fps(cams)
     with Writer(dst, version=8) as w:
         cc = w.add_connection(COLOR, Image.__msgtype__, typestore=ts)
         cd = w.add_connection(DEPTH, Image.__msgtype__, typestore=ts)
         ci = w.add_connection(CINFO, CameraInfo.__msgtype__, typestore=ts)
         for n, f in enumerate(frames):
-            t = T0 + int(round(n * 1e9 / 30))
+            t = T0 + int(round(n * 1e9 / rate))
             rgb = cv2.imread(str(seq / "rgb" / f"{f['id']:06d}.png"))
             d = cv2.imread(str(seq / "depth" / f"{f['id']:06d}.png"), cv2.IMREAD_UNCHANGED).astype(np.float32)
             dmm = np.clip(np.round(d * scale), 0, 65535).astype(np.uint16)

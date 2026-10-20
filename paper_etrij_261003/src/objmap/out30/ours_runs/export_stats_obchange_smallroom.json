@@ -1,0 +1,52 @@
+[
+ {
+  "dataset": "obchange_smallroom",
+  "scene": 2,
+  "landmarks": 12,
+  "accepted_dets": 436,
+  "dets_assigned": 399,
+  "processed_frames": 2071,
+  "video_frames": 8203,
+  "sam6d_hz": 7.583302819480044
+ },
+ {
+  "dataset": "obchange_smallroom",
+  "scene": 3,
+  "landmarks": 11,
+  "accepted_dets": 668,
+  "dets_assigned": 620,
+  "processed_frames": 2100,
+  "video_frames": 8204,
+  "sam6d_hz": 7.689491028927132
+ },
+ {
+  "dataset": "obchange_smallroom",
+  "scene": 4,
+  "landmarks": 11,
+  "accepted_dets": 679,
+  "dets_assigned": 631,
+  "processed_frames": 2122,
+  "video_frames": 8204,
+  "sam6d_hz": 7.770047601611131
+ },
+ {
+  "dataset": "obchange_smallroom",
+  "scene": 5,
+  "landmarks": 11,
+  "accepted_dets": 882,
+  "dets_assigned": 802,
+  "processed_frames": 2204,
+  "video_frames": 8520,
+  "sam6d_hz": 7.768769827282341
+ },
+ {
+  "dataset": "obchange_smallroom",
+  "scene": 6,
+  "landmarks": 17,
+  "accepted_dets": 551,
+  "dets_assigned": 481,
+  "processed_frames": 2084,
+  "video_frames": 8205,
+  "sam6d_hz": 7.628111273792094
+ }
+]

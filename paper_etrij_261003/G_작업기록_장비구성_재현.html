@@ -22,7 +22,7 @@ li{margin:3px 0}
 a{color:var(--acc);word-break:break-all}
 </style></head><body><main><h1 id="_1">작업기록 장비구성 재현</h1>
 <blockquote>
-<p>작업 기록 · 장비 구성 · 재현 안내 — 재시작 메모(08), 원고 v0.3 · 상태 전이 수식 · 저장소 사고(19), 다른 장비(4090 · 5090 · .41)에서 다시 돌리기와 4090 재현 결과(26), .41 한 대 구성 · FM-Fusion 재검출 · .192 드라이버 복구(28). 개별 문서 4개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 맨 앞의 '종합' 절은 구성 문서를 읽고 정리한 요약(<code>묶음요약/G_작업기록_장비구성_재현.md</code>)이고, 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-15.</p>
+<p>작업 기록 · 장비 구성 · 재현 안내 — 재시작 메모(08), 원고 v0.3 · 상태 전이 수식 · 저장소 사고(19), 다른 장비(4090 · 5090 · .41)에서 다시 돌리기와 4090 재현 결과(26), .41 한 대 구성 · FM-Fusion 재검출 · .192 드라이버 복구(28), 주말 실험(29 · 30)을 .41 서버 + .192 SLAM 으로 재현 · 같은 머신 다중 체인 함정(31). 개별 문서 5개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 맨 앞의 '종합' 절은 구성 문서를 읽고 정리한 요약(<code>묶음요약/G_작업기록_장비구성_재현.md</code>)이고, 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-20.</p>
 </blockquote>
 <p><strong>이 묶음의 장</strong></p>
 <ul>
@@ -30,9 +30,10 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>19_작업기록_원고v0.3_3080반복_261010</strong> — 19. 작업 기록 — 원고 v0.3, 상태 전이 수식, RTX 3080 반복 측정 (2026-10-10)</li>
 <li><strong>26_다른장비_재현_안내_4090_5090_261011</strong> — 26. 다른 장비에서 다시 돌리기 — 주말(10-10 · 10-11) 노트북 실험을 RTX 4090 · RTX 5090(Blackwell)으로 (2026-10-11)</li>
 <li><strong>28_작업기록_41단독_FMFusion재검출_192복구_261014</strong> — 28. 작업 기록 — .41 한 대 구성, FM-Fusion 검출 재실행(.41 · .192), .192 드라이버 복구 (2026-10-14)</li>
+<li><strong>31_41서버_192SLAM_주말재현_261019</strong> — 31. 주말(29·30 문서) 실험을 .41 서버 + .192 SLAM 으로 재현 (2026-10-19 저녁 ~ 10-20 오후)</li>
 </ul>
 <h2 id="2026-10-15">종합 — 이 묶음이 말하는 것 (2026-10-15 정리)</h2>
-<p>실험 결과가 아니라 <strong>언제 무엇을 어느 장비에서 했고, 무엇이 막혔고 어떻게 풀었는지</strong>를 적은 작업 기록과 재현 안내 네 개입니다. 원래 A 묶음(논문 기획)에 섞여 있던 것을 2026-10-15 에 따로 묶었습니다. 다른 장비에서 실험을 다시 돌리거나, 어떤 수치가 어느 장비 · 어느 날 것인지 확인할 때 봅니다.</p>
+<p>실험 결과가 아니라 <strong>언제 무엇을 어느 장비에서 했고, 무엇이 막혔고 어떻게 풀었는지</strong>를 적은 작업 기록과 재현 안내 다섯 개입니다. 원래 A 묶음(논문 기획)에 섞여 있던 것을 2026-10-15 에 따로 묶었습니다. 다른 장비에서 실험을 다시 돌리거나, 어떤 수치가 어느 장비 · 어느 날 것인지 확인할 때 봅니다.</p>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -67,6 +68,12 @@ a{color:var(--acc);word-break:break-all}
 <td>.41 · .192</td>
 <td>.41 한 대 구성(hub + ORB-SLAM3), FM-Fusion 검출 재실행(.41 · .192, 설정 파일 누락 사고 1건), .192 드라이버 575 → 580 으로 멈춤 해결</td>
 </tr>
+<tr>
+<td>31 주말 실험 재현</td>
+<td>10-19 저녁 → 10-20</td>
+<td>.41(hub + 인식기, GPU 0 · 2 · 3 세 체인 동시) + .192(수정 ORB-SLAM3 + 자이로)</td>
+<td>노트북 + Mac 의 29 · 30 문서를 하루 만에 다시: 자이로 28회(원본 0.5 28/7, 개선안 3 94/2, + 자이로 92/4, 루프 보정 중앙값 19.0 → 8.0 cm), 미사용 녹화 10개 × 3(71/18 대 77/5), ObChange 네 방 실시간 30 fps 합산 ours_obs 0.416 / 0.244(노트북 0.443 / 0.225, 순위 같음, §5). 같은 머신에서 체인 셋을 돌리다 만난 함정 여덟과 보수 체인(§4), 아직 못 한 넷과 이유(§6), 10-20 낮 .192 주력 구성(수정 ORB + 자이로, 없으면 특징점 3000) 10개 × 3회 79/4 · 78/6 · 78/8 과 네 방 2회차 0.449 / 0.253(§7)</td>
+</tr>
 </tbody>
 </table></div>
 <p><strong>장비와 역할 (문서 전체에서 쓰는 이름)</strong></p>
@@ -94,9 +101,9 @@ a{color:var(--acc);word-break:break-all}
 </tr>
 <tr>
 <td>.41</td>
-<td>RTX PRO 6000 Blackwell ×4, 10.254.176.41, sudo 없음</td>
-<td>10-08 부터 인식 서버(hub), Blackwell 재실행, 10-14 부터 ORB-SLAM3 도 한 머신</td>
-<td>06 §9, 11 §4, 12 §5, 16 §4, 18 C·E, 15 §7, 20 §7, 21 §4, 23 §7, 27, 28</td>
+<td>RTX PRO 6000 Blackwell ×4, 10.254.176.41, sudo 없음, 메모리 62 GB</td>
+<td>10-08 부터 인식 서버(hub), Blackwell 재실행, 10-14 부터 ORB-SLAM3 도 한 머신, 10-19 세 체인 동시(GPU 0 · 2 · 3)</td>
+<td>06 §9, 11 §4, 12 §5, 16 §4, 18 C·E, 15 §7, 20 §7, 21 §4, 23 §7, 27, 28, 31</td>
 </tr>
 <tr>
 <td>.3</td>
@@ -105,10 +112,10 @@ a{color:var(--acc);word-break:break-all}
 <td>18 D, 17 표 1</td>
 </tr>
 <tr>
-<td>5090</td>
-<td>RTX 5090 (예정)</td>
-<td>논문 최종 수치 3회 반복</td>
-<td>03, 17 §5, 26</td>
+<td>5090 노트북</td>
+<td>RTX 5090 Laptop + Mac M4 Pro(ORB-SLAM3)</td>
+<td>10-17 ~ 18 주말 실험(미사용 데이터 · 네 방 실시간 · 자이로), 논문 최종 수치 3회 반복 후보</td>
+<td>29, 30, 03, 17 §5, 26; 31 은 그 재현</td>
 </tr>
 </tbody>
 </table></div>
@@ -118,11 +125,13 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>.41 에 sudo 없음</strong>: ORB-SLAM3 의존 라이브러리(libsqlite3-dev, nlohmann-json3-dev)를 <code>deps/install</code> 에 손으로 두고 <code>build_host.sh</code> 가 apt 를 건너뛰게 함(26 §9). bop_toolkit 의 VSD 렌더러는 EGL 벤더를 NVIDIA 로 강제(06 §9).</li>
 <li><strong>.41 DualMap 실패 10회</strong>: conda 환경에 <code>mobileclip</code> 이 없어 검출기 초기화가 조용히 빠져나감(<code>'Detector' object has no attribute 'yolo'</code>) + "검출 0개 프레임 건너뛰기" 패치 누락. .192 의 패키지 · 파일을 복사해 해결(23 §7.4, 28 §1).</li>
 <li><strong>FM-Fusion 새 작업 폴더에 설정 파일 누락</strong>: <code>config_*.yaml</code> · <code>likelihood_*.txt</code> · <code>splits/</code> 를 복사하지 않으면 융합이 빈 지도를 내고 채점기가 0점을 찍음(28 §3).</li>
+<li><strong>같은 머신에서 체인 여럿(31 §4)</strong>: hub ↔ SAM-6D 공유메모리 이름(<code>/dev/shm/sam6d_frame</code>)이 고정이라 다른 체인의 인식기가 뜨는 순간 내 인식기가 멈춤 → <code>SAM6D_SHM_SUFFIX</code> 로 체인마다 <code>_g0/_g2/_g3</code>(가장 치명적, 겹친 실행 20개 재실행); 정리 단계의 <code>pkill -f hub.py</code> 가 남의 hub 를 죽임 → 자기 PID 만; <code>/mnt/nvme1</code> inode 47.7만 개 → 프레임 PNG 는 <code>/</code> 에; .192 세션을 NAS 에서 읽으면 다른 NAS 작업과 겹쳐 프레임 절반 드롭 → 로컬 복사본; DualMap 실시간 훅(<code>DM_RT_INTERVAL</code>) 누락 → .192 파일 복사; CPU 경합 → <code>taskset</code> 으로 체인별 코어.</li>
+<li><strong>FM-Fusion 패치 누락 · DualMap 동시 실행 SIGKILL</strong>(31 §4.7 · 4.8): .41 빌드에 29 §5.6 의 프레임 상한 1,000,000 · Qhull 예외 패치가 없어 20,000 프레임 넘는 연속 지도가 출력 없이 끝나거나 SIGABRT → .192 패치 소스로 재빌드; 두 방 체인의 긴 DualMap 연속 실행이 겹치면 SIGKILL(메모리 62 GB) → 체인이 끝난 뒤 한 번에 하나씩 보수 체인.</li>
 <li><strong>저장소 사고</strong>(10-10): 서버 사본이 만든 자기 참조 심링크가 추적되어 노트북 <code>template/</code>(2 GB) 삭제 → T7 이동 디스크에서 복구(19 §1).</li>
 <li><strong>ORB-SLAM3 잘못된 루프 보정</strong>(3 m 급): 해당 실행은 버리고 다시 돌리는 규칙(22 §0, 15 §2).</li>
 </ul>
 <p><strong>재현 순서(26 §4):</strong> 짧은 것(실데이터 5개 실시간, 약 30분)부터 돌려 환경을 확인하고, 긴 것(YCB-V 반복, 기준 방법)은 뒤에. 장비마다 고칠 곳은 <code>objpose/pc/catalog.py</code> 의 <code>DATASET_ROOT</code>, 스크립트의 장비 태그(<code>l3080</code> 등), <code>realdata/logs_live_261011/*.sh</code> 의 <code>REPO=</code> 경로.</p>
-<p><strong>남은 일(28 §6):</strong> 26 §7 · 27(서버·클라이언트) §4 의 ".192 멈춤 → .41 단독" 조치 해제 표기, 5090 에서 세 방법 최종 실행, <code>run_fmf_detect_41.sh</code> / <code>_192.sh</code> 를 호스트 변수 하나로 합치기.</p>
+<p><strong>남은 일(28 §6, 31 §6):</strong> 26 §7 · 27(서버·클라이언트) §4 의 ".192 멈춤 → .41 단독" 조치 해제 표기, 5090 에서 세 방법 최종 실행, <code>run_fmf_detect_41.sh</code> / <code>_192.sh</code> 를 호스트 변수 하나로 합치기. 31 에서 못 한 넷 — HOPE-Video(데이터 <code>paper_benchmarks/HOPE/video_bop</code> 를 노트북에서 복사하면 됨, 코드는 .192 가지 병합으로 들어옴), 원본 ORB-SLAM3 .192 리눅스 빌드(사용자 결정으로 안 만듦, .192 주력은 수정 ORB + 자이로), 10 fps 보조 조건(BOP 판 프레임 없음), 뷰어 변경 반영(.192 가지 <code>objpose/memory-dup-suppression</code> 병합으로 해결). .41 에서 DualMap 긴 연속 실행은 한 번에 하나만(RSS 36 GB).</p>
 <div class="toc">
 <ul>
 <li><a href="#_1">작업기록 장비구성 재현</a><ul>
@@ -174,6 +183,40 @@ a{color:var(--acc);word-break:break-all}
 <li><a href="#4-192-27-4090-91">4. .192 복구와 같은 검출 재실행 (27 객체지도 4090 §9.1)</a></li>
 <li><a href="#5_2">5. 머신 운용에서 배운 것</a></li>
 <li><a href="#6_2">6. 남은 일</a></li>
+</ul>
+</li>
+<li><a href="#31-2930-41-192-slam-2026-10-19-10-20">31. 주말(29·30 문서) 실험을 .41 서버 + .192 SLAM 으로 재현 (2026-10-19 저녁 ~ 10-20 오후)</a><ul>
+<li><a href="#0_3">0. 요약</a></li>
+<li><a href="#1_2">1. 구성</a></li>
+<li><a href="#2-30">2. 30 문서 재현 — 자이로</a><ul>
+<li><a href="#21-4-3">2.1 합계 (녹화 4개 × 구성, 우리 기술은 3회 반복)</a></li>
+<li><a href="#22-1-2-3">2.2 녹화별 (맞음/잘못, 1 · 2 · 3회)</a></li>
+</ul>
+</li>
+<li><a href="#3-29-2-10">3. 29 §2 재현 — 미사용 실데이터 10개</a></li>
+<li><a href="#4-2026-10-19">4. 함정과 조치 (모두 2026-10-19 저녁)</a><ul>
+<li><a href="#41-192-nas">4.1 .192 NAS 경합</a></li>
+<li><a href="#42-nvme1-inode">4.2 nvme1 inode 고갈</a></li>
+<li><a href="#43-pkill">4.3 전역 pkill</a></li>
+<li><a href="#44-hub-sam-6d">4.4 hub ↔ SAM-6D 공유메모리 이름 충돌</a></li>
+<li><a href="#45-dualmap">4.5 DualMap 실시간 훅 누락</a></li>
+<li><a href="#46-cpu">4.6 CPU 경합</a></li>
+<li><a href="#47-fm-fusion-41">4.7 FM-Fusion 패치 누락 (.41 빌드)</a></li>
+<li><a href="#48-dualmap-sigkill">4.8 DualMap 연속 지도 동시 실행 SIGKILL</a></li>
+</ul>
+</li>
+<li><a href="#5-29-5-obchange-30-fps">5. 29 §5 재현 — ObChange 네 방 실시간 30 fps</a><ul>
+<li><a href="#51-41-ctr5cm-f1">5.1 .41 결과 (ctr5cm F1 방문별 / 연속, 괄호는 연속 지도에서 치운 물체 중 남은 수 / 치운 물체 수)</a></li>
+<li><a href="#52-29-52-41">5.2 노트북(29 §5.2) 과 비교 — 합산 방문별 / 연속, .41 → 노트북</a></li>
+<li><a href="#53">5.3 실시간 조건에서 각 방법이 처리한 프레임 (연속 지도 실행 한 번 기준, 초당 처리 프레임)</a></li>
+</ul>
+</li>
+<li><a href="#6-10-20">6. 아직 안 한 것 (10-20 아침 확인, 막힌 이유)</a></li>
+<li><a href="#7-10-20-192-2">7. 10-20 낮 추가 실행 (.192 주력 구성 · 제안 방법 2회차)</a><ul>
+<li><a href="#71-10-192-results_main_41lanjson-8-10">7.1 미사용 녹화 10개, .192 주력 구성 (results_main_41lan.json, 맞음/잘못, 물체 8개 × 10)</a></li>
+<li><a href="#72-2-out30_r2-ctr5cm-f1">7.2 네 방 실시간 제안 방법 2회차 (out30_r2, ctr5cm F1 방문별 / 연속)</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -841,7 +884,7 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 </tbody>
 </table></div>
 <h3 id="7-4090-2026-10-12">7. 4090 에서 실제로 걸린 것 (2026-10-12 추가)</h3>
-<p>이 PC(RTX 4090 ×4, 드라이버 575 → CUDA 12.9 까지)에서 2절 안내대로 옮겨 돌리다가 걸린 것들입니다. 5090/.41 에서도 같은 일이 생길 수 있어 적어 둡니다.</p>
+<p>이 PC(RTX 4090 ×4, 드라이버 575.57.08 → CUDA 12.9 까지; 2026-10-14 부터 580.178.04)에서 2절 안내대로 옮겨 돌리다가 걸린 것들입니다. 5090/.41 에서도 같은 일이 생길 수 있어 적어 둡니다.</p>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -905,6 +948,11 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 <td>GroundingDINO 적재</td>
 <td><code>'BertModel' object has no attribute 'get_extended_attention_mask'</code></td>
 <td><code>sam6d</code> 를 복제한 <code>fmfusion</code> 환경의 transformers 가 5.19. GroundingDINO 의 <code>bertwarper.py</code> 는 4.x API 를 씀 → <code>pip install transformers==4.44.2</code> (fmfusion 환경에만). YCB-V · ObChange 는 노트북 검출을 재사용해서 이 오류를 만나지 않았고, 실데이터는 궤적이 달라 검출부터 다시 돌려야 해서 드러남</td>
+</tr>
+<tr>
+<td>데스크톱 멈춤 (<code>fmf_detect</code>)</td>
+<td>10-13~14 에 FM-Fusion 검출(GroundingDINO + SAM, <code>fmfusion</code> 환경)을 돌리면 1~4분 안에 화면·VS Code·<code>nvidia-smi</code> 가 모두 멈추고 하드 리셋만 됨. 다섯 번 재현(GPU 0 · 3 두 장, 디스플레이 카드가 아닌 계산 카드에서), 제안 방법 체인(<code>sam6d</code> 환경, 같은 torch 2.7.1 cu12.9)은 멀쩡함</td>
+<td>커널 로그: Xid 62(마이크로컨트롤러 정지) · Xid 158(<code>NV_UFLUSH_FB_FLUSH</code> 시간 초과) 또는 Xid 없이 드라이버 전역 잠금(<code>os_acquire_rwlock_write</code>, nvidia-modeset 커널 스레드 D 상태)만 교착 → 계산 GPU 가 컨텍스트 정리 중 레지스터 읽기에 답하지 않고 CPU 쪽 드라이버(GSP 펌웨어 끔)가 잠금을 든 채 시간 초과를 반복하며 디스플레이까지 끌고 내려감. 전력 상한 280 W, GroundingDINO 컴파일 커널 대신 PyTorch 경로(<code>fmfusion_detect.py --msda pytorch</code>, 기본값) 모두 효과 없음. <strong>드라이버 575.57.08(<code>NVreg_EnableGpuFirmware=0</code>) → <code>nvidia-driver-580</code> 580.178.04, GSP 펌웨어 켬(modprobe 옵션 주석)</strong> 으로 올린 뒤 10-14 09:59~10:38 완주(27 문서 §7). 그 사이 자동 재시작으로 같은 작업을 다시 띄워 세 번째 멈춤을 만든 적이 있으니, 멈춤 뒤에는 원인을 보기 전까지 같은 GPU 작업을 다시 띄우지 말 것. 멈춤 중에는 <code>nvidia-smi</code> · <code>/proc/driver/nvidia</code> 읽기도 같이 걸림</td>
 </tr>
 </tbody>
 </table></div>
@@ -1224,4 +1272,510 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 <li>26 §7 과 27(서버·클라이언트) §4 에 적은 ".192 멈춤 → .41 단독" 조치 해제. 서버·클라이언트 구성(.41 hub + .192 ORB-SLAM3)으로 260901 eightcircle 실시간 점검을 한 번 더 돌려 10-12 · 10-14 결과와 나란히 두면 됩니다.</li>
 <li>5090 에서 세 방법을 모두 돌려 논문 본문의 최종 수치를 정하는 일(26 문서 순서).</li>
 <li>.41 의 <code>run_fmf_detect_41.sh</code> 와 .192 의 <code>run_fmf_detect_192.sh</code> 는 경로만 다른 같은 스크립트입니다. 다음 장비에서는 하나로 합쳐 <code>OBJMAP_HOST</code> 변수로 경로를 고르게 하면 됩니다.</li>
+</ul>
+<hr />
+<p><a id="31_41서버_192SLAM_주말재현_261019"></a></p>
+<h2 id="31-2930-41-192-slam-2026-10-19-10-20">31. 주말(29·30 문서) 실험을 .41 서버 + .192 SLAM 으로 재현 (2026-10-19 저녁 ~ 10-20 오후)</h2>
+<blockquote>
+<p>노트북(RTX 5090 Laptop) + Mac ORB-SLAM3 로 주말에 한 두 문서 — 29(미사용 데이터 · ObChange 네 방 실시간 30 fps), 30(자이로 보정) — 를 같은 날 저녁 .41(RTX PRO 6000 ×4, hub + 인식기)과 .192(수정 ORB-SLAM3 + 자이로, 로컬 세션 복사본)로 다시 돌렸습니다. 네 방 체인은 10-20 새벽에 끝났고, 기준 방법 두 개의 빠진 지도를 보수 체인이 13:27 에 다시 채운 뒤 표를 완성했습니다(4.7 · 4.8 · 5절). 10-20 낮에는 같은 장비로 미사용 녹화 10개를 .192 의 주력 구성(수정 ORB + 자이로)으로, 네 방 제안 방법을 2회차로 더 돌렸습니다(7절). 실행 이름은 <code>*_41lan*</code>, 결과는 <code>src/realdata/logs_gyro_261019_41lan/results_gyro_41lan.json</code>, <code>src/realdata/logs_unused_261019_41lan/results_unused_41lan.json</code>, <code>src/objmap/out30/obchange_scores_&lt;방&gt;.json</code> 입니다.</p>
+</blockquote>
+<h3 id="0_3">0. 요약</h3>
+<ul>
+<li><strong>30 문서 재현 (자이로, 260901 녹화 4개, 3회 반복):</strong> 원본 0.5 + 수정 ORB <strong>28/7</strong>(노트북 19/15), 개선안 3 + 수정 ORB <strong>94/2</strong>(95/3), 개선안 3 + 수정 ORB + 자이로 <strong>92/4</strong>(96/0). 가장 큰 루프 보정 중앙값은 자이로 끔 19.0 cm → 자이로 8.0 cm(노트북 13.6 → 9.6 cm)로 같은 방향. 인식 빈도는 .41 이 1.2~2.6배 높음(원본 3.9 대 1.5 Hz, 개선안 3 8.0 대 6.5 Hz).</li>
+<li><strong>29 §2 재현 (미사용 실데이터 10개, NAS 에 없는 eight_fast · eight_middle 제외):</strong> 원본 0.5 <strong>71/18</strong>(노트북 같은 10개 69/20), 개선안 3 <strong>77/5</strong>(78/4). 개선안 3 이 앞선 녹화 8, 같은 것 1(height), 뒤진 것 1(longcircle_dark) — 29 문서와 같은 패턴.</li>
+<li><strong>29 §5 재현 (ObChange 네 방 실시간 30 fps):</strong> 네 방 합산 ctr5cm F1 방문별 / 연속이 제안(관측 자세) <strong>0.416 / 0.244</strong>(노트북 0.443 / 0.225), 제안(CAD 자세) 0.308 / 0.165(0.322 / 0.162), dualmap_bgr 0.150 / 0.084(0.189 / 0.072), DualMap 0.126 / 0.054(0.130 / 0.051), FM-Fusion 0.096 / 0.047(0.115 / 0.053). 순서와 수준이 노트북과 같고, 네 방 모두 제안(관측 자세)이 가장 높음. 제안은 처리 빈도가 7.2~7.8 Hz 로 노트북(4.7~6.7)보다 높고, 2회차(7절)도 합산 0.449 / 0.253 으로 같은 수준.</li>
+<li><strong>10-20 낮 추가(7절):</strong> 미사용 녹화 10개를 .192 주력 구성(수정 ORB, digut 은 + 자이로 2000, 나머지 특징점 3000)으로 개선안 3 을 3회 — <strong>79/4 · 78/6 · 78/8</strong>(특징점 2000 의 77/5 와 같은 수준), 원본 0.5 는 66/23.</li>
+<li><strong>같은 머신에서 체인 여럿을 돌리다 찾은 함정 여덟(4절):</strong> nvme1 inode 고갈, .192 NAS 경합, <code>pkill hub.py</code> 가 다른 체인 hub 를 죽임, hub↔SAM-6D 공유메모리 이름 충돌(가장 치명적, 다른 체인의 인식기가 뜨는 순간 내 인식기가 멈춤), DualMap 실시간 훅 누락, CPU 경합, FM-Fusion .41 빌드의 패치 누락(20,000 프레임 넘는 연속 지도가 출력 없이 끝남 · Qhull SIGABRT), DualMap 긴 연속 실행 둘이 겹치면 메모리 62 GB 를 넘어 SIGKILL(한 실행이 RSS 36 GB 까지 자람). 모두 고쳤고 영향 받은 실행은 다시 돌렸거나 보수 체인으로 다시 채웠음.</li>
+</ul>
+<h3 id="1_2">1. 구성</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>인식 + 객체 상태 지도</td>
+<td>.41, GPU 0, hub(<code>objpose/pc/hub.py</code>) + <code>live_cores.py</code> 인식기. 개선안 3 + 군집 먼저 = <code>OBJPOSE_LIVE_MODE=hybrid</code>, ViT-S, 0.5, <code>--verify-cluster-first</code>; 원본 0.5 = <code>orig</code>, ViT-L</td>
+</tr>
+<tr>
+<td>SLAM</td>
+<td>.192 수정 ORB-SLAM3(10-19 14:54 빌드, <code>--gyro</code>/<code>--imu</code> 지원), 특징점 2000, 1배속, ssh 역터널 17001. 자이로: <code>--gyro ~/objpose/mac_slam/settings/rig_260901_gyro.json --imu &lt;ses&gt;/imu</code></td>
+</tr>
+<tr>
+<td>세션 데이터</td>
+<td>.192 는 NAS 대신 로컬 <code>/home/jucpark/local_sessions/data_slam_converted/&lt;ses&gt;/{SLAM,imu}</code> (NAS 읽기는 다른 작업과 겹쳐 프레임을 절반 놓침, 4.1절). .41 은 <code>/mnt/nvme1/Dataset/data_slam_converted</code> (260915 7개는 NAS 에서 복사)</td>
+</tr>
+<tr>
+<td>기준 위치</td>
+<td>eightcircle · bigeightcircle 은 .41 의 배포 ORB 실행(eval_real), digut · longcircle 은 30 문서의 노트북 기준 위치 재사용; 미사용 녹화는 이 서버의 배포 인식기 실행 <code>ref_&lt;ses&gt;_ours_41lan</code></td>
+</tr>
+<tr>
+<td>ObChange</td>
+<td>네 방 주석 → <code>obchange_gt.py</code>(물체 Office 10 · LivingArea 14 · SmallRoom 25 · BigRoom 46, 29 문서와 같음), 원본 bag → 30 fps 프레임(<code>obchange_raw_seq.py</code>; Office 12,545 · LivingArea 18,069 · SmallRoom 49,936 · BigRoom 98,463 프레임, 29 문서와 같음). 프레임은 <code>/</code>(~/DeepLearning/Dataset/objmap_obchange30)</td>
+</tr>
+<tr>
+<td>동시 실행</td>
+<td>GPU 0 자이로·실데이터 체인(코어 28-47, 공유메모리 접미사 <code>_g0</code>, 포트 8766/17001), GPU 2 방 체인 Office → LivingArea → SmallRoom(코어 0-13, <code>_g2</code>, 8775/17011), GPU 3 BigRoom(코어 14-27, <code>_g3</code>, 8785/17021)</td>
+</tr>
+<tr>
+<td>보수 체인 (10-20)</td>
+<td>네 방 체인이 모두 끝난 05:13 부터 GPU 3 단독 <code>~/Dataset/bop/ycbv_work/run_obchange_repair2_41.sh</code>: FM-Fusion 을 패치 소스로 다시 빌드한 뒤 빠진 연속 · 방문 지도만 다시 융합, DualMap 의 빠진 연속 지도는 한 번에 하나씩, 끝나면 BigRoom · SmallRoom 재채점(4.7 · 4.8절). SmallRoom FM-Fusion 은 07:24 부터 코어 0-13 에서 따로(<code>out30/logs_smallroom/fmfusion_repair_pre.log</code>)</td>
+</tr>
+<tr>
+<td>스크립트</td>
+<td><code>src/realdata/logs_gyro_261019_41lan/{run_gyro_lan41.sh, run_gpu0_chain_v3.sh, score_gyro_41lan.py}</code>, <code>src/realdata/logs_unused_261019_41lan/{run_unused_lan41.sh, score_unused_41lan.py}</code>, <code>src/objmap/{convert_room_41.sh, convert_bigroom_41.sh, run_obchange_rt_ports.sh, run_obchange_rooms_41c.sh, run_obchange_bigroom_41.sh, obchange_rooms_env_41.sh}</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="2-30">2. 30 문서 재현 — 자이로</h3>
+<h4 id="21-4-3">2.1 합계 (녹화 4개 × 구성, 우리 기술은 3회 반복)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>.41 + .192 맞음/잘못</th>
+<th>노트북 + Mac</th>
+<th>루프 보정 중앙값 · 평균 · 최대 (cm) .41</th>
+<th>노트북</th>
+<th>빈도 .41 / 노트북</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>원본 0.5 + 수정 ORB (1회)</td>
+<td>28/7</td>
+<td>19/15</td>
+<td>11.0 · 11.4 · 16.1</td>
+<td>11.6 · 84.0 · 302.1</td>
+<td>3.9 / 1.5 Hz</td>
+</tr>
+<tr>
+<td>개선안 3 + 수정 ORB (3회)</td>
+<td>94/2</td>
+<td>95/3</td>
+<td>19.0 · 18.8 · 30.2</td>
+<td>13.6 · 18.9 · 70.2</td>
+<td>8.0 / 6.5 Hz</td>
+</tr>
+<tr>
+<td>개선안 3 + 수정 ORB + 자이로 (3회)</td>
+<td>92/4</td>
+<td>96/0</td>
+<td>8.0 · 9.8 · 20.8</td>
+<td>9.6 · 10.7 · 17.0</td>
+<td>8.0 / 6.5 Hz</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="22-1-2-3">2.2 녹화별 (맞음/잘못, 1 · 2 · 3회)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화</th>
+<th>원본 0.5 + ORB</th>
+<th>개선안 3 + ORB</th>
+<th>개선안 3 + ORB + 자이로</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>eightcircle</td>
+<td>7/2</td>
+<td>7/1 · 8/0 · 8/0</td>
+<td>8/0 · 8/0 · 8/0</td>
+</tr>
+<tr>
+<td>bigeightcircle</td>
+<td>7/2</td>
+<td>8/0 · 8/0 · 7/1</td>
+<td>7/1 · 6/2 · 8/0</td>
+</tr>
+<tr>
+<td>digut</td>
+<td>7/1</td>
+<td>8/0 · 8/0 · 8/0</td>
+<td>8/0 · 8/0 · 8/0</td>
+</tr>
+<tr>
+<td>longcircle</td>
+<td>7/2</td>
+<td>8/0 · 8/0 · 8/0</td>
+<td>8/0 · 7/1 · 8/0</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>다시 돌린 실행: bigeightcircle 자이로 끔 1회차(공유메모리 충돌로 물체 0개, <code>_shmclash</code>), 자이로 2회차(루프 보정 314.5 cm, SLAM 드롭 17, <code>_bigloop314</code>). 다른 hub 와 시간이 겹친 실행 20개는 모두 <code>*_shmclash</code> 로 치우고 다시 돌렸음(4.4절).</li>
+<li>해석은 30 문서와 같음: 우리 기술이 원본보다 확실히 낫고(잘못 7 → 2~4), 자이로는 물체 결과보다 루프 보정 크기(중앙값 19.0 → 8.0 cm)와 실행 간 흔들림을 줄임. 원본 0.5 가 노트북보다 좋은 것(28/7 대 19/15)은 인식 빈도가 2.6배 높아서로 봄.</li>
+</ul>
+<h3 id="3-29-2-10">3. 29 §2 재현 — 미사용 실데이터 10개</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화</th>
+<th>원본 0.5 (.41 / 노트북)</th>
+<th>개선안 3 (.41 / 노트북)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>260901_digut</td>
+<td>7/1 / 7/1</td>
+<td>8/0 / 8/0</td>
+</tr>
+<tr>
+<td>260915_longcircle</td>
+<td>5/4 / 7/2</td>
+<td>8/0 / 8/0</td>
+</tr>
+<tr>
+<td>260826_longcircle_dark</td>
+<td>8/1 / 8/1</td>
+<td>7/2 / 7/1</td>
+</tr>
+<tr>
+<td>260915_inlong_fast</td>
+<td>8/1 / 8/1</td>
+<td>8/0 / 8/0</td>
+</tr>
+<tr>
+<td>260915_inlong_middle</td>
+<td>8/1 / 8/1</td>
+<td>8/0 / 8/0</td>
+</tr>
+<tr>
+<td>260915_outlong_fast</td>
+<td>8/1 / 6/3</td>
+<td>8/0 / 8/1</td>
+</tr>
+<tr>
+<td>260915_outlong_middle</td>
+<td>7/2 / 7/2</td>
+<td>8/0 / 8/0</td>
+</tr>
+<tr>
+<td>260915_height</td>
+<td>6/3 / 5/4</td>
+<td>7/1 / 7/1</td>
+</tr>
+<tr>
+<td>260915_dense</td>
+<td>7/2 / 6/3</td>
+<td>7/2 / 8/1</td>
+</tr>
+<tr>
+<td>260915_distance</td>
+<td>7/2 / 7/2</td>
+<td>8/0 / 8/0</td>
+</tr>
+<tr>
+<td><strong>합계 (80개)</strong></td>
+<td><strong>71/18 / 69/20</strong></td>
+<td><strong>77/5 / 78/4</strong></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>빈도 .41: 원본 2.6 Hz, 개선안 3 6.7 Hz (노트북 1.0 / 4.4 Hz). outlong_middle 은 세 구성 모두 1~1.5 m 루프 보정(29 문서와 같음); 원본 0.5 의 344.7 cm 실행은 폐기하고 다시 돌림(110 cm).</li>
+<li>260915_eight_fast · eight_middle 은 NAS 에 없어(노트북 → Mac 으로만 올라감) 제외.</li>
+</ul>
+<h3 id="4-2026-10-19">4. 함정과 조치 (모두 2026-10-19 저녁)</h3>
+<h4 id="41-192-nas">4.1 .192 NAS 경합</h4>
+<p>.192 의 세션 경로는 NAS 링크라, 같은 시간 .192 의 다른 세션이 NAS 작업을 돌리자 slam_stream 이 디스크 대기에 걸려 hello 가 4분 뒤 오고 4,536 프레임 중 2,391 을 놓쳐 루프 보정 435 cm 가 나옴. SLAM · imu 를 .192 로컬 디스크로 복사하고 그 경로로 바꾼 뒤 드롭 0.</p>
+<h4 id="42-nvme1-inode">4.2 nvme1 inode 고갈</h4>
+<p><code>/mnt/nvme1</code> 은 inode 가 47.7만 개뿐이라 BigRoom 프레임(PNG 20만 장 + 링크)을 쓰다 "No space left on device". 프레임 저장소를 <code>/</code>(<code>~/DeepLearning/Dataset/objmap_obchange30</code>)로 옮기고 nvme1 에는 링크만 둠.</p>
+<h4 id="43-pkill">4.3 전역 pkill</h4>
+<p>자이로 스크립트의 정리 단계가 <code>pkill -f hub.py</code> 로 머신의 모든 hub 를 죽여 GPU 2·3 방 체인의 제안 방법 실행이 4분마다 끊김. 자기 PID 만 끝내도록 고치고 끝난 실행은 건너뛰게 한 뒤 재시작.</p>
+<h4 id="44-hub-sam-6d">4.4 hub ↔ SAM-6D 공유메모리 이름 충돌</h4>
+<p>hub 와 인식기는 <code>/dev/shm/sam6d_frame</code>·<code>sam6d_result</code> 라는 고정 이름으로 프레임·결과를 주고받는다. hub 둘이 돌면 뒤에 뜬 인식기가 그 이름을 지우고 새로 만들어 앞 hub 의 인식기가 멈춘다(Office 연속 실행이 재생 91초 — 다른 체인의 인식기가 READY 된 시각 — 에 멈춰 물체 0개). <code>sam6d_realtime/realtime/shm_channel.py</code> 가 <code>SAM6D_SHM_SUFFIX</code> 환경변수를 이름에 붙이도록 고치고 체인마다 <code>_g0/_g2/_g3</code> 을 줌. 겹친 실행 20개는 다시 돌림.</p>
+<h4 id="45-dualmap">4.5 DualMap 실시간 훅 누락</h4>
+<p>29 문서의 실시간 조건은 DualMap <code>applications/runner_dataset.py</code> 의 로컬 패치(<code>DM_RT_INTERVAL</code>)에 의존하는데 .41 에는 없어 모든 프레임을 처리함(Office 방문 하나 5분 34초). .192 파일을 복사하고(원본 <code>.pre_261019</code>) 방 체인을 다시 돌림. 훅 없는 결과는 <code>out30/_nohook_261019/</code>.</p>
+<h4 id="46-cpu">4.6 CPU 경합</h4>
+<p>DualMap runner 둘이 각 20코어, FM-Fusion 융합 5코어를 써 load 130. <code>taskset</code> 으로 체인별 코어를 나눔(GPU 0 실험 28-47, GPU 2 0-13, GPU 3 14-27).</p>
+<h4 id="47-fm-fusion-41">4.7 FM-Fusion 패치 누락 (.41 빌드)</h4>
+<p>.41 의 FM-Fusion <code>IntegrateInstanceMap</code> 은 21 문서 때 올린 프레임 상한(4,000 → 20,000)만 있고, 29 §5.6 에서 노트북에 더한 두 패치 — 상한 1,000,000, 볼록껍질(Qhull) 예외 처리 — 가 없었다. 그래서 (1) 프레임이 20,000 을 넘는 연속 지도(BigRoom 은 방문 1~2 부터 28,096, SmallRoom 은 방문 1~3 부터 25,007)는 프로그램이 출력 없이 끝나고, (2) 평평한 점군을 만난 실행은 <code>QH6013 qhull input error: input is less than 3-dimensional</code> 로 SIGABRT. 융합 스크립트(<code>fmfusion_export.py</code>)는 한 장면이 실패하면 거기서 멈추므로 실제로 빠진 지도는 BigRoom 연속 1~2(출력 없음) 이후 1~3 ~ 1~7, 방문 4(SIGABRT) 이후 5~7, SmallRoom 연속 1~2(SIGABRT) 이후 전부, 방문 2(SIGABRT) 이후 전부 — 채점기는 없는 지도를 TP·FP·FN 0 으로 찍었다. Office · LivingArea 는 프레임이 상한 아래(12,545 · 18,069)이고 예외도 만나지 않아 영향 없음. 10-20 05:02 .192 의 패치 소스(<code>src/IntegrateInstanceMap.cpp</code> 상한, <code>src/mapping/Instance.cpp</code> 볼록껍질 재시도 — 흔들림을 준 복사본으로 한 번 더, 그래도 실패하면 상자 유지)를 .41 에 적용해 다시 빌드하고(원본은 <code>*.pre_261020</code>), 빠진 지도만 다시 융합. 밤 체인의 BigRoom · SmallRoom FM-Fusion 점수는 그래서 쓰지 않고 보수 뒤 값을 쓴다(5절).</p>
+<h4 id="48-dualmap-sigkill">4.8 DualMap 연속 지도 동시 실행 SIGKILL</h4>
+<p>BigRoom 체인(GPU 3)의 DualMap 연속 지도 여섯 실행(dualmap 방문 1~6 · 1~7, dualmap_bgr 1~4 · 1~5 · 1~6 · 1~7)과 SmallRoom 체인(GPU 2)의 dualmap 1~6 이 00:43~04:58 에 겹쳐 돌다 모두 SIGKILL 로 죽음(<code>dualmap_run.sh: Killed</code>; 시간 제한 14,400 s 보다 훨씬 전, 짧은 방문별 실행은 무사). 커널 로그는 sudo 가 없어 못 봤으나, 두 방 체인이 겹친 시간대의 긴 실행만 죽었고 DualMap 은 영상 전체를 메모리에 올려 두므로 62 GB 메모리 부족으로 본다. 보수 체인이 GPU 3 에서 한 번에 하나씩 다시 돌렸더니(08:04~13:26, BigRoom 연속 실행 하나가 43~51 분) 모두 끝났고, BigRoom 연속 1~6 실행 하나가 54,000 프레임 시점에 RSS 36 GB(가용 10 GB, 스왑 8 GB 거의 참)였다. .41 은 노트북보다 초당 처리 프레임이 많아(DualMap 8~15 Hz) 그만큼 지도가 커지므로, 이 머신에서는 DualMap 긴 연속 실행을 <strong>한 번에 하나만</strong> 돌려야 한다.</p>
+<h3 id="5-29-5-obchange-30-fps">5. 29 §5 재현 — ObChange 네 방 실시간 30 fps</h3>
+<p>모든 방법이 같은 실시간 30 fps 재생(29 §5.1 과 같은 조건)이고, 채점은 <code>obchange_score.py</code> ctr5cm(같은 종류 · 중심 5 cm). 밤 체인(GPU 2 · 3)의 제안 방법 네 방과 Office · LivingArea 의 기준 방법은 그대로, BigRoom · SmallRoom 의 FM-Fusion · DualMap 빠진 지도는 보수 체인(10-20 05:13~13:27)이 채운 값이다(4.7 · 4.8절). 표는 <code>src/objmap/obchange_tables_261017.py</code>(.41 DualMap 로그 형식 <code>[RealTime] ... processed N of M</code> 을 읽도록 고침) 출력.</p>
+<h4 id="51-41-ctr5cm-f1">5.1 .41 결과 (ctr5cm F1 방문별 / 연속, 괄호는 연속 지도에서 치운 물체 중 남은 수 / 치운 물체 수)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>Office</th>
+<th>LivingArea</th>
+<th>SmallRoom</th>
+<th>BigRoom</th>
+<th><strong>합산</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ours_obs</td>
+<td>0.350 / 0.209 (5/7)</td>
+<td>0.606 / 0.333 (8/11)</td>
+<td>0.353 / 0.267 (5/7)</td>
+<td>0.429 / 0.217 (15/30)</td>
+<td><strong>0.416 / 0.244</strong> (33/55)</td>
+</tr>
+<tr>
+<td>ours_cad</td>
+<td>0.200 / 0.090 (3/7)</td>
+<td>0.444 / 0.235 (6/11)</td>
+<td>0.282 / 0.229 (4/7)</td>
+<td>0.319 / 0.136 (6/30)</td>
+<td>0.308 / 0.165 (19/55)</td>
+</tr>
+<tr>
+<td>FM-Fusion</td>
+<td>0.152 / 0.085 (5/7)</td>
+<td>0.175 / 0.065 (8/11)</td>
+<td>0.054 / 0.037 (2/7)</td>
+<td>0.094 / 0.040 (12/30)</td>
+<td>0.096 / 0.047 (27/55)</td>
+</tr>
+<tr>
+<td>DualMap</td>
+<td>0.143 / 0.000 (0/7)</td>
+<td>0.250 / 0.067 (1/11)</td>
+<td>0.141 / 0.062 (1/7)</td>
+<td>0.065 / 0.060 (2/30)</td>
+<td>0.126 / 0.054 (4/55)</td>
+</tr>
+<tr>
+<td>dualmap_bgr</td>
+<td>0.240 / 0.037 (1/7)</td>
+<td>0.121 / 0.116 (1/11)</td>
+<td>0.192 / 0.085 (0/7)</td>
+<td>0.104 / 0.085 (5/30)</td>
+<td>0.150 / 0.084 (7/55)</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="52-29-52-41">5.2 노트북(29 §5.2) 과 비교 — 합산 방문별 / 연속, .41 → 노트북</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>.41</th>
+<th>노트북(5090 + Mac)</th>
+<th>차이</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ours_obs</td>
+<td><strong>0.416 / 0.244</strong></td>
+<td><strong>0.443 / 0.225</strong></td>
+<td>−0.027 / +0.019</td>
+</tr>
+<tr>
+<td>ours_cad</td>
+<td>0.308 / 0.165</td>
+<td>0.322 / 0.162</td>
+<td>−0.014 / +0.003</td>
+</tr>
+<tr>
+<td>FM-Fusion</td>
+<td>0.096 / 0.047</td>
+<td>0.115 / 0.053</td>
+<td>−0.019 / −0.006</td>
+</tr>
+<tr>
+<td>DualMap</td>
+<td>0.126 / 0.054</td>
+<td>0.130 / 0.051</td>
+<td>−0.004 / +0.003</td>
+</tr>
+<tr>
+<td>dualmap_bgr</td>
+<td>0.150 / 0.084</td>
+<td>0.189 / 0.072</td>
+<td>−0.039 / +0.012</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>순위(제안 관측 &gt; 제안 CAD &gt; dualmap_bgr ≳ DualMap &gt; FM-Fusion)와 수준이 노트북과 같고, 방 하나씩 봐도 네 방 모두 제안(관측 자세)이 가장 높다. 방별 차이는 ±0.1 안쪽(LivingArea ours_obs 방문별 0.606 대 0.690, DualMap Office 0.143 대 0.069)이며 29 §7 이 말한 대로 방마다 정답 물체가 적어 한두 개 차이로 움직이는 폭이다.</li>
+<li>치운 물체 지우기(괄호)는 .41 에서도 어느 방법도 거의 못 한다(제안 33/55 남음, 노트북 33/55 같음).</li>
+<li>Office 의 dualmap_bgr 연속 1~4 실행은 10-19 21:07 에 <code>malloc_consolidate(): invalid chunk size</code> 로 죽어(메모리 부족이 아닌 힙 손상, 1,732/8,364 프레임) 빠져 있었고, 표를 만들다 발견해 10-20 13:31 GPU 1 에서 하나만 다시 돌려(5분, <code>out30/logs_office/dualmap_repair.log</code>) Office 를 재채점했다. 보수 체인의 "빠진 지도" 검사는 BigRoom · SmallRoom 만 보았기 때문에 놓쳤다.</li>
+</ul>
+<h4 id="53">5.3 실시간 조건에서 각 방법이 처리한 프레임 (연속 지도 실행 한 번 기준, 초당 처리 프레임)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방(30 fps 프레임)</th>
+<th>우리 방법</th>
+<th>FM-Fusion</th>
+<th>DualMap</th>
+<th>dualmap_bgr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Office (12545)</td>
+<td>3016 (7.2 Hz)</td>
+<td>1303 (3.1 Hz, 321 ms)</td>
+<td>5169 (12.4 Hz)</td>
+<td>5818 (13.9 Hz)</td>
+</tr>
+<tr>
+<td>LivingArea (18069)</td>
+<td>4581 (7.6 Hz)</td>
+<td>1981 (3.3 Hz, 304 ms)</td>
+<td>9262 (15.4 Hz)</td>
+<td>8752 (14.5 Hz)</td>
+</tr>
+<tr>
+<td>SmallRoom (49936)</td>
+<td>12941 (7.8 Hz)</td>
+<td>5487 (3.3 Hz, 303 ms)</td>
+<td>22765 (13.7 Hz)</td>
+<td>19755 (11.9 Hz)</td>
+</tr>
+<tr>
+<td>BigRoom (98463)</td>
+<td>25224 (7.7 Hz)</td>
+<td>7166 (2.2 Hz, 458 ms)</td>
+<td>26383 (8.0 Hz)</td>
+<td>25015 (7.6 Hz)</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>노트북(29 §5.4)과 견주면 제안 4.7~6.7 → 7.2~7.8 Hz, FM-Fusion 1.3~1.6 → 2.2~3.3 Hz(검출 한 장 630~755 → 303~458 ms), DualMap 7.5~17.4 → 7.6~15.4 Hz. 제안과 FM-Fusion 은 Blackwell 에서 더 많은 프레임을 처리했지만 F1 은 같은 수준 — 실시간 조건에서 처리 빈도가 결과를 좌우하지 않는다는 29 §5.5 와 같은 결론.</li>
+<li>BigRoom DualMap 두 판이 8 Hz 로 떨어지는 것도 노트북과 같다(지도가 커질수록 느려짐).</li>
+</ul>
+<h3 id="6-10-20">6. 아직 안 한 것 (10-20 아침 확인, 막힌 이유)</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>막힌 이유</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>29 §4 HOPE-Video 한 장 평가</td>
+<td>서버에 데이터(<code>paper_benchmarks/HOPE/video_bop</code>)와 노트북에서 만든 코드(<code>src/bop_more/make_hope_targets.py</code>, <code>run_hope_laptop5090.sh</code>)가 없음. 노트북 저장소가 origin 의 어느 가지에도 올라오지 않음</td>
+</tr>
+<tr>
+<td>30 §2.4 원본 ORB-SLAM3 v1.0</td>
+<td>.192 에는 수정 ORB-SLAM3(10-19 14:54 빌드, 10-18 충돌 수정 포함)만 있고 원본 v1.0 리눅스 빌드는 없음. <code>linux_slam/CMakeLists.txt</code> 가 <code>-DORB_SLAM3_SRC</code> 를 받고 <code>slam_stream.cc</code> 에 <code>OBJPOSE_UPSTREAM_ORB</code> 분기가 있어 만들 수는 있으나, 10-20 사용자 결정으로 .192 는 수정 ORB(자이로 있는 녹화는 + 자이로, 없는 녹화는 특징점 3000)를 주력 구성으로 쓰고 원본 빌드는 만들지 않음</td>
+</tr>
+<tr>
+<td>29 §5.3 10 fps 보조 조건</td>
+<td>ObChange BOP 판(<code>bop/test/&lt;방&gt;_s&lt;k&gt;</code>) 프레임이 서버에 없음(<code>/mnt/nvme1/Dataset/obchange/{zip,raw}</code> 는 원본 bag 과 주석뿐). 본 결과(30 fps)만 재현</td>
+</tr>
+<tr>
+<td>뷰어 변경(catalog 기본 백엔드 · run_web.sh)</td>
+<td>노트북 저장소에만 있고 origin 에 없음(<code>objpose/pc/catalog.py</code> 는 이 가지에만 존재)</td>
+</tr>
+</tbody>
+</table></div>
+<p>(10-20 아침 추가) .192 는 ssh 포트 10022(<code>slam192</code>)로 접속되며(처음에 22 번으로 시도해 "꺼져 있다"고 잘못 봤음), .192 저장소 가지 <code>objpose/memory-dup-suppression</code> 에 노트북 커밋 8개(뷰어 기본 백엔드 · <code>run_web.sh</code>, 30 §2.4 원본 ORB 결과, HOPE 스크립트와 5090 결과)가 있어 이 가지에 병합하면 뷰어 변경과 HOPE 코드는 들어온다. HOPE-Video 데이터(<code>paper_benchmarks/HOPE/video_bop</code>)만 노트북에서 복사하면 된다.</p>
+<h3 id="7-10-20-192-2">7. 10-20 낮 추가 실행 (.192 주력 구성 · 제안 방법 2회차)</h3>
+<p>10-20 07:56 부터 GPU 0(.192 연동) · GPU 1 에서 추가로 돌린 것. 스크립트 <code>src/realdata/logs_main_261020_41lan/run_main_lan41.sh</code>, <code>src/objmap/run_obchange_ours_rep_41.sh</code>(<code>REP=2</code>). GPU 2 · 3 의 3회차(<code>out30_r3</code>)와 기준 방법 2회차 · DualMap YCB-V(<code>run_lane_b_41.sh</code>)는 보수 체인 뒤 13:27 부터 돌고 있어 이 문서에는 없다.</p>
+<h4 id="71-10-192-results_main_41lanjson-8-10">7.1 미사용 녹화 10개, .192 주력 구성 (<code>results_main_41lan.json</code>, 맞음/잘못, 물체 8개 × 10)</h4>
+<p>사용자 결정(10-20): .192 에서는 수정 ORB-SLAM3 + 자이로를 주력 구성으로 쓰고, IMU 가 없는 녹화는 수정 ORB 특징점 3000. 열 개 중 IMU 가 있는 것은 260901_cbnu_digut 뿐(<code>--gyro rig_260901_gyro.json --imu &lt;ses&gt;/imu</code>, 특징점 2000), 나머지 아홉은 <code>--features 3000</code>(ORBextractor.nFeatures 덮어쓰기). 원본 0.5 도 같은 SLAM 구성.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>구성</th>
+<th>맞음/잘못</th>
+<th>인식 빈도(평균)</th>
+<th>10-19 (특징점 2000, 자이로 없음, 3절)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>기준(배포 인식기, 이 서버)</td>
+<td>80/1</td>
+<td>5.5 Hz</td>
+<td>80/1</td>
+</tr>
+<tr>
+<td>원본 0.5 (<code>origL05_main</code>)</td>
+<td>66/23</td>
+<td>2.6 Hz</td>
+<td>71/18</td>
+</tr>
+<tr>
+<td>개선안 3 1회 (<code>main_r1</code>)</td>
+<td><strong>79/4</strong></td>
+<td>6.6 Hz</td>
+<td>77/5</td>
+</tr>
+<tr>
+<td>개선안 3 2회 (<code>main_r2</code>)</td>
+<td>78/6</td>
+<td>6.6 Hz</td>
+<td>—</td>
+</tr>
+<tr>
+<td>개선안 3 3회 (<code>main_r3</code>)</td>
+<td>78/8</td>
+<td>6.6 Hz</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>특징점 3000 과 2000 의 차이는 반복 편차 안(개선안 3 이 3회 79/4 · 78/6 · 78/8, 10-19 가 77/5). 원본 0.5 는 66/23 으로 10-19(71/18)보다 조금 나쁘지만 녹화별로 보면 longcircle 4/5 · height 5/4 · dense 6/3 처럼 원래 흔들리는 녹화들이다.</li>
+<li>digut(자이로): 3회 모두 8/0, 가장 큰 루프 보정 8.1 · 10.7 · 11.2 cm(자이로 없는 기준 13.5 cm). outlong_middle 은 29 문서처럼 1~2 m 루프 보정(197 · 205 · 227 cm)이 나왔지만 인식은 8/0 · 8/1 · 8/1.</li>
+<li>SLAM 프레임 드롭 0(로컬 세션 복사본, 4.1절), 한 실행 3~5분.</li>
+</ul>
+<h4 id="72-2-out30_r2-ctr5cm-f1">7.2 네 방 실시간 제안 방법 2회차 (<code>out30_r2</code>, ctr5cm F1 방문별 / 연속)</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>Office</th>
+<th>LivingArea</th>
+<th>SmallRoom</th>
+<th>BigRoom</th>
+<th><strong>합산</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ours_obs 2회차</td>
+<td>0.350 / 0.219</td>
+<td>0.688 / 0.317</td>
+<td>0.360 / 0.283</td>
+<td>0.481 / 0.230</td>
+<td><strong>0.449 / 0.253</strong></td>
+</tr>
+<tr>
+<td>ours_obs 1회차(5절)</td>
+<td>0.350 / 0.209</td>
+<td>0.606 / 0.333</td>
+<td>0.353 / 0.267</td>
+<td>0.429 / 0.217</td>
+<td>0.416 / 0.244</td>
+</tr>
+<tr>
+<td>ours_cad 2회차</td>
+<td>0.200 / 0.094</td>
+<td>0.471 / 0.246</td>
+<td>0.318 / 0.242</td>
+<td>0.356 / 0.145</td>
+<td>0.337 / 0.175</td>
+</tr>
+<tr>
+<td>ours_cad 1회차</td>
+<td>0.200 / 0.090</td>
+<td>0.444 / 0.235</td>
+<td>0.282 / 0.229</td>
+<td>0.319 / 0.136</td>
+<td>0.308 / 0.165</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>Office 는 TP · FN 이 1회차와 똑같고(7/23/3), 합산은 1회차 0.416 / 0.244 → 2회차 0.449 / 0.253 으로 노트북(0.443 / 0.225)을 사이에 둔다. 반복 편차는 합산 ±0.03.</li>
 </ul></main></body></html>

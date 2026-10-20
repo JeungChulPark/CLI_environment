@@ -22,7 +22,7 @@ li{margin:3px 0}
 a{color:var(--acc);word-break:break-all}
 </style></head><body><main><h1 id="_1">공간객체상태지도를 위한 논문 비교</h1>
 <blockquote>
-<p>공간 객체 상태 지도를 위한 논문 비교 — 요약(25), 제안 대 FM-Fusion 대 DualMap: YCB-V(20), ObChange-Kitchen 재방문(21), 실 데이터 녹화 5개(23), 하루 뒤 재실행(24), 4090 재실행 · 기준 방법 같은 장비 · FM-Fusion 검출 재실행 · 세 장비 비교(27). 개별 문서 6개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 맨 앞의 '종합' 절은 구성 문서를 읽고 정리한 요약(<code>묶음요약/F_공간객체상태지도를_위한_논문_비교.md</code>)이고, 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-15.</p>
+<p>공간 객체 상태 지도를 위한 논문 비교 — 요약(25), 제안 대 FM-Fusion 대 DualMap: YCB-V(20), ObChange-Kitchen 재방문(21), 실 데이터 녹화 5개(23), 하루 뒤 재실행(24), 4090 재실행 · 기준 방법 같은 장비 · FM-Fusion 검출 재실행 · 세 장비 비교(27), 미사용 데이터 — 실데이터 녹화 12개 · HOPE-Video · ObChange 다른 방 네 개 실시간 30 fps(29). 개별 문서 7개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 맨 앞의 '종합' 절은 구성 문서를 읽고 정리한 요약(<code>묶음요약/F_공간객체상태지도를_위한_논문_비교.md</code>)이고, 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-20.</p>
 </blockquote>
 <p><strong>이 묶음의 장</strong></p>
 <ul>
@@ -32,9 +32,10 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>23_실데이터_객체지도_비교_261010</strong> — 23. 공간 객체 상태 지도 비교 4단계 — 실 데이터 녹화 5개 (제안 대 FM-Fusion 대 DualMap, 2026-10-10)</li>
 <li><strong>24_실데이터_실시간_재실행_23대비_261011</strong> — 24. 실 데이터 녹화 5개 실시간 재실행 — 23 문서 결과와 비교 (2026-10-11)</li>
 <li><strong>27_객체지도_비교_4090_재실행_261012</strong> — 27. 객체 지도 비교 — 제안 방법을 RTX 4090 에서 다시 돌림 (YCB-V · ObChange-Kitchen, 2026-10-12)</li>
+<li><strong>29_미사용데이터_실험_5090_261017</strong> — 29. 지금까지 쓰지 않은 데이터 실험 — 실 데이터 녹화 12개 · HOPE-Video · ObChange 다른 방 (RTX 5090 Laptop, 2026-10-17)</li>
 </ul>
 <h2 id="2026-10-15">종합 — 이 묶음이 말하는 것 (2026-10-15 정리)</h2>
-<p><strong>공간 객체 상태 지도</strong>를 두고 제안 방법(개선안 3 + 군집 먼저 + 키프레임 고정 객체 지도)과 공개 논문 두 편 — FM-Fusion(RA-L 2024, GroundingDINO + SAM 인스턴스 융합)과 DualMap(RA-L 2025, YOLO-World + MobileSAM + MobileCLIP) — 을 <strong>같은 영상 · 같은 궤적 · 같은 채점기</strong>로 비교한 문서 여섯 개입니다. 논문 7장 "객체 지도 비교" 절의 출처입니다.</p>
+<p><strong>공간 객체 상태 지도</strong>를 두고 제안 방법(개선안 3 + 군집 먼저 + 키프레임 고정 객체 지도)과 공개 논문 두 편 — FM-Fusion(RA-L 2024, GroundingDINO + SAM 인스턴스 융합)과 DualMap(RA-L 2025, YOLO-World + MobileSAM + MobileCLIP) — 을 <strong>같은 영상 · 같은 궤적 · 같은 채점기</strong>로 비교한 문서 일곱 개입니다. 논문 7장 "객체 지도 비교" 절의 출처입니다.</p>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -101,6 +102,24 @@ a{color:var(--acc);word-break:break-all}
 <td>0.296 · 0.248</td>
 <td>0.109 / 0.165 · 0.175 / 0.414</td>
 <td>§9 FM-Fusion 검출부터 3장비 동일, <strong>§10 세 장비(노트북 · 4090 · Blackwell) 한 표</strong></td>
+</tr>
+<tr>
+<td>29</td>
+<td>ObChange 다른 방 네 개(Office · LivingArea · SmallRoom · BigRoom, 물체 95개), 모든 방법 실시간 30 fps(5090)</td>
+<td>ctr5cm F1 합산 방문별 / 연속</td>
+<td><strong>0.443 / 0.225</strong> (관측 자세), 0.322 / 0.162 (CAD)</td>
+<td>0.115 / 0.053</td>
+<td>0.130 / 0.051 · 0.189 / 0.072</td>
+<td>§2 미사용 실데이터 12녹화 94/4 대 원본 83/23, §4 HOPE-Video 한 장 평가</td>
+</tr>
+<tr>
+<td>31</td>
+<td>29 의 네 방 실시간 30 fps 를 .41(Blackwell) + .192 에서 재현, 보수 뒤 완성(§5)</td>
+<td>ctr5cm F1 합산 방문별 / 연속</td>
+<td><strong>0.416 / 0.244</strong> (관측), 0.308 / 0.165 (CAD); 2회차 0.449 / 0.253</td>
+<td>0.096 / 0.047</td>
+<td>0.126 / 0.054 · 0.150 / 0.084</td>
+<td>순위 · 수준 노트북과 같음, 처리 빈도 제안 7.2~7.8 Hz · FM-Fusion 2.2~3.3 Hz</td>
 </tr>
 <tr>
 <td>25</td>
@@ -255,6 +274,38 @@ a{color:var(--acc);word-break:break-all}
 </ul>
 </li>
 <li><a href="#10-3080-ti-4090192-blackwell41-2026-10-14">10. 세 장비 한눈에 — 노트북(3080 Ti) · 4090(.192) · Blackwell(.41) (2026-10-14 추가)</a></li>
+</ul>
+</li>
+<li><a href="#29-12-hope-video-obchange-rtx-5090-laptop-2026-10-17">29. 지금까지 쓰지 않은 데이터 실험 — 실 데이터 녹화 12개 · HOPE-Video · ObChange 다른 방 (RTX 5090 Laptop, 2026-10-17)</a><ul>
+<li><a href="#0_5">0. 요약</a></li>
+<li><a href="#1_6">1. 대상 데이터와 쓰지 않은 이유</a><ul>
+<li><a href="#11">1.1 문서와 대조</a></li>
+<li><a href="#12">1.2 데이터 준비</a></li>
+</ul>
+</li>
+<li><a href="#2-12">2. 실 데이터 녹화 12개</a><ul>
+<li><a href="#21_3">2.1 실행 조건</a></li>
+<li><a href="#22_3">2.2 녹화별 최종 지도</a></li>
+<li><a href="#23_1">2.3 기준 위치의 신뢰도</a></li>
+<li><a href="#24-23-24">2.4 23 · 24 문서와의 관계</a></li>
+</ul>
+</li>
+<li><a href="#3_4">3. 실 데이터 결과 파일</a></li>
+<li><a href="#4-hope-video">4. HOPE-Video 한 장 평가</a><ul>
+<li><a href="#41_1">4.1 데이터와 실행 조건</a></li>
+<li><a href="#42">4.2 결과</a></li>
+</ul>
+</li>
+<li><a href="#5-obchange-office-livingarea-smallroom-bigroom">5. ObChange 다른 방 네 개 (Office · LivingArea · SmallRoom · BigRoom)</a><ul>
+<li><a href="#51_1">5.1 데이터와 두 조건</a></li>
+<li><a href="#52-30-fps">5.2 결과: 실시간 30 fps (본 결과)</a></li>
+<li><a href="#53-10-fps">5.3 결과: 10 fps 기본 설정 (보조)</a></li>
+<li><a href="#54">5.4 실시간 조건에서 각 방법이 처리한 프레임</a></li>
+<li><a href="#55">5.5 해석</a></li>
+<li><a href="#56">5.6 바꾼 코드와 외부 코드 패치</a></li>
+<li><a href="#57">5.7 주의</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -2684,6 +2735,7 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>(2026-10-14 추가) FM-Fusion 은 검출(GroundingDINO + SAM)까지 .41(RTX PRO 6000)에서 다시 돌렸습니다(9절).</strong> 7절의 "검출은 노트북 것 재사용" 단서가 풀립니다. 결과는 노트북 검출과 같습니다 — YCB-V 28/106/27(F1 0.296), ObChange 방문별 13/67/12(F1 0.248). 검출 속도는 프레임당 1.2 s → 0.32 s.</li>
 <li><strong>(2026-10-14 낮 추가) 드라이버를 올린 4090(.192)에서도 같은 검출을 처음부터 다시 돌려 멈춤 없이 끝났고(9.1절, 44분), 결과는 .41 · 노트북과 같습니다</strong> — YCB-V 28/106/27(F1 0.296), ObChange 방문별 13/67/12(F1 0.248). 원래 구성(컴파일된 deformable-attention 커널)으로 돌렸으므로 10-13 · 10-14 의 멈춤은 드라이버 575.57.08 문제였다고 볼 수 있습니다.</li>
 <li><strong>(2026-10-14 저녁 추가) 제안 방법의 Blackwell(.41, RTX PRO 6000) 결과를 이 문서에도 넣었습니다(2 · 3 절 표의 Blackwell 행, 10절).</strong> 10-12 에 .41 에서 같은 입력·같은 설정으로 돌린 것(20 문서 §7, 21 문서 §4)으로, YCB-V ours_cad 54/43/1(F1 0.711, 인식 평균 4.58 Hz), ObChange 방문별 ours_obs 22/41/3(F1 0.500, 5.9~7.1 Hz)입니다. 노트북 → 4090 → Blackwell 로 TP · FN 은 그대로이고 FP 만 인식 빈도와 함께 늘어, 세 장비 모두 제안 &gt; FM-Fusion &gt; DualMap 순위입니다. 실데이터 5녹화도 세 장비에서 제안 90.5~100% 대 기준 15~33% 입니다.</li>
+<li><strong>(2026-10-14 10:38 추가) 이 PC 의 체인 <code>chain_ours_4090.sh fmf_detect</code> 도 580 드라이버에서 멈춤 없이 완주했습니다(7절 끝).</strong> 10-13~14 에 드라이버 575.57.08 로 다섯 번 멈춘 뒤의 첫 완주로, PyTorch deformable-attention 경로(<code>--msda pytorch</code>)에 ObChange 898 프레임만 새로 검출한 실행이라 9.1절(원래 커널, 전부 새 검출)과 구분합니다. 값은 같습니다(YCB-V 28/106/27, ObChange 방문별 13/67/12, 연속 FP 106). 멈춤 경위는 26 문서 §7 과 28 문서.</li>
 <li><strong>ObChange 연속 지도의 변화 반영:</strong> 새로 놓은 물체는 15/21 → 17/21 로 조금 더 올렸고, 치운 물체는 여전히 지우지 못했습니다(남음 / 직전 지도에 있었음 10/11 → 13/14). 인식 빈도가 3배인데도 지우지 못한 것은, 치운 자리가 화면에 든 인식 프레임보다 "확정 → 놓침"에 필요한 연속 미검출 46~66번이 여전히 많기 때문입니다(21 문서 4절).</li>
 </ul>
 <h3 id="1_5">1. 실행 조건</h3>
@@ -2985,6 +3037,20 @@ a{color:var(--acc);word-break:break-all}
 </tr>
 <tr>
 <td>FM-Fusion (이 PC, 검출은 노트북 것 재사용)</td>
+<td><strong>4090</strong></td>
+<td>IoU 0.25</td>
+<td>28</td>
+<td>106</td>
+<td>27</td>
+<td>0.209</td>
+<td>0.509</td>
+<td>0.296</td>
+<td>0.368</td>
+<td>6.5</td>
+<td>0.380</td>
+</tr>
+<tr>
+<td>FM-Fusion (이 PC 체인, 검출까지 이 PC — 10-14, 7절 끝)</td>
 <td><strong>4090</strong></td>
 <td>IoU 0.25</td>
 <td>28</td>
@@ -3464,6 +3530,19 @@ a{color:var(--acc);word-break:break-all}
 <td>11.9</td>
 </tr>
 <tr>
+<td>FM-Fusion (이 PC 체인, 검출까지 이 PC — 10-14, 7절 끝)</td>
+<td><strong>4090</strong></td>
+<td>중심 5 cm</td>
+<td>13</td>
+<td>67</td>
+<td>12</td>
+<td>0.163</td>
+<td>0.520</td>
+<td>0.248</td>
+<td>0.160</td>
+<td>11.9</td>
+</tr>
+<tr>
 <td>DualMap BGR 수정 (이 PC)</td>
 <td><strong>4090</strong></td>
 <td>중심 5 cm</td>
@@ -3647,6 +3726,16 @@ a{color:var(--acc);word-break:break-all}
 <td>9 / 21</td>
 </tr>
 <tr>
+<td>FM-Fusion (이 PC 체인, 검출까지 이 PC — 10-14, 7절 끝)</td>
+<td><strong>4090</strong></td>
+<td>11</td>
+<td>106</td>
+<td>14</td>
+<td>0.155</td>
+<td>9 / 10 / 17</td>
+<td>9 / 21</td>
+</tr>
+<tr>
 <td>DualMap BGR 수정 (이 PC)</td>
 <td><strong>4090</strong></td>
 <td>9</td>
@@ -3718,6 +3807,11 @@ a{color:var(--acc);word-break:break-all}
 <td>코드 없음</td>
 <td><strong>됨</strong> (20:13~21:35, 8절). 이 PC 궤적(체인 A 의 개선안 3 + 군집 먼저 r1, 녹화 1 은 08 세트의 개선안 3) 위에서 FM-Fusion 은 검출부터, DualMap 은 두 설정 모두 다시 돌림</td>
 </tr>
+<tr>
+<td>FM-Fusion 검출(GroundingDINO + SAM)을 이 PC 에서 (YCB-V · ObChange)</td>
+<td>노트북 검출 재사용</td>
+<td><strong>됨 (2026-10-14 09:59~10:38).</strong> 10-13~14 에 드라이버 575.57.08 이 다섯 번 멈춰 580.178.04 로 올린 뒤 완주. 결과는 재사용 값과 같음(7절)</td>
+</tr>
 </tbody>
 </table></div>
 <h3 id="6_4">6. 논문에서의 쓰임과 다음 일</h3>
@@ -3725,7 +3819,7 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>본문 표는 20 · 21 문서(노트북) 값을 그대로 둡니다.</strong> 세 방법을 같은 장비에서 돌린 것이 그 표이기 때문입니다. 이 문서는 "제안 방법의 TP 는 장비와 무관하게 재현되고, FP 는 인식 빈도에 따라 는다"는 재현성 근거로 각주나 보충에 씁니다. 22 문서(실데이터 3회 반복)의 "정확도는 GPU 와 관계없이 재현된다"는 TP 쪽 이야기이고, 없는 물체의 FP 는 빠른 GPU 에서 더 늘어난다는 점을 함께 적어야 합니다.</li>
 <li><strong>FP 가 인식 프레임 수에 비례한다</strong>는 것은 없는 물체를 거르는 단계(자세 검증 · 합의)가 병목이라는 뜻입니다. 두 가지를 확인할 수 있습니다. (1) 기록된 인식 결과(<code>sam6d/detections.jsonl</code>)를 재생해 GPU 없이 존재확률 c 와 확정 조건(후보 → 확정 검출 2번)을 바꿔 보기(25 문서 7절의 재생 실험과 같은 방법). (2) 인식 빈도를 노트북 수준으로 제한한 실행(허브의 인식 간격 옵션)으로 FP 가 노트북 값으로 돌아오는지 보기.</li>
 <li>기준 방법 코드가 오면 YCB-V · ObChange 기준 방법을 이 PC 에서 돌려 세 방법을 같은 장비(4090)에서 비교한 표를 만들고, 그 뒤 5090 에서 최종 수치를 냅니다(26 문서).</li>
-<li><strong>파일:</strong> 결과 <code>src/objmap/out_4090/{ours_cad,ours_obs}/metrics_*.json</code>, <code>out_4090/obchange_scores.json</code>, <code>out_4090/ours_runs/export_stats_*.json</code>, 비교표 <code>out_4090/compare_4090.md</code>, 로그 <code>out_4090/logs/</code>, 스크립트 <code>src/objmap/{chain_ours_4090.sh, fixup_ycbv_4090.sh, fixup2_export_4090.sh, compare_4090.py}</code>. 실행 폴더(<code>out_4090/ours_runs/&lt;scene&gt;/</code>)와 지도(<code>ours_*/ycbv/</code>, <code>ours_*/obchange_*/</code>)는 git 에 넣지 않습니다(노트북과 같음).</li>
+<li><strong>파일:</strong> 결과 <code>src/objmap/out_4090/{ours_cad,ours_obs}/metrics_*.json</code>, <code>out_4090/obchange_scores.json</code>, <code>out_4090/ours_runs/export_stats_*.json</code>, 비교표 <code>out_4090/compare_4090.md</code>, 로그 <code>out_4090/logs/</code>, 노트북 검출을 재사용한 FM-Fusion 결과 사본 <code>out_4090/fmfusion_laptopdet/</code> · <code>out_4090/obchange_scores_laptopdet.json</code>(10-14 부터 <code>out_4090/fmfusion/</code> 은 이 PC 검출 기준), 스크립트 <code>src/objmap/{chain_ours_4090.sh, fixup_ycbv_4090.sh, fixup2_export_4090.sh, compare_4090.py}</code>. 실행 폴더(<code>out_4090/ours_runs/&lt;scene&gt;/</code>)와 지도(<code>ours_*/ycbv/</code>, <code>ours_*/obchange_*/</code>)는 git 에 넣지 않습니다(노트북과 같음).</li>
 </ul>
 <h3 id="7-2026-10-12">7. 기준 방법을 같은 장비에서 (2026-10-12 저녁 추가)</h3>
 <p>노트북에서 가져온 <code>~/DeepLearning/baselines/</code>(FM-Fusion b82d64c + 프레임 상한 수정, gsam_fmfusion, DualMap 157235e + BGR 수정)를 이 PC 에서 빌드해 돌렸습니다(<code>src/objmap/chain_ours_4090.sh</code> 뒷부분, <code>setup_baselines_4090.sh</code>, <code>dualmap_fixup_4090.sh</code>). 환경은 <code>sam6d</code> conda 환경을 복제한 <code>fmfusion</code> · <code>dualmap</code>(torch 2.7.1 cu12.9). 걸린 것은 26 문서 §7.</p>
@@ -3744,7 +3838,7 @@ a{color:var(--acc);word-break:break-all}
 <td>FM-Fusion</td>
 <td>인스턴스 융합(<code>IntegrateInstanceMap</code>, CPU) + 내보내기·채점</td>
 <td>GroundingDINO + SAM 검출(<code>scans/&lt;장면&gt;/prediction_no_augment</code>, 10-09 노트북 생성)</td>
-<td><strong>같음</strong> (YCB-V 28/106/27, ObChange 13/67/12). 융합이 결정적이라는 확인이지 같은 GPU 재실행은 아님. 검출까지 다시 돌린 결과는 9절(.41, 10-14): 같음</td>
+<td><strong>같음</strong> (YCB-V 28/106/27, ObChange 13/67/12). 융합이 결정적이라는 확인이지 같은 GPU 재실행은 아님. 검출까지 다시 돌린 결과는 9절(.41) · 9.1절(.192, 580 드라이버, 원래 커널) · 7절 끝(.192 체인, PyTorch 경로), 10-14: 모두 같음</td>
 </tr>
 <tr>
 <td>DualMap 공개</td>
@@ -3762,6 +3856,12 @@ a{color:var(--acc);word-break:break-all}
 </table></div>
 <p><strong>DualMap 장면 49 멈춤:</strong> 공개 설정 첫 실행이 YCB-V 장면 49 에서 25분 제한까지 멈췄습니다. YOLO-World 가 아무 상자도 내지 않은 프레임에서 <code>curr_detections</code> 가 이전 프레임 것으로 남아 <code>process_detections</code> 가 빈 마스크 배열을 필터링하다 멈추는 것이라, <code>utils/object_detector.py</code> 에 빈 결과를 <code>None</code> 으로 두고 그 프레임을 건너뛰는 두 줄을 넣었습니다(노트북 패치에는 없던 수정, 26 문서 §7). 장면 49 는 <code>dualmap_fixup_4090.sh</code> 로 다시 돌렸고(20:11~20:12, 수정 뒤에는 90초에 끝남) 2.1 절 행은 12 장면 값입니다.</p>
 <p><strong>결론:</strong> 같은 장비에서 제안 F1 0.706(YCB-V) · 0.543(ObChange 방문별)이 FM-Fusion 0.296 · 0.248, DualMap 0.109~0.165 · 0.175~0.414 보다 높습니다. 노트북 표(20 · 21 문서)와의 차이는 제안 방법의 FP 가 는 것(2 · 3 절)뿐이고 기준 방법은 거의 그대로이므로, 본문의 "같은 장비" 조건은 4090 표로도 성립합니다. 최종 수치는 5090 에서 세 방법을 모두 돌린 뒤 정합니다.</p>
+<p><strong>검출까지 이 PC 에서 (2026-10-14 추가).</strong> <code>bash src/objmap/chain_ours_4090.sh fmf_detect</code> 가 YCB-V 48~59 와 ObChange kitchen(방문 2~6 이 공유하는 <code>obchange_kitchen_all_000006</code> 예측 폴더)의 GroundingDINO(Swin-T) + SAM(ViT-H) 검출을 프레임 간격 10 으로 이 PC 에서 다시 만들고(<code>fmfusion_detect.py</code>, <code>fmfusion</code> 환경, 입력 영상은 노트북 스캔 폴더로 링크, 예측만 <code>fmfusion_4090/scans/&lt;장면&gt;/prediction_no_augment</code> 에 새로 씀), 이어서 융합 → 내보내기 → 채점을 돌렸습니다. 노트북 검출을 재사용한 결과는 <code>out_4090/fmfusion_laptopdet/</code> · <code>obchange_scores_laptopdet.json</code> 으로 옮겨 두었습니다.</p>
+<ul>
+<li><strong>검출 결과:</strong> 장면마다 라벨 파일 수와 상자 수가 노트북과 같습니다(예: 장면 48 은 224 프레임 672 상자, ObChange 893 프레임 2,679 상자; 전체 ObChange 898 프레임에 3,998 상자, 396 ms/프레임). 파일 내용은 좌표·점수의 소수점 노이즈만 다릅니다.</li>
+<li><strong>채점:</strong> YCB-V IoU 0.25 는 28/106/27(F1 0.296, 프레임 수준 F1 0.380), 중심 5 cm 는 29/105/26(0.307)으로 재사용 값과 같습니다. ObChange 방문별(중심 5 cm)도 13/67/12(0.248)로 같고, 연속 지도만 FP 가 100 → 106(F1 0.162 → 0.155, IoU 0.25 는 3/108/22 → 3/114/22)으로 조금 나빠졌습니다. 2.1 · 3.1 · 3.2 절 표에 "검출까지 이 PC" 행으로 넣었습니다.</li>
+<li><strong>드라이버 멈춤:</strong> 이 단계는 10-13 10:05 부터 10-14 09:15 까지 다섯 번 데스크톱 전체가 멈췄습니다(모두 GroundingDINO 추론 중 또는 검출 프로세스 종료 시점, GPU 0 과 3 두 장에서 재현, 커널 로그는 Xid 62 · Xid 158(FB_FLUSH 시간 초과) 또는 드라이버 잠금(<code>os_acquire_rwlock_write</code>) 교착). 전력 상한 280 W, GroundingDINO 의 컴파일된 MSDeformAttn 커널 대신 PyTorch 경로(<code>--msda pytorch</code>) 모두 효과가 없었고, 드라이버를 575.57.08(GSP 펌웨어 끔)에서 <strong>580.178.04(GSP 켬)</strong> 로 올린 뒤 10-14 09:59~10:38 에 한 번에 완주했습니다(26 문서 §7, 28 문서). 그 전의 부분 검출 결과는 쓰지 않았습니다. 같은 날 11:01~11:45 에 원래 커널로 전부 새로 검출한 실행은 9.1절(<code>out_4090det2/</code>)입니다.</li>
+</ul>
 <h3 id="8-5-pc-2026-10-12">8. 실데이터 5개 — 기준 방법을 이 PC 궤적 위에서 (2026-10-12 저녁 추가)</h3>
 <p>24 문서 4절과 같은 단계(<code>run_real_compare_261011.sh</code>, <code>TAG=4090</code>): 녹화마다 이 PC 에서 돌린 제안 방법 실행의 ORB-SLAM3 궤적(루프 보정 반영)을 세 방법이 함께 쓰고, 인식 카메라 프레임을 <code>real_work_4090/</code> 에 다시 깔았습니다(녹화별 6,362 / 8,539 / 3,054 / 4,774 / 3,848 장). 궤적 출처는 녹화 1 이 <code>real5_260901_hybS05</code>(08 세트), 2~5 가 체인 A 의 <code>hol_&lt;녹화&gt;_hybS05_cf_r1</code>. FM-Fusion 은 <strong>GroundingDINO + SAM 검출부터</strong> 이 PC 에서 돌렸고(10프레임마다 2,658장, 13.5분), DualMap 은 두 설정을 전부 돌렸습니다(25분). 결과 <code>src/objmap/out_4090/real_scores.json</code>, 지도 <code>out_4090/&lt;방법&gt;/real/00000k/map.json</code>, 로그 <code>out_4090/real_logs/</code>.</p>
 <p><strong>녹화별 최종 지도 (맞음 / 잘못; 괄호는 24 문서의 노트북 값)</strong></p>
@@ -3828,7 +3928,7 @@ a{color:var(--acc);word-break:break-all}
 </tbody>
 </table></div>
 <ul>
-<li><strong>기준 방법은 궤적과 장비를 바꿔도 거의 그대로입니다.</strong> FM-Fusion 은 합계 33/176 → 33/175, 못 찾은 물체도 같은 종류(식혜 캔 5회, 공룡 인형 2회)이고 잘못의 대부분이 "다른 자리"(5개 녹화 합계 151개)입니다. DualMap 두 설정도 ±2 안에서 같습니다. 이 PC 의 검출부터 다시 돌린 FM-Fusion 이 노트북 검출을 재사용한 값과 같은 수준이므로, 2.1 · 3.1 절의 YCB-V · ObChange 행(검출 재사용)도 그대로 써도 됩니다.</li>
+<li><strong>기준 방법은 궤적과 장비를 바꿔도 거의 그대로입니다.</strong> FM-Fusion 은 합계 33/176 → 33/175, 못 찾은 물체도 같은 종류(식혜 캔 5회, 공룡 인형 2회)이고 잘못의 대부분이 "다른 자리"(5개 녹화 합계 151개)입니다. DualMap 두 설정도 ±2 안에서 같습니다. 이 PC 의 검출부터 다시 돌린 FM-Fusion 이 노트북 검출을 재사용한 값과 같은 수준이므로, 2.1 · 3.1 절의 YCB-V · ObChange 행(검출 재사용)도 그대로 써도 됩니다. 10-14 에 YCB-V · ObChange 도 검출부터 다시 돌려 실제로 같음을 확인했습니다(7절).</li>
 <li><strong>제안 방법의 39/1</strong> 은 녹화 1 의 공룡 인형 하나가 라벨 오류로 잘못 올라간 것입니다(08 세트 <code>real5_260901_hybS05</code>, 군집 먼저 없음). 24 문서의 40/0 은 군집 먼저가 있는 구성이었습니다. 체인 A 의 다른 네 녹화(군집 먼저 있음)는 모두 8/0 입니다.</li>
 <li>인식 빈도는 노트북 2.5~3.5 Hz → 5.2~6.5 Hz.</li>
 <li><strong>쓰임:</strong> 23 · 24 문서의 실데이터 표가 "같은 장비·같은 궤적" 조건으로 이 PC 에서도 재현된다는 근거. 본문 표는 24 문서 값을 두고 이 표를 보충으로 둡니다.</li>
@@ -4110,4 +4210,716 @@ a{color:var(--acc);word-break:break-all}
 <li><strong>순위는 세 장비 모두 제안 &gt; FM-Fusion(YCB-V) 또는 제안 &gt; DualMap BGR &gt; FM-Fusion(ObChange)입니다.</strong> 가장 낮은 제안 값(Blackwell ObChange 방문별 0.500)도 가장 높은 기준 값(4090 DualMap BGR 0.414)보다 높습니다. 기준 방법은 장비에 따라 거의 변하지 않습니다(FM-Fusion 은 TP · FP · FN 까지 같음, 9절).</li>
 <li><strong>실시간 실데이터에서는 FP 증가가 나타나지 않습니다.</strong> 인식 6.70 Hz 의 Blackwell 실행도 잘못 2개(경계 사례 1 + 라벨 1)로 노트북(0~1개)과 같은 범위입니다. GT 궤적 오프라인 재생(YCB-V · ObChange)은 카메라가 물체를 오래 보는 구성이라 없는 종류의 그럴듯한 답이 더 많이 쌓이지만, 실데이터는 카메라가 계속 움직이고 물체 8개가 뚜렷해 그런 답이 검증을 통과하지 못하는 것으로 보입니다.</li>
 <li><strong>아직 없는 것:</strong> DualMap 의 YCB-V · ObChange Blackwell 실행(노트북 · 4090 값이 ±1~2 안에서 같아 결론에 영향은 없음), 제안 방법의 YCB-V 중심 5 cm 채점(Blackwell), 그리고 26 문서 순서대로 5090 에서 세 방법을 한 번에 돌린 최종 표. 본문 표는 이 10절처럼 장비를 열로 둔 형태로 쓰되, 최종 수치는 5090 실행 뒤에 정합니다.</li>
+</ul>
+<hr />
+<p><a id="29_미사용데이터_실험_5090_261017"></a></p>
+<h2 id="29-12-hope-video-obchange-rtx-5090-laptop-2026-10-17">29. 지금까지 쓰지 않은 데이터 실험 — 실 데이터 녹화 12개 · HOPE-Video · ObChange 다른 방 (RTX 5090 Laptop, 2026-10-17)</h2>
+<blockquote>
+<p>노트북(RTX 5090 Laptop)의 <code>~/DeepLearning/Datasets</code> 를 00~28 문서와 대조해(27 은 두 개), 한 번도 실험에 쓰지 않은 데이터를 돌렸습니다. 실 데이터 녹화 12개는 Mac ORB-SLAM3 실시간으로 세 구성을 돌렸습니다(1~3절). 공개 데이터는 HOPE-Video 한 장 평가(4절)와 ObChange 의 Kitchen 이외 네 방(5절)입니다. 실 데이터 실행 스크립트·채점 코드·결과는 <code>src/realdata/logs_unused_261017/</code> 에 있습니다(<code>run_unused_l5090.sh</code>, <code>score_unused.py</code>, <code>results_unused_l5090.json</code>).</p>
+</blockquote>
+<h3 id="0_5">0. 요약</h3>
+<ul>
+<li><strong>실 데이터 12개 녹화(96개 물체), 최종 지도 맞음 / 잘못:</strong> 원본 0.5 <strong>83 / 23 (69.7%)</strong> 대 개선안 3 + 군집 먼저 <strong>94 / 4 (94.0%)</strong>. 12개 녹화 중 개선안 3 이 앞선 것 10개, 같은 것 1개(260915_height 는 둘 다 놓침 있음, 개선안 3 이 7/1 로 원본 5/4 보다 앞섬), 뒤진 것 1개(260826_longcircle_dark, 7/1 대 8/1)입니다.</li>
+<li><strong>원본 0.5 의 잘못 23개 중 11개는 장면에 없는 소스(Sauce_high)</strong> 를 식혜 · 다른 물체 자리에 올린 것입니다(08 문서에서 본 현상과 같음). 개선안 3 에서는 2개입니다.</li>
+<li><strong>인식 빈도:</strong> 12개 녹화 평균 원본 0.5 <strong>1.03 Hz</strong> 대 개선안 3 <strong>4.43 Hz</strong> (4.3배). 실행 중 매 순간 점수의 평균은 60.5% 대 71.0% 입니다.</li>
+<li><strong>물체 위치:</strong> 기준 위치까지 거리 중앙값 원본 2.9 cm 대 개선안 3 2.0 cm, 10 cm 넘은 물체 21개 대 7개.</li>
+<li><strong>채점 주의:</strong> 이 녹화들은 이전 실행이 없어, 녹화마다 배포 인식기 실행 하나(<code>ref_&lt;녹화&gt;_ours_l5090</code>)의 최종 지도를 기준 위치로 썼습니다(08 문서의 260910_object 와 같은 방식). 기준 실행과 개선안 3 은 같은 계열이라 개선안 3 에 유리할 수 있습니다. 다만 독립적인 원본 SAM-6D 가 기준 위치 96개 중 83개를 20 cm 안에서 따로 찾았으므로, 기준 위치 자체는 대부분 맞다고 봅니다(2.3절).</li>
+<li><strong>HOPE-Video 413장(목표 3,243개), 원본 L0 대 개선안 3 + 군집 먼저:</strong> 찾은 비율 63.6 → 54.0% (−9.6%p), 정답 비율 70.9 → <strong>89.4%</strong>, 이미지당 오답 2.05 → <strong>0.50</strong>, 둘 다 답한 물체의 ADD-S AUC 84.4 → <strong>88.4</strong>, 이미지당 시간 856 → <strong>377 ms</strong>. 18 문서의 다른 BOP 데이터셋과 같은 방향이고, 찾은 비율 손실은 그중 가장 작습니다(4절).</li>
+<li><strong>ObChange 다른 방 네 개(Office · LivingArea · SmallRoom · BigRoom), 모든 방법 같은 실시간 30 fps:</strong> ctr5cm F1 합산 방문별 / 연속이 제안(관측 자세) <strong>0.443 / 0.225</strong>, 제안(CAD 자세) 0.322 / 0.162, dualmap_bgr 0.189 / 0.072, DualMap 0.130 / 0.051, FM-Fusion 0.115 / 0.053 이고, 네 방 모두 제안(관측 자세)이 가장 높습니다. 10 fps 기본 설정(기준 방법은 시간 제약 없음)에서 실시간으로 바꾸면 제안은 거의 같고 DualMap 두 판은 떨어집니다. 처리 빈도는 제안 4.7~6.7 Hz, FM-Fusion 1.3~1.6 Hz, DualMap 7.5~17.4 Hz 입니다. 연속 지도에서 치운 물체를 지우는 것은 어느 방법도 거의 못 합니다(제안 1/34, FM-Fusion 3/32, 5절).</li>
+</ul>
+<h3 id="1_6">1. 대상 데이터와 쓰지 않은 이유</h3>
+<h4 id="11">1.1 문서와 대조</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>데이터</th>
+<th>00~28 문서 사용</th>
+<th>이번</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>260826_etri_eightcircle_dark · 260901_cbnu_bigeightcircle · 260901_cbnu_eightcircle · 260910_object · 260915_eightcircle</td>
+<td>사용 (07 · 08 · 13 · 22 · 23 · 24)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>260901_cbnu_longcircle</td>
+<td>08 문서에서 시도, SAM bag 손상으로 제외</td>
+<td>그대로 제외 (이 노트북 사본도 같은 bag)</td>
+</tr>
+<tr>
+<td><strong>260901_cbnu_digut</strong></td>
+<td>없음</td>
+<td>실험</td>
+</tr>
+<tr>
+<td><strong>260826_etri_longcircle_dark</strong></td>
+<td>없음</td>
+<td>실험</td>
+</tr>
+<tr>
+<td><strong>260915 경로 10개</strong> (inlong · outlong · eight × fast · middle, longcircle, height, dense, distance)</td>
+<td>없음</td>
+<td>실험</td>
+</tr>
+<tr>
+<td>260826_etri_differentObject · similarObject</td>
+<td>없음</td>
+<td><strong>제외:</strong> 측면(SAM) 카메라가 없는 세션이고(<code>info.json clock.method = no_sam_camera</code>), 물체 구성이 8개 선반 물체와 다름(다른 물체 · 비슷한 물체 시험용)</td>
+</tr>
+<tr>
+<td><code>data_slam/recording_20260910_183935</code> · <code>_184228</code></td>
+<td>없음</td>
+<td><strong>제외:</strong> 기록이 끝나지 않은 빈 세션(수 KB)</td>
+</tr>
+<tr>
+<td><code>data_slam/260915_*</code> 원본</td>
+<td>—</td>
+<td>변환본으로 대신함. 원본은 이 노트북 쪽(정면 d435i + Velodyne)만 있고 측면 카메라 반쪽이 없음</td>
+</tr>
+<tr>
+<td>HOPE (이미지 · 비디오)</td>
+<td>없음</td>
+<td>HOPE-Video 실험(4절). HOPE 이미지 test 셋은 받혀 있지 않음</td>
+</tr>
+<tr>
+<td>ObChange BigRoom · LivingArea · Office · SmallRoom</td>
+<td>없음 (21 문서는 Kitchen 만)</td>
+<td>실험(5절)</td>
+</tr>
+<tr>
+<td>Replica</td>
+<td>20 · 25 문서에서 입력 형식으로만 언급</td>
+<td>제외: 대상 물체(YCB · 선반 물체)가 없음</td>
+</tr>
+<tr>
+<td>손 데이터셋(DexYCB, HO3D, HanCo, FreiHAND, MSRA)</td>
+<td>없음</td>
+<td>제외: 객체 위치 추정 논문과 무관</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="12">1.2 데이터 준비</h4>
+<ul>
+<li>노트북의 <code>catalog.py</code> 는 <code>~/DeepLearning/Dataset/&lt;녹화&gt;</code> 를 읽습니다. 노트북에는 그 폴더가 없어, <code>~/DeepLearning/Dataset/</code> 를 만들고 <code>Datasets/data_slam_converted/</code> 의 녹화로 가는 링크만 두었습니다(코드는 그대로).</li>
+<li><strong>Mac → 노트북:</strong> 260915_longcircle · height · dense · distance 의 SAM bag 은 Mac 에만 있어 받았습니다(24 GB, <code>Datasets/data_slam_converted/260915_from_mac/</code>).</li>
+<li><strong>노트북 → Mac:</strong> 260826_etri_longcircle_dark · 260915_eight_fast · eight_middle 의 SLAM bag 은 Mac 에 없어 올렸습니다(12.6 GB, <code>~/Documents/DefenseMeta/Dataset/&lt;녹화&gt;/</code>).</li>
+<li>카메라 간 외부 파라미터는 날짜별 기존 값을 그대로 씁니다: 260826 은 <code>rt/X_slam_sam.json</code>, 260901 은 <code>rt/260901/X_slam_sam_260901.json</code>, 260915 는 <code>rt/260915/X_slam_sam_260915.json</code>(260915_eightcircle 에서 맞춘 값을 같은 날 다른 경로에 빌려 씀).</li>
+<li>두 카메라 시계 차이는 변환 때 bag 에 들어가 있습니다. 260915 경로들은 genlock 실측이 안 돼 녹화 예약 시각 차(-0.4~-1.2 ms)를 썼고, 260901_digut 은 -13.5 ms, 260826_longcircle_dark 는 +18231 ms(genlock 실측) 입니다.</li>
+</ul>
+<h3 id="2-12">2. 실 데이터 녹화 12개</h3>
+<h4 id="21_3">2.1 실행 조건</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SLAM</td>
+<td>Mac ORB-SLAM3, 특징점 2000, 1배속 (24 문서와 같음). Mac 주소 192.168.219.106 (Wi-Fi)</td>
+</tr>
+<tr>
+<td>구성</td>
+<td>① 기준: 배포 인식기(<code>--recognizer</code> 없음) ② 원본 0.5 (<code>OBJPOSE_LIVE_MODE=orig</code>, ViT-L, 0.5) ③ 개선안 3 + 군집 먼저 (<code>hybrid</code>, ViT-S, 0.5, <code>--verify-cluster-first</code>) — 22 · 24 문서와 같은 두 비교 구성</td>
+</tr>
+<tr>
+<td>PC</td>
+<td>RTX 5090 Laptop (jucpark-device), 혼자 실행</td>
+</tr>
+<tr>
+<td>실행 이름</td>
+<td><code>ref_&lt;녹화&gt;_ours_l5090</code>, <code>live_261017_&lt;녹화&gt;_l5090_{origL05,hyb3cf}</code></td>
+</tr>
+<tr>
+<td>채점</td>
+<td><code>score_unused.py</code>. <code>eval_real.py</code> 와 같은 규칙(물체 종류 맞고 기준 위치 20 cm 안이면 맞음, 종류마다 하나, 나머지는 모두 잘못, 점수 = 맞음 ÷ (8 + 잘못))</td>
+</tr>
+<tr>
+<td>기준 위치</td>
+<td>녹화마다 ① 기준 실행의 최종 지도. 기준 실행에서 한 번만 나왔고 추정 5회 이상인 종류만 기준으로 씀 → 12개 녹화 모두 8개 종류가 다 기준이 됨</td>
+</tr>
+<tr>
+<td>시각</td>
+<td>05:50~07:24. 260915_height · dense · distance 는 링크를 받기 전에 만들어 첫 시도가 바로 실패했고, 링크를 넣고 다시 돌렸습니다</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>노트북에서는 hub 가 conda <code>cv2</code> 를 불러오면서 <code>LD_LIBRARY_PATH</code> 앞에 conda 의 OpenSSL 을 넣어, hub 가 부르는 <code>ssh</code> 가 "OpenSSL version mismatch" 로 실패합니다. 스크립트가 <code>LD_LIBRARY_PATH</code> 를 빼고 <code>ssh</code> 를 부르는 래퍼(<code>logs_unused_261017/bin/ssh</code>)를 PATH 앞에 둡니다. 체크포인트 경로는 <code>ycbv_work_paper/env.sh</code> 를 씁니다.</li>
+</ul>
+<h4 id="22_3">2.2 녹화별 최종 지도</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>녹화 (길이)</th>
+<th>원본 0.5</th>
+<th>개선안 3 + 군집 먼저</th>
+<th>인식 빈도 Hz 원본 → 개선안 3</th>
+<th>실행 중 평균 점수 % 원본 → 개선안 3</th>
+<th>가장 큰 루프 보정 (cm) 원본 / 개선안 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>260901_digut (229초)</td>
+<td>7 / 1 (77.8%)</td>
+<td><strong>8 / 0 (100%)</strong></td>
+<td>1.82 → 7.43</td>
+<td>57.4 → 59.2</td>
+<td>8.6 / 11.0</td>
+</tr>
+<tr>
+<td>260826_longcircle_dark (136초, 어두움)</td>
+<td><strong>8 / 1 (88.9%)</strong></td>
+<td>7 / 1 (77.8%)</td>
+<td>0.91 → 3.82</td>
+<td>66.3 → 79.1</td>
+<td>7.4 / 6.2</td>
+</tr>
+<tr>
+<td>260915_inlong_fast (54초)</td>
+<td>8 / 1 (88.9%)</td>
+<td><strong>8 / 0 (100%)</strong></td>
+<td>0.98 → 4.28</td>
+<td>59.5 → 71.5</td>
+<td>29.6 / 30.0</td>
+</tr>
+<tr>
+<td>260915_inlong_middle (91초)</td>
+<td>8 / 1 (88.9%)</td>
+<td><strong>8 / 0 (100%)</strong></td>
+<td>0.91 → 3.88</td>
+<td>61.7 → 74.2</td>
+<td>40.2 / 38.4</td>
+</tr>
+<tr>
+<td>260915_outlong_fast (92초)</td>
+<td>6 / 3 (54.5%)</td>
+<td><strong>8 / 1 (88.9%)</strong></td>
+<td>1.14 → 4.96</td>
+<td>63.8 → 78.7</td>
+<td>27.8 / 30.2</td>
+</tr>
+<tr>
+<td>260915_outlong_middle (120초)</td>
+<td>7 / 2 (70.0%)</td>
+<td><strong>8 / 0 (100%)</strong></td>
+<td>1.03 → 4.54</td>
+<td>47.4 → 61.3</td>
+<td><strong>164.6 / 203.8</strong></td>
+</tr>
+<tr>
+<td>260915_eight_fast (66초)</td>
+<td>7 / 1 (77.8%)</td>
+<td><strong>8 / 0 (100%)</strong></td>
+<td>0.91 → 3.85</td>
+<td>56.9 → 72.3</td>
+<td>17.2 / 22.0</td>
+</tr>
+<tr>
+<td>260915_eight_middle (100초)</td>
+<td>7 / 2 (70.0%)</td>
+<td><strong>8 / 0 (100%)</strong></td>
+<td>0.84 → 3.42</td>
+<td>64.0 → 74.5</td>
+<td>18.8 / 14.7</td>
+</tr>
+<tr>
+<td>260915_longcircle (95초)</td>
+<td>7 / 2 (70.0%)</td>
+<td><strong>8 / 0 (100%)</strong></td>
+<td>0.98 → 4.92</td>
+<td>54.5 → 70.4</td>
+<td>9.0 / 10.1</td>
+</tr>
+<tr>
+<td>260915_height (115초)</td>
+<td>5 / 4 (41.7%)</td>
+<td><strong>7 / 1 (77.8%)</strong></td>
+<td>0.98 → 4.31</td>
+<td>48.1 → 53.9</td>
+<td>18.5 / 16.7</td>
+</tr>
+<tr>
+<td>260915_dense (136초)</td>
+<td>6 / 3 (54.5%)</td>
+<td><strong>8 / 1 (88.9%)</strong></td>
+<td>0.92 → 4.12</td>
+<td>76.3 → 84.9</td>
+<td>27.1 / 15.1</td>
+</tr>
+<tr>
+<td>260915_distance (190초)</td>
+<td>7 / 2 (70.0%)</td>
+<td><strong>8 / 0 (100%)</strong></td>
+<td>0.89 → 3.58</td>
+<td>69.8 → 71.9</td>
+<td>1.5 / 2.0</td>
+</tr>
+<tr>
+<td><strong>합계 (96개)</strong></td>
+<td><strong>83 / 23 (69.7%)</strong></td>
+<td><strong>94 / 4 (94.0%)</strong></td>
+<td>평균 <strong>1.03 → 4.43</strong></td>
+<td>평균 <strong>60.5 → 71.0</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>잘못의 종류</strong>(real_score.py 분류): 원본 0.5 는 다른 물체 자리에 다른 이름(라벨) 16개 + 엉뚱한 자리 7개, 개선안 3 은 라벨 4개뿐입니다. 중복은 둘 다 0 입니다.</li>
+<li><strong>원본 0.5 가 놓친 물체:</strong> 곰 인형 5번, 공룡 · 식혜 · 초코 헤이즐넛 각 2번, 우유 · 페브리즈 각 1번(13개).</li>
+<li><strong>개선안 3 이 놓친 것:</strong> 260826_longcircle_dark 의 곰 인형(다른 물체 자리에 올림), 260915_height 의 우유. 잘못 4개 중 2개는 소스입니다.</li>
+<li><strong>인식 빈도:</strong> 260901_digut 의 개선안 3 은 7.4 Hz 로 다른 녹화(3.4~5.0 Hz)보다 높습니다. 기준 실행도 7.4 Hz 로 같아 구성 차이가 아니라 녹화 차이입니다(원인은 확인하지 않음).</li>
+<li><strong>루프 보정:</strong> 260915_outlong_middle 은 세 구성 모두 1.2~2.0 m 보정이 나왔습니다(기준 115.7, 원본 164.6, 개선안 3 203.8 cm). 지금까지 버린 실행은 3 m 안팎이었으므로 그대로 씁니다. 24 문서의 260910_object(2 m 넘는 보정이 매번 나옴)와 같은 성격의 녹화로 보입니다. 그래도 개선안 3 은 이 녹화에서 8/0 입니다.</li>
+<li><strong>260826_longcircle_dark</strong> 는 개선안 3 이 진 유일한 녹화입니다. 같은 장소의 260826_eightcircle_dark(24 문서 · 오늘 아침 확인 실행)에서는 8/0 이었습니다.</li>
+</ul>
+<h4 id="23_1">2.3 기준 위치의 신뢰도</h4>
+<ul>
+<li>기준 위치는 배포 인식기 실행 하나에서 나왔고, 정답이 아닙니다. 기준 실행이 놓치거나 틀린 자리에 올린 물체는 그대로 기준이 됩니다.</li>
+<li><strong>독립 확인:</strong> 원본 0.5 는 인식기 앞단(FastSAM + DINOv2 ViT-L)이 기준 실행과 다릅니다. 원본 0.5 가 96개 기준 위치 중 83개(86%)에서 같은 종류를 20 cm 안에 올렸으므로, 그 83개는 두 방법이 따로 같은 자리를 찾은 것입니다. 나머지 13개 중 7개는 원본이 그 물체를 어느 기준 위치에서도 20 cm 밖에 올린 경우라, 이 채점으로는 어느 쪽이 맞는지 가릴 수 없습니다.</li>
+<li>기준 실행의 최종 지도에서 8개 종류는 12개 녹화 모두 한 번씩만 나왔습니다. 기준 실행의 잘못은 260826_longcircle_dark 의 소스 1개뿐입니다.</li>
+<li>그래도 개선안 3 은 기준 실행과 같은 PEM · 검증 단계를 쓰므로 위치 오차가 작게 나오기 쉽습니다(중앙값 2.0 대 원본 2.9 cm). 위치 오차 비교는 참고로만 봅니다.</li>
+</ul>
+<h4 id="24-23-24">2.4 23 · 24 문서와의 관계</h4>
+<ul>
+<li>같은 두 구성을 다른 녹화 5개에서 비교한 22 · 24 문서(3080, 원본 0.5 대 개선안 3)와 방향이 같습니다. 인식 빈도는 24 문서 3080 의 평균 2.76 Hz 보다 높은데(4.43 Hz), 장비 차이(5090) 때문입니다. 오늘 아침 260826_eightcircle_dark 확인 실행도 3080 1.96 Hz → 5090 3.52 Hz 였습니다.</li>
+<li>260915 경로 10개는 같은 날 같은 선반을 경로 · 속도 · 높이 · 거리를 바꿔 찍은 녹화로 보입니다(녹화 이름 기준). 원본 0.5 는 경로에 따라 41.7~88.9% 로 흔들렸고, 개선안 3 은 77.8~100% 입니다.</li>
+</ul>
+<h3 id="3_4">3. 실 데이터 결과 파일</h3>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>파일</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/realdata/logs_unused_261017/run_unused_l5090.sh</code></td>
+<td>실행 스크립트(녹화 인자로 일부만 돌릴 수 있음)</td>
+</tr>
+<tr>
+<td><code>src/realdata/logs_unused_261017/score_unused.py</code></td>
+<td>채점(기준 실행 → 기준 위치 → 세 구성 채점)</td>
+</tr>
+<tr>
+<td><code>src/realdata/logs_unused_261017/results_unused_l5090.json</code></td>
+<td>녹화별 기준 위치, 구성별 맞음 · 잘못 · 종류 · 빈도 · 시점별 점수 · 물체별 거리</td>
+</tr>
+<tr>
+<td><code>src/realdata/logs_unused_261017/progress.log</code>, <code>progress_redo.log</code></td>
+<td>실행 기록</td>
+</tr>
+<tr>
+<td><code>objpose/output/{ref_*_ours_l5090, live_261017_*_l5090_*}</code></td>
+<td>실행 결과(36개)</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="4-hope-video">4. HOPE-Video 한 장 평가</h3>
+<h4 id="41_1">4.1 데이터와 실행 조건</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>데이터</td>
+<td>HOPE-Video (NVIDIA, 식료품 물체 28종, RealSense D415 640×480, 10장면 2,038장, 약 6 fps 키프레임). <code>paper_benchmarks/HOPE/video_bop</code> 의 BOP 형식(정답 자세 mm, 원본 jpg 로 가는 링크)</td>
+</tr>
+<tr>
+<td>평가 이미지</td>
+<td>장면마다 5장에 1장 → <strong>413장, 목표 3,243개</strong>(보인 비율 0.1 이상인 물체마다 1개). BOP 가 HOPE-Video 목록을 주지 않아 <code>src/bop_more/make_hope_targets.py</code> 로 만듦</td>
+</tr>
+<tr>
+<td>비교</td>
+<td>18 문서 C 절과 같은 두 방법: 원본 SAM-6D L0(FastSAM-x + ViT-L, 가중합 ISM, 물체당 1개, PEM) 대 개선안 3 + 군집 먼저(원본 ISM 앞단, ViT-S, 판정 0.5 + 우리 PEM + 자세 검증, 군집 먼저)</td>
+</tr>
+<tr>
+<td>자산</td>
+<td>28종 템플릿 42장씩 CPU 렌더(24분), <code>build_assets.py</code> 로 특징 · PEM 템플릿</td>
+</tr>
+<tr>
+<td>PC</td>
+<td>RTX 5090 Laptop. 실행 <code>src/bop_more/run_hope_laptop5090.sh</code>, 환경 <code>env_bop_more_laptop5090.sh</code>, 결과 <code>src/bop_more/out_5090/hope/</code></td>
+</tr>
+<tr>
+<td>지표</td>
+<td><code>evaluate.py --skip_bop</code>: 찾은 비율, 정답 비율, 이미지당 오답, ADD-S AUC(0~10 cm, 답 없음 = 무한 오차), 이미지당 시간. BOP AR 은 이 노트북에 bop_toolkit 이 없고, 툴킷의 <code>hope</code> 정의가 HOPE 이미지판(1920×1080, 장면 1~40)이라 내지 않았습니다</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>코드 변경:</strong> <code>bop_more/paths.py</code> 의 데이터셋 목록에 <code>hope</code> 를 넣었습니다. 또 <code>run_orig.select_bank</code> 에 <code>BOP_BANK_CACHE</code>(GPU 에 둘 목표 묶음 수 상한)를 넣었습니다. HOPE 는 이미지마다 목표가 10개 안팎이라 묶음이 거의 매번 새로 생기고, 상한 없는 캐시가 50장쯤에서 24 GB 를 다 써 두 방법 모두 메모리 부족으로 멈췄습니다. 노트북 환경 파일만 상한 4 로 두고, 기본값은 예전처럼 상한 없음입니다. 두 방법이 같은 함수를 쓰므로 시간 비교에는 같은 영향입니다.</li>
+<li><strong>정답 깊이 주의:</strong> 정답 모델을 깊이 영상에 투영하면 깊이가 모델보다 약 1 cm 앞에 있습니다(D415 깊이 배율을 고치지 않은 값으로 보임, HOPE 이미지판은 0.98 을 곱함). 맞음 기준이 지름의 10%(7.6~25 mm)라 두 방법 모두 점수가 눌릴 수 있습니다.</li>
+</ul>
+<h4 id="42">4.2 결과</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>지표</th>
+<th>원본 L0</th>
+<th>개선안 3 + 군집 먼저</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>찾은 비율 (목표 3,243개)</td>
+<td><strong>63.6%</strong></td>
+<td>54.0% (−9.6%p)</td>
+</tr>
+<tr>
+<td>답 수 / 맞은 답</td>
+<td>2,910 / 2,062</td>
+<td>1,958 / 1,751</td>
+</tr>
+<tr>
+<td>정답 비율 (맞은 답 ÷ 답)</td>
+<td>70.9%</td>
+<td><strong>89.4%</strong></td>
+</tr>
+<tr>
+<td>이미지당 오답</td>
+<td>2.05</td>
+<td><strong>0.50</strong></td>
+</tr>
+<tr>
+<td>ADD-S AUC (답 없음 포함)</td>
+<td><strong>64.7</strong></td>
+<td>52.8</td>
+</tr>
+<tr>
+<td>둘 다 답한 1,882개의 ADD-S AUC / 오차 중앙값</td>
+<td>84.4 / 5.43 mm</td>
+<td><strong>88.4 / 5.13 mm</strong></td>
+</tr>
+<tr>
+<td>이미지당 시간 중앙값 (p90)</td>
+<td>856 ms (1,766)</td>
+<td><strong>377 ms</strong> (861)</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>YCB-V · LM-O · TUD-L · IC-BIN 과 같은 방향입니다.</strong> 개선안 3 은 덜 찾고(−9.6%p), 답한 것은 더 자주 맞고(정답 비율 +18.5%p, 오답 4분의 1), 둘 다 답한 물체끼리는 자세가 더 정확하며(ADD-S AUC 84.4 → 88.4), 2.3배 빠릅니다.</li>
+<li><strong>찾은 비율 손실 −9.6%p</strong> 는 18 문서의 다른 데이터셋(YCB-V −12, IC-BIN −17, TUD-L −23, LM-O −27%p)보다 작습니다. HOPE 물체는 모두 인쇄 무늬가 있는 상자 · 캔이라, 무늬 없는 물체에서 생기던 질감 관문 탈락이 적은 것으로 봅니다(탈락 사유는 세지 않았음).</li>
+<li><strong>정답 비율 89.4%</strong> 는 18 문서의 97.9~100% 보다 낮습니다. 비슷한 모양의 캔 · 상자가 한 장에 10개 안팎 있는 장면이라 종류 혼동이 남습니다.</li>
+<li><strong>ADD-S AUC(답 없음 포함)</strong> 는 원본이 높습니다. 답을 안 낸 목표를 무한 오차로 세므로 찾은 비율 손실이 그대로 들어간 값입니다.</li>
+<li><strong>물체별 찾은 비율이 가장 많이 준 것(원본 → 개선안 3):</strong> Mushrooms 53.2 → 14.4%, Yogurt 54.9 → 29.7%, Corn 48.4 → 25.8%, Mustard 83.9 → 62.2%, Mayo 75.8 → 58.1%. 오른 것: Milk 48.2 → 60.6%, Peas&amp;Carrots 38.9 → 46.7%, Cherries 27.9 → 31.0%.</li>
+</ul>
+<h3 id="5-obchange-office-livingarea-smallroom-bigroom">5. ObChange 다른 방 네 개 (Office · LivingArea · SmallRoom · BigRoom)</h3>
+<p>21 문서는 ObChange(TU Wien, CC BY 4.0) 다섯 방 중 Kitchen 만 썼습니다. 같은 비교(제안 · FM-Fusion · DualMap 두 판, 방문별 · 연속 지도)를 나머지 네 방에서 했습니다. <strong>본 결과는 모든 방법을 같은 실시간 30 fps 입력으로 돌린 것(5.2절)이고, 처음 돌린 10 fps 기본 설정 결과는 보조로 둡니다(5.3절).</strong></p>
+<h4 id="51_1">5.1 데이터와 두 조건</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방</th>
+<th>방문</th>
+<th>정답 물체 (방문 2~끝 합계)</th>
+<th>채점 제외 물체(CAD 없음)</th>
+<th>프레임 10 fps / 30 fps</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Office</td>
+<td>1~6</td>
+<td>10 (방문마다 2)</td>
+<td>15</td>
+<td>4,184 / 12,545</td>
+</tr>
+<tr>
+<td>LivingArea</td>
+<td>1~6</td>
+<td>14</td>
+<td>42</td>
+<td>6,026 / 18,069</td>
+</tr>
+<tr>
+<td>SmallRoom</td>
+<td>1~6</td>
+<td>25</td>
+<td>29</td>
+<td>16,648 / 49,936</td>
+</tr>
+<tr>
+<td>BigRoom</td>
+<td>1~7</td>
+<td>46</td>
+<td>60</td>
+<td>32,829 / 98,463</td>
+</tr>
+<tr>
+<td>(참고) Kitchen, 21 문서</td>
+<td>1~6</td>
+<td>25</td>
+<td>5</td>
+<td>— / 8,974</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>정답:</strong> 21 문서와 같은 방법입니다. 점 단위 주석(ElasticFusion 재구성 위)을 정답으로 쓰고, YCB-V CAD 를 그 점에 ICP 로 맞춰 6D 자세를 만들었습니다(<code>obchange_gt.py --room</code>). LivingArea 주석 한 줄(scene6 plane 2, 065-j_cups)은 바닥 표시 플래그가 줄 가운데에 있어, 플래그를 줄 어디서든 읽도록 파서를 고쳤습니다.</li>
+<li><strong>10 fps 와 30 fps:</strong> 네 방은 처음에 데이터셋의 BOP 판 프레임(<code>bop/test/&lt;방&gt;_s&lt;k&gt;</code>)으로 돌렸습니다. 원본 rosbag 과 대조하니 <strong>BOP 판은 30 Hz 카메라 영상의 정확히 3장에 1장</strong>이었습니다(시각 차이 0 ms, 카메라 자세 차이 중앙값 0.4 mm · 최대 2.2 mm, 내부 파라미터 같음). 그래서 원본 bag 을 30 fps 로 다시 풀었습니다(<code>obchange_raw_seq.py</code>, Kitchen 의 <code>obchange_prep.py</code> 와 같은 변환). 방 → bag 폴더: Office = GH30_office, LivingArea = GH30_living, SmallRoom = Arena, BigRoom = KennyLab.</li>
+</ul>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>조건</th>
+<th>입력</th>
+<th>제안</th>
+<th>FM-Fusion</th>
+<th>DualMap · dualmap_bgr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>실시간 30 fps (본 결과)</strong></td>
+<td>원본 bag 30 fps, 벽시계에 맞춰 흘림</td>
+<td>허브 1배속 재생(21 문서와 같음): 인식기가 비면 가장 최근 프레임을 가져가고 지나간 프레임은 버림</td>
+<td>같은 규칙. 검출(GroundingDINO + SAM)이 비면 가장 최근 프레임을 검출(<code>fmfusion_detect.py --realtime-fps 30</code>), 지도 생성은 검출한 프레임만</td>
+<td>같은 규칙(<code>stride=1</code>, <code>DM_RT_INTERVAL=1/30</code>: 처리가 밀린 프레임은 버림)</td>
+</tr>
+<tr>
+<td>10 fps 기본 설정 (보조)</td>
+<td>BOP 판 10 fps</td>
+<td>허브 1배속 재생</td>
+<td>시간 제약 없이 3프레임마다 검출(21 문서 Kitchen 은 30 fps 에서 10프레임마다 = 같은 영상 간격)</td>
+<td>시간 제약 없이 저장소 기본 <code>stride: 10</code></td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>실시간 조건의 뜻:</strong> 세 방법 모두 같은 30 fps 영상을 같은 시계로 받고, 자기 처리 속도만큼만 봅니다. 10 fps 기본 설정에서는 제안만 실시간이고 두 기준 방법은 시간 제약 없이 정해진 간격의 프레임을 다 처리했습니다.</li>
+<li><strong>FM-Fusion 지도 생성 시간:</strong> 실시간 검출이 고른 프레임만 지도 생성(IntegrateInstanceMap)에 넣고, 지도 생성은 검출과 동시에 돈다고(파이프라인) 봅니다. 프레임당 지도 생성 시간은 Office 에서 평균 367~413 ms(95% 680~800 ms)로 검출 간격(755 ms)보다 짧아 이 가정이 성립합니다. 둘을 차례로 돌린다고 보면 프레임당 약 1.17 초(0.86 Hz)라 처리 프레임이 더 줄어듭니다. 즉 이 비교는 FM-Fusion 에 유리한 쪽입니다.</li>
+<li><strong>DualMap 프레임 규칙:</strong> DualMap 의 로봇용 실행기(<code>runner_ros</code>)는 자체 키프레임 규칙(0.5 초 · 10 cm · 3°)으로 프레임을 덜 고릅니다. 이번에는 세 방법에 같은 규칙("비면 가장 최근 프레임")을 적용했습니다. DualMap 은 지도 생성을 별도 스레드에서 하므로 주 처리 흐름이 빨리 비어, 영상의 25~58%를 받았습니다(5.4절).</li>
+<li><strong>지도 방식:</strong> 21 문서와 같습니다. 방문별 = 방문 k 만 본 지도. 연속 = 방문 1~k 를 이어 본 지도의 방문 k 끝 상태(제안은 한 번 재생하며 방문 끝마다 메모리 스냅숏, 두 기준 방법은 방문 1~k 를 매번 처음부터 입력).</li>
+<li><strong>채점:</strong> <code>obchange_score.py</code>. 같은 종류 · 물체 중심 5 cm 안이면 맞음(ctr5cm). IoU 0.25 짝짓기는 21 문서와 같은 이유(정답 점군과 카메라 궤적의 cm 단위 흔들림, 작은 물체)로 모든 방법이 0.00~0.27 이라 표에서 뺐습니다. CAD 가 없는 물체 위의 예측은 빼고 셉니다(don't care).</li>
+</ul>
+<h4 id="52-30-fps">5.2 결과: 실시간 30 fps (본 결과)</h4>
+<p>ctr5cm F1, <strong>방문별 / 연속</strong>, 괄호는 연속 지도에서 <strong>치운 물체 중 지도에 남은 수 / 치운 물체 수</strong>(작을수록 변화를 잘 따름). 합산은 방들의 TP · FP · FN 을 더해 다시 계산한 F1 입니다.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>Office</th>
+<th>LivingArea</th>
+<th>SmallRoom</th>
+<th>BigRoom</th>
+<th><strong>합산</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ours_obs</td>
+<td>0.389 / 0.200 (5/7)</td>
+<td>0.690 / 0.261 (7/11)</td>
+<td>0.385 / 0.236 (5/7)</td>
+<td>0.438 / 0.216 (16/30)</td>
+<td>0.443 / 0.225 (33/55)</td>
+</tr>
+<tr>
+<td>ours_cad</td>
+<td>0.222 / 0.102 (3/7)</td>
+<td>0.438 / 0.229 (6/11)</td>
+<td>0.312 / 0.220 (4/7)</td>
+<td>0.328 / 0.130 (6/30)</td>
+<td>0.322 / 0.162 (19/55)</td>
+</tr>
+<tr>
+<td>FM-Fusion</td>
+<td>0.162 / 0.098 (5/7)</td>
+<td>0.242 / 0.099 (10/11)</td>
+<td>0.083 / 0.040 (2/7)</td>
+<td>0.100 / 0.040 (12/30)</td>
+<td>0.115 / 0.053 (29/55)</td>
+</tr>
+<tr>
+<td>DualMap</td>
+<td>0.069 / 0.070 (0/7)</td>
+<td>0.375 / 0.069 (1/11)</td>
+<td>0.000 / 0.038 (0/7)</td>
+<td>0.163 / 0.047 (1/30)</td>
+<td>0.130 / 0.051 (2/55)</td>
+</tr>
+<tr>
+<td>dualmap_bgr</td>
+<td>0.160 / 0.100 (1/7)</td>
+<td>0.188 / 0.088 (1/11)</td>
+<td>0.219 / 0.053 (0/7)</td>
+<td>0.175 / 0.069 (5/30)</td>
+<td>0.189 / 0.072 (7/55)</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="53-10-fps">5.3 결과: 10 fps 기본 설정 (보조)</h4>
+<p>같은 형식입니다. BigRoom 은 기준 방법 실행 도중 30 fps 실시간 비교로 바꾸면서 멈춰 없습니다(제안만 끝남).</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>Office</th>
+<th>LivingArea</th>
+<th>SmallRoom</th>
+<th><strong>합산</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ours_obs</td>
+<td>0.424 / 0.230 (5/7)</td>
+<td>0.600 / 0.281 (6/11)</td>
+<td>0.366 / 0.252 (5/7)</td>
+<td>0.428 / 0.253 (16/25)</td>
+</tr>
+<tr>
+<td>ours_cad</td>
+<td>0.242 / 0.098 (3/7)</td>
+<td>0.438 / 0.207 (5/11)</td>
+<td>0.272 / 0.216 (4/7)</td>
+<td>0.301 / 0.181 (12/25)</td>
+</tr>
+<tr>
+<td>FM-Fusion</td>
+<td>0.144 / 0.089 (5/7)</td>
+<td>0.226 / 0.095 (10/11)</td>
+<td>0.074 / 0.049 (3/7)</td>
+<td>0.123 / 0.071 (18/25)</td>
+</tr>
+<tr>
+<td>DualMap</td>
+<td>0.167 / 0.095 (0/7)</td>
+<td>0.370 / 0.208 (2/11)</td>
+<td>0.129 / 0.115 (1/7)</td>
+<td>0.195 / 0.136 (3/25)</td>
+</tr>
+<tr>
+<td>dualmap_bgr</td>
+<td>0.381 / 0.091 (1/7)</td>
+<td>0.296 / 0.111 (2/11)</td>
+<td>0.250 / 0.150 (1/7)</td>
+<td>0.288 / 0.124 (4/25)</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="54">5.4 실시간 조건에서 각 방법이 처리한 프레임</h4>
+<p>방마다 연속 지도 실행(방문 1~끝을 이어 재생) 한 번 기준입니다. 괄호는 영상 시간 기준 초당 처리 프레임(FM-Fusion 은 검출 한 장 평균 시간 포함).</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방(30 fps 프레임)</th>
+<th>우리 방법</th>
+<th>FM-Fusion</th>
+<th>DualMap</th>
+<th>dualmap_bgr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Office (12545)</td>
+<td>1958 (4.7 Hz)</td>
+<td>556 (1.3 Hz, 755 ms)</td>
+<td>3436 (8.2 Hz)</td>
+<td>3515 (8.4 Hz)</td>
+</tr>
+<tr>
+<td>LivingArea (18069)</td>
+<td>4057 (6.7 Hz)</td>
+<td>892 (1.5 Hz, 676 ms)</td>
+<td>10492 (17.4 Hz)</td>
+<td>9184 (15.2 Hz)</td>
+</tr>
+<tr>
+<td>SmallRoom (49936)</td>
+<td>10902 (6.6 Hz)</td>
+<td>2467 (1.5 Hz, 675 ms)</td>
+<td>21717 (13.0 Hz)</td>
+<td>20326 (12.2 Hz)</td>
+</tr>
+<tr>
+<td>BigRoom (98463)</td>
+<td>20890 (6.4 Hz)</td>
+<td>5214 (1.6 Hz, 630 ms)</td>
+<td>27948 (8.5 Hz)</td>
+<td>24662 (7.5 Hz)</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="55">5.5 해석</h4>
+<ul>
+<li><strong>네 방 합산, 실시간 30 fps(본 결과):</strong> 제안(관측 자세, ours_obs)이 방문별 <strong>0.443</strong> · 연속 <strong>0.225</strong> 로 가장 높습니다. 다음은 제안(CAD 자세) 0.322 / 0.162, dualmap_bgr 0.189 / 0.072, DualMap 0.130 / 0.051, FM-Fusion 0.115 / 0.053 입니다. 방 하나씩 봐도 제안(관측 자세)은 네 방의 방문별 · 연속 모두에서 가장 높습니다. 정답 물체가 가장 많은 BigRoom(46개)에서도 0.438 / 0.216 으로 다른 방과 같은 수준입니다.</li>
+<li><strong>조건을 맞추면 기준 방법이 떨어집니다(10 fps 결과가 있는 세 방).</strong> 10 fps 기본 설정에서 실시간 30 fps 로 바꾸면 제안은 방문별 0.428 → 0.448 · 연속 0.253 → 0.234 로 거의 같지만, DualMap 은 0.195 / 0.136 → 0.105 / 0.054, dualmap_bgr 은 0.288 / 0.124 → 0.200 / 0.074 로 떨어집니다. DualMap 은 영상의 25~58% 를 받았는데도(5.4절) 맞힌 물체(TP)가 연속 지도 합계 12 → 6 개로 줄었습니다. 시간 제약 없는 10프레임 간격보다 처리가 밀려 버린 프레임 구성이 불리했던 것으로 봅니다.</li>
+<li><strong>FM-Fusion 은 정밀도가 낮습니다.</strong> 네 방 연속 지도에서 맞힌 수는 제안과 비슷하지만(TP 48 대 53) 잘못 올린 물체가 1,683 개(제안 323 개)입니다.</li>
+<li><strong>처리 빈도(5.4절):</strong> 30 fps 영상에서 제안은 초당 4.7~6.7 장, FM-Fusion 검출은 1.3~1.6 장(한 장 630~755 ms)입니다. DualMap 두 판은 7.5~17.4 장으로 가장 많이 받지만 F1 은 제안보다 낮습니다. 많이 보는 것보다 한 장에서 무엇을 얼마나 정확히 올리느냐가 결과를 정합니다.</li>
+<li><strong>치운 물체:</strong> 괄호 숫자는 작을수록 좋아 보이지만 그대로 읽으면 안 됩니다. 네 방 합계로 치운 물체 55 개 중 지도에 한 번이라도 올린 것이 제안(관측) 34, FM-Fusion 32, DualMap 5, dualmap_bgr 10 개입니다. DualMap 의 작은 숫자는 치운 물체를 지운 것이 아니라 애초에 거의 올리지 않은 결과입니다. 올린 것 중에서 지운 것은 제안 1/34, FM-Fusion 3/32 로, <strong>연속 지도에서 치운 물체를 지우는 것은 어느 방법도 거의 못 합니다.</strong> 새로 놓인 물체(65 개)는 제안 34, FM-Fusion 32, DualMap 9, dualmap_bgr 12 개를 찾았습니다.</li>
+<li><strong>제안 안에서:</strong> 관측 자세(ours_obs)가 CAD 자세(ours_cad)보다 네 방 모두 높습니다. 21 문서 Kitchen 과 같은 방향입니다.</li>
+</ul>
+<h4 id="56">5.6 바꾼 코드와 외부 코드 패치</h4>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>파일</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/objmap/obchange_raw_seq.py</code> (새 파일)</td>
+<td>Kitchen 이외 방의 원본 bag → 30 fps 프레임 · cameras.json. bag 을 zip 에서 하나씩 풀어 두 번 읽음(1차: /tf · 영상 시각, 2차: 쓸 프레임만 저장)으로 메모리를 쓰지 않음</td>
+</tr>
+<tr>
+<td><code>src/objmap/run_obchange_rt.sh</code> (새 파일)</td>
+<td>실시간 30 fps 한 방 전체(입력 준비 → 제안 → FM-Fusion 실시간 검출 → FM-Fusion 지도 생성 · DualMap 두 판 → 채점). 결과는 <code>gt30/</code>, <code>out30/</code>, <code>~/DeepLearning/Datasets/objmap_obchange30/</code> 에 따로 둠</td>
+</tr>
+<tr>
+<td><code>src/objmap/obchange_bop_seq.py</code>, <code>run_obchange_room.sh</code>, <code>obchange_env.sh</code>, <code>fmf_python.sh</code> (새 파일)</td>
+<td>10 fps 기본 설정 한 방 전체와 노트북 경로</td>
+</tr>
+<tr>
+<td><code>src/objmap/fmfusion_detect.py</code></td>
+<td><code>--realtime-fps</code>: 프레임이 그 속도로 도착한다고 보고, 검출기가 비면 가장 최근 프레임만 검출. 고른 프레임 · 검출 시간을 <code>realtime_detect.json</code> 에 남김</td>
+</tr>
+<tr>
+<td><code>src/objmap/run_ours.py</code></td>
+<td><code>SEQ_BAGS_DELETE</code>: 30 fps 재생 bag(프레임당 1.5 MB, SmallRoom 연속 72 GB)을 실행 뒤 지움</td>
+</tr>
+<tr>
+<td><code>src/objmap/dualmap_run.sh</code></td>
+<td><code>DUALMAP_EXTRA</code>: hydra 설정 덧붙이기(실시간은 <code>stride=1</code>)</td>
+</tr>
+<tr>
+<td><code>src/objmap/obchange_gt.py</code>, <code>common.py</code>, <code>seq_bags.py</code>, <code>gt_pose_stream.py</code>, <code>dualmap_prep.py</code>, <code>fmfusion_prep.py</code>, <code>fmfusion_export.py</code>, <code>obchange_score.py</code></td>
+<td>방 이름(<code>--room</code>, <code>obchange_&lt;방&gt;[_all]</code>) 처리, 재생 시계 fps 를 cameras.json 에서 읽음</td>
+</tr>
+<tr>
+<td><code>src/objmap/obchange_tables_261017.py</code> (새 파일)</td>
+<td>이 절의 표</td>
+</tr>
+<tr>
+<td>FM-Fusion <code>src/IntegrateInstanceMap.cpp</code> 71행 (로컬)</td>
+<td>폴더 프레임 수 상한 4000 → 1,000,000. 상한을 넘으면 아무 출력 없이 끝나는 코드라, 10 fps 방(최대 32,829)과 30 fps BigRoom(98,463)에서 지도가 비지 않게 함</td>
+</tr>
+<tr>
+<td>FM-Fusion <code>src/mapping/Instance.cpp</code> (로컬)</td>
+<td>볼록 껍질(Qhull)이 평평한 점군에서 예외를 내면 프로그램 전체가 멈춤 → 흔든 입력으로 한 번 더, 그래도 실패하면 그 물체의 상자만 갱신하지 않음. 10 fps SmallRoom 첫 실행이 방문 2 에서 이 예외로 멈췄고, 고친 뒤 다시 돌린 실행들에서는 이 경로가 한 번도 쓰이지 않았습니다(재현 안 됨). 원래 멈추던 경우에만 동작하므로 다른 결과는 바뀌지 않음</td>
+</tr>
+<tr>
+<td>DualMap <code>utils/object_detector.py</code> (로컬)</td>
+<td>dualmap_bgr 판의 BGR 입력(24 문서 패치를 다시 만든 것, <code>src/objmap/dualmap_ultralytics_bgr_reconstructed_261017.patch</code>). <code>applications/runner_dataset.py</code> 의 실시간 훅(<code>DM_RT_INTERVAL</code>)은 이전 실험에서 넣은 것 그대로</td>
+</tr>
+</tbody>
+</table></div>
+<h4 id="57">5.7 주의</h4>
+<ul>
+<li>방마다 정답 물체가 적습니다(Office 는 방문마다 2개). 한두 개 차이로 F1 이 0.1 넘게 움직이므로 합산 결과로 읽는 것이 맞습니다.</li>
+<li>정답 6D 자세는 점 주석에 CAD 를 맞춘 것이라, 21 문서와 같이 중심 5 cm 짝짓기만 본 결과로 씁니다.</li>
+<li>실시간 조건의 처리 프레임 수는 장비(RTX 5090 Laptop)와 그 순간의 부하에 따라 달라집니다. FM-Fusion 지도 생성(CPU)은 DualMap 실행과 같은 시간에 돌았습니다.</li>
 </ul></main></body></html>

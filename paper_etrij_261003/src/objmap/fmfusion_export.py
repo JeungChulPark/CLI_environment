@@ -42,12 +42,12 @@ def read_ply_xyz(path):
         return np.stack([v["x"], v["y"], v["z"]], 1).astype(np.float64)
 
 
-def run(scene, dataset="ycbv"):
+def run(scene, dataset="ycbv", frame_gap=2, max_frames=20000):
     scan = FMF_DATA / "scans" / seq_name(dataset, scene)
     cfg = scan / "config.yaml" if dataset == "real" else config_path(dataset)
     cmd = [str(EXE), "--config", str(cfg),
            "--root", str(FMF_DATA / "scans" / seq_name(dataset, scene)), "--output", str(RAW),
-           "--prediction", "prediction_no_augment", "--frame_gap", "2", "--max_frames", "20000", "--verbose", "2"]
+           "--prediction", "prediction_no_augment", "--frame_gap", str(frame_gap), "--max_frames", str(max_frames), "--verbose", "2"]
     t0 = time.time()
     log = open(RAW / f"{seq_name(dataset, scene)}.log", "w")
     subprocess.run(cmd, stdout=log, stderr=subprocess.STDOUT, check=True)
@@ -74,13 +74,15 @@ def main():
     ap.add_argument("--scenes", type=int, nargs="*", default=list(range(48, 60)))
     ap.add_argument("--skip-run", action="store_true")
     ap.add_argument("--dataset", default="ycbv", help="see common.seq_cameras")
+    ap.add_argument("--frame_gap", type=int, default=2, help="IntegrateInstanceMap --frame_gap")
+    ap.add_argument("--max_frames", type=int, default=20000, help="IntegrateInstanceMap --max_frames (largest frame id)")
     a = ap.parse_args()
     RAW.mkdir(parents=True, exist_ok=True)
     log = RAW / "map_times.json"
     rec = json.load(open(log)) if log.exists() else {}
     for s in a.scenes:
         if not a.skip_run:
-            t = run(s, a.dataset)
+            t = run(s, a.dataset, a.frame_gap, a.max_frames)
             rec[seq_name(a.dataset, s)] = {"seconds": t}
             json.dump(rec, open(log, "w"), indent=1)
         n = export(s, a.dataset)

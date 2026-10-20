@@ -9,9 +9,17 @@
 from __future__ import annotations
 
 import json
+import os
 from multiprocessing import shared_memory
 
 import numpy as np
+
+# 2026-10-19: the channel names are process-wide on the machine, so two hubs (and their SAM-6D workers) running at the
+# same time on one PC clobbered each other's segments (a worker starting at 19:30 on .41 silently stalled another hub's
+# worker). SAM6D_SHM_SUFFIX (e.g. "_g0") in the environment of a hub — inherited by the worker it spawns — keeps each
+# hub/worker pair on its own names. Empty by default, so a single hub behaves as before.
+_SFX = os.environ.get("SAM6D_SHM_SUFFIX", "")
+FRAME_NAME, RESULT_NAME = "sam6d_frame" + _SFX, "sam6d_result" + _SFX
 
 HDR = 384          # 헤더 바이트 (frame metadata + pose + K + UTF-8 map_id)
 MAXBUF = 12 << 20   # 프레임 한 장 최대 12 MB (1280x720 RGB+depth 여유)
@@ -25,7 +33,7 @@ def _hdr(buf):
 
 
 class FrameWriter:
-    def __init__(self, name="sam6d_frame", size=MAXBUF):
+    def __init__(self, name=FRAME_NAME, size=MAXBUF):
         try:
             self.shm = shared_memory.SharedMemory(name=name, create=True, size=size)
         except FileExistsError:
@@ -68,7 +76,7 @@ class FrameWriter:
 
 
 class FrameReader:
-    def __init__(self, name="sam6d_frame"):
+    def __init__(self, name=FRAME_NAME):
         self.shm = shared_memory.SharedMemory(name=name)
         self.i, self.f, self.K, self.map_id = _hdr(self.shm.buf)
         self.last = -1
@@ -107,7 +115,7 @@ class FrameReader:
 
 
 class JsonWriter:
-    def __init__(self, name="sam6d_result", size=4 << 20):
+    def __init__(self, name=RESULT_NAME, size=4 << 20):
         try:
             self.shm = shared_memory.SharedMemory(name=name, create=True, size=size)
         except FileExistsError:
@@ -132,7 +140,7 @@ class JsonWriter:
 
 
 class JsonReader:
-    def __init__(self, name="sam6d_result"):
+    def __init__(self, name=RESULT_NAME):
         self.shm = shared_memory.SharedMemory(name=name)
         self.i = np.ndarray((2,), np.int64, buffer=self.shm.buf, offset=0)
         self.last = -1

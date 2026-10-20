@@ -1,0 +1,1059 @@
+{
+ "units": "m",
+ "frame": "world",
+ "method": "FM-Fusion",
+ "dataset": "obchange_bigroom_all",
+ "scene": 4,
+ "objects": [
+  {
+   "id": 0,
+   "label": "003_cracker_box",
+   "points": "points/0.npy",
+   "score": 0.8,
+   "n_obs": 178
+  },
+  {
+   "id": 1,
+   "label": "008_pudding_box",
+   "points": "points/1.npy",
+   "score": 1.0,
+   "n_obs": 97
+  },
+  {
+   "id": 2,
+   "label": "004_sugar_box",
+   "points": "points/2.npy",
+   "score": 0.97,
+   "n_obs": 47
+  },
+  {
+   "id": 3,
+   "label": "052_extra_large_clamp",
+   "points": "points/3.npy",
+   "score": 0.76,
+   "n_obs": 6
+  },
+  {
+   "id": 4,
+   "label": "004_sugar_box",
+   "points": "points/4.npy",
+   "score": 0.97,
+   "n_obs": 7
+  },
+  {
+   "id": 5,
+   "label": "025_mug",
+   "points": "points/5.npy",
+   "score": 0.72,
+   "n_obs": 85
+  },
+  {
+   "id": 6,
+   "label": "052_extra_large_clamp",
+   "points": "points/6.npy",
+   "score": 0.73,
+   "n_obs": 9
+  },
+  {
+   "id": 7,
+   "label": "019_pitcher_base",
+   "points": "points/7.npy",
+   "score": 1.0,
+   "n_obs": 38
+  },
+  {
+   "id": 8,
+   "label": "004_sugar_box",
+   "points": "points/8.npy",
+   "score": 0.92,
+   "n_obs": 9
+  },
+  {
+   "id": 9,
+   "label": "052_extra_large_clamp",
+   "points": "points/9.npy",
+   "score": 0.72,
+   "n_obs": 5
+  },
+  {
+   "id": 10,
+   "label": "052_extra_large_clamp",
+   "points": "points/10.npy",
+   "score": 0.73,
+   "n_obs": 24
+  },
+  {
+   "id": 11,
+   "label": "021_bleach_cleanser",
+   "points": "points/11.npy",
+   "score": 1.0,
+   "n_obs": 48
+  },
+  {
+   "id": 12,
+   "label": "019_pitcher_base",
+   "points": "points/12.npy",
+   "score": 1.0,
+   "n_obs": 71
+  },
+  {
+   "id": 13,
+   "label": "024_bowl",
+   "points": "points/13.npy",
+   "score": 0.75,
+   "n_obs": 74
+  },
+  {
+   "id": 14,
+   "label": "052_extra_large_clamp",
+   "points": "points/14.npy",
+   "score": 0.75,
+   "n_obs": 46
+  },
+  {
+   "id": 15,
+   "label": "019_pitcher_base",
+   "points": "points/15.npy",
+   "score": 1.0,
+   "n_obs": 58
+  },
+  {
+   "id": 16,
+   "label": "019_pitcher_base",
+   "points": "points/16.npy",
+   "score": 0.91,
+   "n_obs": 69
+  },
+  {
+   "id": 17,
+   "label": "052_extra_large_clamp",
+   "points": "points/17.npy",
+   "score": 0.73,
+   "n_obs": 15
+  },
+  {
+   "id": 18,
+   "label": "004_sugar_box",
+   "points": "points/18.npy",
+   "score": 0.97,
+   "n_obs": 10
+  },
+  {
+   "id": 19,
+   "label": "021_bleach_cleanser",
+   "points": "points/19.npy",
+   "score": 0.89,
+   "n_obs": 67
+  },
+  {
+   "id": 20,
+   "label": "008_pudding_box",
+   "points": "points/20.npy",
+   "score": 0.98,
+   "n_obs": 50
+  },
+  {
+   "id": 21,
+   "label": "010_potted_meat_can",
+   "points": "points/21.npy",
+   "score": 1.0,
+   "n_obs": 242
+  },
+  {
+   "id": 22,
+   "label": "003_cracker_box",
+   "points": "points/22.npy",
+   "score": 0.99,
+   "n_obs": 150
+  },
+  {
+   "id": 23,
+   "label": "019_pitcher_base",
+   "points": "points/23.npy",
+   "score": 1.0,
+   "n_obs": 5
+  },
+  {
+   "id": 24,
+   "label": "021_bleach_cleanser",
+   "points": "points/24.npy",
+   "score": 1.0,
+   "n_obs": 20
+  },
+  {
+   "id": 25,
+   "label": "021_bleach_cleanser",
+   "points": "points/25.npy",
+   "score": 1.0,
+   "n_obs": 8
+  },
+  {
+   "id": 26,
+   "label": "052_extra_large_clamp",
+   "points": "points/26.npy",
+   "score": 0.73,
+   "n_obs": 6
+  },
+  {
+   "id": 27,
+   "label": "003_cracker_box",
+   "points": "points/27.npy",
+   "score": 1.0,
+   "n_obs": 85
+  },
+  {
+   "id": 28,
+   "label": "004_sugar_box",
+   "points": "points/28.npy",
+   "score": 1.0,
+   "n_obs": 19
+  },
+  {
+   "id": 29,
+   "label": "003_cracker_box",
+   "points": "points/29.npy",
+   "score": 0.72,
+   "n_obs": 22
+  },
+  {
+   "id": 30,
+   "label": "052_extra_large_clamp",
+   "points": "points/30.npy",
+   "score": 0.87,
+   "n_obs": 5
+  },
+  {
+   "id": 31,
+   "label": "006_mustard_bottle",
+   "points": "points/31.npy",
+   "score": 0.74,
+   "n_obs": 9
+  },
+  {
+   "id": 32,
+   "label": "004_sugar_box",
+   "points": "points/32.npy",
+   "score": 1.0,
+   "n_obs": 19
+  },
+  {
+   "id": 33,
+   "label": "036_wood_block",
+   "points": "points/33.npy",
+   "score": 0.97,
+   "n_obs": 139
+  },
+  {
+   "id": 34,
+   "label": "061_foam_brick",
+   "points": "points/34.npy",
+   "score": 1.0,
+   "n_obs": 25
+  },
+  {
+   "id": 35,
+   "label": "003_cracker_box",
+   "points": "points/35.npy",
+   "score": 0.67,
+   "n_obs": 149
+  },
+  {
+   "id": 36,
+   "label": "052_extra_large_clamp",
+   "points": "points/36.npy",
+   "score": 0.75,
+   "n_obs": 20
+  },
+  {
+   "id": 37,
+   "label": "021_bleach_cleanser",
+   "points": "points/37.npy",
+   "score": 0.77,
+   "n_obs": 3
+  },
+  {
+   "id": 38,
+   "label": "008_pudding_box",
+   "points": "points/38.npy",
+   "score": 0.85,
+   "n_obs": 132
+  },
+  {
+   "id": 39,
+   "label": "003_cracker_box",
+   "points": "points/39.npy",
+   "score": 0.89,
+   "n_obs": 59
+  },
+  {
+   "id": 40,
+   "label": "051_large_clamp",
+   "points": "points/40.npy",
+   "score": 0.73,
+   "n_obs": 43
+  },
+  {
+   "id": 41,
+   "label": "004_sugar_box",
+   "points": "points/41.npy",
+   "score": 1.0,
+   "n_obs": 10
+  },
+  {
+   "id": 42,
+   "label": "004_sugar_box",
+   "points": "points/42.npy",
+   "score": 1.0,
+   "n_obs": 16
+  },
+  {
+   "id": 43,
+   "label": "052_extra_large_clamp",
+   "points": "points/43.npy",
+   "score": 0.74,
+   "n_obs": 20
+  },
+  {
+   "id": 44,
+   "label": "003_cracker_box",
+   "points": "points/44.npy",
+   "score": 0.77,
+   "n_obs": 51
+  },
+  {
+   "id": 45,
+   "label": "052_extra_large_clamp",
+   "points": "points/45.npy",
+   "score": 0.74,
+   "n_obs": 34
+  },
+  {
+   "id": 46,
+   "label": "021_bleach_cleanser",
+   "points": "points/46.npy",
+   "score": 1.0,
+   "n_obs": 12
+  },
+  {
+   "id": 47,
+   "label": "052_extra_large_clamp",
+   "points": "points/47.npy",
+   "score": 0.73,
+   "n_obs": 35
+  },
+  {
+   "id": 48,
+   "label": "019_pitcher_base",
+   "points": "points/48.npy",
+   "score": 1.0,
+   "n_obs": 22
+  },
+  {
+   "id": 49,
+   "label": "052_extra_large_clamp",
+   "points": "points/49.npy",
+   "score": 0.76,
+   "n_obs": 4
+  },
+  {
+   "id": 50,
+   "label": "052_extra_large_clamp",
+   "points": "points/50.npy",
+   "score": 0.74,
+   "n_obs": 23
+  },
+  {
+   "id": 51,
+   "label": "019_pitcher_base",
+   "points": "points/51.npy",
+   "score": 1.0,
+   "n_obs": 236
+  },
+  {
+   "id": 52,
+   "label": "004_sugar_box",
+   "points": "points/52.npy",
+   "score": 0.66,
+   "n_obs": 123
+  },
+  {
+   "id": 53,
+   "label": "unknown",
+   "points": "points/53.npy",
+   "score": 0.0,
+   "n_obs": 16
+  },
+  {
+   "id": 54,
+   "label": "052_extra_large_clamp",
+   "points": "points/54.npy",
+   "score": 0.74,
+   "n_obs": 17
+  },
+  {
+   "id": 55,
+   "label": "021_bleach_cleanser",
+   "points": "points/55.npy",
+   "score": 1.0,
+   "n_obs": 91
+  },
+  {
+   "id": 56,
+   "label": "010_potted_meat_can",
+   "points": "points/56.npy",
+   "score": 0.96,
+   "n_obs": 602
+  },
+  {
+   "id": 57,
+   "label": "004_sugar_box",
+   "points": "points/57.npy",
+   "score": 0.77,
+   "n_obs": 16
+  },
+  {
+   "id": 58,
+   "label": "025_mug",
+   "points": "points/58.npy",
+   "score": 0.62,
+   "n_obs": 7
+  },
+  {
+   "id": 59,
+   "label": "021_bleach_cleanser",
+   "points": "points/59.npy",
+   "score": 1.0,
+   "n_obs": 10
+  },
+  {
+   "id": 60,
+   "label": "006_mustard_bottle",
+   "points": "points/60.npy",
+   "score": 0.76,
+   "n_obs": 6
+  },
+  {
+   "id": 61,
+   "label": "004_sugar_box",
+   "points": "points/61.npy",
+   "score": 0.96,
+   "n_obs": 5
+  },
+  {
+   "id": 62,
+   "label": "003_cracker_box",
+   "points": "points/62.npy",
+   "score": 0.97,
+   "n_obs": 63
+  },
+  {
+   "id": 63,
+   "label": "unknown",
+   "points": "points/63.npy",
+   "score": 0.0,
+   "n_obs": 9
+  },
+  {
+   "id": 64,
+   "label": "unknown",
+   "points": "points/64.npy",
+   "score": 0.0,
+   "n_obs": 10
+  },
+  {
+   "id": 65,
+   "label": "019_pitcher_base",
+   "points": "points/65.npy",
+   "score": 1.0,
+   "n_obs": 55
+  },
+  {
+   "id": 66,
+   "label": "052_extra_large_clamp",
+   "points": "points/66.npy",
+   "score": 0.73,
+   "n_obs": 17
+  },
+  {
+   "id": 67,
+   "label": "004_sugar_box",
+   "points": "points/67.npy",
+   "score": 1.0,
+   "n_obs": 61
+  },
+  {
+   "id": 68,
+   "label": "unknown",
+   "points": "points/68.npy",
+   "score": 0.0,
+   "n_obs": 7
+  },
+  {
+   "id": 69,
+   "label": "052_extra_large_clamp",
+   "points": "points/69.npy",
+   "score": 0.75,
+   "n_obs": 19
+  },
+  {
+   "id": 70,
+   "label": "021_bleach_cleanser",
+   "points": "points/70.npy",
+   "score": 0.88,
+   "n_obs": 23
+  },
+  {
+   "id": 71,
+   "label": "004_sugar_box",
+   "points": "points/71.npy",
+   "score": 1.0,
+   "n_obs": 7
+  },
+  {
+   "id": 72,
+   "label": "004_sugar_box",
+   "points": "points/72.npy",
+   "score": 0.72,
+   "n_obs": 20
+  },
+  {
+   "id": 73,
+   "label": "006_mustard_bottle",
+   "points": "points/73.npy",
+   "score": 0.94,
+   "n_obs": 51
+  },
+  {
+   "id": 74,
+   "label": "019_pitcher_base",
+   "points": "points/74.npy",
+   "score": 1.0,
+   "n_obs": 42
+  },
+  {
+   "id": 75,
+   "label": "003_cracker_box",
+   "points": "points/75.npy",
+   "score": 0.98,
+   "n_obs": 10
+  },
+  {
+   "id": 76,
+   "label": "021_bleach_cleanser",
+   "points": "points/76.npy",
+   "score": 0.96,
+   "n_obs": 14
+  },
+  {
+   "id": 77,
+   "label": "019_pitcher_base",
+   "points": "points/77.npy",
+   "score": 1.0,
+   "n_obs": 77
+  },
+  {
+   "id": 78,
+   "label": "052_extra_large_clamp",
+   "points": "points/78.npy",
+   "score": 0.71,
+   "n_obs": 3
+  },
+  {
+   "id": 79,
+   "label": "025_mug",
+   "points": "points/79.npy",
+   "score": 0.83,
+   "n_obs": 67
+  },
+  {
+   "id": 80,
+   "label": "021_bleach_cleanser",
+   "points": "points/80.npy",
+   "score": 1.0,
+   "n_obs": 287
+  },
+  {
+   "id": 81,
+   "label": "052_extra_large_clamp",
+   "points": "points/81.npy",
+   "score": 0.78,
+   "n_obs": 91
+  },
+  {
+   "id": 82,
+   "label": "061_foam_brick",
+   "points": "points/82.npy",
+   "score": 1.0,
+   "n_obs": 13
+  },
+  {
+   "id": 83,
+   "label": "004_sugar_box",
+   "points": "points/83.npy",
+   "score": 0.99,
+   "n_obs": 17
+  },
+  {
+   "id": 84,
+   "label": "052_extra_large_clamp",
+   "points": "points/84.npy",
+   "score": 0.74,
+   "n_obs": 20
+  },
+  {
+   "id": 85,
+   "label": "004_sugar_box",
+   "points": "points/85.npy",
+   "score": 1.0,
+   "n_obs": 143
+  },
+  {
+   "id": 86,
+   "label": "003_cracker_box",
+   "points": "points/86.npy",
+   "score": 0.96,
+   "n_obs": 51
+  },
+  {
+   "id": 87,
+   "label": "unknown",
+   "points": "points/87.npy",
+   "score": 0.0,
+   "n_obs": 22
+  },
+  {
+   "id": 88,
+   "label": "006_mustard_bottle",
+   "points": "points/88.npy",
+   "score": 0.99,
+   "n_obs": 92
+  },
+  {
+   "id": 89,
+   "label": "021_bleach_cleanser",
+   "points": "points/89.npy",
+   "score": 0.95,
+   "n_obs": 21
+  },
+  {
+   "id": 90,
+   "label": "052_extra_large_clamp",
+   "points": "points/90.npy",
+   "score": 0.78,
+   "n_obs": 3
+  },
+  {
+   "id": 91,
+   "label": "019_pitcher_base",
+   "points": "points/91.npy",
+   "score": 1.0,
+   "n_obs": 23
+  },
+  {
+   "id": 92,
+   "label": "003_cracker_box",
+   "points": "points/92.npy",
+   "score": 0.95,
+   "n_obs": 57
+  },
+  {
+   "id": 93,
+   "label": "unknown",
+   "points": "points/93.npy",
+   "score": 0.0,
+   "n_obs": 16
+  },
+  {
+   "id": 94,
+   "label": "019_pitcher_base",
+   "points": "points/94.npy",
+   "score": 1.0,
+   "n_obs": 25
+  },
+  {
+   "id": 95,
+   "label": "025_mug",
+   "points": "points/95.npy",
+   "score": 0.86,
+   "n_obs": 28
+  },
+  {
+   "id": 96,
+   "label": "025_mug",
+   "points": "points/96.npy",
+   "score": 0.79,
+   "n_obs": 4
+  },
+  {
+   "id": 97,
+   "label": "003_cracker_box",
+   "points": "points/97.npy",
+   "score": 0.94,
+   "n_obs": 57
+  },
+  {
+   "id": 98,
+   "label": "051_large_clamp",
+   "points": "points/98.npy",
+   "score": 0.72,
+   "n_obs": 10
+  },
+  {
+   "id": 99,
+   "label": "003_cracker_box",
+   "points": "points/99.npy",
+   "score": 0.69,
+   "n_obs": 71
+  },
+  {
+   "id": 100,
+   "label": "019_pitcher_base",
+   "points": "points/100.npy",
+   "score": 1.0,
+   "n_obs": 126
+  },
+  {
+   "id": 101,
+   "label": "021_bleach_cleanser",
+   "points": "points/101.npy",
+   "score": 0.98,
+   "n_obs": 82
+  },
+  {
+   "id": 102,
+   "label": "051_large_clamp",
+   "points": "points/102.npy",
+   "score": 0.75,
+   "n_obs": 8
+  },
+  {
+   "id": 103,
+   "label": "004_sugar_box",
+   "points": "points/103.npy",
+   "score": 0.9,
+   "n_obs": 111
+  },
+  {
+   "id": 104,
+   "label": "008_pudding_box",
+   "points": "points/104.npy",
+   "score": 1.0,
+   "n_obs": 39
+  },
+  {
+   "id": 105,
+   "label": "051_large_clamp",
+   "points": "points/105.npy",
+   "score": 0.72,
+   "n_obs": 4
+  },
+  {
+   "id": 106,
+   "label": "036_wood_block",
+   "points": "points/106.npy",
+   "score": 0.89,
+   "n_obs": 7
+  },
+  {
+   "id": 107,
+   "label": "052_extra_large_clamp",
+   "points": "points/107.npy",
+   "score": 0.73,
+   "n_obs": 5
+  },
+  {
+   "id": 108,
+   "label": "006_mustard_bottle",
+   "points": "points/108.npy",
+   "score": 0.75,
+   "n_obs": 175
+  },
+  {
+   "id": 109,
+   "label": "019_pitcher_base",
+   "points": "points/109.npy",
+   "score": 0.92,
+   "n_obs": 4
+  },
+  {
+   "id": 110,
+   "label": "003_cracker_box",
+   "points": "points/110.npy",
+   "score": 0.81,
+   "n_obs": 44
+  },
+  {
+   "id": 111,
+   "label": "052_extra_large_clamp",
+   "points": "points/111.npy",
+   "score": 0.74,
+   "n_obs": 4
+  },
+  {
+   "id": 112,
+   "label": "008_pudding_box",
+   "points": "points/112.npy",
+   "score": 0.9,
+   "n_obs": 4
+  },
+  {
+   "id": 113,
+   "label": "021_bleach_cleanser",
+   "points": "points/113.npy",
+   "score": 1.0,
+   "n_obs": 3
+  },
+  {
+   "id": 114,
+   "label": "051_large_clamp",
+   "points": "points/114.npy",
+   "score": 0.72,
+   "n_obs": 3
+  },
+  {
+   "id": 115,
+   "label": "unknown",
+   "points": "points/115.npy",
+   "score": 0.0,
+   "n_obs": 15
+  },
+  {
+   "id": 116,
+   "label": "unknown",
+   "points": "points/116.npy",
+   "score": 0.0,
+   "n_obs": 7
+  },
+  {
+   "id": 117,
+   "label": "019_pitcher_base",
+   "points": "points/117.npy",
+   "score": 1.0,
+   "n_obs": 15
+  },
+  {
+   "id": 118,
+   "label": "052_extra_large_clamp",
+   "points": "points/118.npy",
+   "score": 0.73,
+   "n_obs": 13
+  },
+  {
+   "id": 119,
+   "label": "021_bleach_cleanser",
+   "points": "points/119.npy",
+   "score": 0.86,
+   "n_obs": 5
+  },
+  {
+   "id": 120,
+   "label": "036_wood_block",
+   "points": "points/120.npy",
+   "score": 0.71,
+   "n_obs": 3
+  },
+  {
+   "id": 121,
+   "label": "052_extra_large_clamp",
+   "points": "points/121.npy",
+   "score": 0.75,
+   "n_obs": 8
+  },
+  {
+   "id": 122,
+   "label": "019_pitcher_base",
+   "points": "points/122.npy",
+   "score": 0.97,
+   "n_obs": 38
+  },
+  {
+   "id": 123,
+   "label": "052_extra_large_clamp",
+   "points": "points/123.npy",
+   "score": 0.76,
+   "n_obs": 8
+  },
+  {
+   "id": 124,
+   "label": "008_pudding_box",
+   "points": "points/124.npy",
+   "score": 1.0,
+   "n_obs": 9
+  },
+  {
+   "id": 125,
+   "label": "003_cracker_box",
+   "points": "points/125.npy",
+   "score": 0.93,
+   "n_obs": 17
+  },
+  {
+   "id": 126,
+   "label": "unknown",
+   "points": "points/126.npy",
+   "score": 0.0,
+   "n_obs": 6
+  },
+  {
+   "id": 127,
+   "label": "004_sugar_box",
+   "points": "points/127.npy",
+   "score": 1.0,
+   "n_obs": 5
+  },
+  {
+   "id": 128,
+   "label": "019_pitcher_base",
+   "points": "points/128.npy",
+   "score": 1.0,
+   "n_obs": 25
+  },
+  {
+   "id": 129,
+   "label": "025_mug",
+   "points": "points/129.npy",
+   "score": 0.86,
+   "n_obs": 26
+  },
+  {
+   "id": 130,
+   "label": "025_mug",
+   "points": "points/130.npy",
+   "score": 0.97,
+   "n_obs": 5
+  },
+  {
+   "id": 131,
+   "label": "unknown",
+   "points": "points/131.npy",
+   "score": 0.0,
+   "n_obs": 4
+  },
+  {
+   "id": 132,
+   "label": "003_cracker_box",
+   "points": "points/132.npy",
+   "score": 0.88,
+   "n_obs": 10
+  },
+  {
+   "id": 133,
+   "label": "unknown",
+   "points": "points/133.npy",
+   "score": 0.0,
+   "n_obs": 4
+  },
+  {
+   "id": 134,
+   "label": "021_bleach_cleanser",
+   "points": "points/134.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 135,
+   "label": "004_sugar_box",
+   "points": "points/135.npy",
+   "score": 1.0,
+   "n_obs": 3
+  },
+  {
+   "id": 136,
+   "label": "003_cracker_box",
+   "points": "points/136.npy",
+   "score": 1.0,
+   "n_obs": 18
+  },
+  {
+   "id": 137,
+   "label": "006_mustard_bottle",
+   "points": "points/137.npy",
+   "score": 0.99,
+   "n_obs": 14
+  },
+  {
+   "id": 138,
+   "label": "019_pitcher_base",
+   "points": "points/138.npy",
+   "score": 1.0,
+   "n_obs": 6
+  },
+  {
+   "id": 139,
+   "label": "unknown",
+   "points": "points/139.npy",
+   "score": 0.0,
+   "n_obs": 5
+  },
+  {
+   "id": 140,
+   "label": "003_cracker_box",
+   "points": "points/140.npy",
+   "score": 1.0,
+   "n_obs": 15
+  },
+  {
+   "id": 141,
+   "label": "052_extra_large_clamp",
+   "points": "points/141.npy",
+   "score": 0.74,
+   "n_obs": 3
+  },
+  {
+   "id": 142,
+   "label": "004_sugar_box",
+   "points": "points/142.npy",
+   "score": 0.99,
+   "n_obs": 6
+  },
+  {
+   "id": 143,
+   "label": "052_extra_large_clamp",
+   "points": "points/143.npy",
+   "score": 0.76,
+   "n_obs": 5
+  },
+  {
+   "id": 144,
+   "label": "021_bleach_cleanser",
+   "points": "points/144.npy",
+   "score": 1.0,
+   "n_obs": 11
+  },
+  {
+   "id": 145,
+   "label": "019_pitcher_base",
+   "points": "points/145.npy",
+   "score": 1.0,
+   "n_obs": 7
+  },
+  {
+   "id": 146,
+   "label": "008_pudding_box",
+   "points": "points/146.npy",
+   "score": 1.0,
+   "n_obs": 10
+  },
+  {
+   "id": 147,
+   "label": "052_extra_large_clamp",
+   "points": "points/147.npy",
+   "score": 0.72,
+   "n_obs": 5
+  },
+  {
+   "id": 148,
+   "label": "052_extra_large_clamp",
+   "points": "points/148.npy",
+   "score": 0.75,
+   "n_obs": 37
+  },
+  {
+   "id": 149,
+   "label": "036_wood_block",
+   "points": "points/149.npy",
+   "score": 0.81,
+   "n_obs": 10
+  }
+ ]
+}
