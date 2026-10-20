@@ -1,0 +1,802 @@
+{
+ "ours_cad|obchange_office|iou": {
+  "visits": 5,
+  "tp": 0,
+  "fp": 30,
+  "fn": 10,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 0,
+    "fp": 6,
+    "fn": 2,
+    "n_pred": 6,
+    "dont_care": 0
+   },
+   {
+    "visit": 3,
+    "tp": 0,
+    "fp": 7,
+    "fn": 2,
+    "n_pred": 7,
+    "dont_care": 0
+   },
+   {
+    "visit": 4,
+    "tp": 0,
+    "fp": 6,
+    "fn": 2,
+    "n_pred": 6,
+    "dont_care": 0
+   },
+   {
+    "visit": 5,
+    "tp": 0,
+    "fp": 7,
+    "fn": 2,
+    "n_pred": 7,
+    "dont_care": 0
+   },
+   {
+    "visit": 6,
+    "tp": 0,
+    "fp": 4,
+    "fn": 2,
+    "n_pred": 4,
+    "dont_care": 0
+   }
+  ]
+ },
+ "ours_cad|obchange_office|ctr5cm": {
+  "visits": 5,
+  "tp": 4,
+  "fp": 26,
+  "fn": 6,
+  "precision": 0.13333333333333333,
+  "recall": 0.4,
+  "f1": 0.2,
+  "mean_iou": 0.09444249545302438,
+  "mean_sd_mm": 16.362294719879095,
+  "dont_care": 0,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 1,
+    "fp": 5,
+    "fn": 1,
+    "n_pred": 6,
+    "dont_care": 0
+   },
+   {
+    "visit": 3,
+    "tp": 1,
+    "fp": 6,
+    "fn": 1,
+    "n_pred": 7,
+    "dont_care": 0
+   },
+   {
+    "visit": 4,
+    "tp": 0,
+    "fp": 6,
+    "fn": 2,
+    "n_pred": 6,
+    "dont_care": 0
+   },
+   {
+    "visit": 5,
+    "tp": 1,
+    "fp": 6,
+    "fn": 1,
+    "n_pred": 7,
+    "dont_care": 0
+   },
+   {
+    "visit": 6,
+    "tp": 1,
+    "fp": 3,
+    "fn": 1,
+    "n_pred": 4,
+    "dont_care": 0
+   }
+  ]
+ },
+ "ours_cad|obchange_office_all|iou": {
+  "visits": 5,
+  "tp": 0,
+  "fp": 58,
+  "fn": 10,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 0,
+    "fp": 7,
+    "fn": 2,
+    "n_pred": 7,
+    "dont_care": 0
+   },
+   {
+    "visit": 3,
+    "tp": 0,
+    "fp": 9,
+    "fn": 2,
+    "n_pred": 9,
+    "dont_care": 0
+   },
+   {
+    "visit": 4,
+    "tp": 0,
+    "fp": 13,
+    "fn": 2,
+    "n_pred": 13,
+    "dont_care": 0
+   },
+   {
+    "visit": 5,
+    "tp": 0,
+    "fp": 14,
+    "fn": 2,
+    "n_pred": 14,
+    "dont_care": 0
+   },
+   {
+    "visit": 6,
+    "tp": 0,
+    "fp": 15,
+    "fn": 2,
+    "n_pred": 15,
+    "dont_care": 0
+   }
+  ],
+  "revisit": {
+   "removed": 7,
+   "removed_mapped": 3,
+   "removed_still_in_map": 3,
+   "added": 7,
+   "added_found": 0,
+   "per_visit": [
+    {
+     "visit": 3,
+     "removed": 2,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 2,
+     "added_found": 0
+    },
+    {
+     "visit": 4,
+     "removed": 2,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 2,
+     "added_found": 0
+    },
+    {
+     "visit": 5,
+     "removed": 2,
+     "mapped": 0,
+     "still_in_map": 0,
+     "added": 2,
+     "added_found": 0
+    },
+    {
+     "visit": 6,
+     "removed": 1,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 1,
+     "added_found": 0
+    }
+   ]
+  }
+ },
+ "ours_cad|obchange_office_all|ctr5cm": {
+  "visits": 5,
+  "tp": 4,
+  "fp": 54,
+  "fn": 6,
+  "precision": 0.06896551724137931,
+  "recall": 0.4,
+  "f1": 0.1176470588235294,
+  "mean_iou": 0.08948014293668344,
+  "mean_sd_mm": 16.99041783339327,
+  "dont_care": 0,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 1,
+    "fp": 6,
+    "fn": 1,
+    "n_pred": 7,
+    "dont_care": 0
+   },
+   {
+    "visit": 3,
+    "tp": 1,
+    "fp": 8,
+    "fn": 1,
+    "n_pred": 9,
+    "dont_care": 0
+   },
+   {
+    "visit": 4,
+    "tp": 0,
+    "fp": 13,
+    "fn": 2,
+    "n_pred": 13,
+    "dont_care": 0
+   },
+   {
+    "visit": 5,
+    "tp": 1,
+    "fp": 13,
+    "fn": 1,
+    "n_pred": 14,
+    "dont_care": 0
+   },
+   {
+    "visit": 6,
+    "tp": 1,
+    "fp": 14,
+    "fn": 1,
+    "n_pred": 15,
+    "dont_care": 0
+   }
+  ],
+  "revisit": {
+   "removed": 7,
+   "removed_mapped": 3,
+   "removed_still_in_map": 3,
+   "added": 7,
+   "added_found": 2,
+   "per_visit": [
+    {
+     "visit": 3,
+     "removed": 2,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 2,
+     "added_found": 1
+    },
+    {
+     "visit": 4,
+     "removed": 2,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 2,
+     "added_found": 0
+    },
+    {
+     "visit": 5,
+     "removed": 2,
+     "mapped": 0,
+     "still_in_map": 0,
+     "added": 2,
+     "added_found": 1
+    },
+    {
+     "visit": 6,
+     "removed": 1,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 1,
+     "added_found": 0
+    }
+   ]
+  }
+ },
+ "ours_obs|obchange_office|iou": {
+  "visits": 5,
+  "tp": 0,
+  "fp": 29,
+  "fn": 10,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 0,
+    "fp": 6,
+    "fn": 2,
+    "n_pred": 6,
+    "dont_care": 0
+   },
+   {
+    "visit": 3,
+    "tp": 0,
+    "fp": 6,
+    "fn": 2,
+    "n_pred": 6,
+    "dont_care": 0
+   },
+   {
+    "visit": 4,
+    "tp": 0,
+    "fp": 6,
+    "fn": 2,
+    "n_pred": 6,
+    "dont_care": 0
+   },
+   {
+    "visit": 5,
+    "tp": 0,
+    "fp": 7,
+    "fn": 2,
+    "n_pred": 7,
+    "dont_care": 0
+   },
+   {
+    "visit": 6,
+    "tp": 0,
+    "fp": 4,
+    "fn": 2,
+    "n_pred": 4,
+    "dont_care": 0
+   }
+  ]
+ },
+ "ours_obs|obchange_office|ctr5cm": {
+  "visits": 5,
+  "tp": 7,
+  "fp": 22,
+  "fn": 3,
+  "precision": 0.2413793103448276,
+  "recall": 0.7,
+  "f1": 0.358974358974359,
+  "mean_iou": 0.11315151621143918,
+  "mean_sd_mm": 14.08799178073741,
+  "dont_care": 0,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 1,
+    "fp": 5,
+    "fn": 1,
+    "n_pred": 6,
+    "dont_care": 0
+   },
+   {
+    "visit": 3,
+    "tp": 2,
+    "fp": 4,
+    "fn": 0,
+    "n_pred": 6,
+    "dont_care": 0
+   },
+   {
+    "visit": 4,
+    "tp": 0,
+    "fp": 6,
+    "fn": 2,
+    "n_pred": 6,
+    "dont_care": 0
+   },
+   {
+    "visit": 5,
+    "tp": 2,
+    "fp": 5,
+    "fn": 0,
+    "n_pred": 7,
+    "dont_care": 0
+   },
+   {
+    "visit": 6,
+    "tp": 2,
+    "fp": 2,
+    "fn": 0,
+    "n_pred": 4,
+    "dont_care": 0
+   }
+  ]
+ },
+ "ours_obs|obchange_office_all|iou": {
+  "visits": 5,
+  "tp": 0,
+  "fp": 58,
+  "fn": 10,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 0,
+    "fp": 7,
+    "fn": 2,
+    "n_pred": 7,
+    "dont_care": 0
+   },
+   {
+    "visit": 3,
+    "tp": 0,
+    "fp": 9,
+    "fn": 2,
+    "n_pred": 9,
+    "dont_care": 0
+   },
+   {
+    "visit": 4,
+    "tp": 0,
+    "fp": 13,
+    "fn": 2,
+    "n_pred": 13,
+    "dont_care": 0
+   },
+   {
+    "visit": 5,
+    "tp": 0,
+    "fp": 14,
+    "fn": 2,
+    "n_pred": 14,
+    "dont_care": 0
+   },
+   {
+    "visit": 6,
+    "tp": 0,
+    "fp": 15,
+    "fn": 2,
+    "n_pred": 15,
+    "dont_care": 0
+   }
+  ],
+  "revisit": {
+   "removed": 7,
+   "removed_mapped": 5,
+   "removed_still_in_map": 5,
+   "added": 7,
+   "added_found": 0,
+   "per_visit": [
+    {
+     "visit": 3,
+     "removed": 2,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 2,
+     "added_found": 0
+    },
+    {
+     "visit": 4,
+     "removed": 2,
+     "mapped": 2,
+     "still_in_map": 2,
+     "added": 2,
+     "added_found": 0
+    },
+    {
+     "visit": 5,
+     "removed": 2,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 2,
+     "added_found": 0
+    },
+    {
+     "visit": 6,
+     "removed": 1,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 1,
+     "added_found": 0
+    }
+   ]
+  }
+ },
+ "ours_obs|obchange_office_all|ctr5cm": {
+  "visits": 5,
+  "tp": 7,
+  "fp": 51,
+  "fn": 3,
+  "precision": 0.1206896551724138,
+  "recall": 0.7,
+  "f1": 0.2058823529411765,
+  "mean_iou": 0.11013462512748773,
+  "mean_sd_mm": 15.747311069726821,
+  "dont_care": 0,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 1,
+    "fp": 6,
+    "fn": 1,
+    "n_pred": 7,
+    "dont_care": 0
+   },
+   {
+    "visit": 3,
+    "tp": 2,
+    "fp": 7,
+    "fn": 0,
+    "n_pred": 9,
+    "dont_care": 0
+   },
+   {
+    "visit": 4,
+    "tp": 1,
+    "fp": 12,
+    "fn": 1,
+    "n_pred": 13,
+    "dont_care": 0
+   },
+   {
+    "visit": 5,
+    "tp": 1,
+    "fp": 13,
+    "fn": 1,
+    "n_pred": 14,
+    "dont_care": 0
+   },
+   {
+    "visit": 6,
+    "tp": 2,
+    "fp": 13,
+    "fn": 0,
+    "n_pred": 15,
+    "dont_care": 0
+   }
+  ],
+  "revisit": {
+   "removed": 7,
+   "removed_mapped": 5,
+   "removed_still_in_map": 5,
+   "added": 7,
+   "added_found": 5,
+   "per_visit": [
+    {
+     "visit": 3,
+     "removed": 2,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 2,
+     "added_found": 2
+    },
+    {
+     "visit": 4,
+     "removed": 2,
+     "mapped": 2,
+     "still_in_map": 2,
+     "added": 2,
+     "added_found": 1
+    },
+    {
+     "visit": 5,
+     "removed": 2,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 2,
+     "added_found": 1
+    },
+    {
+     "visit": 6,
+     "removed": 1,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 1,
+     "added_found": 1
+    }
+   ]
+  }
+ },
+ "fmfusion|obchange_office|iou": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": []
+ },
+ "fmfusion|obchange_office|ctr5cm": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": []
+ },
+ "fmfusion|obchange_office_all|iou": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": [],
+  "revisit": {
+   "removed": 0,
+   "removed_mapped": 0,
+   "removed_still_in_map": 0,
+   "added": 0,
+   "added_found": 0,
+   "per_visit": []
+  }
+ },
+ "fmfusion|obchange_office_all|ctr5cm": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": [],
+  "revisit": {
+   "removed": 0,
+   "removed_mapped": 0,
+   "removed_still_in_map": 0,
+   "added": 0,
+   "added_found": 0,
+   "per_visit": []
+  }
+ },
+ "dualmap|obchange_office|iou": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": []
+ },
+ "dualmap|obchange_office|ctr5cm": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": []
+ },
+ "dualmap|obchange_office_all|iou": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": [],
+  "revisit": {
+   "removed": 0,
+   "removed_mapped": 0,
+   "removed_still_in_map": 0,
+   "added": 0,
+   "added_found": 0,
+   "per_visit": []
+  }
+ },
+ "dualmap|obchange_office_all|ctr5cm": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": [],
+  "revisit": {
+   "removed": 0,
+   "removed_mapped": 0,
+   "removed_still_in_map": 0,
+   "added": 0,
+   "added_found": 0,
+   "per_visit": []
+  }
+ },
+ "dualmap_bgr|obchange_office|iou": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": []
+ },
+ "dualmap_bgr|obchange_office|ctr5cm": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": []
+ },
+ "dualmap_bgr|obchange_office_all|iou": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": [],
+  "revisit": {
+   "removed": 0,
+   "removed_mapped": 0,
+   "removed_still_in_map": 0,
+   "added": 0,
+   "added_found": 0,
+   "per_visit": []
+  }
+ },
+ "dualmap_bgr|obchange_office_all|ctr5cm": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": [],
+  "revisit": {
+   "removed": 0,
+   "removed_mapped": 0,
+   "removed_still_in_map": 0,
+   "added": 0,
+   "added_found": 0,
+   "per_visit": []
+  }
+ }
+}

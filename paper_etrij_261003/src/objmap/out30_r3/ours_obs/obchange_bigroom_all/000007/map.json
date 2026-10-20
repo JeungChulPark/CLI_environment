@@ -1,0 +1,309 @@
+{
+ "units": "m",
+ "frame": "world",
+ "method": "ours",
+ "form": "observed",
+ "run": "/home/jucpark/DeepLearning/CLI_environment/paper_etrij_261003/src/objmap/out30_r3/ours_runs/obchange_bigroom_all_000007",
+ "objects": [
+  {
+   "id": 0,
+   "label": "ycbv_17",
+   "points": "points/0.npy",
+   "n_obs": 19
+  },
+  {
+   "id": 1,
+   "label": "ycbv_10",
+   "points": "points/1.npy",
+   "n_obs": 15
+  },
+  {
+   "id": 2,
+   "label": "ycbv_10",
+   "points": "points/2.npy",
+   "n_obs": 13
+  },
+  {
+   "id": 3,
+   "label": "ycbv_21",
+   "points": "points/3.npy",
+   "n_obs": 23
+  },
+  {
+   "id": 4,
+   "label": "ycbv_13",
+   "points": "points/4.npy",
+   "n_obs": 21
+  },
+  {
+   "id": 5,
+   "label": "ycbv_02",
+   "points": "points/5.npy",
+   "n_obs": 171
+  },
+  {
+   "id": 6,
+   "label": "ycbv_01",
+   "points": "points/6.npy",
+   "n_obs": 59
+  },
+  {
+   "id": 7,
+   "label": "ycbv_16",
+   "points": "points/7.npy",
+   "n_obs": 5
+  },
+  {
+   "id": 8,
+   "label": "ycbv_11",
+   "points": "points/8.npy",
+   "n_obs": 158
+  },
+  {
+   "id": 9,
+   "label": "ycbv_14",
+   "points": "points/9.npy",
+   "n_obs": 115
+  },
+  {
+   "id": 10,
+   "label": "ycbv_02",
+   "points": "points/10.npy",
+   "n_obs": 384
+  },
+  {
+   "id": 11,
+   "label": "ycbv_03",
+   "points": "points/11.npy",
+   "n_obs": 424
+  },
+  {
+   "id": 12,
+   "label": "ycbv_17",
+   "points": "points/12.npy",
+   "n_obs": 13
+  },
+  {
+   "id": 13,
+   "label": "ycbv_11",
+   "points": "points/13.npy",
+   "n_obs": 221
+  },
+  {
+   "id": 14,
+   "label": "ycbv_14",
+   "points": "points/14.npy",
+   "n_obs": 174
+  },
+  {
+   "id": 15,
+   "label": "ycbv_21",
+   "points": "points/15.npy",
+   "n_obs": 83
+  },
+  {
+   "id": 16,
+   "label": "ycbv_04",
+   "points": "points/16.npy",
+   "n_obs": 253
+  },
+  {
+   "id": 17,
+   "label": "ycbv_01",
+   "points": "points/17.npy",
+   "n_obs": 59
+  },
+  {
+   "id": 18,
+   "label": "ycbv_09",
+   "points": "points/18.npy",
+   "n_obs": 16
+  },
+  {
+   "id": 19,
+   "label": "ycbv_08",
+   "points": "points/19.npy",
+   "n_obs": 56
+  },
+  {
+   "id": 20,
+   "label": "ycbv_14",
+   "points": "points/20.npy",
+   "n_obs": 163
+  },
+  {
+   "id": 21,
+   "label": "ycbv_21",
+   "points": "points/21.npy",
+   "n_obs": 17
+  },
+  {
+   "id": 22,
+   "label": "ycbv_04",
+   "points": "points/22.npy",
+   "n_obs": 79
+  },
+  {
+   "id": 23,
+   "label": "ycbv_07",
+   "points": "points/23.npy",
+   "n_obs": 29
+  },
+  {
+   "id": 24,
+   "label": "ycbv_08",
+   "points": "points/24.npy",
+   "n_obs": 35
+  },
+  {
+   "id": 25,
+   "label": "ycbv_17",
+   "points": "points/25.npy",
+   "n_obs": 5
+  },
+  {
+   "id": 26,
+   "label": "ycbv_14",
+   "points": "points/26.npy",
+   "n_obs": 64
+  },
+  {
+   "id": 27,
+   "label": "ycbv_14",
+   "points": "points/27.npy",
+   "n_obs": 99
+  },
+  {
+   "id": 28,
+   "label": "ycbv_16",
+   "points": "points/28.npy",
+   "n_obs": 5
+  },
+  {
+   "id": 29,
+   "label": "ycbv_13",
+   "points": "points/29.npy",
+   "n_obs": 32
+  },
+  {
+   "id": 30,
+   "label": "ycbv_02",
+   "points": "points/30.npy",
+   "n_obs": 79
+  },
+  {
+   "id": 31,
+   "label": "ycbv_16",
+   "points": "points/31.npy",
+   "n_obs": 2
+  },
+  {
+   "id": 32,
+   "label": "ycbv_16",
+   "points": "points/32.npy",
+   "n_obs": 2
+  },
+  {
+   "id": 33,
+   "label": "ycbv_04",
+   "points": "points/33.npy",
+   "n_obs": 185
+  },
+  {
+   "id": 34,
+   "label": "ycbv_14",
+   "points": "points/34.npy",
+   "n_obs": 45
+  },
+  {
+   "id": 35,
+   "label": "ycbv_16",
+   "points": "points/35.npy",
+   "n_obs": 3
+  },
+  {
+   "id": 36,
+   "label": "ycbv_14",
+   "points": "points/36.npy",
+   "n_obs": 196
+  },
+  {
+   "id": 37,
+   "label": "ycbv_11",
+   "points": "points/37.npy",
+   "n_obs": 132
+  },
+  {
+   "id": 38,
+   "label": "ycbv_01",
+   "points": "points/38.npy",
+   "n_obs": 86
+  },
+  {
+   "id": 39,
+   "label": "ycbv_01",
+   "points": "points/39.npy",
+   "n_obs": 146
+  },
+  {
+   "id": 40,
+   "label": "ycbv_21",
+   "points": "points/40.npy",
+   "n_obs": 24
+  },
+  {
+   "id": 41,
+   "label": "ycbv_17",
+   "points": "points/41.npy",
+   "n_obs": 5
+  },
+  {
+   "id": 42,
+   "label": "ycbv_08",
+   "points": "points/42.npy",
+   "n_obs": 59
+  },
+  {
+   "id": 43,
+   "label": "ycbv_07",
+   "points": "points/43.npy",
+   "n_obs": 20
+  },
+  {
+   "id": 44,
+   "label": "ycbv_19",
+   "points": "points/44.npy",
+   "n_obs": 2
+  },
+  {
+   "id": 45,
+   "label": "ycbv_14",
+   "points": "points/45.npy",
+   "n_obs": 119
+  },
+  {
+   "id": 46,
+   "label": "ycbv_04",
+   "points": "points/46.npy",
+   "n_obs": 108
+  },
+  {
+   "id": 47,
+   "label": "ycbv_14",
+   "points": "points/47.npy",
+   "n_obs": 62
+  },
+  {
+   "id": 48,
+   "label": "ycbv_14",
+   "points": "points/48.npy",
+   "n_obs": 45
+  },
+  {
+   "id": 49,
+   "label": "ycbv_14",
+   "points": "points/49.npy",
+   "n_obs": 54
+  }
+ ]
+}

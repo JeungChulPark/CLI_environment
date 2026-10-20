@@ -1,0 +1,254 @@
+{
+ "units": "m",
+ "frame": "world",
+ "method": "FM-Fusion",
+ "dataset": "obchange_office_all",
+ "scene": 3,
+ "objects": [
+  {
+   "id": 0,
+   "label": "021_bleach_cleanser",
+   "points": "points/0.npy",
+   "score": 0.98,
+   "n_obs": 115
+  },
+  {
+   "id": 1,
+   "label": "004_sugar_box",
+   "points": "points/1.npy",
+   "score": 0.93,
+   "n_obs": 77
+  },
+  {
+   "id": 2,
+   "label": "019_pitcher_base",
+   "points": "points/2.npy",
+   "score": 1.0,
+   "n_obs": 169
+  },
+  {
+   "id": 3,
+   "label": "004_sugar_box",
+   "points": "points/3.npy",
+   "score": 0.98,
+   "n_obs": 153
+  },
+  {
+   "id": 4,
+   "label": "052_extra_large_clamp",
+   "points": "points/4.npy",
+   "score": 0.72,
+   "n_obs": 23
+  },
+  {
+   "id": 5,
+   "label": "021_bleach_cleanser",
+   "points": "points/5.npy",
+   "score": 0.85,
+   "n_obs": 6
+  },
+  {
+   "id": 6,
+   "label": "052_extra_large_clamp",
+   "points": "points/6.npy",
+   "score": 0.73,
+   "n_obs": 5
+  },
+  {
+   "id": 7,
+   "label": "019_pitcher_base",
+   "points": "points/7.npy",
+   "score": 0.99,
+   "n_obs": 49
+  },
+  {
+   "id": 8,
+   "label": "004_sugar_box",
+   "points": "points/8.npy",
+   "score": 0.94,
+   "n_obs": 82
+  },
+  {
+   "id": 9,
+   "label": "052_extra_large_clamp",
+   "points": "points/9.npy",
+   "score": 0.75,
+   "n_obs": 17
+  },
+  {
+   "id": 10,
+   "label": "051_large_clamp",
+   "points": "points/10.npy",
+   "score": 0.76,
+   "n_obs": 9
+  },
+  {
+   "id": 11,
+   "label": "003_cracker_box",
+   "points": "points/11.npy",
+   "score": 0.77,
+   "n_obs": 74
+  },
+  {
+   "id": 12,
+   "label": "004_sugar_box",
+   "points": "points/12.npy",
+   "score": 1.0,
+   "n_obs": 25
+  },
+  {
+   "id": 13,
+   "label": "019_pitcher_base",
+   "points": "points/13.npy",
+   "score": 0.94,
+   "n_obs": 18
+  },
+  {
+   "id": 14,
+   "label": "006_mustard_bottle",
+   "points": "points/14.npy",
+   "score": 0.99,
+   "n_obs": 55
+  },
+  {
+   "id": 15,
+   "label": "003_cracker_box",
+   "points": "points/15.npy",
+   "score": 0.74,
+   "n_obs": 271
+  },
+  {
+   "id": 16,
+   "label": "006_mustard_bottle",
+   "points": "points/16.npy",
+   "score": 0.69,
+   "n_obs": 64
+  },
+  {
+   "id": 17,
+   "label": "024_bowl",
+   "points": "points/17.npy",
+   "score": 1.0,
+   "n_obs": 4
+  },
+  {
+   "id": 18,
+   "label": "025_mug",
+   "points": "points/18.npy",
+   "score": 0.82,
+   "n_obs": 103
+  },
+  {
+   "id": 19,
+   "label": "010_potted_meat_can",
+   "points": "points/19.npy",
+   "score": 0.9,
+   "n_obs": 38
+  },
+  {
+   "id": 20,
+   "label": "019_pitcher_base",
+   "points": "points/20.npy",
+   "score": 1.0,
+   "n_obs": 27
+  },
+  {
+   "id": 21,
+   "label": "003_cracker_box",
+   "points": "points/21.npy",
+   "score": 0.76,
+   "n_obs": 17
+  },
+  {
+   "id": 22,
+   "label": "021_bleach_cleanser",
+   "points": "points/22.npy",
+   "score": 0.99,
+   "n_obs": 65
+  },
+  {
+   "id": 23,
+   "label": "052_extra_large_clamp",
+   "points": "points/23.npy",
+   "score": 0.91,
+   "n_obs": 4
+  },
+  {
+   "id": 24,
+   "label": "035_power_drill",
+   "points": "points/24.npy",
+   "score": 0.79,
+   "n_obs": 73
+  },
+  {
+   "id": 25,
+   "label": "004_sugar_box",
+   "points": "points/25.npy",
+   "score": 1.0,
+   "n_obs": 32
+  },
+  {
+   "id": 26,
+   "label": "019_pitcher_base",
+   "points": "points/26.npy",
+   "score": 1.0,
+   "n_obs": 44
+  },
+  {
+   "id": 27,
+   "label": "036_wood_block",
+   "points": "points/27.npy",
+   "score": 1.0,
+   "n_obs": 3
+  },
+  {
+   "id": 28,
+   "label": "025_mug",
+   "points": "points/28.npy",
+   "score": 0.79,
+   "n_obs": 106
+  },
+  {
+   "id": 29,
+   "label": "021_bleach_cleanser",
+   "points": "points/29.npy",
+   "score": 1.0,
+   "n_obs": 18
+  },
+  {
+   "id": 30,
+   "label": "052_extra_large_clamp",
+   "points": "points/30.npy",
+   "score": 0.71,
+   "n_obs": 6
+  },
+  {
+   "id": 31,
+   "label": "019_pitcher_base",
+   "points": "points/31.npy",
+   "score": 1.0,
+   "n_obs": 93
+  },
+  {
+   "id": 32,
+   "label": "052_extra_large_clamp",
+   "points": "points/32.npy",
+   "score": 0.75,
+   "n_obs": 12
+  },
+  {
+   "id": 33,
+   "label": "052_extra_large_clamp",
+   "points": "points/33.npy",
+   "score": 0.76,
+   "n_obs": 2
+  },
+  {
+   "id": 34,
+   "label": "006_mustard_bottle",
+   "points": "points/34.npy",
+   "score": 0.87,
+   "n_obs": 5
+  }
+ ]
+}

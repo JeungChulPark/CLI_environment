@@ -22,7 +22,7 @@ li{margin:3px 0}
 a{color:var(--acc);word-break:break-all}
 </style></head><body><main><h1 id="_1">작업기록 장비구성 재현</h1>
 <blockquote>
-<p>작업 기록 · 장비 구성 · 재현 안내 — 재시작 메모(08), 원고 v0.3 · 상태 전이 수식 · 저장소 사고(19), 다른 장비(4090 · 5090 · .41)에서 다시 돌리기와 4090 재현 결과(26), .41 한 대 구성 · FM-Fusion 재검출 · .192 드라이버 복구(28), 주말 실험(29 · 30)을 .41 서버 + .192 SLAM 으로 재현 · 같은 머신 다중 체인 함정(31). 개별 문서 5개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 맨 앞의 '종합' 절은 구성 문서를 읽고 정리한 요약(<code>묶음요약/G_작업기록_장비구성_재현.md</code>)이고, 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-20.</p>
+<p>작업 기록 · 장비 구성 · 재현 안내 — 재시작 메모(08), 원고 v0.3 · 상태 전이 수식 · 저장소 사고(19), 다른 장비(4090 · 5090 · .41)에서 다시 돌리기와 4090 재현 결과(26), .41 한 대 구성 · FM-Fusion 재검출 · .192 드라이버 복구(28), 주말 실험(29 · 30)을 .41 서버 + .192 SLAM 으로 재현 · 같은 머신 다중 체인 함정(31). 개별 문서 5개를 그대로 이어 붙인 묶음입니다(제목 단계만 한 칸 내림). 맨 앞의 '종합' 절은 구성 문서를 읽고 정리한 요약(<code>묶음요약/G_작업기록_장비구성_재현.md</code>)이고, 원문은 <code>개별문서/</code> 폴더에 있습니다. 생성 2026-10-21.</p>
 </blockquote>
 <p><strong>이 묶음의 장</strong></p>
 <ul>
@@ -72,7 +72,7 @@ a{color:var(--acc);word-break:break-all}
 <td>31 주말 실험 재현</td>
 <td>10-19 저녁 → 10-20</td>
 <td>.41(hub + 인식기, GPU 0 · 2 · 3 세 체인 동시) + .192(수정 ORB-SLAM3 + 자이로)</td>
-<td>노트북 + Mac 의 29 · 30 문서를 하루 만에 다시: 자이로 28회(원본 0.5 28/7, 개선안 3 94/2, + 자이로 92/4, 루프 보정 중앙값 19.0 → 8.0 cm), 미사용 녹화 10개 × 3(71/18 대 77/5), ObChange 네 방 실시간 30 fps 합산 ours_obs 0.416 / 0.244(노트북 0.443 / 0.225, 순위 같음, §5). 같은 머신에서 체인 셋을 돌리다 만난 함정 여덟과 보수 체인(§4), 아직 못 한 넷과 이유(§6), 10-20 낮 .192 주력 구성(수정 ORB + 자이로, 없으면 특징점 3000) 10개 × 3회 79/4 · 78/6 · 78/8 과 네 방 2회차 0.449 / 0.253(§7)</td>
+<td>노트북 + Mac 의 29 · 30 문서를 하루 만에 다시: 자이로 28회(원본 0.5 28/7, 개선안 3 94/2, + 자이로 92/4, 루프 보정 중앙값 19.0 → 8.0 cm), 미사용 녹화 10개 × 3(71/18 대 77/5), ObChange 네 방 실시간 30 fps 합산 ours_obs 0.416 / 0.244(노트북 0.443 / 0.225, 순위 같음, §5). 같은 머신에서 체인 셋을 돌리다 만난 함정 여덟과 보수 체인(§4), 아직 못 한 넷과 이유(§6), 10-20 낮 .192 주력 구성(수정 ORB + 자이로, 없으면 특징점 3000) 10개 × 3회 79/4 · 78/6 · 78/8, 네 방 제안 3회 반복 평균 0.433 / 0.248 · 기준 방법 2회차 · DualMap YCB-V · Kitchen Blackwell(§7)</td>
 </tr>
 </tbody>
 </table></div>
@@ -212,9 +212,11 @@ a{color:var(--acc);word-break:break-all}
 </ul>
 </li>
 <li><a href="#6-10-20">6. 아직 안 한 것 (10-20 아침 확인, 막힌 이유)</a></li>
-<li><a href="#7-10-20-192-2">7. 10-20 낮 추가 실행 (.192 주력 구성 · 제안 방법 2회차)</a><ul>
+<li><a href="#7-10-20-10-21-192-2-3-2-dualmap-ycb-v">7. 10-20 낮 ~ 10-21 아침 추가 실행 (.192 주력 구성 · 제안 방법 2 · 3회차 · 기준 방법 2회차 · DualMap YCB-V)</a><ul>
 <li><a href="#71-10-192-results_main_41lanjson-8-10">7.1 미사용 녹화 10개, .192 주력 구성 (results_main_41lan.json, 맞음/잘못, 물체 8개 × 10)</a></li>
-<li><a href="#72-2-out30_r2-ctr5cm-f1">7.2 네 방 실시간 제안 방법 2회차 (out30_r2, ctr5cm F1 방문별 / 연속)</a></li>
+<li><a href="#72-2-3-out30_r2-out30_r3-ctr5cm-f1">7.2 네 방 실시간 제안 방법 2 · 3회차 (out30_r2 · out30_r3, ctr5cm F1 방문별 / 연속)</a></li>
+<li><a href="#73-2-out30_r2-ctr5cm-f1">7.3 네 방 실시간 기준 방법 세 개 2회차 (out30_r2, ctr5cm F1 방문별 / 연속)</a></li>
+<li><a href="#74-dualmap-blackwell-ycb-v-12-obchange-kitchen-out_41dm">7.4 DualMap 두 판을 Blackwell 에서 — YCB-V 12 영상 · ObChange-Kitchen (out_41dm)</a></li>
 </ul>
 </li>
 </ul>
@@ -1283,8 +1285,8 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 <ul>
 <li><strong>30 문서 재현 (자이로, 260901 녹화 4개, 3회 반복):</strong> 원본 0.5 + 수정 ORB <strong>28/7</strong>(노트북 19/15), 개선안 3 + 수정 ORB <strong>94/2</strong>(95/3), 개선안 3 + 수정 ORB + 자이로 <strong>92/4</strong>(96/0). 가장 큰 루프 보정 중앙값은 자이로 끔 19.0 cm → 자이로 8.0 cm(노트북 13.6 → 9.6 cm)로 같은 방향. 인식 빈도는 .41 이 1.2~2.6배 높음(원본 3.9 대 1.5 Hz, 개선안 3 8.0 대 6.5 Hz).</li>
 <li><strong>29 §2 재현 (미사용 실데이터 10개, NAS 에 없는 eight_fast · eight_middle 제외):</strong> 원본 0.5 <strong>71/18</strong>(노트북 같은 10개 69/20), 개선안 3 <strong>77/5</strong>(78/4). 개선안 3 이 앞선 녹화 8, 같은 것 1(height), 뒤진 것 1(longcircle_dark) — 29 문서와 같은 패턴.</li>
-<li><strong>29 §5 재현 (ObChange 네 방 실시간 30 fps):</strong> 네 방 합산 ctr5cm F1 방문별 / 연속이 제안(관측 자세) <strong>0.416 / 0.244</strong>(노트북 0.443 / 0.225), 제안(CAD 자세) 0.308 / 0.165(0.322 / 0.162), dualmap_bgr 0.150 / 0.084(0.189 / 0.072), DualMap 0.126 / 0.054(0.130 / 0.051), FM-Fusion 0.096 / 0.047(0.115 / 0.053). 순서와 수준이 노트북과 같고, 네 방 모두 제안(관측 자세)이 가장 높음. 제안은 처리 빈도가 7.2~7.8 Hz 로 노트북(4.7~6.7)보다 높고, 2회차(7절)도 합산 0.449 / 0.253 으로 같은 수준.</li>
-<li><strong>10-20 낮 추가(7절):</strong> 미사용 녹화 10개를 .192 주력 구성(수정 ORB, digut 은 + 자이로 2000, 나머지 특징점 3000)으로 개선안 3 을 3회 — <strong>79/4 · 78/6 · 78/8</strong>(특징점 2000 의 77/5 와 같은 수준), 원본 0.5 는 66/23.</li>
+<li><strong>29 §5 재현 (ObChange 네 방 실시간 30 fps):</strong> 네 방 합산 ctr5cm F1 방문별 / 연속이 제안(관측 자세) <strong>0.416 / 0.244</strong>(노트북 0.443 / 0.225), 제안(CAD 자세) 0.308 / 0.165(0.322 / 0.162), dualmap_bgr 0.150 / 0.084(0.189 / 0.072), DualMap 0.126 / 0.054(0.130 / 0.051), FM-Fusion 0.096 / 0.047(0.115 / 0.053). 순서와 수준이 노트북과 같고, 네 방 모두 제안(관측 자세)이 가장 높음. 제안은 처리 빈도가 7.2~7.8 Hz 로 노트북(4.7~6.7)보다 높고, 2 · 3회차(7절)도 합산 0.449 / 0.253 · 0.434 / 0.248 로 같은 수준(3회 평균 0.433 / 0.248).</li>
+<li><strong>10-20 낮 ~ 10-21 아침 추가(7절):</strong> 미사용 녹화 10개를 .192 주력 구성(수정 ORB, digut 은 + 자이로 2000, 나머지 특징점 3000)으로 개선안 3 을 3회 — <strong>79/4 · 78/6 · 78/8</strong>(특징점 2000 의 77/5 와 같은 수준), 원본 0.5 는 66/23. 네 방 제안 방법 3회 반복 합산 ours_obs <strong>0.416 · 0.449 · 0.434 / 0.244 · 0.253 · 0.248</strong>(평균 0.433 / 0.248, 노트북 1회 0.443 / 0.225 가 편차 안), 기준 방법 2회차도 순위 그대로(dualmap_bgr 0.201 / 0.064, DualMap 0.121 / 0.033, FM-Fusion 0.102 / 0.047). DualMap 두 판 YCB-V · Kitchen 을 Blackwell 에서 — IoU 0.25 F1 0.125 · 0.117, Kitchen 방문별 0.211 · 0.373(4090 · 노트북과 같은 범위).</li>
 <li><strong>같은 머신에서 체인 여럿을 돌리다 찾은 함정 여덟(4절):</strong> nvme1 inode 고갈, .192 NAS 경합, <code>pkill hub.py</code> 가 다른 체인 hub 를 죽임, hub↔SAM-6D 공유메모리 이름 충돌(가장 치명적, 다른 체인의 인식기가 뜨는 순간 내 인식기가 멈춤), DualMap 실시간 훅 누락, CPU 경합, FM-Fusion .41 빌드의 패치 누락(20,000 프레임 넘는 연속 지도가 출력 없이 끝남 · Qhull SIGABRT), DualMap 긴 연속 실행 둘이 겹치면 메모리 62 GB 를 넘어 SIGKILL(한 실행이 RSS 36 GB 까지 자람). 모두 고쳤고 영향 받은 실행은 다시 돌렸거나 보수 체인으로 다시 채웠음.</li>
 </ul>
 <h3 id="1_2">1. 구성</h3>
@@ -1678,8 +1680,8 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 </tbody>
 </table></div>
 <p>(10-20 아침 추가) .192 는 ssh 포트 10022(<code>slam192</code>)로 접속되며(처음에 22 번으로 시도해 "꺼져 있다"고 잘못 봤음), .192 저장소 가지 <code>objpose/memory-dup-suppression</code> 에 노트북 커밋 8개(뷰어 기본 백엔드 · <code>run_web.sh</code>, 30 §2.4 원본 ORB 결과, HOPE 스크립트와 5090 결과)가 있어 이 가지에 병합하면 뷰어 변경과 HOPE 코드는 들어온다. HOPE-Video 데이터(<code>paper_benchmarks/HOPE/video_bop</code>)만 노트북에서 복사하면 된다.</p>
-<h3 id="7-10-20-192-2">7. 10-20 낮 추가 실행 (.192 주력 구성 · 제안 방법 2회차)</h3>
-<p>10-20 07:56 부터 GPU 0(.192 연동) · GPU 1 에서 추가로 돌린 것. 스크립트 <code>src/realdata/logs_main_261020_41lan/run_main_lan41.sh</code>, <code>src/objmap/run_obchange_ours_rep_41.sh</code>(<code>REP=2</code>). GPU 2 · 3 의 3회차(<code>out30_r3</code>)와 기준 방법 2회차 · DualMap YCB-V(<code>run_lane_b_41.sh</code>)는 보수 체인 뒤 13:27 부터 돌고 있어 이 문서에는 없다.</p>
+<h3 id="7-10-20-10-21-192-2-3-2-dualmap-ycb-v">7. 10-20 낮 ~ 10-21 아침 추가 실행 (.192 주력 구성 · 제안 방법 2 · 3회차 · 기준 방법 2회차 · DualMap YCB-V)</h3>
+<p>10-20 07:56 부터 GPU 0(.192 연동) · GPU 1 에서 추가로 돌린 것. 스크립트 <code>src/realdata/logs_main_261020_41lan/run_main_lan41.sh</code>, <code>src/objmap/run_obchange_ours_rep_41.sh</code>(<code>REP=2</code>). 보수 체인이 끝난 13:28 부터는 GPU 2 에서 제안 방법 3회차(<code>REP=3</code>, <code>out30_r3</code>, 17:44 끝), GPU 3 에서 <code>src/objmap/run_lane_b_41.sh</code> — DualMap 두 판의 YCB-V 12 영상 · Kitchen(<code>out_41dm</code>, 13:55 끝)과 네 방 기준 방법 세 개 2회차(<code>objmap_obchange30/fmfusion_r2</code>, <code>dualmap_runs_r2</code>, 결과는 <code>out30_r2</code> 에 합쳐 방마다 재채점, 10-21 06:38 끝) — 가 돌았다. 네 줄 모두 rc=0, 죽은 실행 없음(DualMap 긴 연속 실행은 GPU 3 하나에서만).</p>
 <h4 id="71-10-192-results_main_41lanjson-8-10">7.1 미사용 녹화 10개, .192 주력 구성 (<code>results_main_41lan.json</code>, 맞음/잘못, 물체 8개 × 10)</h4>
 <p>사용자 결정(10-20): .192 에서는 수정 ORB-SLAM3 + 자이로를 주력 구성으로 쓰고, IMU 가 없는 녹화는 수정 ORB 특징점 3000. 열 개 중 IMU 가 있는 것은 260901_cbnu_digut 뿐(<code>--gyro rig_260901_gyro.json --imu &lt;ses&gt;/imu</code>, 특징점 2000), 나머지 아홉은 <code>--features 3000</code>(ORBextractor.nFeatures 덮어쓰기). 원본 0.5 도 같은 SLAM 구성.</p>
 <div class="tw"><table>
@@ -1729,7 +1731,7 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 <li>digut(자이로): 3회 모두 8/0, 가장 큰 루프 보정 8.1 · 10.7 · 11.2 cm(자이로 없는 기준 13.5 cm). outlong_middle 은 29 문서처럼 1~2 m 루프 보정(197 · 205 · 227 cm)이 나왔지만 인식은 8/0 · 8/1 · 8/1.</li>
 <li>SLAM 프레임 드롭 0(로컬 세션 복사본, 4.1절), 한 실행 3~5분.</li>
 </ul>
-<h4 id="72-2-out30_r2-ctr5cm-f1">7.2 네 방 실시간 제안 방법 2회차 (<code>out30_r2</code>, ctr5cm F1 방문별 / 연속)</h4>
+<h4 id="72-2-3-out30_r2-out30_r3-ctr5cm-f1">7.2 네 방 실시간 제안 방법 2 · 3회차 (<code>out30_r2</code> · <code>out30_r3</code>, ctr5cm F1 방문별 / 연속)</h4>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -1743,20 +1745,44 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 </thead>
 <tbody>
 <tr>
-<td>ours_obs 2회차</td>
-<td>0.350 / 0.219</td>
-<td>0.688 / 0.317</td>
-<td>0.360 / 0.283</td>
-<td>0.481 / 0.230</td>
-<td><strong>0.449 / 0.253</strong></td>
-</tr>
-<tr>
 <td>ours_obs 1회차(5절)</td>
 <td>0.350 / 0.209</td>
 <td>0.606 / 0.333</td>
 <td>0.353 / 0.267</td>
 <td>0.429 / 0.217</td>
 <td>0.416 / 0.244</td>
+</tr>
+<tr>
+<td>ours_obs 2회차</td>
+<td>0.350 / 0.219</td>
+<td>0.688 / 0.317</td>
+<td>0.360 / 0.283</td>
+<td>0.481 / 0.230</td>
+<td>0.449 / 0.253</td>
+</tr>
+<tr>
+<td>ours_obs 3회차</td>
+<td>0.359 / 0.206</td>
+<td>0.686 / 0.328</td>
+<td>0.337 / 0.286</td>
+<td>0.454 / 0.220</td>
+<td>0.434 / 0.248</td>
+</tr>
+<tr>
+<td><strong>ours_obs 3회 평균</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><strong>0.433 / 0.248</strong> (노트북 1회 0.443 / 0.225)</td>
+</tr>
+<tr>
+<td>ours_cad 1회차</td>
+<td>0.200 / 0.090</td>
+<td>0.444 / 0.235</td>
+<td>0.282 / 0.229</td>
+<td>0.319 / 0.136</td>
+<td>0.308 / 0.165</td>
 </tr>
 <tr>
 <td>ours_cad 2회차</td>
@@ -1767,15 +1793,139 @@ timeout 8 ssh -o BatchMode=yes mac true &amp;&amp; echo MAC_OK
 <td>0.337 / 0.175</td>
 </tr>
 <tr>
-<td>ours_cad 1회차</td>
-<td>0.200 / 0.090</td>
-<td>0.444 / 0.235</td>
-<td>0.282 / 0.229</td>
-<td>0.319 / 0.136</td>
-<td>0.308 / 0.165</td>
+<td>ours_cad 3회차</td>
+<td>0.200 / 0.118</td>
+<td>0.421 / 0.257</td>
+<td>0.273 / 0.247</td>
+<td>0.338 / 0.133</td>
+<td>0.312 / 0.174</td>
+</tr>
+<tr>
+<td><strong>ours_cad 3회 평균</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><strong>0.319 / 0.171</strong> (노트북 0.322 / 0.162)</td>
 </tr>
 </tbody>
 </table></div>
 <ul>
-<li>Office 는 TP · FN 이 1회차와 똑같고(7/23/3), 합산은 1회차 0.416 / 0.244 → 2회차 0.449 / 0.253 으로 노트북(0.443 / 0.225)을 사이에 둔다. 반복 편차는 합산 ±0.03.</li>
+<li>합산 TP/FP/FN(ours_obs 방문별): 1회 62/141/33, 2회 66/133/29, 3회 66/143/29; 연속 56/308/39, 55/285/40, 57/308/38. 세 번의 흔들림은 합산 F1 ±0.02 이고 노트북 1회 값은 그 안에 든다(방문별은 노트북이 0.01 높고 연속은 .41 이 0.02 높음). 연속 지도에서 .41 은 맞힌 수가 많고(56 대 53) 잘못 올린 수가 적다(285~308 대 323).</li>
+<li>Office 는 세 번 모두 TP 7 · FN 3 으로 같다(FP 만 22~23). 방별 흔들림이 가장 큰 곳은 LivingArea 방문별(0.606 → 0.688 → 0.686)로 물체 14개 중 한두 개 차이.</li>
+<li>처리 빈도는 세 번 모두 7.2~7.8 Hz. 더 빠른 GPU 가 더 많은 프레임을 인식해도 F1 은 같은 수준이고, 흔들림은 어느 프레임이 인식되느냐에서 온다.</li>
+</ul>
+<h4 id="73-2-out30_r2-ctr5cm-f1">7.3 네 방 실시간 기준 방법 세 개 2회차 (<code>out30_r2</code>, ctr5cm F1 방문별 / 연속)</h4>
+<p>FM-Fusion 은 검출(<code>--realtime-fps 30</code>)부터, DualMap 두 판은 실시간 훅으로 다시 돌렸다(1회차와 같은 조건, 보수 뒤 1회차 값은 5.1절).</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th>방법</th>
+<th>Office</th>
+<th>LivingArea</th>
+<th>SmallRoom</th>
+<th>BigRoom</th>
+<th><strong>합산 2회차</strong></th>
+<th>합산 1회차</th>
+<th>노트북</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FM-Fusion</td>
+<td>0.137 / 0.082</td>
+<td>0.202 / 0.081</td>
+<td>0.070 / 0.033</td>
+<td>0.091 / 0.039</td>
+<td>0.102 / 0.047</td>
+<td>0.096 / 0.047</td>
+<td>0.115 / 0.053</td>
+</tr>
+<tr>
+<td>DualMap</td>
+<td>0.357 / 0.000</td>
+<td>0.129 / 0.073</td>
+<td>0.111 / 0.061</td>
+<td>0.059 / 0.013</td>
+<td>0.121 / 0.033</td>
+<td>0.126 / 0.054</td>
+<td>0.130 / 0.051</td>
+</tr>
+<tr>
+<td>dualmap_bgr</td>
+<td>0.231 / 0.080</td>
+<td>0.167 / 0.086</td>
+<td>0.250 / 0.083</td>
+<td>0.168 / 0.041</td>
+<td>0.201 / 0.064</td>
+<td>0.150 / 0.084</td>
+<td>0.189 / 0.072</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>기준 방법도 2회차에서 순위가 그대로이고(제안 관측 0.449 &gt; 제안 CAD 0.337 &gt; dualmap_bgr 0.201 &gt; DualMap 0.121 ≳ FM-Fusion 0.102), 제안(관측 자세)과의 차이는 방문별 0.25 · 연속 0.19 이상이다.</li>
+<li>dualmap_bgr 만 반복 편차가 0.05(0.150 → 0.201)로 제안보다 크다. 검출(YOLO-World)이 실시간 재생 중 어느 프레임을 잡느냐에 따라 물체 한두 개가 바뀌는데 정답 수가 적어 F1 이 크게 움직인다. FM-Fusion 은 연속 FP 가 1,817(1회차 1,890 대)로 여전히 많다.</li>
+<li>연속 지도의 치운 물체 지우기: FM-Fusion 27/55 남음, DualMap 7/55, dualmap_bgr 8/55 — 제안(33/55)보다 적게 남지만 애초에 올린 물체가 적어서이고, 새로 둔 물체 찾기도 그만큼 적다.</li>
+</ul>
+<h4 id="74-dualmap-blackwell-ycb-v-12-obchange-kitchen-out_41dm">7.4 DualMap 두 판을 Blackwell 에서 — YCB-V 12 영상 · ObChange-Kitchen (<code>out_41dm</code>)</h4>
+<p>27 §7 의 4090 실행과 같은 입력(정답 궤적, 실시간 제약 없음)을 .41 에서 다시 돌린 것. 21 · 27 문서와 같은 채점.</p>
+<div class="tw"><table>
+<thead>
+<tr>
+<th></th>
+<th>YCB-V F1 IoU 0.25 (<code>--clean</code>)</th>
+<th>YCB-V F1 중심 5 cm (<code>--clean</code>)</th>
+<th>Kitchen 방문별 ctr5cm</th>
+<th>Kitchen 연속 ctr5cm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DualMap 공개 .41</td>
+<td>0.125 (0.143)</td>
+<td>0.250 (0.232)</td>
+<td>0.211 (6/26/19)</td>
+<td>0.144</td>
+</tr>
+<tr>
+<td>DualMap 공개 4090 (27 §7)</td>
+<td>0.109</td>
+<td>—</td>
+<td>0.175 (5/27/20)</td>
+<td>0.147</td>
+</tr>
+<tr>
+<td>DualMap 공개 노트북 3080 (20 · 21)</td>
+<td>0.091</td>
+<td>—</td>
+<td>0.175</td>
+<td>0.129</td>
+</tr>
+<tr>
+<td>dualmap_bgr .41</td>
+<td>0.117 (0.133)</td>
+<td>0.367 (0.300)</td>
+<td>0.373 (11/23/14)</td>
+<td>0.204</td>
+</tr>
+<tr>
+<td>dualmap_bgr 4090 (27 §7)</td>
+<td>0.165</td>
+<td>—</td>
+<td>0.414 (12/21/13)</td>
+<td>0.200</td>
+</tr>
+<tr>
+<td>dualmap_bgr 노트북 3080 (20 · 21)</td>
+<td>0.168</td>
+<td>—</td>
+<td>0.351</td>
+<td>0.189</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>세 장비에서 DualMap 두 판은 YCB-V 0.09~0.17, Kitchen 방문별 0.18~0.41 범위에 머물러 20 · 21 · 27 문서의 결론(제안 YCB-V 0.71~0.80, Kitchen 0.50~0.67 이 훨씬 높음)이 유지된다. 장비마다 ±0.05 움직이는 것은 YOLO-World 검출의 흔들림이다.</li>
+<li>Kitchen 의 치운 물체: 공개판 5/17 남음 · 새 물체 6/21 찾음, BGR 7/17 · 9/21 — 4090 과 한 개 차이.</li>
 </ul></main></body></html>

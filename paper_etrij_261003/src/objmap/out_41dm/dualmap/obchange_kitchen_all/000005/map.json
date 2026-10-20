@@ -1,0 +1,300 @@
+{
+ "units": "m",
+ "frame": "world",
+ "dataset": "obchange_kitchen_all",
+ "scene": 5,
+ "kind": "dualmap",
+ "source": "/home/jucpark/Dataset/bop/ycbv_work/dualmap_runs_41dm/dualmap/obka000005/ycbv_obka000005/map",
+ "objects": [
+  {
+   "id": 0,
+   "label": "unknown",
+   "points": "points/0.npy"
+  },
+  {
+   "id": 1,
+   "label": "025_mug",
+   "points": "points/1.npy"
+  },
+  {
+   "id": 2,
+   "label": "unknown",
+   "points": "points/2.npy"
+  },
+  {
+   "id": 3,
+   "label": "unknown",
+   "points": "points/3.npy"
+  },
+  {
+   "id": 4,
+   "label": "unknown",
+   "points": "points/4.npy"
+  },
+  {
+   "id": 5,
+   "label": "unknown",
+   "points": "points/5.npy"
+  },
+  {
+   "id": 6,
+   "label": "unknown",
+   "points": "points/6.npy"
+  },
+  {
+   "id": 7,
+   "label": "unknown",
+   "points": "points/7.npy"
+  },
+  {
+   "id": 8,
+   "label": "025_mug",
+   "points": "points/8.npy"
+  },
+  {
+   "id": 9,
+   "label": "unknown",
+   "points": "points/9.npy"
+  },
+  {
+   "id": 10,
+   "label": "unknown",
+   "points": "points/10.npy"
+  },
+  {
+   "id": 11,
+   "label": "025_mug",
+   "points": "points/11.npy"
+  },
+  {
+   "id": 12,
+   "label": "unknown",
+   "points": "points/12.npy"
+  },
+  {
+   "id": 13,
+   "label": "unknown",
+   "points": "points/13.npy"
+  },
+  {
+   "id": 14,
+   "label": "unknown",
+   "points": "points/14.npy"
+  },
+  {
+   "id": 15,
+   "label": "002_master_chef_can",
+   "points": "points/15.npy"
+  },
+  {
+   "id": 16,
+   "label": "021_bleach_cleanser",
+   "points": "points/16.npy"
+  },
+  {
+   "id": 17,
+   "label": "021_bleach_cleanser",
+   "points": "points/17.npy"
+  },
+  {
+   "id": 18,
+   "label": "unknown",
+   "points": "points/18.npy"
+  },
+  {
+   "id": 19,
+   "label": "002_master_chef_can",
+   "points": "points/19.npy"
+  },
+  {
+   "id": 20,
+   "label": "unknown",
+   "points": "points/20.npy"
+  },
+  {
+   "id": 21,
+   "label": "002_master_chef_can",
+   "points": "points/21.npy"
+  },
+  {
+   "id": 22,
+   "label": "025_mug",
+   "points": "points/22.npy"
+  },
+  {
+   "id": 23,
+   "label": "unknown",
+   "points": "points/23.npy"
+  },
+  {
+   "id": 24,
+   "label": "unknown",
+   "points": "points/24.npy"
+  },
+  {
+   "id": 25,
+   "label": "025_mug",
+   "points": "points/25.npy"
+  },
+  {
+   "id": 26,
+   "label": "unknown",
+   "points": "points/26.npy"
+  },
+  {
+   "id": 27,
+   "label": "unknown",
+   "points": "points/27.npy"
+  },
+  {
+   "id": 28,
+   "label": "unknown",
+   "points": "points/28.npy"
+  },
+  {
+   "id": 29,
+   "label": "002_master_chef_can",
+   "points": "points/29.npy"
+  },
+  {
+   "id": 30,
+   "label": "unknown",
+   "points": "points/30.npy"
+  },
+  {
+   "id": 31,
+   "label": "unknown",
+   "points": "points/31.npy"
+  },
+  {
+   "id": 32,
+   "label": "019_pitcher_base",
+   "points": "points/32.npy"
+  },
+  {
+   "id": 33,
+   "label": "002_master_chef_can",
+   "points": "points/33.npy"
+  },
+  {
+   "id": 34,
+   "label": "unknown",
+   "points": "points/34.npy"
+  },
+  {
+   "id": 35,
+   "label": "025_mug",
+   "points": "points/35.npy"
+  },
+  {
+   "id": 36,
+   "label": "unknown",
+   "points": "points/36.npy"
+  },
+  {
+   "id": 37,
+   "label": "025_mug",
+   "points": "points/37.npy"
+  },
+  {
+   "id": 38,
+   "label": "unknown",
+   "points": "points/38.npy"
+  },
+  {
+   "id": 39,
+   "label": "unknown",
+   "points": "points/39.npy"
+  },
+  {
+   "id": 40,
+   "label": "unknown",
+   "points": "points/40.npy"
+  },
+  {
+   "id": 41,
+   "label": "unknown",
+   "points": "points/41.npy"
+  },
+  {
+   "id": 42,
+   "label": "unknown",
+   "points": "points/42.npy"
+  },
+  {
+   "id": 43,
+   "label": "unknown",
+   "points": "points/43.npy"
+  },
+  {
+   "id": 44,
+   "label": "unknown",
+   "points": "points/44.npy"
+  },
+  {
+   "id": 45,
+   "label": "unknown",
+   "points": "points/45.npy"
+  },
+  {
+   "id": 46,
+   "label": "unknown",
+   "points": "points/46.npy"
+  },
+  {
+   "id": 47,
+   "label": "unknown",
+   "points": "points/47.npy"
+  },
+  {
+   "id": 48,
+   "label": "unknown",
+   "points": "points/48.npy"
+  },
+  {
+   "id": 49,
+   "label": "unknown",
+   "points": "points/49.npy"
+  },
+  {
+   "id": 50,
+   "label": "unknown",
+   "points": "points/50.npy"
+  },
+  {
+   "id": 51,
+   "label": "008_pudding_box",
+   "points": "points/51.npy"
+  },
+  {
+   "id": 52,
+   "label": "unknown",
+   "points": "points/52.npy"
+  },
+  {
+   "id": 53,
+   "label": "unknown",
+   "points": "points/53.npy"
+  },
+  {
+   "id": 54,
+   "label": "unknown",
+   "points": "points/54.npy"
+  },
+  {
+   "id": 55,
+   "label": "002_master_chef_can",
+   "points": "points/55.npy"
+  },
+  {
+   "id": 56,
+   "label": "025_mug",
+   "points": "points/56.npy"
+  },
+  {
+   "id": 57,
+   "label": "025_mug",
+   "points": "points/57.npy"
+  }
+ ]
+}

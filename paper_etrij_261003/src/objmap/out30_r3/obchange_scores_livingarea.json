@@ -1,0 +1,802 @@
+{
+ "ours_cad|obchange_livingarea|iou": {
+  "visits": 5,
+  "tp": 2,
+  "fp": 22,
+  "fn": 12,
+  "precision": 0.08333333333333333,
+  "recall": 0.14285714285714285,
+  "f1": 0.10526315789473685,
+  "mean_iou": 0.35320058365020046,
+  "mean_sd_mm": 6.2329739064545535,
+  "dont_care": 2,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 0,
+    "fp": 2,
+    "fn": 2,
+    "n_pred": 2,
+    "dont_care": 1
+   },
+   {
+    "visit": 3,
+    "tp": 0,
+    "fp": 5,
+    "fn": 2,
+    "n_pred": 5,
+    "dont_care": 0
+   },
+   {
+    "visit": 4,
+    "tp": 1,
+    "fp": 5,
+    "fn": 3,
+    "n_pred": 6,
+    "dont_care": 1
+   },
+   {
+    "visit": 5,
+    "tp": 0,
+    "fp": 5,
+    "fn": 3,
+    "n_pred": 5,
+    "dont_care": 0
+   },
+   {
+    "visit": 6,
+    "tp": 1,
+    "fp": 5,
+    "fn": 2,
+    "n_pred": 6,
+    "dont_care": 0
+   }
+  ]
+ },
+ "ours_cad|obchange_livingarea|ctr5cm": {
+  "visits": 5,
+  "tp": 8,
+  "fp": 16,
+  "fn": 6,
+  "precision": 0.3333333333333333,
+  "recall": 0.5714285714285714,
+  "f1": 0.4210526315789474,
+  "mean_iou": 0.20618231123824163,
+  "mean_sd_mm": 12.034434886536314,
+  "dont_care": 2,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 2,
+    "fp": 0,
+    "fn": 0,
+    "n_pred": 2,
+    "dont_care": 1
+   },
+   {
+    "visit": 3,
+    "tp": 0,
+    "fp": 5,
+    "fn": 2,
+    "n_pred": 5,
+    "dont_care": 0
+   },
+   {
+    "visit": 4,
+    "tp": 2,
+    "fp": 4,
+    "fn": 2,
+    "n_pred": 6,
+    "dont_care": 1
+   },
+   {
+    "visit": 5,
+    "tp": 3,
+    "fp": 2,
+    "fn": 0,
+    "n_pred": 5,
+    "dont_care": 0
+   },
+   {
+    "visit": 6,
+    "tp": 1,
+    "fp": 5,
+    "fn": 2,
+    "n_pred": 6,
+    "dont_care": 0
+   }
+  ]
+ },
+ "ours_cad|obchange_livingarea_all|iou": {
+  "visits": 5,
+  "tp": 2,
+  "fp": 54,
+  "fn": 12,
+  "precision": 0.03571428571428571,
+  "recall": 0.14285714285714285,
+  "f1": 0.05714285714285715,
+  "mean_iou": 0.40144665461121154,
+  "mean_sd_mm": 5.790351559732265,
+  "dont_care": 3,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 0,
+    "fp": 3,
+    "fn": 2,
+    "n_pred": 3,
+    "dont_care": 1
+   },
+   {
+    "visit": 3,
+    "tp": 0,
+    "fp": 9,
+    "fn": 2,
+    "n_pred": 9,
+    "dont_care": 0
+   },
+   {
+    "visit": 4,
+    "tp": 1,
+    "fp": 10,
+    "fn": 3,
+    "n_pred": 11,
+    "dont_care": 1
+   },
+   {
+    "visit": 5,
+    "tp": 0,
+    "fp": 14,
+    "fn": 3,
+    "n_pred": 14,
+    "dont_care": 1
+   },
+   {
+    "visit": 6,
+    "tp": 1,
+    "fp": 18,
+    "fn": 2,
+    "n_pred": 19,
+    "dont_care": 0
+   }
+  ],
+  "revisit": {
+   "removed": 11,
+   "removed_mapped": 7,
+   "removed_still_in_map": 7,
+   "added": 12,
+   "added_found": 2,
+   "per_visit": [
+    {
+     "visit": 3,
+     "removed": 2,
+     "mapped": 2,
+     "still_in_map": 2,
+     "added": 2,
+     "added_found": 0
+    },
+    {
+     "visit": 4,
+     "removed": 2,
+     "mapped": 0,
+     "still_in_map": 0,
+     "added": 4,
+     "added_found": 1
+    },
+    {
+     "visit": 5,
+     "removed": 4,
+     "mapped": 2,
+     "still_in_map": 2,
+     "added": 3,
+     "added_found": 0
+    },
+    {
+     "visit": 6,
+     "removed": 3,
+     "mapped": 3,
+     "still_in_map": 3,
+     "added": 3,
+     "added_found": 1
+    }
+   ]
+  }
+ },
+ "ours_cad|obchange_livingarea_all|ctr5cm": {
+  "visits": 5,
+  "tp": 9,
+  "fp": 47,
+  "fn": 5,
+  "precision": 0.16071428571428573,
+  "recall": 0.6428571428571429,
+  "f1": 0.2571428571428572,
+  "mean_iou": 0.20064411437603485,
+  "mean_sd_mm": 12.971384502640783,
+  "dont_care": 3,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 2,
+    "fp": 1,
+    "fn": 0,
+    "n_pred": 3,
+    "dont_care": 1
+   },
+   {
+    "visit": 3,
+    "tp": 0,
+    "fp": 9,
+    "fn": 2,
+    "n_pred": 9,
+    "dont_care": 0
+   },
+   {
+    "visit": 4,
+    "tp": 2,
+    "fp": 9,
+    "fn": 2,
+    "n_pred": 11,
+    "dont_care": 1
+   },
+   {
+    "visit": 5,
+    "tp": 3,
+    "fp": 11,
+    "fn": 0,
+    "n_pred": 14,
+    "dont_care": 1
+   },
+   {
+    "visit": 6,
+    "tp": 2,
+    "fp": 17,
+    "fn": 1,
+    "n_pred": 19,
+    "dont_care": 0
+   }
+  ],
+  "revisit": {
+   "removed": 11,
+   "removed_mapped": 7,
+   "removed_still_in_map": 7,
+   "added": 12,
+   "added_found": 7,
+   "per_visit": [
+    {
+     "visit": 3,
+     "removed": 2,
+     "mapped": 2,
+     "still_in_map": 2,
+     "added": 2,
+     "added_found": 0
+    },
+    {
+     "visit": 4,
+     "removed": 2,
+     "mapped": 0,
+     "still_in_map": 0,
+     "added": 4,
+     "added_found": 2
+    },
+    {
+     "visit": 5,
+     "removed": 4,
+     "mapped": 2,
+     "still_in_map": 2,
+     "added": 3,
+     "added_found": 3
+    },
+    {
+     "visit": 6,
+     "removed": 3,
+     "mapped": 3,
+     "still_in_map": 3,
+     "added": 3,
+     "added_found": 2
+    }
+   ]
+  }
+ },
+ "ours_obs|obchange_livingarea|iou": {
+  "visits": 5,
+  "tp": 2,
+  "fp": 19,
+  "fn": 12,
+  "precision": 0.09523809523809523,
+  "recall": 0.14285714285714285,
+  "f1": 0.11428571428571427,
+  "mean_iou": 0.37758134760436896,
+  "mean_sd_mm": 4.422026156726889,
+  "dont_care": 5,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 0,
+    "fp": 2,
+    "fn": 2,
+    "n_pred": 2,
+    "dont_care": 1
+   },
+   {
+    "visit": 3,
+    "tp": 0,
+    "fp": 3,
+    "fn": 2,
+    "n_pred": 3,
+    "dont_care": 2
+   },
+   {
+    "visit": 4,
+    "tp": 1,
+    "fp": 5,
+    "fn": 3,
+    "n_pred": 6,
+    "dont_care": 1
+   },
+   {
+    "visit": 5,
+    "tp": 1,
+    "fp": 3,
+    "fn": 2,
+    "n_pred": 4,
+    "dont_care": 1
+   },
+   {
+    "visit": 6,
+    "tp": 0,
+    "fp": 6,
+    "fn": 3,
+    "n_pred": 6,
+    "dont_care": 0
+   }
+  ]
+ },
+ "ours_obs|obchange_livingarea|ctr5cm": {
+  "visits": 5,
+  "tp": 12,
+  "fp": 9,
+  "fn": 2,
+  "precision": 0.5714285714285714,
+  "recall": 0.8571428571428571,
+  "f1": 0.6857142857142857,
+  "mean_iou": 0.18324065342475318,
+  "mean_sd_mm": 11.005007615206702,
+  "dont_care": 5,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 2,
+    "fp": 0,
+    "fn": 0,
+    "n_pred": 2,
+    "dont_care": 1
+   },
+   {
+    "visit": 3,
+    "tp": 1,
+    "fp": 2,
+    "fn": 1,
+    "n_pred": 3,
+    "dont_care": 2
+   },
+   {
+    "visit": 4,
+    "tp": 4,
+    "fp": 2,
+    "fn": 0,
+    "n_pred": 6,
+    "dont_care": 1
+   },
+   {
+    "visit": 5,
+    "tp": 3,
+    "fp": 1,
+    "fn": 0,
+    "n_pred": 4,
+    "dont_care": 1
+   },
+   {
+    "visit": 6,
+    "tp": 2,
+    "fp": 4,
+    "fn": 1,
+    "n_pred": 6,
+    "dont_care": 0
+   }
+  ]
+ },
+ "ours_obs|obchange_livingarea_all|iou": {
+  "visits": 5,
+  "tp": 2,
+  "fp": 51,
+  "fn": 12,
+  "precision": 0.03773584905660377,
+  "recall": 0.14285714285714285,
+  "f1": 0.05970149253731343,
+  "mean_iou": 0.3899355231944751,
+  "mean_sd_mm": 3.9029681012553916,
+  "dont_care": 6,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 0,
+    "fp": 3,
+    "fn": 2,
+    "n_pred": 3,
+    "dont_care": 1
+   },
+   {
+    "visit": 3,
+    "tp": 0,
+    "fp": 6,
+    "fn": 2,
+    "n_pred": 6,
+    "dont_care": 3
+   },
+   {
+    "visit": 4,
+    "tp": 1,
+    "fp": 10,
+    "fn": 3,
+    "n_pred": 11,
+    "dont_care": 1
+   },
+   {
+    "visit": 5,
+    "tp": 1,
+    "fp": 13,
+    "fn": 2,
+    "n_pred": 14,
+    "dont_care": 1
+   },
+   {
+    "visit": 6,
+    "tp": 0,
+    "fp": 19,
+    "fn": 3,
+    "n_pred": 19,
+    "dont_care": 0
+   }
+  ],
+  "revisit": {
+   "removed": 11,
+   "removed_mapped": 9,
+   "removed_still_in_map": 9,
+   "added": 12,
+   "added_found": 2,
+   "per_visit": [
+    {
+     "visit": 3,
+     "removed": 2,
+     "mapped": 2,
+     "still_in_map": 2,
+     "added": 2,
+     "added_found": 0
+    },
+    {
+     "visit": 4,
+     "removed": 2,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 4,
+     "added_found": 1
+    },
+    {
+     "visit": 5,
+     "removed": 4,
+     "mapped": 3,
+     "still_in_map": 3,
+     "added": 3,
+     "added_found": 1
+    },
+    {
+     "visit": 6,
+     "removed": 3,
+     "mapped": 3,
+     "still_in_map": 3,
+     "added": 3,
+     "added_found": 0
+    }
+   ]
+  }
+ },
+ "ours_obs|obchange_livingarea_all|ctr5cm": {
+  "visits": 5,
+  "tp": 11,
+  "fp": 42,
+  "fn": 3,
+  "precision": 0.20754716981132076,
+  "recall": 0.7857142857142857,
+  "f1": 0.3283582089552239,
+  "mean_iou": 0.19938960841908251,
+  "mean_sd_mm": 9.829603798246255,
+  "dont_care": 6,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 2,
+    "fp": 1,
+    "fn": 0,
+    "n_pred": 3,
+    "dont_care": 1
+   },
+   {
+    "visit": 3,
+    "tp": 1,
+    "fp": 5,
+    "fn": 1,
+    "n_pred": 6,
+    "dont_care": 3
+   },
+   {
+    "visit": 4,
+    "tp": 3,
+    "fp": 8,
+    "fn": 1,
+    "n_pred": 11,
+    "dont_care": 1
+   },
+   {
+    "visit": 5,
+    "tp": 3,
+    "fp": 11,
+    "fn": 0,
+    "n_pred": 14,
+    "dont_care": 1
+   },
+   {
+    "visit": 6,
+    "tp": 2,
+    "fp": 17,
+    "fn": 1,
+    "n_pred": 19,
+    "dont_care": 0
+   }
+  ],
+  "revisit": {
+   "removed": 11,
+   "removed_mapped": 9,
+   "removed_still_in_map": 9,
+   "added": 12,
+   "added_found": 9,
+   "per_visit": [
+    {
+     "visit": 3,
+     "removed": 2,
+     "mapped": 2,
+     "still_in_map": 2,
+     "added": 2,
+     "added_found": 1
+    },
+    {
+     "visit": 4,
+     "removed": 2,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 4,
+     "added_found": 3
+    },
+    {
+     "visit": 5,
+     "removed": 4,
+     "mapped": 3,
+     "still_in_map": 3,
+     "added": 3,
+     "added_found": 3
+    },
+    {
+     "visit": 6,
+     "removed": 3,
+     "mapped": 3,
+     "still_in_map": 3,
+     "added": 3,
+     "added_found": 2
+    }
+   ]
+  }
+ },
+ "fmfusion|obchange_livingarea|iou": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": []
+ },
+ "fmfusion|obchange_livingarea|ctr5cm": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": []
+ },
+ "fmfusion|obchange_livingarea_all|iou": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": [],
+  "revisit": {
+   "removed": 0,
+   "removed_mapped": 0,
+   "removed_still_in_map": 0,
+   "added": 0,
+   "added_found": 0,
+   "per_visit": []
+  }
+ },
+ "fmfusion|obchange_livingarea_all|ctr5cm": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": [],
+  "revisit": {
+   "removed": 0,
+   "removed_mapped": 0,
+   "removed_still_in_map": 0,
+   "added": 0,
+   "added_found": 0,
+   "per_visit": []
+  }
+ },
+ "dualmap|obchange_livingarea|iou": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": []
+ },
+ "dualmap|obchange_livingarea|ctr5cm": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": []
+ },
+ "dualmap|obchange_livingarea_all|iou": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": [],
+  "revisit": {
+   "removed": 0,
+   "removed_mapped": 0,
+   "removed_still_in_map": 0,
+   "added": 0,
+   "added_found": 0,
+   "per_visit": []
+  }
+ },
+ "dualmap|obchange_livingarea_all|ctr5cm": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": [],
+  "revisit": {
+   "removed": 0,
+   "removed_mapped": 0,
+   "removed_still_in_map": 0,
+   "added": 0,
+   "added_found": 0,
+   "per_visit": []
+  }
+ },
+ "dualmap_bgr|obchange_livingarea|iou": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": []
+ },
+ "dualmap_bgr|obchange_livingarea|ctr5cm": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": []
+ },
+ "dualmap_bgr|obchange_livingarea_all|iou": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": [],
+  "revisit": {
+   "removed": 0,
+   "removed_mapped": 0,
+   "removed_still_in_map": 0,
+   "added": 0,
+   "added_found": 0,
+   "per_visit": []
+  }
+ },
+ "dualmap_bgr|obchange_livingarea_all|ctr5cm": {
+  "visits": 0,
+  "tp": 0,
+  "fp": 0,
+  "fn": 0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "mean_iou": null,
+  "mean_sd_mm": null,
+  "dont_care": 0,
+  "per_visit": [],
+  "revisit": {
+   "removed": 0,
+   "removed_mapped": 0,
+   "removed_still_in_map": 0,
+   "added": 0,
+   "added_found": 0,
+   "per_visit": []
+  }
+ }
+}

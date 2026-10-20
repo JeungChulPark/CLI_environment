@@ -692,207 +692,1025 @@
   }
  },
  "fmfusion|obchange_bigroom|iou": {
-  "visits": 0,
-  "tp": 0,
-  "fp": 0,
-  "fn": 0,
-  "precision": 0.0,
-  "recall": 0.0,
-  "f1": 0.0,
-  "mean_iou": null,
-  "mean_sd_mm": null,
-  "dont_care": 0,
-  "per_visit": []
+  "visits": 6,
+  "tp": 5,
+  "fp": 498,
+  "fn": 41,
+  "precision": 0.009940357852882704,
+  "recall": 0.10869565217391304,
+  "f1": 0.018214936247723135,
+  "mean_iou": 0.312545761972983,
+  "mean_sd_mm": 11.304232924140718,
+  "dont_care": 27,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 0,
+    "fp": 83,
+    "fn": 6,
+    "n_pred": 83,
+    "dont_care": 2
+   },
+   {
+    "visit": 3,
+    "tp": 2,
+    "fp": 87,
+    "fn": 5,
+    "n_pred": 89,
+    "dont_care": 3
+   },
+   {
+    "visit": 4,
+    "tp": 1,
+    "fp": 82,
+    "fn": 6,
+    "n_pred": 83,
+    "dont_care": 6
+   },
+   {
+    "visit": 5,
+    "tp": 2,
+    "fp": 75,
+    "fn": 6,
+    "n_pred": 77,
+    "dont_care": 7
+   },
+   {
+    "visit": 6,
+    "tp": 0,
+    "fp": 91,
+    "fn": 8,
+    "n_pred": 91,
+    "dont_care": 3
+   },
+   {
+    "visit": 7,
+    "tp": 0,
+    "fp": 80,
+    "fn": 10,
+    "n_pred": 80,
+    "dont_care": 6
+   }
+  ]
  },
  "fmfusion|obchange_bigroom|ctr5cm": {
-  "visits": 0,
-  "tp": 0,
-  "fp": 0,
-  "fn": 0,
-  "precision": 0.0,
-  "recall": 0.0,
-  "f1": 0.0,
-  "mean_iou": null,
-  "mean_sd_mm": null,
-  "dont_care": 0,
-  "per_visit": []
+  "visits": 6,
+  "tp": 25,
+  "fp": 478,
+  "fn": 21,
+  "precision": 0.04970178926441352,
+  "recall": 0.5434782608695652,
+  "f1": 0.09107468123861567,
+  "mean_iou": 0.13359164772967463,
+  "mean_sd_mm": 16.175186218697064,
+  "dont_care": 27,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 4,
+    "fp": 79,
+    "fn": 2,
+    "n_pred": 83,
+    "dont_care": 2
+   },
+   {
+    "visit": 3,
+    "tp": 3,
+    "fp": 86,
+    "fn": 4,
+    "n_pred": 89,
+    "dont_care": 3
+   },
+   {
+    "visit": 4,
+    "tp": 4,
+    "fp": 79,
+    "fn": 3,
+    "n_pred": 83,
+    "dont_care": 6
+   },
+   {
+    "visit": 5,
+    "tp": 5,
+    "fp": 72,
+    "fn": 3,
+    "n_pred": 77,
+    "dont_care": 7
+   },
+   {
+    "visit": 6,
+    "tp": 4,
+    "fp": 87,
+    "fn": 4,
+    "n_pred": 91,
+    "dont_care": 3
+   },
+   {
+    "visit": 7,
+    "tp": 5,
+    "fp": 75,
+    "fn": 5,
+    "n_pred": 80,
+    "dont_care": 6
+   }
+  ]
  },
  "fmfusion|obchange_bigroom_all|iou": {
-  "visits": 0,
-  "tp": 0,
-  "fp": 0,
-  "fn": 0,
-  "precision": 0.0,
-  "recall": 0.0,
-  "f1": 0.0,
-  "mean_iou": null,
-  "mean_sd_mm": null,
-  "dont_care": 0,
-  "per_visit": [],
+  "visits": 6,
+  "tp": 3,
+  "fp": 987,
+  "fn": 43,
+  "precision": 0.0030303030303030303,
+  "recall": 0.06521739130434782,
+  "f1": 0.005791505791505791,
+  "mean_iou": 0.30047215837538416,
+  "mean_sd_mm": 12.35745140971369,
+  "dont_care": 21,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 0,
+    "fp": 99,
+    "fn": 6,
+    "n_pred": 99,
+    "dont_care": 2
+   },
+   {
+    "visit": 3,
+    "tp": 2,
+    "fp": 119,
+    "fn": 5,
+    "n_pred": 121,
+    "dont_care": 3
+   },
+   {
+    "visit": 4,
+    "tp": 1,
+    "fp": 150,
+    "fn": 6,
+    "n_pred": 151,
+    "dont_care": 4
+   },
+   {
+    "visit": 5,
+    "tp": 0,
+    "fp": 170,
+    "fn": 8,
+    "n_pred": 170,
+    "dont_care": 4
+   },
+   {
+    "visit": 6,
+    "tp": 0,
+    "fp": 211,
+    "fn": 8,
+    "n_pred": 211,
+    "dont_care": 3
+   },
+   {
+    "visit": 7,
+    "tp": 0,
+    "fp": 238,
+    "fn": 10,
+    "n_pred": 238,
+    "dont_care": 5
+   }
+  ],
   "revisit": {
-   "removed": 0,
-   "removed_mapped": 0,
-   "removed_still_in_map": 0,
-   "added": 0,
-   "added_found": 0,
-   "per_visit": []
+   "removed": 30,
+   "removed_mapped": 15,
+   "removed_still_in_map": 12,
+   "added": 34,
+   "added_found": 2,
+   "per_visit": [
+    {
+     "visit": 3,
+     "removed": 6,
+     "mapped": 4,
+     "still_in_map": 3,
+     "added": 7,
+     "added_found": 2
+    },
+    {
+     "visit": 4,
+     "removed": 2,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 2,
+     "added_found": 0
+    },
+    {
+     "visit": 5,
+     "removed": 6,
+     "mapped": 3,
+     "still_in_map": 2,
+     "added": 7,
+     "added_found": 0
+    },
+    {
+     "visit": 6,
+     "removed": 8,
+     "mapped": 4,
+     "still_in_map": 3,
+     "added": 8,
+     "added_found": 0
+    },
+    {
+     "visit": 7,
+     "removed": 8,
+     "mapped": 3,
+     "still_in_map": 3,
+     "added": 10,
+     "added_found": 0
+    }
+   ]
   }
  },
  "fmfusion|obchange_bigroom_all|ctr5cm": {
-  "visits": 0,
-  "tp": 0,
-  "fp": 0,
-  "fn": 0,
-  "precision": 0.0,
-  "recall": 0.0,
-  "f1": 0.0,
-  "mean_iou": null,
-  "mean_sd_mm": null,
-  "dont_care": 0,
-  "per_visit": [],
+  "visits": 6,
+  "tp": 20,
+  "fp": 970,
+  "fn": 26,
+  "precision": 0.020202020202020204,
+  "recall": 0.43478260869565216,
+  "f1": 0.03861003861003861,
+  "mean_iou": 0.11639088108010243,
+  "mean_sd_mm": 17.864417700854904,
+  "dont_care": 21,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 4,
+    "fp": 95,
+    "fn": 2,
+    "n_pred": 99,
+    "dont_care": 2
+   },
+   {
+    "visit": 3,
+    "tp": 3,
+    "fp": 118,
+    "fn": 4,
+    "n_pred": 121,
+    "dont_care": 3
+   },
+   {
+    "visit": 4,
+    "tp": 4,
+    "fp": 147,
+    "fn": 3,
+    "n_pred": 151,
+    "dont_care": 4
+   },
+   {
+    "visit": 5,
+    "tp": 4,
+    "fp": 166,
+    "fn": 4,
+    "n_pred": 170,
+    "dont_care": 4
+   },
+   {
+    "visit": 6,
+    "tp": 3,
+    "fp": 208,
+    "fn": 5,
+    "n_pred": 211,
+    "dont_care": 3
+   },
+   {
+    "visit": 7,
+    "tp": 2,
+    "fp": 236,
+    "fn": 8,
+    "n_pred": 238,
+    "dont_care": 5
+   }
+  ],
   "revisit": {
-   "removed": 0,
-   "removed_mapped": 0,
-   "removed_still_in_map": 0,
-   "added": 0,
-   "added_found": 0,
-   "per_visit": []
+   "removed": 30,
+   "removed_mapped": 15,
+   "removed_still_in_map": 12,
+   "added": 34,
+   "added_found": 13,
+   "per_visit": [
+    {
+     "visit": 3,
+     "removed": 6,
+     "mapped": 4,
+     "still_in_map": 3,
+     "added": 7,
+     "added_found": 3
+    },
+    {
+     "visit": 4,
+     "removed": 2,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 2,
+     "added_found": 1
+    },
+    {
+     "visit": 5,
+     "removed": 6,
+     "mapped": 3,
+     "still_in_map": 2,
+     "added": 7,
+     "added_found": 4
+    },
+    {
+     "visit": 6,
+     "removed": 8,
+     "mapped": 4,
+     "still_in_map": 3,
+     "added": 8,
+     "added_found": 3
+    },
+    {
+     "visit": 7,
+     "removed": 8,
+     "mapped": 3,
+     "still_in_map": 3,
+     "added": 10,
+     "added_found": 2
+    }
+   ]
   }
  },
  "dualmap|obchange_bigroom|iou": {
-  "visits": 0,
+  "visits": 6,
   "tp": 0,
-  "fp": 0,
-  "fn": 0,
+  "fp": 55,
+  "fn": 46,
   "precision": 0.0,
   "recall": 0.0,
   "f1": 0.0,
   "mean_iou": null,
   "mean_sd_mm": null,
-  "dont_care": 0,
-  "per_visit": []
+  "dont_care": 5,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 0,
+    "fp": 9,
+    "fn": 6,
+    "n_pred": 9,
+    "dont_care": 1
+   },
+   {
+    "visit": 3,
+    "tp": 0,
+    "fp": 6,
+    "fn": 7,
+    "n_pred": 6,
+    "dont_care": 1
+   },
+   {
+    "visit": 4,
+    "tp": 0,
+    "fp": 9,
+    "fn": 7,
+    "n_pred": 9,
+    "dont_care": 1
+   },
+   {
+    "visit": 5,
+    "tp": 0,
+    "fp": 10,
+    "fn": 8,
+    "n_pred": 10,
+    "dont_care": 1
+   },
+   {
+    "visit": 6,
+    "tp": 0,
+    "fp": 9,
+    "fn": 8,
+    "n_pred": 9,
+    "dont_care": 0
+   },
+   {
+    "visit": 7,
+    "tp": 0,
+    "fp": 12,
+    "fn": 10,
+    "n_pred": 12,
+    "dont_care": 1
+   }
+  ]
  },
  "dualmap|obchange_bigroom|ctr5cm": {
-  "visits": 0,
-  "tp": 0,
-  "fp": 0,
-  "fn": 0,
-  "precision": 0.0,
-  "recall": 0.0,
-  "f1": 0.0,
-  "mean_iou": null,
-  "mean_sd_mm": null,
-  "dont_care": 0,
-  "per_visit": []
+  "visits": 6,
+  "tp": 3,
+  "fp": 52,
+  "fn": 43,
+  "precision": 0.05454545454545454,
+  "recall": 0.06521739130434782,
+  "f1": 0.0594059405940594,
+  "mean_iou": 0.04875683384667475,
+  "mean_sd_mm": 20.43379824662349,
+  "dont_care": 5,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 0,
+    "fp": 9,
+    "fn": 6,
+    "n_pred": 9,
+    "dont_care": 1
+   },
+   {
+    "visit": 3,
+    "tp": 1,
+    "fp": 5,
+    "fn": 6,
+    "n_pred": 6,
+    "dont_care": 1
+   },
+   {
+    "visit": 4,
+    "tp": 1,
+    "fp": 8,
+    "fn": 6,
+    "n_pred": 9,
+    "dont_care": 1
+   },
+   {
+    "visit": 5,
+    "tp": 0,
+    "fp": 10,
+    "fn": 8,
+    "n_pred": 10,
+    "dont_care": 1
+   },
+   {
+    "visit": 6,
+    "tp": 0,
+    "fp": 9,
+    "fn": 8,
+    "n_pred": 9,
+    "dont_care": 0
+   },
+   {
+    "visit": 7,
+    "tp": 1,
+    "fp": 11,
+    "fn": 9,
+    "n_pred": 12,
+    "dont_care": 1
+   }
+  ]
  },
  "dualmap|obchange_bigroom_all|iou": {
-  "visits": 0,
+  "visits": 5,
   "tp": 0,
-  "fp": 0,
-  "fn": 0,
+  "fp": 115,
+  "fn": 40,
   "precision": 0.0,
   "recall": 0.0,
   "f1": 0.0,
   "mean_iou": null,
   "mean_sd_mm": null,
-  "dont_care": 0,
-  "per_visit": [],
+  "dont_care": 8,
+  "per_visit": [
+   {
+    "visit": 3,
+    "tp": 0,
+    "fp": 11,
+    "fn": 7,
+    "n_pred": 11,
+    "dont_care": 2
+   },
+   {
+    "visit": 4,
+    "tp": 0,
+    "fp": 19,
+    "fn": 7,
+    "n_pred": 19,
+    "dont_care": 1
+   },
+   {
+    "visit": 5,
+    "tp": 0,
+    "fp": 18,
+    "fn": 8,
+    "n_pred": 18,
+    "dont_care": 2
+   },
+   {
+    "visit": 6,
+    "tp": 0,
+    "fp": 32,
+    "fn": 8,
+    "n_pred": 32,
+    "dont_care": 1
+   },
+   {
+    "visit": 7,
+    "tp": 0,
+    "fp": 35,
+    "fn": 10,
+    "n_pred": 35,
+    "dont_care": 2
+   }
+  ],
   "revisit": {
-   "removed": 0,
-   "removed_mapped": 0,
-   "removed_still_in_map": 0,
-   "added": 0,
+   "removed": 30,
+   "removed_mapped": 1,
+   "removed_still_in_map": 1,
+   "added": 34,
    "added_found": 0,
-   "per_visit": []
+   "per_visit": [
+    {
+     "visit": 3,
+     "removed": 6,
+     "mapped": 0,
+     "still_in_map": 0,
+     "added": 7,
+     "added_found": 0
+    },
+    {
+     "visit": 4,
+     "removed": 2,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 2,
+     "added_found": 0
+    },
+    {
+     "visit": 5,
+     "removed": 6,
+     "mapped": 0,
+     "still_in_map": 0,
+     "added": 7,
+     "added_found": 0
+    },
+    {
+     "visit": 6,
+     "removed": 8,
+     "mapped": 0,
+     "still_in_map": 0,
+     "added": 8,
+     "added_found": 0
+    },
+    {
+     "visit": 7,
+     "removed": 8,
+     "mapped": 0,
+     "still_in_map": 0,
+     "added": 10,
+     "added_found": 0
+    }
+   ]
   }
  },
  "dualmap|obchange_bigroom_all|ctr5cm": {
-  "visits": 0,
-  "tp": 0,
-  "fp": 0,
-  "fn": 0,
-  "precision": 0.0,
-  "recall": 0.0,
-  "f1": 0.0,
-  "mean_iou": null,
-  "mean_sd_mm": null,
-  "dont_care": 0,
-  "per_visit": [],
+  "visits": 5,
+  "tp": 1,
+  "fp": 114,
+  "fn": 39,
+  "precision": 0.008695652173913044,
+  "recall": 0.025,
+  "f1": 0.012903225806451613,
+  "mean_iou": 0.08797653958944282,
+  "mean_sd_mm": 15.593698239706885,
+  "dont_care": 8,
+  "per_visit": [
+   {
+    "visit": 3,
+    "tp": 1,
+    "fp": 10,
+    "fn": 6,
+    "n_pred": 11,
+    "dont_care": 2
+   },
+   {
+    "visit": 4,
+    "tp": 0,
+    "fp": 19,
+    "fn": 7,
+    "n_pred": 19,
+    "dont_care": 1
+   },
+   {
+    "visit": 5,
+    "tp": 0,
+    "fp": 18,
+    "fn": 8,
+    "n_pred": 18,
+    "dont_care": 2
+   },
+   {
+    "visit": 6,
+    "tp": 0,
+    "fp": 32,
+    "fn": 8,
+    "n_pred": 32,
+    "dont_care": 1
+   },
+   {
+    "visit": 7,
+    "tp": 0,
+    "fp": 35,
+    "fn": 10,
+    "n_pred": 35,
+    "dont_care": 2
+   }
+  ],
   "revisit": {
-   "removed": 0,
-   "removed_mapped": 0,
-   "removed_still_in_map": 0,
-   "added": 0,
-   "added_found": 0,
-   "per_visit": []
+   "removed": 30,
+   "removed_mapped": 1,
+   "removed_still_in_map": 1,
+   "added": 34,
+   "added_found": 1,
+   "per_visit": [
+    {
+     "visit": 3,
+     "removed": 6,
+     "mapped": 0,
+     "still_in_map": 0,
+     "added": 7,
+     "added_found": 1
+    },
+    {
+     "visit": 4,
+     "removed": 2,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 2,
+     "added_found": 0
+    },
+    {
+     "visit": 5,
+     "removed": 6,
+     "mapped": 0,
+     "still_in_map": 0,
+     "added": 7,
+     "added_found": 0
+    },
+    {
+     "visit": 6,
+     "removed": 8,
+     "mapped": 0,
+     "still_in_map": 0,
+     "added": 8,
+     "added_found": 0
+    },
+    {
+     "visit": 7,
+     "removed": 8,
+     "mapped": 0,
+     "still_in_map": 0,
+     "added": 10,
+     "added_found": 0
+    }
+   ]
   }
  },
  "dualmap_bgr|obchange_bigroom|iou": {
-  "visits": 0,
+  "visits": 6,
   "tp": 0,
-  "fp": 0,
-  "fn": 0,
+  "fp": 49,
+  "fn": 46,
   "precision": 0.0,
   "recall": 0.0,
   "f1": 0.0,
   "mean_iou": null,
   "mean_sd_mm": null,
-  "dont_care": 0,
-  "per_visit": []
+  "dont_care": 10,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 0,
+    "fp": 8,
+    "fn": 6,
+    "n_pred": 8,
+    "dont_care": 2
+   },
+   {
+    "visit": 3,
+    "tp": 0,
+    "fp": 9,
+    "fn": 7,
+    "n_pred": 9,
+    "dont_care": 1
+   },
+   {
+    "visit": 4,
+    "tp": 0,
+    "fp": 10,
+    "fn": 7,
+    "n_pred": 10,
+    "dont_care": 1
+   },
+   {
+    "visit": 5,
+    "tp": 0,
+    "fp": 7,
+    "fn": 8,
+    "n_pred": 7,
+    "dont_care": 2
+   },
+   {
+    "visit": 6,
+    "tp": 0,
+    "fp": 6,
+    "fn": 8,
+    "n_pred": 6,
+    "dont_care": 1
+   },
+   {
+    "visit": 7,
+    "tp": 0,
+    "fp": 9,
+    "fn": 10,
+    "n_pred": 9,
+    "dont_care": 3
+   }
+  ]
  },
  "dualmap_bgr|obchange_bigroom|ctr5cm": {
-  "visits": 0,
-  "tp": 0,
-  "fp": 0,
-  "fn": 0,
-  "precision": 0.0,
-  "recall": 0.0,
-  "f1": 0.0,
-  "mean_iou": null,
-  "mean_sd_mm": null,
-  "dont_care": 0,
-  "per_visit": []
+  "visits": 6,
+  "tp": 8,
+  "fp": 41,
+  "fn": 38,
+  "precision": 0.16326530612244897,
+  "recall": 0.17391304347826086,
+  "f1": 0.16842105263157894,
+  "mean_iou": 0.06214191541102654,
+  "mean_sd_mm": 19.400356013113225,
+  "dont_care": 10,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 0,
+    "fp": 8,
+    "fn": 6,
+    "n_pred": 8,
+    "dont_care": 2
+   },
+   {
+    "visit": 3,
+    "tp": 0,
+    "fp": 9,
+    "fn": 7,
+    "n_pred": 9,
+    "dont_care": 1
+   },
+   {
+    "visit": 4,
+    "tp": 0,
+    "fp": 10,
+    "fn": 7,
+    "n_pred": 10,
+    "dont_care": 1
+   },
+   {
+    "visit": 5,
+    "tp": 4,
+    "fp": 3,
+    "fn": 4,
+    "n_pred": 7,
+    "dont_care": 2
+   },
+   {
+    "visit": 6,
+    "tp": 1,
+    "fp": 5,
+    "fn": 7,
+    "n_pred": 6,
+    "dont_care": 1
+   },
+   {
+    "visit": 7,
+    "tp": 3,
+    "fp": 6,
+    "fn": 7,
+    "n_pred": 9,
+    "dont_care": 3
+   }
+  ]
  },
  "dualmap_bgr|obchange_bigroom_all|iou": {
-  "visits": 0,
+  "visits": 6,
   "tp": 0,
-  "fp": 0,
-  "fn": 0,
+  "fp": 151,
+  "fn": 46,
   "precision": 0.0,
   "recall": 0.0,
   "f1": 0.0,
   "mean_iou": null,
   "mean_sd_mm": null,
-  "dont_care": 0,
-  "per_visit": [],
+  "dont_care": 8,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 0,
+    "fp": 8,
+    "fn": 6,
+    "n_pred": 8,
+    "dont_care": 2
+   },
+   {
+    "visit": 3,
+    "tp": 0,
+    "fp": 17,
+    "fn": 7,
+    "n_pred": 17,
+    "dont_care": 1
+   },
+   {
+    "visit": 4,
+    "tp": 0,
+    "fp": 23,
+    "fn": 7,
+    "n_pred": 23,
+    "dont_care": 1
+   },
+   {
+    "visit": 5,
+    "tp": 0,
+    "fp": 27,
+    "fn": 8,
+    "n_pred": 27,
+    "dont_care": 2
+   },
+   {
+    "visit": 6,
+    "tp": 0,
+    "fp": 34,
+    "fn": 8,
+    "n_pred": 34,
+    "dont_care": 1
+   },
+   {
+    "visit": 7,
+    "tp": 0,
+    "fp": 42,
+    "fn": 10,
+    "n_pred": 42,
+    "dont_care": 1
+   }
+  ],
   "revisit": {
-   "removed": 0,
-   "removed_mapped": 0,
-   "removed_still_in_map": 0,
-   "added": 0,
+   "removed": 30,
+   "removed_mapped": 4,
+   "removed_still_in_map": 4,
+   "added": 34,
    "added_found": 0,
-   "per_visit": []
+   "per_visit": [
+    {
+     "visit": 3,
+     "removed": 6,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 7,
+     "added_found": 0
+    },
+    {
+     "visit": 4,
+     "removed": 2,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 2,
+     "added_found": 0
+    },
+    {
+     "visit": 5,
+     "removed": 6,
+     "mapped": 0,
+     "still_in_map": 0,
+     "added": 7,
+     "added_found": 0
+    },
+    {
+     "visit": 6,
+     "removed": 8,
+     "mapped": 2,
+     "still_in_map": 2,
+     "added": 8,
+     "added_found": 0
+    },
+    {
+     "visit": 7,
+     "removed": 8,
+     "mapped": 0,
+     "still_in_map": 0,
+     "added": 10,
+     "added_found": 0
+    }
+   ]
   }
  },
  "dualmap_bgr|obchange_bigroom_all|ctr5cm": {
-  "visits": 0,
-  "tp": 0,
-  "fp": 0,
-  "fn": 0,
-  "precision": 0.0,
-  "recall": 0.0,
-  "f1": 0.0,
-  "mean_iou": null,
-  "mean_sd_mm": null,
-  "dont_care": 0,
-  "per_visit": [],
+  "visits": 6,
+  "tp": 4,
+  "fp": 147,
+  "fn": 42,
+  "precision": 0.026490066225165563,
+  "recall": 0.08695652173913043,
+  "f1": 0.04060913705583757,
+  "mean_iou": 0.06767544780640634,
+  "mean_sd_mm": 19.298464933243945,
+  "dont_care": 8,
+  "per_visit": [
+   {
+    "visit": 2,
+    "tp": 1,
+    "fp": 7,
+    "fn": 5,
+    "n_pred": 8,
+    "dont_care": 2
+   },
+   {
+    "visit": 3,
+    "tp": 1,
+    "fp": 16,
+    "fn": 6,
+    "n_pred": 17,
+    "dont_care": 1
+   },
+   {
+    "visit": 4,
+    "tp": 0,
+    "fp": 23,
+    "fn": 7,
+    "n_pred": 23,
+    "dont_care": 1
+   },
+   {
+    "visit": 5,
+    "tp": 2,
+    "fp": 25,
+    "fn": 6,
+    "n_pred": 27,
+    "dont_care": 2
+   },
+   {
+    "visit": 6,
+    "tp": 0,
+    "fp": 34,
+    "fn": 8,
+    "n_pred": 34,
+    "dont_care": 1
+   },
+   {
+    "visit": 7,
+    "tp": 0,
+    "fp": 42,
+    "fn": 10,
+    "n_pred": 42,
+    "dont_care": 1
+   }
+  ],
   "revisit": {
-   "removed": 0,
-   "removed_mapped": 0,
-   "removed_still_in_map": 0,
-   "added": 0,
-   "added_found": 0,
-   "per_visit": []
+   "removed": 30,
+   "removed_mapped": 4,
+   "removed_still_in_map": 4,
+   "added": 34,
+   "added_found": 3,
+   "per_visit": [
+    {
+     "visit": 3,
+     "removed": 6,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 7,
+     "added_found": 1
+    },
+    {
+     "visit": 4,
+     "removed": 2,
+     "mapped": 1,
+     "still_in_map": 1,
+     "added": 2,
+     "added_found": 0
+    },
+    {
+     "visit": 5,
+     "removed": 6,
+     "mapped": 0,
+     "still_in_map": 0,
+     "added": 7,
+     "added_found": 2
+    },
+    {
+     "visit": 6,
+     "removed": 8,
+     "mapped": 2,
+     "still_in_map": 2,
+     "added": 8,
+     "added_found": 0
+    },
+    {
+     "visit": 7,
+     "removed": 8,
+     "mapped": 0,
+     "still_in_map": 0,
+     "added": 10,
+     "added_found": 0
+    }
+   ]
   }
  }
 }

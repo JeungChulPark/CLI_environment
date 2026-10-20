@@ -1,0 +1,1240 @@
+{
+ "units": "m",
+ "frame": "world",
+ "dataset": "obchange_bigroom_all",
+ "scene": 7,
+ "kind": "dualmap",
+ "source": "/home/jucpark/DeepLearning/Datasets/objmap_obchange30/dualmap_runs_r2/dualmap/obba000007/ycbv_obba000007/map",
+ "objects": [
+  {
+   "id": 0,
+   "label": "unknown",
+   "points": "points/0.npy"
+  },
+  {
+   "id": 1,
+   "label": "unknown",
+   "points": "points/1.npy"
+  },
+  {
+   "id": 2,
+   "label": "unknown",
+   "points": "points/2.npy"
+  },
+  {
+   "id": 3,
+   "label": "unknown",
+   "points": "points/3.npy"
+  },
+  {
+   "id": 4,
+   "label": "unknown",
+   "points": "points/4.npy"
+  },
+  {
+   "id": 5,
+   "label": "unknown",
+   "points": "points/5.npy"
+  },
+  {
+   "id": 6,
+   "label": "unknown",
+   "points": "points/6.npy"
+  },
+  {
+   "id": 7,
+   "label": "unknown",
+   "points": "points/7.npy"
+  },
+  {
+   "id": 8,
+   "label": "unknown",
+   "points": "points/8.npy"
+  },
+  {
+   "id": 9,
+   "label": "unknown",
+   "points": "points/9.npy"
+  },
+  {
+   "id": 10,
+   "label": "unknown",
+   "points": "points/10.npy"
+  },
+  {
+   "id": 11,
+   "label": "unknown",
+   "points": "points/11.npy"
+  },
+  {
+   "id": 12,
+   "label": "unknown",
+   "points": "points/12.npy"
+  },
+  {
+   "id": 13,
+   "label": "unknown",
+   "points": "points/13.npy"
+  },
+  {
+   "id": 14,
+   "label": "unknown",
+   "points": "points/14.npy"
+  },
+  {
+   "id": 15,
+   "label": "unknown",
+   "points": "points/15.npy"
+  },
+  {
+   "id": 16,
+   "label": "unknown",
+   "points": "points/16.npy"
+  },
+  {
+   "id": 17,
+   "label": "unknown",
+   "points": "points/17.npy"
+  },
+  {
+   "id": 18,
+   "label": "025_mug",
+   "points": "points/18.npy"
+  },
+  {
+   "id": 19,
+   "label": "unknown",
+   "points": "points/19.npy"
+  },
+  {
+   "id": 20,
+   "label": "unknown",
+   "points": "points/20.npy"
+  },
+  {
+   "id": 21,
+   "label": "035_power_drill",
+   "points": "points/21.npy"
+  },
+  {
+   "id": 22,
+   "label": "unknown",
+   "points": "points/22.npy"
+  },
+  {
+   "id": 23,
+   "label": "unknown",
+   "points": "points/23.npy"
+  },
+  {
+   "id": 24,
+   "label": "unknown",
+   "points": "points/24.npy"
+  },
+  {
+   "id": 25,
+   "label": "unknown",
+   "points": "points/25.npy"
+  },
+  {
+   "id": 26,
+   "label": "unknown",
+   "points": "points/26.npy"
+  },
+  {
+   "id": 27,
+   "label": "unknown",
+   "points": "points/27.npy"
+  },
+  {
+   "id": 28,
+   "label": "unknown",
+   "points": "points/28.npy"
+  },
+  {
+   "id": 29,
+   "label": "unknown",
+   "points": "points/29.npy"
+  },
+  {
+   "id": 30,
+   "label": "unknown",
+   "points": "points/30.npy"
+  },
+  {
+   "id": 31,
+   "label": "unknown",
+   "points": "points/31.npy"
+  },
+  {
+   "id": 32,
+   "label": "unknown",
+   "points": "points/32.npy"
+  },
+  {
+   "id": 33,
+   "label": "unknown",
+   "points": "points/33.npy"
+  },
+  {
+   "id": 34,
+   "label": "019_pitcher_base",
+   "points": "points/34.npy"
+  },
+  {
+   "id": 35,
+   "label": "unknown",
+   "points": "points/35.npy"
+  },
+  {
+   "id": 36,
+   "label": "010_potted_meat_can",
+   "points": "points/36.npy"
+  },
+  {
+   "id": 37,
+   "label": "021_bleach_cleanser",
+   "points": "points/37.npy"
+  },
+  {
+   "id": 38,
+   "label": "unknown",
+   "points": "points/38.npy"
+  },
+  {
+   "id": 39,
+   "label": "unknown",
+   "points": "points/39.npy"
+  },
+  {
+   "id": 40,
+   "label": "unknown",
+   "points": "points/40.npy"
+  },
+  {
+   "id": 41,
+   "label": "unknown",
+   "points": "points/41.npy"
+  },
+  {
+   "id": 42,
+   "label": "unknown",
+   "points": "points/42.npy"
+  },
+  {
+   "id": 43,
+   "label": "unknown",
+   "points": "points/43.npy"
+  },
+  {
+   "id": 44,
+   "label": "024_bowl",
+   "points": "points/44.npy"
+  },
+  {
+   "id": 45,
+   "label": "unknown",
+   "points": "points/45.npy"
+  },
+  {
+   "id": 46,
+   "label": "040_large_marker",
+   "points": "points/46.npy"
+  },
+  {
+   "id": 47,
+   "label": "unknown",
+   "points": "points/47.npy"
+  },
+  {
+   "id": 48,
+   "label": "unknown",
+   "points": "points/48.npy"
+  },
+  {
+   "id": 49,
+   "label": "025_mug",
+   "points": "points/49.npy"
+  },
+  {
+   "id": 50,
+   "label": "unknown",
+   "points": "points/50.npy"
+  },
+  {
+   "id": 51,
+   "label": "025_mug",
+   "points": "points/51.npy"
+  },
+  {
+   "id": 52,
+   "label": "unknown",
+   "points": "points/52.npy"
+  },
+  {
+   "id": 53,
+   "label": "unknown",
+   "points": "points/53.npy"
+  },
+  {
+   "id": 54,
+   "label": "unknown",
+   "points": "points/54.npy"
+  },
+  {
+   "id": 55,
+   "label": "unknown",
+   "points": "points/55.npy"
+  },
+  {
+   "id": 56,
+   "label": "unknown",
+   "points": "points/56.npy"
+  },
+  {
+   "id": 57,
+   "label": "unknown",
+   "points": "points/57.npy"
+  },
+  {
+   "id": 58,
+   "label": "unknown",
+   "points": "points/58.npy"
+  },
+  {
+   "id": 59,
+   "label": "025_mug",
+   "points": "points/59.npy"
+  },
+  {
+   "id": 60,
+   "label": "unknown",
+   "points": "points/60.npy"
+  },
+  {
+   "id": 61,
+   "label": "unknown",
+   "points": "points/61.npy"
+  },
+  {
+   "id": 62,
+   "label": "024_bowl",
+   "points": "points/62.npy"
+  },
+  {
+   "id": 63,
+   "label": "unknown",
+   "points": "points/63.npy"
+  },
+  {
+   "id": 64,
+   "label": "unknown",
+   "points": "points/64.npy"
+  },
+  {
+   "id": 65,
+   "label": "unknown",
+   "points": "points/65.npy"
+  },
+  {
+   "id": 66,
+   "label": "unknown",
+   "points": "points/66.npy"
+  },
+  {
+   "id": 67,
+   "label": "unknown",
+   "points": "points/67.npy"
+  },
+  {
+   "id": 68,
+   "label": "unknown",
+   "points": "points/68.npy"
+  },
+  {
+   "id": 69,
+   "label": "unknown",
+   "points": "points/69.npy"
+  },
+  {
+   "id": 70,
+   "label": "unknown",
+   "points": "points/70.npy"
+  },
+  {
+   "id": 71,
+   "label": "unknown",
+   "points": "points/71.npy"
+  },
+  {
+   "id": 72,
+   "label": "unknown",
+   "points": "points/72.npy"
+  },
+  {
+   "id": 73,
+   "label": "unknown",
+   "points": "points/73.npy"
+  },
+  {
+   "id": 74,
+   "label": "unknown",
+   "points": "points/74.npy"
+  },
+  {
+   "id": 75,
+   "label": "unknown",
+   "points": "points/75.npy"
+  },
+  {
+   "id": 76,
+   "label": "unknown",
+   "points": "points/76.npy"
+  },
+  {
+   "id": 77,
+   "label": "unknown",
+   "points": "points/77.npy"
+  },
+  {
+   "id": 78,
+   "label": "unknown",
+   "points": "points/78.npy"
+  },
+  {
+   "id": 79,
+   "label": "unknown",
+   "points": "points/79.npy"
+  },
+  {
+   "id": 80,
+   "label": "unknown",
+   "points": "points/80.npy"
+  },
+  {
+   "id": 81,
+   "label": "unknown",
+   "points": "points/81.npy"
+  },
+  {
+   "id": 82,
+   "label": "unknown",
+   "points": "points/82.npy"
+  },
+  {
+   "id": 83,
+   "label": "unknown",
+   "points": "points/83.npy"
+  },
+  {
+   "id": 84,
+   "label": "unknown",
+   "points": "points/84.npy"
+  },
+  {
+   "id": 85,
+   "label": "unknown",
+   "points": "points/85.npy"
+  },
+  {
+   "id": 86,
+   "label": "unknown",
+   "points": "points/86.npy"
+  },
+  {
+   "id": 87,
+   "label": "unknown",
+   "points": "points/87.npy"
+  },
+  {
+   "id": 88,
+   "label": "unknown",
+   "points": "points/88.npy"
+  },
+  {
+   "id": 89,
+   "label": "024_bowl",
+   "points": "points/89.npy"
+  },
+  {
+   "id": 90,
+   "label": "unknown",
+   "points": "points/90.npy"
+  },
+  {
+   "id": 91,
+   "label": "unknown",
+   "points": "points/91.npy"
+  },
+  {
+   "id": 92,
+   "label": "002_master_chef_can",
+   "points": "points/92.npy"
+  },
+  {
+   "id": 93,
+   "label": "unknown",
+   "points": "points/93.npy"
+  },
+  {
+   "id": 94,
+   "label": "unknown",
+   "points": "points/94.npy"
+  },
+  {
+   "id": 95,
+   "label": "unknown",
+   "points": "points/95.npy"
+  },
+  {
+   "id": 96,
+   "label": "unknown",
+   "points": "points/96.npy"
+  },
+  {
+   "id": 97,
+   "label": "024_bowl",
+   "points": "points/97.npy"
+  },
+  {
+   "id": 98,
+   "label": "unknown",
+   "points": "points/98.npy"
+  },
+  {
+   "id": 99,
+   "label": "unknown",
+   "points": "points/99.npy"
+  },
+  {
+   "id": 100,
+   "label": "unknown",
+   "points": "points/100.npy"
+  },
+  {
+   "id": 101,
+   "label": "unknown",
+   "points": "points/101.npy"
+  },
+  {
+   "id": 102,
+   "label": "unknown",
+   "points": "points/102.npy"
+  },
+  {
+   "id": 103,
+   "label": "unknown",
+   "points": "points/103.npy"
+  },
+  {
+   "id": 104,
+   "label": "unknown",
+   "points": "points/104.npy"
+  },
+  {
+   "id": 105,
+   "label": "unknown",
+   "points": "points/105.npy"
+  },
+  {
+   "id": 106,
+   "label": "unknown",
+   "points": "points/106.npy"
+  },
+  {
+   "id": 107,
+   "label": "002_master_chef_can",
+   "points": "points/107.npy"
+  },
+  {
+   "id": 108,
+   "label": "unknown",
+   "points": "points/108.npy"
+  },
+  {
+   "id": 109,
+   "label": "unknown",
+   "points": "points/109.npy"
+  },
+  {
+   "id": 110,
+   "label": "002_master_chef_can",
+   "points": "points/110.npy"
+  },
+  {
+   "id": 111,
+   "label": "unknown",
+   "points": "points/111.npy"
+  },
+  {
+   "id": 112,
+   "label": "unknown",
+   "points": "points/112.npy"
+  },
+  {
+   "id": 113,
+   "label": "002_master_chef_can",
+   "points": "points/113.npy"
+  },
+  {
+   "id": 114,
+   "label": "unknown",
+   "points": "points/114.npy"
+  },
+  {
+   "id": 115,
+   "label": "unknown",
+   "points": "points/115.npy"
+  },
+  {
+   "id": 116,
+   "label": "unknown",
+   "points": "points/116.npy"
+  },
+  {
+   "id": 117,
+   "label": "unknown",
+   "points": "points/117.npy"
+  },
+  {
+   "id": 118,
+   "label": "unknown",
+   "points": "points/118.npy"
+  },
+  {
+   "id": 119,
+   "label": "unknown",
+   "points": "points/119.npy"
+  },
+  {
+   "id": 120,
+   "label": "024_bowl",
+   "points": "points/120.npy"
+  },
+  {
+   "id": 121,
+   "label": "unknown",
+   "points": "points/121.npy"
+  },
+  {
+   "id": 122,
+   "label": "unknown",
+   "points": "points/122.npy"
+  },
+  {
+   "id": 123,
+   "label": "unknown",
+   "points": "points/123.npy"
+  },
+  {
+   "id": 124,
+   "label": "unknown",
+   "points": "points/124.npy"
+  },
+  {
+   "id": 125,
+   "label": "unknown",
+   "points": "points/125.npy"
+  },
+  {
+   "id": 126,
+   "label": "unknown",
+   "points": "points/126.npy"
+  },
+  {
+   "id": 127,
+   "label": "unknown",
+   "points": "points/127.npy"
+  },
+  {
+   "id": 128,
+   "label": "024_bowl",
+   "points": "points/128.npy"
+  },
+  {
+   "id": 129,
+   "label": "unknown",
+   "points": "points/129.npy"
+  },
+  {
+   "id": 130,
+   "label": "unknown",
+   "points": "points/130.npy"
+  },
+  {
+   "id": 131,
+   "label": "unknown",
+   "points": "points/131.npy"
+  },
+  {
+   "id": 132,
+   "label": "unknown",
+   "points": "points/132.npy"
+  },
+  {
+   "id": 133,
+   "label": "unknown",
+   "points": "points/133.npy"
+  },
+  {
+   "id": 134,
+   "label": "unknown",
+   "points": "points/134.npy"
+  },
+  {
+   "id": 135,
+   "label": "unknown",
+   "points": "points/135.npy"
+  },
+  {
+   "id": 136,
+   "label": "unknown",
+   "points": "points/136.npy"
+  },
+  {
+   "id": 137,
+   "label": "unknown",
+   "points": "points/137.npy"
+  },
+  {
+   "id": 138,
+   "label": "025_mug",
+   "points": "points/138.npy"
+  },
+  {
+   "id": 139,
+   "label": "025_mug",
+   "points": "points/139.npy"
+  },
+  {
+   "id": 140,
+   "label": "unknown",
+   "points": "points/140.npy"
+  },
+  {
+   "id": 141,
+   "label": "unknown",
+   "points": "points/141.npy"
+  },
+  {
+   "id": 142,
+   "label": "unknown",
+   "points": "points/142.npy"
+  },
+  {
+   "id": 143,
+   "label": "unknown",
+   "points": "points/143.npy"
+  },
+  {
+   "id": 144,
+   "label": "025_mug",
+   "points": "points/144.npy"
+  },
+  {
+   "id": 145,
+   "label": "unknown",
+   "points": "points/145.npy"
+  },
+  {
+   "id": 146,
+   "label": "unknown",
+   "points": "points/146.npy"
+  },
+  {
+   "id": 147,
+   "label": "unknown",
+   "points": "points/147.npy"
+  },
+  {
+   "id": 148,
+   "label": "unknown",
+   "points": "points/148.npy"
+  },
+  {
+   "id": 149,
+   "label": "unknown",
+   "points": "points/149.npy"
+  },
+  {
+   "id": 150,
+   "label": "unknown",
+   "points": "points/150.npy"
+  },
+  {
+   "id": 151,
+   "label": "unknown",
+   "points": "points/151.npy"
+  },
+  {
+   "id": 152,
+   "label": "002_master_chef_can",
+   "points": "points/152.npy"
+  },
+  {
+   "id": 153,
+   "label": "unknown",
+   "points": "points/153.npy"
+  },
+  {
+   "id": 154,
+   "label": "unknown",
+   "points": "points/154.npy"
+  },
+  {
+   "id": 155,
+   "label": "unknown",
+   "points": "points/155.npy"
+  },
+  {
+   "id": 156,
+   "label": "unknown",
+   "points": "points/156.npy"
+  },
+  {
+   "id": 157,
+   "label": "unknown",
+   "points": "points/157.npy"
+  },
+  {
+   "id": 158,
+   "label": "unknown",
+   "points": "points/158.npy"
+  },
+  {
+   "id": 159,
+   "label": "unknown",
+   "points": "points/159.npy"
+  },
+  {
+   "id": 160,
+   "label": "unknown",
+   "points": "points/160.npy"
+  },
+  {
+   "id": 161,
+   "label": "unknown",
+   "points": "points/161.npy"
+  },
+  {
+   "id": 162,
+   "label": "unknown",
+   "points": "points/162.npy"
+  },
+  {
+   "id": 163,
+   "label": "unknown",
+   "points": "points/163.npy"
+  },
+  {
+   "id": 164,
+   "label": "unknown",
+   "points": "points/164.npy"
+  },
+  {
+   "id": 165,
+   "label": "unknown",
+   "points": "points/165.npy"
+  },
+  {
+   "id": 166,
+   "label": "unknown",
+   "points": "points/166.npy"
+  },
+  {
+   "id": 167,
+   "label": "unknown",
+   "points": "points/167.npy"
+  },
+  {
+   "id": 168,
+   "label": "unknown",
+   "points": "points/168.npy"
+  },
+  {
+   "id": 169,
+   "label": "unknown",
+   "points": "points/169.npy"
+  },
+  {
+   "id": 170,
+   "label": "unknown",
+   "points": "points/170.npy"
+  },
+  {
+   "id": 171,
+   "label": "unknown",
+   "points": "points/171.npy"
+  },
+  {
+   "id": 172,
+   "label": "unknown",
+   "points": "points/172.npy"
+  },
+  {
+   "id": 173,
+   "label": "unknown",
+   "points": "points/173.npy"
+  },
+  {
+   "id": 174,
+   "label": "unknown",
+   "points": "points/174.npy"
+  },
+  {
+   "id": 175,
+   "label": "unknown",
+   "points": "points/175.npy"
+  },
+  {
+   "id": 176,
+   "label": "unknown",
+   "points": "points/176.npy"
+  },
+  {
+   "id": 177,
+   "label": "unknown",
+   "points": "points/177.npy"
+  },
+  {
+   "id": 178,
+   "label": "025_mug",
+   "points": "points/178.npy"
+  },
+  {
+   "id": 179,
+   "label": "unknown",
+   "points": "points/179.npy"
+  },
+  {
+   "id": 180,
+   "label": "unknown",
+   "points": "points/180.npy"
+  },
+  {
+   "id": 181,
+   "label": "025_mug",
+   "points": "points/181.npy"
+  },
+  {
+   "id": 182,
+   "label": "unknown",
+   "points": "points/182.npy"
+  },
+  {
+   "id": 183,
+   "label": "008_pudding_box",
+   "points": "points/183.npy"
+  },
+  {
+   "id": 184,
+   "label": "025_mug",
+   "points": "points/184.npy"
+  },
+  {
+   "id": 185,
+   "label": "025_mug",
+   "points": "points/185.npy"
+  },
+  {
+   "id": 186,
+   "label": "025_mug",
+   "points": "points/186.npy"
+  },
+  {
+   "id": 187,
+   "label": "unknown",
+   "points": "points/187.npy"
+  },
+  {
+   "id": 188,
+   "label": "025_mug",
+   "points": "points/188.npy"
+  },
+  {
+   "id": 189,
+   "label": "unknown",
+   "points": "points/189.npy"
+  },
+  {
+   "id": 190,
+   "label": "019_pitcher_base",
+   "points": "points/190.npy"
+  },
+  {
+   "id": 191,
+   "label": "025_mug",
+   "points": "points/191.npy"
+  },
+  {
+   "id": 192,
+   "label": "unknown",
+   "points": "points/192.npy"
+  },
+  {
+   "id": 193,
+   "label": "unknown",
+   "points": "points/193.npy"
+  },
+  {
+   "id": 194,
+   "label": "unknown",
+   "points": "points/194.npy"
+  },
+  {
+   "id": 195,
+   "label": "unknown",
+   "points": "points/195.npy"
+  },
+  {
+   "id": 196,
+   "label": "unknown",
+   "points": "points/196.npy"
+  },
+  {
+   "id": 197,
+   "label": "unknown",
+   "points": "points/197.npy"
+  },
+  {
+   "id": 198,
+   "label": "036_wood_block",
+   "points": "points/198.npy"
+  },
+  {
+   "id": 199,
+   "label": "unknown",
+   "points": "points/199.npy"
+  },
+  {
+   "id": 200,
+   "label": "unknown",
+   "points": "points/200.npy"
+  },
+  {
+   "id": 201,
+   "label": "unknown",
+   "points": "points/201.npy"
+  },
+  {
+   "id": 202,
+   "label": "unknown",
+   "points": "points/202.npy"
+  },
+  {
+   "id": 203,
+   "label": "unknown",
+   "points": "points/203.npy"
+  },
+  {
+   "id": 204,
+   "label": "unknown",
+   "points": "points/204.npy"
+  },
+  {
+   "id": 205,
+   "label": "unknown",
+   "points": "points/205.npy"
+  },
+  {
+   "id": 206,
+   "label": "unknown",
+   "points": "points/206.npy"
+  },
+  {
+   "id": 207,
+   "label": "unknown",
+   "points": "points/207.npy"
+  },
+  {
+   "id": 208,
+   "label": "unknown",
+   "points": "points/208.npy"
+  },
+  {
+   "id": 209,
+   "label": "unknown",
+   "points": "points/209.npy"
+  },
+  {
+   "id": 210,
+   "label": "unknown",
+   "points": "points/210.npy"
+  },
+  {
+   "id": 211,
+   "label": "unknown",
+   "points": "points/211.npy"
+  },
+  {
+   "id": 212,
+   "label": "002_master_chef_can",
+   "points": "points/212.npy"
+  },
+  {
+   "id": 213,
+   "label": "unknown",
+   "points": "points/213.npy"
+  },
+  {
+   "id": 214,
+   "label": "unknown",
+   "points": "points/214.npy"
+  },
+  {
+   "id": 215,
+   "label": "unknown",
+   "points": "points/215.npy"
+  },
+  {
+   "id": 216,
+   "label": "010_potted_meat_can",
+   "points": "points/216.npy"
+  },
+  {
+   "id": 217,
+   "label": "unknown",
+   "points": "points/217.npy"
+  },
+  {
+   "id": 218,
+   "label": "unknown",
+   "points": "points/218.npy"
+  },
+  {
+   "id": 219,
+   "label": "unknown",
+   "points": "points/219.npy"
+  },
+  {
+   "id": 220,
+   "label": "unknown",
+   "points": "points/220.npy"
+  },
+  {
+   "id": 221,
+   "label": "035_power_drill",
+   "points": "points/221.npy"
+  },
+  {
+   "id": 222,
+   "label": "unknown",
+   "points": "points/222.npy"
+  },
+  {
+   "id": 223,
+   "label": "unknown",
+   "points": "points/223.npy"
+  },
+  {
+   "id": 224,
+   "label": "unknown",
+   "points": "points/224.npy"
+  },
+  {
+   "id": 225,
+   "label": "unknown",
+   "points": "points/225.npy"
+  },
+  {
+   "id": 226,
+   "label": "024_bowl",
+   "points": "points/226.npy"
+  },
+  {
+   "id": 227,
+   "label": "unknown",
+   "points": "points/227.npy"
+  },
+  {
+   "id": 228,
+   "label": "unknown",
+   "points": "points/228.npy"
+  },
+  {
+   "id": 229,
+   "label": "unknown",
+   "points": "points/229.npy"
+  },
+  {
+   "id": 230,
+   "label": "unknown",
+   "points": "points/230.npy"
+  },
+  {
+   "id": 231,
+   "label": "unknown",
+   "points": "points/231.npy"
+  },
+  {
+   "id": 232,
+   "label": "unknown",
+   "points": "points/232.npy"
+  },
+  {
+   "id": 233,
+   "label": "unknown",
+   "points": "points/233.npy"
+  },
+  {
+   "id": 234,
+   "label": "unknown",
+   "points": "points/234.npy"
+  },
+  {
+   "id": 235,
+   "label": "unknown",
+   "points": "points/235.npy"
+  },
+  {
+   "id": 236,
+   "label": "unknown",
+   "points": "points/236.npy"
+  },
+  {
+   "id": 237,
+   "label": "unknown",
+   "points": "points/237.npy"
+  },
+  {
+   "id": 238,
+   "label": "unknown",
+   "points": "points/238.npy"
+  },
+  {
+   "id": 239,
+   "label": "unknown",
+   "points": "points/239.npy"
+  },
+  {
+   "id": 240,
+   "label": "unknown",
+   "points": "points/240.npy"
+  },
+  {
+   "id": 241,
+   "label": "unknown",
+   "points": "points/241.npy"
+  },
+  {
+   "id": 242,
+   "label": "unknown",
+   "points": "points/242.npy"
+  },
+  {
+   "id": 243,
+   "label": "unknown",
+   "points": "points/243.npy"
+  },
+  {
+   "id": 244,
+   "label": "unknown",
+   "points": "points/244.npy"
+  },
+  {
+   "id": 245,
+   "label": "unknown",
+   "points": "points/245.npy"
+  }
+ ]
+}

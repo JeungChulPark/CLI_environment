@@ -1,0 +1,180 @@
+{
+ "units": "m",
+ "frame": "world",
+ "dataset": "obchange_office",
+ "scene": 2,
+ "kind": "dualmap_bgr",
+ "source": "/home/jucpark/DeepLearning/Datasets/objmap_obchange30/dualmap_runs_r2/dualmap_bgr/obov000002/ycbv_obov000002/map",
+ "objects": [
+  {
+   "id": 0,
+   "label": "019_pitcher_base",
+   "points": "points/0.npy"
+  },
+  {
+   "id": 1,
+   "label": "unknown",
+   "points": "points/1.npy"
+  },
+  {
+   "id": 2,
+   "label": "unknown",
+   "points": "points/2.npy"
+  },
+  {
+   "id": 3,
+   "label": "011_banana",
+   "points": "points/3.npy"
+  },
+  {
+   "id": 4,
+   "label": "unknown",
+   "points": "points/4.npy"
+  },
+  {
+   "id": 5,
+   "label": "unknown",
+   "points": "points/5.npy"
+  },
+  {
+   "id": 6,
+   "label": "unknown",
+   "points": "points/6.npy"
+  },
+  {
+   "id": 7,
+   "label": "unknown",
+   "points": "points/7.npy"
+  },
+  {
+   "id": 8,
+   "label": "025_mug",
+   "points": "points/8.npy"
+  },
+  {
+   "id": 9,
+   "label": "unknown",
+   "points": "points/9.npy"
+  },
+  {
+   "id": 10,
+   "label": "unknown",
+   "points": "points/10.npy"
+  },
+  {
+   "id": 11,
+   "label": "unknown",
+   "points": "points/11.npy"
+  },
+  {
+   "id": 12,
+   "label": "unknown",
+   "points": "points/12.npy"
+  },
+  {
+   "id": 13,
+   "label": "unknown",
+   "points": "points/13.npy"
+  },
+  {
+   "id": 14,
+   "label": "unknown",
+   "points": "points/14.npy"
+  },
+  {
+   "id": 15,
+   "label": "unknown",
+   "points": "points/15.npy"
+  },
+  {
+   "id": 16,
+   "label": "019_pitcher_base",
+   "points": "points/16.npy"
+  },
+  {
+   "id": 17,
+   "label": "unknown",
+   "points": "points/17.npy"
+  },
+  {
+   "id": 18,
+   "label": "unknown",
+   "points": "points/18.npy"
+  },
+  {
+   "id": 19,
+   "label": "unknown",
+   "points": "points/19.npy"
+  },
+  {
+   "id": 20,
+   "label": "unknown",
+   "points": "points/20.npy"
+  },
+  {
+   "id": 21,
+   "label": "unknown",
+   "points": "points/21.npy"
+  },
+  {
+   "id": 22,
+   "label": "unknown",
+   "points": "points/22.npy"
+  },
+  {
+   "id": 23,
+   "label": "unknown",
+   "points": "points/23.npy"
+  },
+  {
+   "id": 24,
+   "label": "unknown",
+   "points": "points/24.npy"
+  },
+  {
+   "id": 25,
+   "label": "unknown",
+   "points": "points/25.npy"
+  },
+  {
+   "id": 26,
+   "label": "unknown",
+   "points": "points/26.npy"
+  },
+  {
+   "id": 27,
+   "label": "unknown",
+   "points": "points/27.npy"
+  },
+  {
+   "id": 28,
+   "label": "unknown",
+   "points": "points/28.npy"
+  },
+  {
+   "id": 29,
+   "label": "unknown",
+   "points": "points/29.npy"
+  },
+  {
+   "id": 30,
+   "label": "unknown",
+   "points": "points/30.npy"
+  },
+  {
+   "id": 31,
+   "label": "unknown",
+   "points": "points/31.npy"
+  },
+  {
+   "id": 32,
+   "label": "unknown",
+   "points": "points/32.npy"
+  },
+  {
+   "id": 33,
+   "label": "021_bleach_cleanser",
+   "points": "points/33.npy"
+  }
+ ]
+}
