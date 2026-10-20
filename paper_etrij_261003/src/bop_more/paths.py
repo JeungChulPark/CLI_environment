@@ -16,7 +16,7 @@ def _p(env, default):
 
 
 DS = os.environ.get("BOP_DATASET", "lmo").strip().lower()
-assert DS in ("lmo", "tudl", "icbin", "tless", "hb"), f"BOP_DATASET={DS}"
+assert DS in ("lmo", "tudl", "icbin", "tless", "hb", "hope"), f"BOP_DATASET={DS}"
 # code
 REPO = _p("OBJPOSE_REPO", HERE.parents[2])                       # CLI_environment checkout
 SR = _p("SAM6D_REALTIME", REPO / "sam6d_realtime")               # our recognizer

@@ -1,0 +1,9 @@
+[2026-10-14 09:59:43] START fmf_detect (msda=pytorch, CUDA_VISIBLE_DEVICES=0)
+[2026-10-14 09:59:54] fmfusion detect ycbv rc=0
+[2026-10-14 10:05:59] fmfusion detect obchange rc=0
+[2026-10-14 10:17:16] fmfusion ycbv rc=0
+[2026-10-14 10:35:03] fmfusion obchange_all rc=0
+[2026-10-14 10:37:32] fmfusion obchange visits rc=0
+[2026-10-14 10:37:42] fmfusion eval done
+[2026-10-14 10:38:27] obchange score (all methods) rc=0
+[2026-10-14 10:38:27] FMF DETECT 4090 ALL DONE

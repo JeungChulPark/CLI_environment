@@ -58,8 +58,8 @@
    "id": 7,
    "label": "051_large_clamp",
    "points": "points/7.npy",
-   "score": 0.71,
-   "n_obs": 11
+   "score": 0.72,
+   "n_obs": 14
   },
   {
    "id": 8,
@@ -87,7 +87,7 @@
    "label": "052_extra_large_clamp",
    "points": "points/11.npy",
    "score": 0.75,
-   "n_obs": 36
+   "n_obs": 34
   },
   {
    "id": 12,

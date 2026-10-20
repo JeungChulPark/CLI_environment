@@ -17,7 +17,7 @@
    "label": "021_bleach_cleanser",
    "points": "points/1.npy",
    "score": 0.95,
-   "n_obs": 264
+   "n_obs": 263
   },
   {
    "id": 2,
@@ -28,10 +28,10 @@
   },
   {
    "id": 3,
-   "label": "035_power_drill",
+   "label": "052_extra_large_clamp",
    "points": "points/3.npy",
    "score": 0.59,
-   "n_obs": 300
+   "n_obs": 312
   },
   {
    "id": 4,
@@ -44,7 +44,7 @@
    "id": 5,
    "label": "021_bleach_cleanser",
    "points": "points/5.npy",
-   "score": 0.82,
+   "score": 0.81,
    "n_obs": 181
   },
   {
@@ -59,7 +59,7 @@
    "label": "010_potted_meat_can",
    "points": "points/7.npy",
    "score": 0.81,
-   "n_obs": 164
+   "n_obs": 170
   },
   {
    "id": 8,
@@ -150,7 +150,7 @@
    "label": "004_sugar_box",
    "points": "points/20.npy",
    "score": 1.0,
-   "n_obs": 8
+   "n_obs": 10
   }
  ]
 }

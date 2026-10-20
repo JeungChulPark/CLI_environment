@@ -45,7 +45,7 @@
    "label": "052_extra_large_clamp",
    "points": "points/5.npy",
    "score": 0.74,
-   "n_obs": 18
+   "n_obs": 17
   },
   {
    "id": 6,
@@ -80,7 +80,7 @@
    "label": "021_bleach_cleanser",
    "points": "points/10.npy",
    "score": 1.0,
-   "n_obs": 96
+   "n_obs": 95
   },
   {
    "id": 11,

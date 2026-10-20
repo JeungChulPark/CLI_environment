@@ -66,13 +66,13 @@
    "label": "052_extra_large_clamp",
    "points": "points/8.npy",
    "score": 0.64,
-   "n_obs": 545
+   "n_obs": 540
   },
   {
    "id": 9,
    "label": "008_pudding_box",
    "points": "points/9.npy",
-   "score": 0.99,
+   "score": 0.98,
    "n_obs": 15
   },
   {

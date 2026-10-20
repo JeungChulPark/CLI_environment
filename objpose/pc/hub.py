@@ -823,10 +823,14 @@ class Hub:
         if backend not in cat.BY_ID:
             return False, f"알 수 없는 백엔드 {backend}"
         try:
-            argv = cat.hub_args(dataset, backend, features or cat.DEFAULT_FEATURES)
+            argv = cat.hub_args(dataset, backend, features or cat.DEFAULT_FEATURES,
+                                run_tag=time.strftime("_web%y%m%d%H%M%S"))
         except (ValueError, KeyError) as e:
             return False, str(e)
         self._restart = argv
+        # the viewer's backend comparison (ORB-SLAM3 / RTAB-Map / KISS-ICP / hdl ...) keeps covering
+        # every run of this dataset, earlier catalog runs and the viewer's _web runs alike
+        self._restart_compare = f"live_{dataset}_*"
         f = f" f{features}" if features and cat.BY_ID[backend].sized else ""
         self.status = f"{dataset} · {cat.BY_ID[backend].label}{f} 로 재시작하는 중"
         log(f"restart requested: {dataset} / {backend}")
@@ -847,8 +851,17 @@ class Hub:
         argv = [sys.executable, "-u", str(HERE / "hub.py"), *self._restart,
                 "--http-host", self.a.http_host, "--http-port", str(self.a.http_port),
                 "--mac-host", self.a.mac_host]
-        if self.a.compare_glob:
-            argv += ["--compare-glob", self.a.compare_glob]
+        argv += ["--compare-glob", self._restart_compare]
+        # The catalog argv covers the data and the SLAM side only; the recogniser this hub was
+        # started with (run_web.sh: improvement 3 + cluster-first) carries over to the new run.
+        # Its environment (OBJPOSE_LIVE_MODE etc.) survives execv as is.
+        a = self.a
+        argv += (["--recognizer", a.recognizer] if a.recognizer else []) + \
+                (["--ism-config", a.ism_config] if a.ism_config else []) + \
+                (["--cluster-occupancy", str(a.cluster_occupancy)] if a.cluster_occupancy else []) + \
+                (["--verify-candidates", str(a.verify_candidates)] if a.verify_candidates else []) + \
+                (["--verify-cluster-first"] if a.verify_cluster_first else []) + \
+                (["--no-verify"] if a.no_verify else []) + (["--map-prior"] if a.map_prior else [])
         log("exec " + " ".join(argv[3:]))
         sys.stdout.flush()
         os.execv(sys.executable, argv)

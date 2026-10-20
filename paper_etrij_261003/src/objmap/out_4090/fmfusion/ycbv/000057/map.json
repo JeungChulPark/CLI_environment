@@ -52,7 +52,7 @@
    "label": "025_mug",
    "points": "points/6.npy",
    "score": 1.0,
-   "n_obs": 163
+   "n_obs": 162
   },
   {
    "id": 7,
@@ -66,7 +66,7 @@
    "label": "036_wood_block",
    "points": "points/8.npy",
    "score": 1.0,
-   "n_obs": 14
+   "n_obs": 13
   },
   {
    "id": 9,

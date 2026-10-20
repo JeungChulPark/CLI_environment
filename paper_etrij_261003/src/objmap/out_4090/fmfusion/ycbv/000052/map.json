@@ -30,8 +30,8 @@
    "id": 3,
    "label": "003_cracker_box",
    "points": "points/3.npy",
-   "score": 0.93,
-   "n_obs": 29
+   "score": 0.94,
+   "n_obs": 30
   },
   {
    "id": 4,
