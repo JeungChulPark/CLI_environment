@@ -1,0 +1,45 @@
+%YAML:1.0
+# ORB-SLAM3 RGB-D settings for dataset 260915_eightcircle / SAM (RealSense D455F; intrinsics from 260915 info.json SAM.K, same values as 260901 SLAM camera)
+#   cameras were swapped against 260901: this rig needs its own RT (rt/260915)
+
+
+File.version: "1.0"
+Camera.type: "PinHole"
+
+Camera1.fx: 385.134
+Camera1.fy: 384.563
+Camera1.cx: 320.789
+Camera1.cy: 243.438
+
+Camera1.k1: -0.055259
+Camera1.k2:  0.068334
+Camera1.p1: -0.000608
+Camera1.p2: -0.000944
+Camera1.k3: -0.022290
+
+Camera.width: 640
+Camera.height: 480
+Camera.fps: 30
+Camera.RGB: 1
+
+RGBD.DepthMapFactor: 1000.0
+
+Stereo.ThDepth: 40.0
+Stereo.b: 0.0745
+
+ORBextractor.nFeatures: 2000
+ORBextractor.scaleFactor: 1.2
+ORBextractor.nLevels: 8
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
+
+Viewer.KeyFrameSize: 0.05
+Viewer.KeyFrameLineWidth: 1.0
+Viewer.GraphLineWidth: 0.9
+Viewer.PointSize: 2.0
+Viewer.CameraSize: 0.08
+Viewer.CameraLineWidth: 3.0
+Viewer.ViewpointX: 0.0
+Viewer.ViewpointY: -0.7
+Viewer.ViewpointZ: -3.5
+Viewer.ViewpointF: 500.0

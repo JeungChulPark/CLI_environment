@@ -1,0 +1,51 @@
+{
+ "dataset": "261022_cbnu_digut",
+ "cam": "objpose/rt/261022/digut_slam_orb_tum.txt.optimized.txt",
+ "imu": "objpose/rt/261022/digut_imu.npz",
+ "gyro_bias_rad_s": [
+  -0.0014505073091179745,
+  -0.0012184194819934036,
+  0.0020588264953950914
+ ],
+ "acc_mean": [
+  0.6459703384044135,
+  0.06544989505399776,
+  -9.771147459474125
+ ],
+ "time": {
+  "imu_minus_cam_s": -0.0007131560636387478,
+  "corr_ci": 0.9946966487879912,
+  "meaning": "an event stamped t on the camera clock is stamped t + tau on the other sensor's clock"
+ },
+ "R_cam_imu": [
+  [
+   -0.010367669081352393,
+   0.9999280205838688,
+   -0.0060386330444865965
+  ],
+  [
+   -0.013821765906215477,
+   0.005895076094155988,
+   0.9998870970590019
+  ],
+  [
+   0.9998507239708603,
+   0.010449963113356275,
+   0.013759652825422075
+  ]
+ ],
+ "R_cam_imu_fit": {
+  "n": 19024,
+  "n_moving": 10995,
+  "singular_values": [
+   997.6740468038512,
+   0.6294811794922746,
+   0.3072276673648007
+  ],
+  "kabsch_vs_refined_deg": 0.15580002000897605,
+  "resid_rms_rad_s": 0.020991752798294627,
+  "rate_rms_rad_s": 0.22994138827549318,
+  "still_frac": 0.3977081581160639
+ },
+ "method": "calib_gyro_261022.py (|w| time shift, Kabsch + joint R/bias least squares)"
+}

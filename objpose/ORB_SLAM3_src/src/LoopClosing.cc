@@ -1036,7 +1036,10 @@ void LoopClosing::CorrectLoop()
     // Send a stop signal to Local Mapping
     // Avoid new keyframes are inserted while correcting the loop
     mpLocalMapper->RequestStop();
-    mpLocalMapper->EmptyQueue(); // Proccess keyframes in the queue
+    // EmptyQueue() moved below the isStopped() wait (2026-10-25). Called here, this thread ran ProcessNewKeyFrame()
+    // while the LocalMapping thread was still mid-iteration on its own keyframe; both overwrite mpCurrentKeyFrame, so
+    // map points got another keyframe's feature indices -> cv::Mat row assertion in ComputeDistinctiveDescriptors,
+    // null vertex in OptimizeEssentialGraph, locked freed mutex in MapPoint(). MergeLocal() already waits first.
 
     // If a Global Bundle Adjustment is running, abort it
     if(isRunningGBA())
@@ -1060,6 +1063,8 @@ void LoopClosing::CorrectLoop()
     {
         usleep(1000);
     }
+    // LocalMapping only stops with an empty queue; this catches a keyframe Tracking queued just after RequestStop()
+    mpLocalMapper->EmptyQueue();
 
     // Ensure current keyframe is updated
     //cout << "Start updating connections" << endl;

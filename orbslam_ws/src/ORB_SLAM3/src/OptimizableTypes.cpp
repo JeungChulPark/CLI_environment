@@ -147,7 +147,9 @@ namespace ORB_SLAM3 {
         double y = xyz_trans[1];
         double z = xyz_trans[2];
 
-        auto projectJac = -pCamera->projectJac(xyz_trans);
+        // Concrete type, not auto: auto kept an Eigen expression that pointed at projectJac()'s temporary, so the two
+        // Jacobians below read a dead stack slot (ASan stack-use-after-scope, 2026-10-25). Same line in upstream v1.0.
+        const Eigen::Matrix<double,2,3> projectJac = -pCamera->projectJac(xyz_trans);
 
         _jacobianOplusXi =  projectJac * T.rotation().toRotationMatrix();
 
