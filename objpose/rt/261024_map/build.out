@@ -1,0 +1,388 @@
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: divide by zero encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: overflow encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: invalid value encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: divide by zero encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: overflow encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: invalid value encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: divide by zero encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: overflow encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: invalid value encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: divide by zero encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: overflow encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: invalid value encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: divide by zero encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: overflow encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: invalid value encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: divide by zero encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: overflow encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: invalid value encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: divide by zero encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: overflow encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: invalid value encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: divide by zero encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: overflow encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: invalid value encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: divide by zero encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: overflow encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: invalid value encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: divide by zero encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: overflow encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: invalid value encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+== 261022_cbnu_digut
+orb_live                     ATE   67.4 cm (max  178.1)  rot  6.01 deg | drift pos rmse  129.2 max  315.1 final  180.1 cm  yaw rmse 10.40 max 20.59 tilt rmse  1.12 | RPE10s  53.5 cm  4.67 deg  RPE1s 22.56 cm 1.845 deg
+orb_opt                      ATE   40.6 cm (max  159.4)  rot  2.54 deg | drift pos rmse  102.1 max  173.6 final  123.0 cm  yaw rmse  6.81 max  9.62 tilt rmse  1.22 | RPE10s  30.4 cm  1.87 deg  RPE1s  5.69 cm 0.611 deg
+dep_live                     ATE   83.1 cm (max  283.5)  rot 10.26 deg | drift pos rmse  106.6 max  362.6 final    7.9 cm  yaw rmse 12.71 max 69.99 tilt rmse  1.52 | RPE10s 106.6 cm 12.88 deg  RPE1s 35.10 cm 5.672 deg
+dep_opt                      ATE   65.3 cm (max  187.0)  rot  5.56 deg | drift pos rmse  106.9 max  307.2 final    6.8 cm  yaw rmse  8.84 max 19.80 tilt rmse  1.85 | RPE10s  60.9 cm  4.88 deg  RPE1s 14.64 cm 1.439 deg
+up_live                      ATE   24.0 cm (max   37.6)  rot  1.88 deg | drift pos rmse   32.3 max   57.9 final   28.3 cm  yaw rmse  2.44 max  5.48 tilt rmse  1.81 | RPE10s  24.1 cm  1.34 deg  RPE1s  3.66 cm 0.527 deg
+up_opt                       ATE   23.9 cm (max   34.8)  rot  1.77 deg | drift pos rmse   32.7 max   57.5 final   28.3 cm  yaw rmse  2.22 max  5.51 tilt rmse  1.63 | RPE10s  23.5 cm  1.17 deg  RPE1s  3.37 cm 0.419 deg
+upd_live                     ATE  128.5 cm (max  321.3)  rot 11.70 deg | drift pos rmse  254.3 max  429.5 final  371.1 cm  yaw rmse 21.26 max 28.71 tilt rmse  4.07 | RPE10s  75.4 cm  6.41 deg  RPE1s 29.07 cm 2.267 deg
+upd_opt                      ATE   95.3 cm (max  324.5)  rot  8.25 deg | drift pos rmse  262.5 max  422.3 final  365.4 cm  yaw rmse 22.78 max 31.20 tilt rmse  4.29 | RPE10s  36.0 cm  5.47 deg  RPE1s 11.45 cm 1.620 deg
+gy_live                      ATE   23.6 cm (max   78.5)  rot  0.98 deg | drift pos rmse   30.2 max   96.7 final   27.9 cm  yaw rmse  0.84 max  2.87 tilt rmse  0.48 | RPE10s  27.6 cm  1.35 deg  RPE1s  6.96 cm 0.618 deg
+gy_opt                       ATE   18.7 cm (max   32.1)  rot  0.56 deg | drift pos rmse   23.7 max   44.3 final   22.0 cm  yaw rmse  0.48 max  2.49 tilt rmse  0.33 | RPE10s  21.9 cm  0.77 deg  RPE1s  3.73 cm 0.401 deg
+   24000 cloud points, path 65.23 m, metrics: {'orb_live': {'ate': 67.4, 'ate_max': 178.1, 'final': 180.1, 'rot': 6.01}, 'orb_opt': {'ate': 40.6, 'ate_max': 159.4, 'final': 123.0, 'rot': 2.54}, 'dep_live': {'ate': 83.1, 'ate_max': 283.5, 'final': 7.9, 'rot': 10.26}, 'dep_opt': {'ate': 65.3, 'ate_max': 187.0, 'final': 6.8, 'rot': 5.56}, 'up_live': {'ate': 24.0, 'ate_max': 37.6, 'final': 28.3, 'rot': 1.88}, 'up_opt': {'ate': 23.9, 'ate_max': 34.8, 'final': 28.3, 'rot': 1.77}, 'upd_live': {'ate': 128.5, 'ate_max': 321.3, 'final': 371.1, 'rot': 11.7}, 'upd_opt': {'ate': 95.3, 'ate_max': 324.5, 'final': 365.4, 'rot': 8.25}, 'gy_live': {'ate': 23.6, 'ate_max': 78.5, 'final': 27.9, 'rot': 0.98}, 'gy_opt': {'ate': 18.7, 'ate_max': 32.1, 'final': 22.0, 'rot': 0.56}}
+== 261022_cbnu_eight
+orb_live                     ATE   23.7 cm (max   51.4)  rot  1.31 deg | drift pos rmse   32.2 max   72.0 final   25.8 cm  yaw rmse  1.52 max  3.89 tilt rmse  0.80 | RPE10s  27.3 cm  1.78 deg  RPE1s  4.85 cm 0.679 deg
+orb_opt                      ATE   22.5 cm (max   52.6)  rot  1.07 deg | drift pos rmse   30.9 max   73.0 final   27.1 cm  yaw rmse  1.23 max  3.71 tilt rmse  0.66 | RPE10s  24.8 cm  1.48 deg  RPE1s  4.47 cm 0.633 deg
+dep_live                     ATE   10.5 cm (max   30.9)  rot  1.15 deg | drift pos rmse   12.0 max   31.4 final    3.2 cm  yaw rmse  0.98 max  3.12 tilt rmse  0.68 | RPE10s  10.6 cm  1.32 deg  RPE1s  3.92 cm 0.531 deg
+dep_opt                      ATE    9.0 cm (max   30.7)  rot  0.54 deg | drift pos rmse   10.3 max   30.5 final    8.0 cm  yaw rmse  0.41 max  1.64 tilt rmse  0.46 | RPE10s   7.3 cm  0.77 deg  RPE1s  2.79 cm 0.401 deg
+up_live                      ATE   18.5 cm (max   30.0)  rot  1.19 deg | drift pos rmse   22.0 max   39.8 final    6.2 cm  yaw rmse  0.98 max  2.46 tilt rmse  0.55 | RPE10s  22.3 cm  1.42 deg  RPE1s  3.93 cm 0.506 deg
+up_opt                       ATE   17.3 cm (max   29.5)  rot  0.61 deg | drift pos rmse   21.2 max   40.8 final    4.3 cm  yaw rmse  0.54 max  2.38 tilt rmse  0.38 | RPE10s  20.5 cm  0.83 deg  RPE1s  3.06 cm 0.407 deg
+upd_live                     ATE    9.1 cm (max   21.5)  rot  1.18 deg | drift pos rmse   10.8 max   24.1 final    2.6 cm  yaw rmse  1.03 max  3.13 tilt rmse  0.61 | RPE10s  10.5 cm  1.25 deg  RPE1s  3.98 cm 0.475 deg
+upd_opt                      ATE    7.9 cm (max   19.7)  rot  0.45 deg | drift pos rmse    9.1 max   20.0 final    7.5 cm  yaw rmse  0.32 max  1.83 tilt rmse  0.39 | RPE10s   6.7 cm  0.60 deg  RPE1s  2.24 cm 0.369 deg
+gy_live                      ATE   22.1 cm (max   51.3)  rot  1.49 deg | drift pos rmse   25.9 max   63.6 final    6.2 cm  yaw rmse  1.27 max  3.70 tilt rmse  0.80 | RPE10s  25.9 cm  1.25 deg  RPE1s  4.64 cm 0.430 deg
+gy_opt                       ATE   21.8 cm (max   49.1)  rot  1.12 deg | drift pos rmse   25.8 max   61.0 final    5.4 cm  yaw rmse  1.11 max  3.64 tilt rmse  0.54 | RPE10s  25.1 cm  0.91 deg  RPE1s  3.92 cm 0.330 deg
+gyd_live                     ATE   15.0 cm (max   38.3)  rot  1.39 deg | drift pos rmse   18.0 max   46.6 final    4.8 cm  yaw rmse  1.15 max  3.15 tilt rmse  0.81 | RPE10s  12.5 cm  1.35 deg  RPE1s  4.15 cm 0.423 deg
+gyd_opt                      ATE   14.0 cm (max   37.0)  rot  0.88 deg | drift pos rmse   16.6 max   45.6 final    8.4 cm  yaw rmse  0.78 max  3.12 tilt rmse  0.51 | RPE10s  10.8 cm  0.90 deg  RPE1s  3.46 cm 0.339 deg
+   24000 cloud points, path 78.43 m, metrics: {'orb_live': {'ate': 23.7, 'ate_max': 51.4, 'final': 25.8, 'rot': 1.31}, 'orb_opt': {'ate': 22.5, 'ate_max': 52.6, 'final': 27.1, 'rot': 1.07}, 'dep_live': {'ate': 10.5, 'ate_max': 30.9, 'final': 3.2, 'rot': 1.15}, 'dep_opt': {'ate': 9.0, 'ate_max': 30.7, 'final': 8.0, 'rot': 0.54}, 'up_live': {'ate': 18.5, 'ate_max': 30.0, 'final': 6.2, 'rot': 1.19}, 'up_opt': {'ate': 17.3, 'ate_max': 29.5, 'final': 4.3, 'rot': 0.61}, 'upd_live': {'ate': 9.1, 'ate_max': 21.5, 'final': 2.6, 'rot': 1.18}, 'upd_opt': {'ate': 7.9, 'ate_max': 19.7, 'final': 7.5, 'rot': 0.45}, 'gy_live': {'ate': 22.1, 'ate_max': 51.3, 'final': 6.2, 'rot': 1.49}, 'gy_opt': {'ate': 21.8, 'ate_max': 49.1, 'final': 5.4, 'rot': 1.12}, 'gyd_live': {'ate': 15.0, 'ate_max': 38.3, 'final': 4.8, 'rot': 1.39}, 'gyd_opt': {'ate': 14.0, 'ate_max': 37.0, 'final': 8.4, 'rot': 0.88}}
+== 261022_cbnu_kiuk
+orb_live                     ATE   89.4 cm (max  509.7)  rot 16.78 deg | drift pos rmse   97.1 max  547.0 final   13.1 cm  yaw rmse 17.10 max 82.12 tilt rmse  0.72 | RPE10s 117.1 cm 22.44 deg  RPE1s 14.68 cm 6.311 deg
+orb_opt                      ATE   76.6 cm (max  288.4)  rot  1.20 deg | drift pos rmse   83.6 max  320.1 final   11.2 cm  yaw rmse  0.83 max  9.49 tilt rmse  0.50 | RPE10s  93.0 cm  1.41 deg  RPE1s  4.18 cm 0.518 deg
+dep_live                     ATE   18.6 cm (max   93.1)  rot  2.14 deg | drift pos rmse   22.1 max   82.6 final   66.6 cm  yaw rmse  1.75 max  8.00 tilt rmse  0.96 | RPE10s  12.5 cm  2.31 deg  RPE1s  5.77 cm 0.829 deg
+dep_opt                      ATE   18.1 cm (max   93.6)  rot  1.58 deg | drift pos rmse   21.3 max   83.5 final   66.0 cm  yaw rmse  1.35 max  8.38 tilt rmse  0.79 | RPE10s  11.4 cm  1.70 deg  RPE1s  5.51 cm 0.722 deg
+up_live                      ATE   18.7 cm (max   34.7)  rot  1.35 deg | drift pos rmse   22.0 max   45.8 final   15.2 cm  yaw rmse  1.15 max  4.00 tilt rmse  0.49 | RPE10s  22.5 cm  1.75 deg  RPE1s  3.85 cm 0.698 deg
+up_opt                       ATE   18.2 cm (max   32.3)  rot  0.64 deg | drift pos rmse   21.8 max   44.1 final   12.1 cm  yaw rmse  0.36 max  1.98 tilt rmse  0.36 | RPE10s  21.9 cm  0.74 deg  RPE1s  3.25 cm 0.428 deg
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: divide by zero encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: overflow encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: invalid value encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: divide by zero encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: overflow encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: invalid value encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: divide by zero encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: overflow encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: invalid value encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: divide by zero encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: overflow encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: invalid value encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: divide by zero encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: overflow encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: invalid value encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: divide by zero encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: overflow encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:47: RuntimeWarning: invalid value encountered in matmul
+  H = (b * w[:, None]).T @ a
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+upd_live                     ATE    5.7 cm (max   29.3)  rot  1.09 deg | drift pos rmse    9.1 max   23.2 final    4.9 cm  yaw rmse  1.01 max  3.95 tilt rmse  0.44 | RPE10s   8.5 cm  1.26 deg  RPE1s  3.27 cm 0.566 deg
+upd_opt                      ATE    4.0 cm (max   15.9)  rot  0.51 deg | drift pos rmse    7.0 max   13.6 final    3.0 cm  yaw rmse  0.25 max  0.92 tilt rmse  0.32 | RPE10s   5.1 cm  0.57 deg  RPE1s  1.80 cm 0.337 deg
+gy_live                      ATE   20.1 cm (max   37.4)  rot  1.32 deg | drift pos rmse   28.7 max   50.1 final   15.7 cm  yaw rmse  1.14 max  2.74 tilt rmse  0.57 | RPE10s  24.3 cm  1.54 deg  RPE1s  4.76 cm 0.561 deg
+gy_opt                       ATE   16.3 cm (max   27.5)  rot  1.06 deg | drift pos rmse   22.4 max   42.6 final    9.9 cm  yaw rmse  0.85 max  3.41 tilt rmse  0.55 | RPE10s  20.2 cm  1.20 deg  RPE1s  4.13 cm 0.519 deg
+gyd_live                     ATE  106.5 cm (max  541.7)  rot 11.76 deg | drift pos rmse  107.8 max  553.6 final   15.2 cm  yaw rmse 11.86 max 81.10 tilt rmse  0.52 | RPE10s 128.2 cm 17.67 deg  RPE1s 25.06 cm 6.267 deg
+gyd_opt                      ATE   62.6 cm (max  260.0)  rot  3.57 deg | drift pos rmse   63.3 max  256.0 final   11.9 cm  yaw rmse  3.60 max 14.05 tilt rmse  0.53 | RPE10s  61.7 cm  4.14 deg  RPE1s 10.20 cm 1.153 deg
+   24000 cloud points, path 51.91 m, metrics: {'orb_live': {'ate': 89.4, 'ate_max': 509.7, 'final': 13.1, 'rot': 16.78}, 'orb_opt': {'ate': 76.6, 'ate_max': 288.4, 'final': 11.2, 'rot': 1.2}, 'dep_live': {'ate': 18.6, 'ate_max': 93.1, 'final': 66.6, 'rot': 2.14}, 'dep_opt': {'ate': 18.1, 'ate_max': 93.6, 'final': 66.0, 'rot': 1.58}, 'up_live': {'ate': 18.7, 'ate_max': 34.7, 'final': 15.2, 'rot': 1.35}, 'up_opt': {'ate': 18.2, 'ate_max': 32.3, 'final': 12.1, 'rot': 0.64}, 'upd_live': {'ate': 5.7, 'ate_max': 29.3, 'final': 4.9, 'rot': 1.09}, 'upd_opt': {'ate': 4.0, 'ate_max': 15.9, 'final': 3.0, 'rot': 0.51}, 'gy_live': {'ate': 20.1, 'ate_max': 37.4, 'final': 15.7, 'rot': 1.32}, 'gy_opt': {'ate': 16.3, 'ate_max': 27.5, 'final': 9.9, 'rot': 1.06}, 'gyd_live': {'ate': 106.5, 'ate_max': 541.7, 'final': 15.2, 'rot': 11.76}, 'gyd_opt': {'ate': 62.6, 'ate_max': 260.0, 'final': 11.9, 'rot': 3.57}}
+== 261022_cbnu_kiuk_obchange
+orb_live                     ATE   13.7 cm (max   28.8)  rot  0.50 deg | drift pos rmse   17.3 max   38.4 final    2.5 cm  yaw rmse  0.37 max  1.38 tilt rmse  0.34 | RPE10s  15.1 cm  0.64 deg  RPE1s  2.66 cm 0.268 deg
+orb_opt                      ATE   13.0 cm (max   27.8)  rot  0.58 deg | drift pos rmse   16.2 max   35.8 final    1.9 cm  yaw rmse  0.54 max  1.99 tilt rmse  0.35 | RPE10s  15.1 cm  0.79 deg  RPE1s  3.23 cm 0.345 deg
+dep_live                     ATE    5.2 cm (max   11.8)  rot  0.59 deg | drift pos rmse    5.8 max   12.9 final   11.1 cm  yaw rmse  0.51 max  1.53 tilt rmse  0.32 | RPE10s   7.8 cm  0.76 deg  RPE1s  1.78 cm 0.269 deg
+dep_opt                      ATE    4.9 cm (max   11.5)  rot  0.58 deg | drift pos rmse    5.1 max   11.4 final    9.4 cm  yaw rmse  0.62 max  1.60 tilt rmse  0.31 | RPE10s   7.4 cm  0.76 deg  RPE1s  1.77 cm 0.265 deg
+up_live                      ATE   13.2 cm (max   29.9)  rot  0.54 deg | drift pos rmse   16.5 max   38.3 final    2.7 cm  yaw rmse  0.49 max  1.52 tilt rmse  0.33 | RPE10s  14.9 cm  0.67 deg  RPE1s  2.55 cm 0.265 deg
+up_opt                       ATE   12.8 cm (max   26.6)  rot  0.48 deg | drift pos rmse   15.9 max   34.2 final    3.4 cm  yaw rmse  0.47 max  1.28 tilt rmse  0.31 | RPE10s  14.8 cm  0.65 deg  RPE1s  2.61 cm 0.264 deg
+upd_live                     ATE    5.7 cm (max   12.9)  rot  0.50 deg | drift pos rmse    6.3 max   12.2 final   10.5 cm  yaw rmse  0.44 max  1.47 tilt rmse  0.33 | RPE10s   8.0 cm  0.68 deg  RPE1s  1.77 cm 0.263 deg
+upd_opt                      ATE    5.5 cm (max   12.7)  rot  0.50 deg | drift pos rmse    5.8 max   11.9 final   10.0 cm  yaw rmse  0.51 max  1.33 tilt rmse  0.32 | RPE10s   7.4 cm  0.67 deg  RPE1s  1.74 cm 0.263 deg
+gy_live                      ATE   13.6 cm (max   29.1)  rot  0.47 deg | drift pos rmse   17.0 max   38.0 final    3.0 cm  yaw rmse  0.36 max  1.21 tilt rmse  0.33 | RPE10s  15.0 cm  0.61 deg  RPE1s  2.55 cm 0.257 deg
+gy_opt                       ATE   13.5 cm (max   28.4)  rot  0.47 deg | drift pos rmse   16.6 max   36.6 final    4.1 cm  yaw rmse  0.44 max  1.26 tilt rmse  0.32 | RPE10s  15.2 cm  0.64 deg  RPE1s  2.59 cm 0.251 deg
+gyd_live                     ATE    4.7 cm (max   11.7)  rot  0.47 deg | drift pos rmse    5.0 max   12.0 final    9.7 cm  yaw rmse  0.41 max  1.26 tilt rmse  0.33 | RPE10s   6.8 cm  0.63 deg  RPE1s  1.65 cm 0.255 deg
+gyd_opt                      ATE    4.7 cm (max   11.7)  rot  0.46 deg | drift pos rmse    4.8 max   11.5 final    9.0 cm  yaw rmse  0.48 max  1.14 tilt rmse  0.31 | RPE10s   6.5 cm  0.60 deg  RPE1s  1.64 cm 0.247 deg
+   24000 cloud points, path 78.75 m, metrics: {'orb_live': {'ate': 13.7, 'ate_max': 28.8, 'final': 2.5, 'rot': 0.5}, 'orb_opt': {'ate': 13.0, 'ate_max': 27.8, 'final': 1.9, 'rot': 0.58}, 'dep_live': {'ate': 5.2, 'ate_max': 11.8, 'final': 11.1, 'rot': 0.59}, 'dep_opt': {'ate': 4.9, 'ate_max': 11.5, 'final': 9.4, 'rot': 0.58}, 'up_live': {'ate': 13.2, 'ate_max': 29.9, 'final': 2.7, 'rot': 0.54}, 'up_opt': {'ate': 12.8, 'ate_max': 26.6, 'final': 3.4, 'rot': 0.48}, 'upd_live': {'ate': 5.7, 'ate_max': 12.9, 'final': 10.5, 'rot': 0.5}, 'upd_opt': {'ate': 5.5, 'ate_max': 12.7, 'final': 10.0, 'rot': 0.5}, 'gy_live': {'ate': 13.6, 'ate_max': 29.1, 'final': 3.0, 'rot': 0.47}, 'gy_opt': {'ate': 13.5, 'ate_max': 28.4, 'final': 4.1, 'rot': 0.47}, 'gyd_live': {'ate': 4.7, 'ate_max': 11.7, 'final': 9.7, 'rot': 0.47}, 'gyd_opt': {'ate': 4.7, 'ate_max': 11.7, 'final': 9.0, 'rot': 0.46}}
+== 261022_cbnu_long
+orb_live                     ATE   16.1 cm (max   29.2)  rot  1.11 deg | drift pos rmse   17.8 max   37.2 final   26.4 cm  yaw rmse  1.06 max  3.80 tilt rmse  0.68 | RPE10s  19.3 cm  1.42 deg  RPE1s  3.83 cm 0.522 deg
+orb_opt                      ATE   14.1 cm (max   21.6)  rot  0.47 deg | drift pos rmse   16.1 max   25.7 final   23.7 cm  yaw rmse  0.32 max  0.96 tilt rmse  0.30 | RPE10s  16.1 cm  0.59 deg  RPE1s  2.62 cm 0.299 deg
+dep_live                     ATE    6.5 cm (max   21.2)  rot  1.19 deg | drift pos rmse   10.3 max   24.3 final    9.7 cm  yaw rmse  0.60 max  2.69 tilt rmse  0.83 | RPE10s   9.6 cm  1.38 deg  RPE1s  3.36 cm 0.470 deg
+dep_opt                      ATE    4.5 cm (max   17.4)  rot  0.55 deg | drift pos rmse    7.2 max   14.3 final    5.4 cm  yaw rmse  0.31 max  2.14 tilt rmse  0.46 | RPE10s   5.6 cm  0.72 deg  RPE1s  2.61 cm 0.369 deg
+up_live                      ATE   14.8 cm (max   25.7)  rot  1.03 deg | drift pos rmse   16.3 max   32.8 final   26.9 cm  yaw rmse  1.00 max  3.17 tilt rmse  0.62 | RPE10s  17.3 cm  1.23 deg  RPE1s  3.57 cm 0.437 deg
+up_opt                       ATE   13.7 cm (max   20.7)  rot  0.46 deg | drift pos rmse   15.4 max   24.3 final   23.9 cm  yaw rmse  0.31 max  1.30 tilt rmse  0.30 | RPE10s  15.7 cm  0.59 deg  RPE1s  2.47 cm 0.341 deg
+upd_live                     ATE    6.5 cm (max   19.3)  rot  1.02 deg | drift pos rmse   10.4 max   24.4 final   11.1 cm  yaw rmse  0.81 max  2.89 tilt rmse  0.58 | RPE10s   8.8 cm  1.25 deg  RPE1s  3.24 cm 0.446 deg
+upd_opt                      ATE    4.3 cm (max   18.4)  rot  0.38 deg | drift pos rmse    7.0 max   13.1 final    7.7 cm  yaw rmse  0.21 max  1.26 tilt rmse  0.29 | RPE10s   4.8 cm  0.51 deg  RPE1s  1.85 cm 0.305 deg
+gy_live                      ATE   16.1 cm (max   27.7)  rot  1.10 deg | drift pos rmse   17.7 max   32.8 final   26.4 cm  yaw rmse  0.74 max  1.96 tilt rmse  0.61 | RPE10s  18.9 cm  0.97 deg  RPE1s  3.83 cm 0.437 deg
+gy_opt                       ATE   13.9 cm (max   20.6)  rot  0.47 deg | drift pos rmse   15.3 max   25.5 final   23.9 cm  yaw rmse  0.37 max  1.34 tilt rmse  0.29 | RPE10s  15.9 cm  0.58 deg  RPE1s  2.69 cm 0.326 deg
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: divide by zero encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: overflow encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/260901/bigeight/calib_rig.py:30: RuntimeWarning: invalid value encountered in matmul
+  c = float(a @ b / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+gyd_live                     ATE    7.5 cm (max   23.8)  rot  1.29 deg | drift pos rmse   11.8 max   29.6 final   10.5 cm  yaw rmse  0.50 max  1.80 tilt rmse  0.78 | RPE10s  11.7 cm  1.16 deg  RPE1s  4.58 cm 0.385 deg
+gyd_opt                      ATE    4.4 cm (max   25.3)  rot  0.43 deg | drift pos rmse    6.8 max   26.6 final    5.7 cm  yaw rmse  0.23 max  2.02 tilt rmse  0.32 | RPE10s   5.5 cm  0.57 deg  RPE1s  2.99 cm 0.329 deg
+   24000 cloud points, path 41.16 m, metrics: {'orb_live': {'ate': 16.1, 'ate_max': 29.2, 'final': 26.4, 'rot': 1.11}, 'orb_opt': {'ate': 14.1, 'ate_max': 21.6, 'final': 23.7, 'rot': 0.47}, 'dep_live': {'ate': 6.5, 'ate_max': 21.2, 'final': 9.7, 'rot': 1.19}, 'dep_opt': {'ate': 4.5, 'ate_max': 17.4, 'final': 5.4, 'rot': 0.55}, 'up_live': {'ate': 14.8, 'ate_max': 25.7, 'final': 26.9, 'rot': 1.03}, 'up_opt': {'ate': 13.7, 'ate_max': 20.7, 'final': 23.9, 'rot': 0.46}, 'upd_live': {'ate': 6.5, 'ate_max': 19.3, 'final': 11.1, 'rot': 1.02}, 'upd_opt': {'ate': 4.3, 'ate_max': 18.4, 'final': 7.7, 'rot': 0.38}, 'gy_live': {'ate': 16.1, 'ate_max': 27.7, 'final': 26.4, 'rot': 1.1}, 'gy_opt': {'ate': 13.9, 'ate_max': 20.6, 'final': 23.9, 'rot': 0.47}, 'gyd_live': {'ate': 7.5, 'ate_max': 23.8, 'final': 10.5, 'rot': 1.29}, 'gyd_opt': {'ate': 4.4, 'ate_max': 25.3, 'final': 5.7, 'rot': 0.43}}
+== 261022_cbnu_long_obchange
+orb_live                     ATE   16.1 cm (max   26.6)  rot  0.88 deg | drift pos rmse   18.6 max   34.8 final   23.7 cm  yaw rmse  0.88 max  3.11 tilt rmse  0.53 | RPE10s  18.7 cm  1.08 deg  RPE1s  3.05 cm 0.384 deg
+orb_opt                      ATE   15.3 cm (max   25.0)  rot  0.39 deg | drift pos rmse   17.1 max   29.8 final   19.8 cm  yaw rmse  0.31 max  0.97 tilt rmse  0.28 | RPE10s  17.7 cm  0.53 deg  RPE1s  2.58 cm 0.270 deg
+dep_live                     ATE    7.7 cm (max   26.0)  rot  0.97 deg | drift pos rmse   12.5 max   37.7 final    7.9 cm  yaw rmse  0.75 max  3.12 tilt rmse  0.83 | RPE10s   9.6 cm  1.26 deg  RPE1s  3.54 cm 0.454 deg
+dep_opt                      ATE    3.7 cm (max   15.8)  rot  0.49 deg | drift pos rmse    5.1 max   16.6 final    4.4 cm  yaw rmse  0.32 max  1.67 tilt rmse  0.46 | RPE10s   4.9 cm  0.66 deg  RPE1s  2.48 cm 0.345 deg
+up_live                      ATE   16.0 cm (max   24.9)  rot  0.90 deg | drift pos rmse   18.2 max   33.1 final   23.2 cm  yaw rmse  0.86 max  2.94 tilt rmse  0.44 | RPE10s  18.2 cm  0.97 deg  RPE1s  2.96 cm 0.339 deg
+up_opt                       ATE   15.4 cm (max   24.3)  rot  0.39 deg | drift pos rmse   17.3 max   29.3 final   20.3 cm  yaw rmse  0.23 max  0.87 tilt rmse  0.28 | RPE10s  17.7 cm  0.51 deg  RPE1s  2.58 cm 0.272 deg
+upd_live                     ATE    5.2 cm (max   15.8)  rot  0.99 deg | drift pos rmse    9.2 max   25.5 final    6.5 cm  yaw rmse  0.85 max  2.82 tilt rmse  0.48 | RPE10s   6.9 cm  1.00 deg  RPE1s  2.24 cm 0.375 deg
+upd_opt                      ATE    3.0 cm (max   12.5)  rot  0.42 deg | drift pos rmse    4.3 max   10.7 final    4.6 cm  yaw rmse  0.25 max  0.79 tilt rmse  0.27 | RPE10s   4.3 cm  0.53 deg  RPE1s  1.53 cm 0.272 deg
+gy_live                      ATE   16.4 cm (max   25.7)  rot  0.54 deg | drift pos rmse   18.4 max   32.9 final   23.2 cm  yaw rmse  0.57 max  1.51 tilt rmse  0.38 | RPE10s  18.7 cm  0.65 deg  RPE1s  2.90 cm 0.295 deg
+gy_opt                       ATE   15.6 cm (max   24.5)  rot  0.35 deg | drift pos rmse   17.3 max   28.7 final   20.8 cm  yaw rmse  0.24 max  0.77 tilt rmse  0.26 | RPE10s  17.9 cm  0.46 deg  RPE1s  2.57 cm 0.262 deg
+gyd_live                     ATE    4.5 cm (max   15.2)  rot  0.69 deg | drift pos rmse   10.0 max   15.9 final    8.1 cm  yaw rmse  0.51 max  1.76 tilt rmse  0.51 | RPE10s   6.2 cm  0.79 deg  RPE1s  2.19 cm 0.317 deg
+gyd_opt                      ATE    3.3 cm (max   16.6)  rot  0.38 deg | drift pos rmse    5.9 max   12.7 final    4.4 cm  yaw rmse  0.24 max  0.83 tilt rmse  0.29 | RPE10s   4.5 cm  0.49 deg  RPE1s  1.64 cm 0.278 deg
+   24000 cloud points, path 61.5 m, metrics: {'orb_live': {'ate': 16.1, 'ate_max': 26.6, 'final': 23.7, 'rot': 0.88}, 'orb_opt': {'ate': 15.3, 'ate_max': 25.0, 'final': 19.8, 'rot': 0.39}, 'dep_live': {'ate': 7.7, 'ate_max': 26.0, 'final': 7.9, 'rot': 0.97}, 'dep_opt': {'ate': 3.7, 'ate_max': 15.8, 'final': 4.4, 'rot': 0.49}, 'up_live': {'ate': 16.0, 'ate_max': 24.9, 'final': 23.2, 'rot': 0.9}, 'up_opt': {'ate': 15.4, 'ate_max': 24.3, 'final': 20.3, 'rot': 0.39}, 'upd_live': {'ate': 5.2, 'ate_max': 15.8, 'final': 6.5, 'rot': 0.99}, 'upd_opt': {'ate': 3.0, 'ate_max': 12.5, 'final': 4.6, 'rot': 0.42}, 'gy_live': {'ate': 16.4, 'ate_max': 25.7, 'final': 23.2, 'rot': 0.54}, 'gy_opt': {'ate': 15.6, 'ate_max': 24.5, 'final': 20.8, 'rot': 0.35}, 'gyd_live': {'ate': 4.5, 'ate_max': 15.2, 'final': 8.1, 'rot': 0.69}, 'gyd_opt': {'ate': 3.3, 'ate_max': 16.6, 'final': 4.4, 'rot': 0.38}}

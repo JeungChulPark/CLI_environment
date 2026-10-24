@@ -1,5 +1,32 @@
 [
  {
+  "session": "260826_etri_differentObject",
+  "path_m": 13.28,
+  "hdl": false,
+  "series": [
+   "orb_live",
+   "orb_opt"
+  ]
+ },
+ {
+  "session": "260826_etri_longcircle_dark",
+  "path_m": 19.84,
+  "hdl": false,
+  "series": [
+   "orb_live",
+   "orb_opt"
+  ]
+ },
+ {
+  "session": "260826_etri_similarObject",
+  "path_m": 13.44,
+  "hdl": false,
+  "series": [
+   "orb_live",
+   "orb_opt"
+  ]
+ },
+ {
   "session": "260901_cbnu_bigeightcircle",
   "path_m": 63.9,
   "hdl": true,
@@ -80,30 +107,121 @@
   ]
  },
  {
-  "session": "260826_etri_longcircle_dark",
-  "path_m": 19.84,
+  "session": "261022_cbnu_digut",
+  "path_m": 65.23,
   "hdl": false,
   "series": [
+   "kiss",
    "orb_live",
-   "orb_opt"
+   "orb_opt",
+   "dep_live",
+   "dep_opt",
+   "up_live",
+   "up_opt",
+   "upd_live",
+   "upd_opt",
+   "gy_live",
+   "gy_opt"
   ]
  },
  {
-  "session": "260826_etri_differentObject",
-  "path_m": 13.28,
+  "session": "261022_cbnu_eight",
+  "path_m": 78.43,
   "hdl": false,
   "series": [
+   "kiss",
    "orb_live",
-   "orb_opt"
+   "orb_opt",
+   "dep_live",
+   "dep_opt",
+   "up_live",
+   "up_opt",
+   "upd_live",
+   "upd_opt",
+   "gy_live",
+   "gy_opt",
+   "gyd_live",
+   "gyd_opt"
   ]
  },
  {
-  "session": "260826_etri_similarObject",
-  "path_m": 13.44,
+  "session": "261022_cbnu_kiuk",
+  "path_m": 51.91,
   "hdl": false,
   "series": [
+   "kiss",
    "orb_live",
-   "orb_opt"
+   "orb_opt",
+   "dep_live",
+   "dep_opt",
+   "up_live",
+   "up_opt",
+   "upd_live",
+   "upd_opt",
+   "gy_live",
+   "gy_opt",
+   "gyd_live",
+   "gyd_opt"
+  ]
+ },
+ {
+  "session": "261022_cbnu_kiuk_obchange",
+  "path_m": 78.75,
+  "hdl": false,
+  "series": [
+   "kiss",
+   "orb_live",
+   "orb_opt",
+   "dep_live",
+   "dep_opt",
+   "up_live",
+   "up_opt",
+   "upd_live",
+   "upd_opt",
+   "gy_live",
+   "gy_opt",
+   "gyd_live",
+   "gyd_opt"
+  ]
+ },
+ {
+  "session": "261022_cbnu_long",
+  "path_m": 41.16,
+  "hdl": false,
+  "series": [
+   "kiss",
+   "orb_live",
+   "orb_opt",
+   "dep_live",
+   "dep_opt",
+   "up_live",
+   "up_opt",
+   "upd_live",
+   "upd_opt",
+   "gy_live",
+   "gy_opt",
+   "gyd_live",
+   "gyd_opt"
+  ]
+ },
+ {
+  "session": "261022_cbnu_long_obchange",
+  "path_m": 61.5,
+  "hdl": false,
+  "series": [
+   "kiss",
+   "orb_live",
+   "orb_opt",
+   "dep_live",
+   "dep_opt",
+   "up_live",
+   "up_opt",
+   "upd_live",
+   "upd_opt",
+   "gy_live",
+   "gy_opt",
+   "gyd_live",
+   "gyd_opt"
   ]
  }
 ]

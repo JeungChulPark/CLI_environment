@@ -1,0 +1,189 @@
+[slam_stream] time-source=header domain=colour header stamp offset_ns=0 non_monotonic=0
+[slam_stream] /Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_digut/SLAM/SLAM_0.db3 | 5767 frames | color 640x480 fx=387.234 | depth fx=387.234 | t=(0.000000,0.000000,0.000000) | units=0.001
+[slam_stream] converted bag: 5767 pairs (inexact 0, max dt 0.000 ms, unpaired colour 0 depth 0) K fx=387.234 fy=386.662 cx=322.784 cy=250.280 D=[-0.056362 0.067728 0.000344 0.000891 -0.022403] plumb_bob, depth pre-aligned
+[slam_stream] settings override RGBD.DepthMapFactor: 925.0
+
+ORB-SLAM3 Copyright (C) 2017-2020 Carlos Campos, Richard Elvira, Juan J. Gómez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+ORB-SLAM2 Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+This program comes with ABSOLUTELY NO WARRANTY;
+This is free software, and you are welcome to redistribute it
+under certain conditions. See LICENSE.txt.
+
+Input sensor was set to: RGB-D
+Loading settings from /tmp/slam_stream_2738_settings.yaml
+	-Loaded camera 1
+Camera.newHeight optional parameter does not exist...
+Camera.newWidth optional parameter does not exist...
+	-Loaded image info
+	-Loaded RGB-D calibration
+	-Loaded ORB settings
+Viewer.imageViewScale optional parameter does not exist...
+	-Loaded viewer settings
+System.LoadAtlasFromFile optional parameter does not exist...
+System.SaveAtlasToFile optional parameter does not exist...
+	-Loaded Atlas settings
+System.thFarPoints optional parameter does not exist...
+	-Loaded misc parameters
+----------------------------------
+SLAM settings: 
+	-Camera 1 parameters (Pinhole): [ 387.234 386.662 322.784 250.28 ]
+	-Camera 1 distortion parameters: [  -0.056362 0.067728 0.000344 0.000891 -0.022403 ]
+	-Original image size: [ 640 , 480 ]
+	-Current image size: [ 640 , 480 ]
+	-Sequence FPS: 30
+	-RGB-D depth map factor: 925
+	-Features per image: 2000
+	-ORB scale factor: 1.2
+	-ORB number of scales: 8
+	-Initial FAST threshold: 20
+	-Min FAST threshold: 7
+
+
+Loading ORB Vocabulary. This could take a while...
+Vocabulary loaded!
+
+Initialization of Atlas from scratch 
+Creation of new map with id: 0
+Creation of new map with last KF id: 0
+Seq. Name: 
+There are 1 cameras in the atlas
+Camera 0 is pinhole
+First KF:0; Map init KF:0
+New Map created with 1877 points
+[slam_stream] 500/5767 ok=500 track mean 8.19 ms
+[slam_stream] 1000/5767 ok=1000 track mean 7.61 ms
+[slam_stream] 1500/5767 ok=1500 track mean 7.13 ms
+*Loop detected
+LOOP_GAP|cur_id=201|matched_id=11|ts_cur=1792572970.490157|ts_matched=1792572924.011763|cur_xyz=-3.447009,-0.095429,-1.900657|matched_xyz=-0.010613,0.011956,0.238848|gap_m=4.049425|sim3t=-0.242242,-0.029847,0.420505|sim3_scale=1.000000|corr_m=3.925030|resid_m=0.713555
+Local Mapping STOP
+Local Mapping RELEASE
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] 2000/5767 ok=2000 track mean 7.84 ms
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Creation of new map with id: 1
+Stored map with ID: 0
+Creation of new map with last KF id: 394
+First KF:394; Map init KF:394
+New Map created with 1830 points
+[slam_stream] 2500/5767 ok=2408 track mean 7.78 ms
+*Merge detected
+Local Mapping STOP
+Change to map with id: 0
+Local Mapping RELEASE
+Local Mapping STOP
+Local Mapping RELEASE
+Merge finished!
+[slam_stream] 3000/5767 ok=2908 track mean 7.94 ms
+[slam_stream] 3500/5767 ok=3408 track mean 8.22 ms
+[slam_stream] 4000/5767 ok=3908 track mean 8.19 ms
+*Loop detected
+LOOP_GAP|cur_id=692|matched_id=218|ts_cur=1792573060.379432|ts_matched=1792572973.390905|cur_xyz=-4.246212,-0.088591,-1.315053|matched_xyz=-1.714165,0.062122,-0.143916|gap_m=2.793838|sim3t=2.042687,-0.005267,-0.824393|sim3_scale=1.000000|corr_m=2.245737|resid_m=0.611525
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] 4500/5767 ok=4408 track mean 8.43 ms
+*Loop detected
+LOOP_GAP|cur_id=785|matched_id=394|ts_cur=1792573083.951883|ts_matched=1792572997.397028|cur_xyz=-0.319769,0.183549,4.302310|matched_xyz=-1.332285,-0.033154,1.572894|gap_m=2.919222|sim3t=0.284707,0.256568,3.500103|sim3_scale=1.000000|corr_m=1.699972|resid_m=1.599919
+Stoping Global Bundle Adjustment...  Done!!
+Local Mapping STOP
+[slam_stream] 5000/5767 ok=4908 track mean 8.83 ms
+[slam_stream] 5500/5767 ok=5408 track mean 8.78 ms
+Local Mapping RELEASE
+[slam_stream] done: 5767 processed, 5675 ok, wall 61.9 s
+Shutdown
+Shutdown: waiting for background threads (localMapper=busy, loopCloser=busy, GBA=running) ...
+Shutdown: WARNING - background threads still busy after 30 s; saving anyway.
+Shutdown: background threads stopped after 30000 ms.
+
+Saving camera trajectory to /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/261024_map/261022_cbnu_digut/dep_run2.txt.optimized.txt ...

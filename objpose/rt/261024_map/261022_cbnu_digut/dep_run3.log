@@ -1,0 +1,79 @@
+[slam_stream] time-source=header domain=colour header stamp offset_ns=0 non_monotonic=0
+[slam_stream] /Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_digut/SLAM/SLAM_0.db3 | 5767 frames | color 640x480 fx=387.234 | depth fx=387.234 | t=(0.000000,0.000000,0.000000) | units=0.001
+[slam_stream] converted bag: 5767 pairs (inexact 0, max dt 0.000 ms, unpaired colour 0 depth 0) K fx=387.234 fy=386.662 cx=322.784 cy=250.280 D=[-0.056362 0.067728 0.000344 0.000891 -0.022403] plumb_bob, depth pre-aligned
+[slam_stream] settings override RGBD.DepthMapFactor: 925.0
+
+ORB-SLAM3 Copyright (C) 2017-2020 Carlos Campos, Richard Elvira, Juan J. Gómez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+ORB-SLAM2 Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+This program comes with ABSOLUTELY NO WARRANTY;
+This is free software, and you are welcome to redistribute it
+under certain conditions. See LICENSE.txt.
+
+Input sensor was set to: RGB-D
+Loading settings from /tmp/slam_stream_6356_settings.yaml
+	-Loaded camera 1
+Camera.newHeight optional parameter does not exist...
+Camera.newWidth optional parameter does not exist...
+	-Loaded image info
+	-Loaded RGB-D calibration
+	-Loaded ORB settings
+Viewer.imageViewScale optional parameter does not exist...
+	-Loaded viewer settings
+System.LoadAtlasFromFile optional parameter does not exist...
+System.SaveAtlasToFile optional parameter does not exist...
+	-Loaded Atlas settings
+System.thFarPoints optional parameter does not exist...
+	-Loaded misc parameters
+----------------------------------
+SLAM settings: 
+	-Camera 1 parameters (Pinhole): [ 387.234 386.662 322.784 250.28 ]
+	-Camera 1 distortion parameters: [  -0.056362 0.067728 0.000344 0.000891 -0.022403 ]
+	-Original image size: [ 640 , 480 ]
+	-Current image size: [ 640 , 480 ]
+	-Sequence FPS: 30
+	-RGB-D depth map factor: 925
+	-Features per image: 2000
+	-ORB scale factor: 1.2
+	-ORB number of scales: 8
+	-Initial FAST threshold: 20
+	-Min FAST threshold: 7
+
+
+Loading ORB Vocabulary. This could take a while...
+Vocabulary loaded!
+
+Initialization of Atlas from scratch 
+Creation of new map with id: 0
+Creation of new map with last KF id: 0
+Seq. Name: 
+There are 1 cameras in the atlas
+Camera 0 is pinhole
+First KF:0; Map init KF:0
+New Map created with 1877 points
+[slam_stream] 500/5767 ok=500 track mean 18.55 ms
+[slam_stream] 1000/5767 ok=1000 track mean 17.37 ms
+[slam_stream] 1500/5767 ok=1500 track mean 14.33 ms
+*Loop detected
+LOOP_GAP|cur_id=214|matched_id=30|ts_cur=1792572970.290103|ts_matched=1792572925.278715|cur_xyz=-3.446672,-0.117569,-1.970137|matched_xyz=-0.076370,0.028538,0.617627|gap_m=4.251683|sim3t=-0.562412,-0.037772,1.103267|sim3_scale=1.000000|corr_m=3.820493|resid_m=1.857775
+Local Mapping STOP
+Local Mapping RELEASE
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] 2000/5767 ok=2000 track mean 13.77 ms
+[slam_stream] 2500/5767 ok=2500 track mean 12.46 ms
+[slam_stream] 3000/5767 ok=3000 track mean 11.78 ms
+[slam_stream] 3500/5767 ok=3500 track mean 11.63 ms
+[slam_stream] 4000/5767 ok=4000 track mean 11.24 ms
+*Loop detected
+LOOP_GAP|cur_id=725|matched_id=226|ts_cur=1792573060.112739|ts_matched=1792572973.257529|cur_xyz=-2.036837,-0.041940,-1.478575|matched_xyz=-1.538542,-0.025073,-0.639457|gap_m=0.976064|sim3t=1.866810,-0.145635,-0.606770|sim3_scale=1.000000|corr_m=0.634105|resid_m=0.409573
+Local Mapping STOP
+[slam_stream] 4500/5767 ok=4500 track mean 11.29 ms
+Local Mapping RELEASE
+[slam_stream] 5000/5767 ok=5000 track mean 11.69 ms
+[slam_stream] 5500/5767 ok=5500 track mean 11.89 ms
+[slam_stream] done: 5767 processed, 5767 ok, wall 80.6 s
+Shutdown
+Shutdown: waiting for background threads (localMapper=busy, loopCloser=busy, GBA=running) ...
+Shutdown: background threads stopped after 24085 ms.
+
+Saving camera trajectory to /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/261024_map/261022_cbnu_digut/dep_run3.txt.optimized.txt ...

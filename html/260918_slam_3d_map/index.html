@@ -13,6 +13,8 @@
     --orb:#3987e5;      /* categorical slot 1 - ORB-SLAM3 */
     --imu:#d95926;      /* categorical slot 2 - ORB-SLAM3 + IMU */
     --hdl:#199e70;      /* categorical slot 3 - HDL graph SLAM */
+    --up:#d6b13c;       /* categorical slot 4 - upstream (unmodified) ORB-SLAM3 */
+    --gyr:#b06fe0;      /* categorical slot 5 - modified ORB-SLAM3 + gyro aid */
     --ref:#c3c2b7;      /* reference: neutral ink, not a categorical hue */
   }
   *{box-sizing:border-box}
@@ -193,15 +195,26 @@
   // ---- series styling: hue = system, opacity/dash = which run & live vs optimized
   const STYLE = {
     kiss:      {c:'--ref', label:'KISS-ICP (LiDAR 기준)',        w:1.0, dash:false, sys:'KISS-ICP'},
-    orb_opt:   {c:'--orb', label:'ORB-SLAM3 · 최적화',            w:1.0, dash:false, sys:'ORB-SLAM3'},
-    orb_live:  {c:'--orb', label:'ORB-SLAM3 · 실시간',            w:0.5, dash:false, sys:'ORB-SLAM3'},
+    orb_opt:   {c:'--orb', label:'ORB-SLAM3 수정본 · 최적화',     w:1.0, dash:false, sys:'ORB-SLAM3'},
+    orb_live:  {c:'--orb', label:'ORB-SLAM3 수정본 · 실시간',     w:0.5, dash:false, sys:'ORB-SLAM3'},
     orb_live2: {c:'--orb', label:'ORB-SLAM3 · 실시간 run 2',      w:0.5, dash:true,  sys:'ORB-SLAM3'},
     imu_opt:   {c:'--imu', label:'ORB-SLAM3 + IMU · 최적화',      w:1.0, dash:false, sys:'ORB+IMU'},
     imu_live:  {c:'--imu', label:'ORB-SLAM3 + IMU · 실시간',      w:0.5, dash:false, sys:'ORB+IMU'},
     imu_live2: {c:'--imu', label:'ORB-SLAM3 + IMU · 실시간 run 2',w:0.5, dash:true,  sys:'ORB+IMU'},
     hdl:       {c:'--hdl', label:'HDL graph SLAM',                 w:1.0, dash:false, sys:'HDL'},
+    // 261022 depth before/after: colour = variant, solid = depth as recorded, dashed = depth corrected (x1.081)
+    up_opt:    {c:'--up',  label:'ORB-SLAM3 원본 · 최적화',               w:1.0, dash:false, sys:'ORB 원본'},
+    up_live:   {c:'--up',  label:'ORB-SLAM3 원본 · 실시간',               w:0.5, dash:false, sys:'ORB 원본'},
+    gy_opt:    {c:'--gyr', label:'ORB-SLAM3 수정본+자이로 · 최적화',      w:1.0, dash:false, sys:'ORB+자이로'},
+    gy_live:   {c:'--gyr', label:'ORB-SLAM3 수정본+자이로 · 실시간',      w:0.5, dash:false, sys:'ORB+자이로'},
+    upd_opt:   {c:'--up',  label:'ORB-SLAM3 원본 · 깊이 보정 · 최적화',    w:1.0, dash:true,  sys:'ORB 원본'},
+    upd_live:  {c:'--up',  label:'ORB-SLAM3 원본 · 깊이 보정 · 실시간',    w:0.5, dash:true,  sys:'ORB 원본'},
+    dep_opt:   {c:'--orb', label:'ORB-SLAM3 수정본 · 깊이 보정 · 최적화',  w:1.0, dash:true,  sys:'ORB-SLAM3'},
+    dep_live:  {c:'--orb', label:'ORB-SLAM3 수정본 · 깊이 보정 · 실시간',  w:0.5, dash:true,  sys:'ORB-SLAM3'},
+    gyd_opt:   {c:'--gyr', label:'ORB-SLAM3 수정본+자이로 · 깊이 보정 · 최적화', w:1.0, dash:true, sys:'ORB+자이로'},
+    gyd_live:  {c:'--gyr', label:'ORB-SLAM3 수정본+자이로 · 깊이 보정 · 실시간', w:0.5, dash:true, sys:'ORB+자이로'},
   };
-  const DEFAULT_ON = ['kiss','orb_opt','imu_opt','hdl'];
+  const DEFAULT_ON = ['kiss','orb_opt','imu_opt','hdl','up_opt','gy_opt','upd_opt','dep_opt','gyd_opt'];
   const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   const short = s => s.replace('260901_cbnu_','');
 
@@ -476,8 +489,10 @@
 
     // best (lowest) value per session column
     const best = summary.map(s=>Math.min(...keys.map(k=>s.metrics?.[k]?.[metric] ?? Infinity)));
-    const groups = {'대표 궤적':['orb_opt','imu_opt','hdl'],
-                    '실시간 궤적':['orb_live','imu_live','hdl'],
+    const groups = {'대표 궤적':['up_opt','orb_opt','gy_opt','imu_opt','hdl'],
+                    '깊이 보정 후 (261022) · 최적화':['upd_opt','dep_opt','gyd_opt'],
+                    '실시간 궤적':['up_live','orb_live','gy_live','imu_live','hdl'],
+                    '깊이 보정 후 (261022) · 실시간':['upd_live','dep_live','gyd_live'],
                     '반복 실행 (run 2)':['orb_live2','imu_live2']};
     const seen = new Set(), body = [];
     for(const [g, gkeys] of Object.entries(groups)){
@@ -503,7 +518,7 @@
     $('#cmpcap').textContent =
       `단위 ${M.unit} · 낮을수록 좋음 · ${M.hint}. 굵게 표시된 값이 해당 세션의 최솟값입니다. ` +
       `HDL graph SLAM은 LiDAR 추정이라 KISS-ICP 포즈와 직접, 카메라 SLAM은 rig 외부 파라미터를 거쳐 비교됩니다. ` +
-      `260915 세션은 rig 보정값이 없어 같은 실행에서 추정한 rig를 썼고, IMU·HDL 실행이 없습니다.` +
+      `260915·261022 세션은 rig 보정값이 없어 같은 실행에서 추정한 rig를 썼고, IMU·HDL 실행이 없습니다.` +
       (noref.length ? ` LiDAR가 없어 표에서 빠진 세션: ${noref.join(', ')}.` : '');
   }
 

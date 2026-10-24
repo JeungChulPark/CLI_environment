@@ -1,0 +1,67 @@
+{
+ "anchored_segments": [
+  {
+   "first_t_ns": 1792575141506636544,
+   "frames": 5152,
+   "last_t_ns": 1792575313244502272
+  }
+ ],
+ "db3": "/Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_kiuk/SLAM/SLAM_0.db3",
+ "features": 2000,
+ "frames": 5152,
+ "gyro": {
+  "bias_cam_rad_s_final": [
+   -0.0009782530939312774,
+   0.0017475783938167096,
+   -0.0009639745776098184
+  ],
+  "frames_with_gyro": 5151,
+  "frames_without_gyro": 1,
+  "imu": "/Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_kiuk/SLAM/../imu/xsens_20261021_183201.db3",
+  "imu_minus_cam_ms": -0.713156,
+  "kf_edges": 14214,
+  "prior_edges": 10300,
+  "rate_hz": 200.0,
+  "rig": "/Users/user/objpose/settings/rig_261022_gyro.json",
+  "topic": "/xsens/imu/data",
+  "zero_rate_updates": 15
+ },
+ "input_kind": "converted",
+ "load_atlas": "",
+ "localization": false,
+ "map_segments": [
+  {
+   "first_t_ns": 1792575141506636544,
+   "last_t_ns": 1792575313244502272,
+   "map_id": 0,
+   "ok_frames": 5152
+  }
+ ],
+ "non_monotonic": 0,
+ "offset_ns": 0,
+ "ok_frames": 5152,
+ "ok_not_vo_frames": 5152,
+ "ok_not_vo_ratio": 1.0,
+ "ok_ratio": 1.0,
+ "pace": 0.0,
+ "prep_ms_mean": 0.8066985797748445,
+ "processed": 5152,
+ "save_atlas": "",
+ "session": "/Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_kiuk/SLAM",
+ "settings": "/Users/user/objpose/settings/orbslam3_260826_dark_nf2000.yaml",
+ "states": {
+  "OK": 5152
+ },
+ "time_domain": "colour header stamp",
+ "time_source": "header",
+ "track_ms": {
+  "max": 107.441541,
+  "mean": 17.223119352096262,
+  "over_33ms": 223,
+  "p50": 15.448,
+  "p95": 31.937334,
+  "p99": 52.187
+ },
+ "trajectory": "TUM T_world_camera, state OK only, clock = time_source (+ offset_ns)",
+ "wall_s": 92.99960225
+}

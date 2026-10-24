@@ -1,0 +1,136 @@
+[slam_stream] time-source=header domain=colour header stamp offset_ns=0 non_monotonic=0
+[slam_stream] /Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_digut/SLAM/SLAM_0.db3 | 5767 frames | color 640x480 fx=387.234 | depth fx=387.234 | t=(0.000000,0.000000,0.000000) | units=0.001
+[slam_stream] converted bag: 5767 pairs (inexact 0, max dt 0.000 ms, unpaired colour 0 depth 0) K fx=387.234 fy=386.662 cx=322.784 cy=250.280 D=[-0.056362 0.067728 0.000344 0.000891 -0.022403] plumb_bob, depth pre-aligned
+[slam_stream] gyro aid: /Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_digut/SLAM/../imu/xsens_20261021_175500.db3 /xsens/imu/data | 38450 samples 200.0 Hz | start bias (rig, camera frame) -0.00122 0.00207 -0.00143 rad/s | zero-rate update on | imu-cam -0.71 ms
+[slam_stream] settings override RGBD.DepthMapFactor: 925.0
+[slam_stream] settings override Gyro.Use: 1
+
+ORB-SLAM3 Copyright (C) 2017-2020 Carlos Campos, Richard Elvira, Juan J. Gómez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+ORB-SLAM2 Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+This program comes with ABSOLUTELY NO WARRANTY;
+This is free software, and you are welcome to redistribute it
+under certain conditions. See LICENSE.txt.
+
+Input sensor was set to: RGB-D
+Loading settings from /tmp/slam_stream_7565_settings.yaml
+	-Loaded camera 1
+Camera.newHeight optional parameter does not exist...
+Camera.newWidth optional parameter does not exist...
+	-Loaded image info
+	-Loaded RGB-D calibration
+	-Loaded ORB settings
+Viewer.imageViewScale optional parameter does not exist...
+	-Loaded viewer settings
+System.LoadAtlasFromFile optional parameter does not exist...
+System.SaveAtlasToFile optional parameter does not exist...
+	-Loaded Atlas settings
+System.thFarPoints optional parameter does not exist...
+	-Loaded misc parameters
+----------------------------------
+SLAM settings: 
+	-Camera 1 parameters (Pinhole): [ 387.234 386.662 322.784 250.28 ]
+	-Camera 1 distortion parameters: [  -0.056362 0.067728 0.000344 0.000891 -0.022403 ]
+	-Original image size: [ 640 , 480 ]
+	-Current image size: [ 640 , 480 ]
+	-Sequence FPS: 30
+	-RGB-D depth map factor: 925
+	-Features per image: 2000
+	-ORB scale factor: 1.2
+	-ORB number of scales: 8
+	-Initial FAST threshold: 20
+	-Min FAST threshold: 7
+
+
+Loading ORB Vocabulary. This could take a while...
+Vocabulary loaded!
+
+Initialization of Atlas from scratch 
+Creation of new map with id: 0
+Creation of new map with last KF id: 0
+Seq. Name: 
+Gyro aid: on, sigma frame 0.0005 rad, keyframe 0.0005 rad + 0.0002 rad/sqrt(s) + 0.0001 rad/s + 0.001 x angle, max gap 10 s
+There are 1 cameras in the atlas
+Camera 0 is pinhole
+First KF:0; Map init KF:0
+New Map created with 1877 points
+[slam_stream] gyro bias update #1 at 3.00 s: bias (camera frame) -0.00108 0.00202 -0.00138 rad/s
+[slam_stream] gyro bias update #2 at 10.07 s: bias (camera frame) -0.00120 0.00218 -0.00136 rad/s
+[slam_stream] gyro bias update #3 at 13.10 s: bias (camera frame) -0.00124 0.00210 -0.00130 rad/s
+[slam_stream] 500/5767 ok=500 track mean 10.72 ms
+[slam_stream] 1000/5767 ok=1000 track mean 10.90 ms
+[slam_stream] gyro bias update #4 at 36.28 s: bias (camera frame) -0.00126 0.00236 -0.00130 rad/s
+[slam_stream] gyro bias update #5 at 39.31 s: bias (camera frame) -0.00139 0.00229 -0.00128 rad/s
+[slam_stream] gyro bias update #6 at 42.34 s: bias (camera frame) -0.00151 0.00224 -0.00124 rad/s
+[slam_stream] 1500/5767 ok=1500 track mean 11.51 ms
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=209|matched_id=33|dt_s=44.678|loop_vs_gyro_deg=23.668|current_vs_gyro_deg=3.100|limit_deg=5.894|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=210|matched_id=8|dt_s=47.112|loop_vs_gyro_deg=14.249|current_vs_gyro_deg=3.401|limit_deg=5.942|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=211|matched_id=36|dt_s=45.245|loop_vs_gyro_deg=19.901|current_vs_gyro_deg=3.297|limit_deg=5.905|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=212|matched_id=45|dt_s=45.078|loop_vs_gyro_deg=15.891|current_vs_gyro_deg=3.322|limit_deg=5.902|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=213|matched_id=19|dt_s=46.745|loop_vs_gyro_deg=20.036|current_vs_gyro_deg=3.455|limit_deg=5.935|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=214|matched_id=7|dt_s=48.246|loop_vs_gyro_deg=23.103|current_vs_gyro_deg=3.601|limit_deg=5.965|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=215|matched_id=38|dt_s=46.078|loop_vs_gyro_deg=22.665|current_vs_gyro_deg=3.436|limit_deg=5.922|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=216|matched_id=9|dt_s=48.179|loop_vs_gyro_deg=13.312|current_vs_gyro_deg=3.572|limit_deg=5.964|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=217|matched_id=32|dt_s=46.445|loop_vs_gyro_deg=24.098|current_vs_gyro_deg=3.476|limit_deg=5.929|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=218|matched_id=38|dt_s=46.178|loop_vs_gyro_deg=9.655|current_vs_gyro_deg=3.425|limit_deg=5.924|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=219|matched_id=19|dt_s=47.245|loop_vs_gyro_deg=22.991|current_vs_gyro_deg=3.511|limit_deg=5.945|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=220|matched_id=19|dt_s=47.279|loop_vs_gyro_deg=18.714|current_vs_gyro_deg=3.501|limit_deg=5.946|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=221|matched_id=8|dt_s=48.546|loop_vs_gyro_deg=24.444|current_vs_gyro_deg=3.575|limit_deg=5.971|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=222|matched_id=19|dt_s=47.445|loop_vs_gyro_deg=21.080|current_vs_gyro_deg=3.508|limit_deg=5.949|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=237|matched_id=40|dt_s=47.512|loop_vs_gyro_deg=24.879|current_vs_gyro_deg=3.451|limit_deg=5.950|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=238|matched_id=40|dt_s=47.612|loop_vs_gyro_deg=11.469|current_vs_gyro_deg=3.438|limit_deg=5.952|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=239|matched_id=40|dt_s=47.679|loop_vs_gyro_deg=23.265|current_vs_gyro_deg=3.443|limit_deg=5.954|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=240|matched_id=40|dt_s=47.712|loop_vs_gyro_deg=21.691|current_vs_gyro_deg=3.435|limit_deg=5.954|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=241|matched_id=38|dt_s=47.912|loop_vs_gyro_deg=23.136|current_vs_gyro_deg=3.450|limit_deg=5.958|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=242|matched_id=41|dt_s=47.845|loop_vs_gyro_deg=20.856|current_vs_gyro_deg=3.419|limit_deg=5.957|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=243|matched_id=44|dt_s=47.679|loop_vs_gyro_deg=24.111|current_vs_gyro_deg=3.405|limit_deg=5.954|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=244|matched_id=37|dt_s=48.079|loop_vs_gyro_deg=20.794|current_vs_gyro_deg=3.423|limit_deg=5.962|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=245|matched_id=44|dt_s=47.812|loop_vs_gyro_deg=13.636|current_vs_gyro_deg=3.402|limit_deg=5.956|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=246|matched_id=36|dt_s=48.279|loop_vs_gyro_deg=16.158|current_vs_gyro_deg=3.441|limit_deg=5.966|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=247|matched_id=33|dt_s=48.479|loop_vs_gyro_deg=25.837|current_vs_gyro_deg=3.472|limit_deg=5.970|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=248|matched_id=49|dt_s=44.911|loop_vs_gyro_deg=21.689|current_vs_gyro_deg=3.545|limit_deg=5.898|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=249|matched_id=36|dt_s=48.446|loop_vs_gyro_deg=18.243|current_vs_gyro_deg=3.439|limit_deg=5.969|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=250|matched_id=37|dt_s=48.412|loop_vs_gyro_deg=20.535|current_vs_gyro_deg=3.431|limit_deg=5.968|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=251|matched_id=38|dt_s=48.412|loop_vs_gyro_deg=14.338|current_vs_gyro_deg=3.428|limit_deg=5.968|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=252|matched_id=22|dt_s=49.279|loop_vs_gyro_deg=12.897|current_vs_gyro_deg=3.479|limit_deg=5.986|verdict=VETO
+[slam_stream] gyro bias update #7 at 55.21 s: bias (camera frame) -0.00150 0.00216 -0.00124 rad/s
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=253|matched_id=12|dt_s=50.179|loop_vs_gyro_deg=16.494|current_vs_gyro_deg=3.574|limit_deg=6.004|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=254|matched_id=38|dt_s=48.546|loop_vs_gyro_deg=18.538|current_vs_gyro_deg=3.429|limit_deg=5.971|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=255|matched_id=44|dt_s=48.279|loop_vs_gyro_deg=12.279|current_vs_gyro_deg=3.386|limit_deg=5.966|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=256|matched_id=29|dt_s=49.146|loop_vs_gyro_deg=4.419|current_vs_gyro_deg=3.436|limit_deg=5.983|verdict=ok
+LOOP_GAP|cur_id=256|matched_id=29|ts_cur=1792572974.424558|ts_matched=1792572925.278715|cur_xyz=-3.541081,-0.010297,-0.481298|matched_xyz=-0.076688,0.025223,0.619117|gap_m=3.635133|sim3t=3.163272,0.615066,-0.184112|sim3_scale=1.000000|corr_m=0.736450|resid_m=3.260245
+libc++abi: terminating due to uncaught exception of type cv::Exception: OpenCV(4.14.0) modules/core/src/matrix.cpp:765: error: (-215:Assertion failed) 0 <= _rowRange.start && _rowRange.start <= _rowRange.end && _rowRange.end <= m.rows in function 'Mat'
+

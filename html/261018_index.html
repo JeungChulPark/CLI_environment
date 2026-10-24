@@ -25,6 +25,10 @@ a.card small{display:block;color:var(--muted);font-size:12.5px;margin-top:6px}
 <span>원본 ORB-SLAM3 vs 수정본 vs 수정본+자이로. 모션캡처·라이다 GT로 office·home·corridor를 평가했다. 자이로를 켜면 Sim(3) ATE가 office −30%, home −14~21%, corridor −19~33% 줄었다. 크래시 수정과 한계도 정리했다.</span>
 <small>원본 orbslam_ws/openloris/report_261018.md</small></a>
 
+<a class="card" href="261025_crashfix_reps.html"><b>261022 세션: ORB-SLAM3 크래시 원인 수정과 반복 실행</b>
+<span>크래시 원인은 CorrectLoop()가 LocalMapping이 멈추기 전에 EmptyQueue()를 불러 생긴 쓰레드 레이스였다(원본 v1.0에도 있음). 수정 전 27회 중 9회 크래시, 수정 후 48회 중 0회. 수정 후 kiuk 이상값 사라짐, digut은 자이로가 잘못된 루프를 막아 58→19 cm. cbnu_s bag 손상, 59초만 복구.</span>
+<small>원본 objpose/docs/slam_261022_crashfix_reps_261025.md</small></a>
+
 <a class="card" href="261019_nf4000_vs_gyro.html"><b>수정 ORB-SLAM3: 특징점 수 × 자이로 2×2, 실데이터</b>
 <span>NF2000 / NF4000 × 자이로 없음 / 있음, 260901 네 세션 각 3회, 라이다 pseudo-GT 기준. 특징점을 늘려도 정확도는 그대로이고 트래킹만 1.5배 느려진다. 자이로는 live ATE −7~−14%. 주력(NF2000+자이로)이 가장 낫다. 잘못된 루프는 NF4000 계열에서만 2회.</span>
 <small>원본 objpose/docs/slam_nf4000_vs_gyro_261019.md</small></a>

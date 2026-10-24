@@ -1,0 +1,40 @@
+ok   digut base_run2 06:38:21
+ok   digut up_run2 06:38:44
+ok   digut dep_run2 06:38:54
+ok   digut gy_run2 06:40:47
+ok   digut upd_run2 06:41:12
+ok   digut gyd_run2 06:41:15
+run_reps.sh: line 12:  5017 Segmentation fault: 11  ~/objpose/$w --session $D/261022_cbnu_$s/SLAM --features 2000 --mode offline "$@" --out "$O/$n.txt" > "$O/$n.log" 2>&1
+FAIL kiuk base_run2 rc=139 06:42:04
+ok   kiuk dep_run2 06:42:28
+ok   kiuk up_run2 06:42:48
+ok   kiuk gyd_run2 06:44:51
+ok   kiuk gy_run2 06:44:53
+ok   kiuk upd_run2 06:45:12
+ok   digut base_run3 06:46:59
+ok   digut up_run3 06:47:20
+ok   digut dep_run3 06:47:29
+run_reps.sh: line 12:  7565 Abort trap: 6           ~/objpose/$w --session $D/261022_cbnu_$s/SLAM --features 2000 --mode offline "$@" --out "$O/$n.txt" > "$O/$n.log" 2>&1
+FAIL digut gyd_run3 rc=134 06:48:11
+ok   digut gy_run3 06:49:20
+ok   digut upd_run3 06:49:27
+ok   kiuk base_run3 06:51:14
+ok   kiuk dep_run3 06:51:17
+ok   kiuk up_run3 06:51:31
+ok   kiuk gyd_run3 06:53:14
+ok   kiuk gy_run3 06:53:17
+ok   kiuk upd_run3 06:53:34
+ok   digut base_run4 06:55:40
+ok   digut dep_run4 06:55:48
+ok   digut up_run4 06:55:58
+run_reps.sh: line 12: 10131 Abort trap: 6           ~/objpose/$w --session $D/261022_cbnu_$s/SLAM --features 2000 --mode offline "$@" --out "$O/$n.txt" > "$O/$n.log" 2>&1
+FAIL digut gyd_run4 rc=134 06:56:37
+ok   digut gy_run4 06:58:05
+ok   digut upd_run4 06:58:32
+ok   kiuk base_run4 07:00:42
+ok   kiuk dep_run4 07:00:45
+ok   kiuk up_run4 07:00:57
+ok   kiuk gy_run4 07:02:32
+ok   kiuk gyd_run4 07:02:36
+ok   kiuk upd_run4 07:02:59
+ALLDONE

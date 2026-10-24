@@ -1,0 +1,119 @@
+[slam_stream] time-source=header domain=colour header stamp offset_ns=0 non_monotonic=0
+[slam_stream] /Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_digut/SLAM/SLAM_0.db3 | 5767 frames | color 640x480 fx=387.234 | depth fx=387.234 | t=(0.000000,0.000000,0.000000) | units=0.001
+[slam_stream] converted bag: 5767 pairs (inexact 0, max dt 0.000 ms, unpaired colour 0 depth 0) K fx=387.234 fy=386.662 cx=322.784 cy=250.280 D=[-0.056362 0.067728 0.000344 0.000891 -0.022403] plumb_bob, depth pre-aligned
+[slam_stream] gyro aid: /Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_digut/SLAM/../imu/xsens_20261021_175500.db3 /xsens/imu/data | 38450 samples 200.0 Hz | start bias (rig, camera frame) -0.00122 0.00207 -0.00143 rad/s | zero-rate update on | imu-cam -0.71 ms
+[slam_stream] settings override Gyro.Use: 1
+
+ORB-SLAM3 Copyright (C) 2017-2020 Carlos Campos, Richard Elvira, Juan J. Gómez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+ORB-SLAM2 Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+This program comes with ABSOLUTELY NO WARRANTY;
+This is free software, and you are welcome to redistribute it
+under certain conditions. See LICENSE.txt.
+
+Input sensor was set to: RGB-D
+Loading settings from /tmp/slam_stream_7564_settings.yaml
+	-Loaded camera 1
+Camera.newHeight optional parameter does not exist...
+Camera.newWidth optional parameter does not exist...
+	-Loaded image info
+	-Loaded RGB-D calibration
+	-Loaded ORB settings
+Viewer.imageViewScale optional parameter does not exist...
+	-Loaded viewer settings
+System.LoadAtlasFromFile optional parameter does not exist...
+System.SaveAtlasToFile optional parameter does not exist...
+	-Loaded Atlas settings
+System.thFarPoints optional parameter does not exist...
+	-Loaded misc parameters
+----------------------------------
+SLAM settings: 
+	-Camera 1 parameters (Pinhole): [ 387.234 386.662 322.784 250.28 ]
+	-Camera 1 distortion parameters: [  -0.056362 0.067728 0.000344 0.000891 -0.022403 ]
+	-Original image size: [ 640 , 480 ]
+	-Current image size: [ 640 , 480 ]
+	-Sequence FPS: 30
+	-RGB-D depth map factor: 1000
+	-Features per image: 2000
+	-ORB scale factor: 1.2
+	-ORB number of scales: 8
+	-Initial FAST threshold: 20
+	-Min FAST threshold: 7
+
+
+Loading ORB Vocabulary. This could take a while...
+Vocabulary loaded!
+
+Initialization of Atlas from scratch 
+Creation of new map with id: 0
+Creation of new map with last KF id: 0
+Seq. Name: 
+Gyro aid: on, sigma frame 0.0005 rad, keyframe 0.0005 rad + 0.0002 rad/sqrt(s) + 0.0001 rad/s + 0.001 x angle, max gap 10 s
+There are 1 cameras in the atlas
+Camera 0 is pinhole
+First KF:0; Map init KF:0
+New Map created with 1877 points
+[slam_stream] gyro bias update #1 at 3.00 s: bias (camera frame) -0.00112 0.00203 -0.00137 rad/s
+[slam_stream] gyro bias update #2 at 10.10 s: bias (camera frame) -0.00110 0.00231 -0.00147 rad/s
+[slam_stream] gyro bias update #3 at 13.14 s: bias (camera frame) -0.00126 0.00255 -0.00135 rad/s
+[slam_stream] 500/5767 ok=500 track mean 10.74 ms
+[slam_stream] 1000/5767 ok=1000 track mean 10.86 ms
+[slam_stream] gyro bias update #4 at 36.28 s: bias (camera frame) -0.00131 0.00272 -0.00137 rad/s
+[slam_stream] gyro bias update #5 at 39.31 s: bias (camera frame) -0.00144 0.00262 -0.00134 rad/s
+[slam_stream] gyro bias update #6 at 42.34 s: bias (camera frame) -0.00150 0.00259 -0.00130 rad/s
+[slam_stream] 1500/5767 ok=1500 track mean 11.54 ms
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=194|matched_id=27|dt_s=45.845|loop_vs_gyro_deg=20.796|current_vs_gyro_deg=4.345|limit_deg=5.917|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=195|matched_id=18|dt_s=46.778|loop_vs_gyro_deg=21.189|current_vs_gyro_deg=4.529|limit_deg=5.936|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=196|matched_id=47|dt_s=45.745|loop_vs_gyro_deg=19.791|current_vs_gyro_deg=4.547|limit_deg=5.915|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=197|matched_id=32|dt_s=46.979|loop_vs_gyro_deg=20.159|current_vs_gyro_deg=4.685|limit_deg=5.940|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=198|matched_id=35|dt_s=47.079|loop_vs_gyro_deg=12.934|current_vs_gyro_deg=4.713|limit_deg=5.942|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=199|matched_id=41|dt_s=46.945|loop_vs_gyro_deg=21.606|current_vs_gyro_deg=4.726|limit_deg=5.939|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=200|matched_id=31|dt_s=47.512|loop_vs_gyro_deg=20.311|current_vs_gyro_deg=4.749|limit_deg=5.950|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=201|matched_id=23|dt_s=47.979|loop_vs_gyro_deg=7.283|current_vs_gyro_deg=4.766|limit_deg=5.960|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=202|matched_id=47|dt_s=46.745|loop_vs_gyro_deg=2.316|current_vs_gyro_deg=4.693|limit_deg=5.935|verdict=ok
+LOOP_GAP|cur_id=202|matched_id=47|ts_cur=1792572972.223945|ts_matched=1792572925.478765|cur_xyz=-3.251556,-0.076499,-1.222893|matched_xyz=-0.081226,0.031170,0.635339|gap_m=3.676359|sim3t=2.730651,0.332842,0.591081|sim3_scale=1.000000|corr_m=0.767365|resid_m=2.983707
+Local Mapping STOP
+Local Mapping RELEASE
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] gyro bias update #7 at 57.91 s: bias (camera frame) -0.00134 0.00253 -0.00125 rad/s
+[slam_stream] gyro bias update #8 at 63.35 s: bias (camera frame) -0.00134 0.00259 -0.00127 rad/s
+[slam_stream] 2000/5767 ok=2000 track mean 12.45 ms
+[slam_stream] 2500/5767 ok=2500 track mean 12.17 ms
+[slam_stream] gyro bias update #9 at 97.69 s: bias (camera frame) -0.00129 0.00266 -0.00126 rad/s
+[slam_stream] 3000/5767 ok=3000 track mean 12.44 ms
+[slam_stream] gyro bias update #10 at 100.73 s: bias (camera frame) -0.00125 0.00275 -0.00127 rad/s
+[slam_stream] gyro bias update #11 at 112.16 s: bias (camera frame) -0.00119 0.00274 -0.00125 rad/s
+[slam_stream] 3500/5767 ok=3500 track mean 12.86 ms
+[slam_stream] 4000/5767 ok=4000 track mean 12.96 ms
+[slam_stream] gyro bias update #12 at 133.83 s: bias (camera frame) -0.00124 0.00268 -0.00131 rad/s
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=526|matched_id=211|dt_s=86.888|loop_vs_gyro_deg=1.895|current_vs_gyro_deg=2.073|limit_deg=6.738|verdict=ok
+LOOP_GAP|cur_id=526|matched_id=211|ts_cur=1792573060.679463|ts_matched=1792572973.791032|cur_xyz=-3.852597,-0.106350,-1.136664|matched_xyz=-3.313478,-0.086904,-0.571778|gap_m=0.781104|sim3t=3.710118,-0.186633,-0.099109|sim3_scale=1.000000|corr_m=0.436121|resid_m=0.617445
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] 4500/5767 ok=4500 track mean 13.13 ms
+[slam_stream] gyro bias update #13 at 151.50 s: bias (camera frame) -0.00110 0.00263 -0.00131 rad/s
+[slam_stream] gyro bias update #14 at 160.14 s: bias (camera frame) -0.00115 0.00255 -0.00130 rad/s
+[slam_stream] 5000/5767 ok=5000 track mean 13.49 ms
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] gyro bias update #15 at 173.01 s: bias (camera frame) -0.00115 0.00248 -0.00126 rad/s
+[slam_stream] 5500/5767 ok=5500 track mean 13.56 ms
+[slam_stream] gyro bias update #16 at 187.58 s: bias (camera frame) -0.00113 0.00245 -0.00125 rad/s
+[slam_stream] gyro bias update #17 at 190.61 s: bias (camera frame) -0.00112 0.00242 -0.00126 rad/s
+[slam_stream] done: 5767 processed, 5767 ok, wall 87.1 s
+[slam_stream] gyro aid: 5766 frames with gyro, 1 without | 11530 pose priors, 16403 keyframe edges | 17 zero-rate updates, final bias -0.00112 0.00242 -0.00126 rad/s
+Shutdown
+Shutdown: waiting for background threads (localMapper=busy, loopCloser=busy, GBA=idle) ...
+Shutdown: background threads stopped after 3825 ms.
+
+Saving camera trajectory to /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/261024_map/261022_cbnu_digut/gy_run3.txt.optimized.txt ...

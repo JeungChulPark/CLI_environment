@@ -1,0 +1,80 @@
+{
+ "anchored_segments": [
+  {
+   "first_t_ns": 1792575141506636544,
+   "frames": 1924,
+   "last_t_ns": 1792575205620655360
+  },
+  {
+   "first_t_ns": 1792575208688046336,
+   "frames": 3137,
+   "last_t_ns": 1792575313244502272
+  }
+ ],
+ "db3": "/Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_kiuk/SLAM/SLAM_0.db3",
+ "features": 2000,
+ "frames": 5152,
+ "gyro": {
+  "bias_cam_rad_s_final": [
+   -0.0010030296675423319,
+   0.0017440039559784037,
+   -0.0010553279921668806
+  ],
+  "frames_with_gyro": 5151,
+  "frames_without_gyro": 1,
+  "imu": "/Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_kiuk/SLAM/../imu/xsens_20261021_183201.db3",
+  "imu_minus_cam_ms": -0.713156,
+  "kf_edges": 9930,
+  "prior_edges": 10118,
+  "rate_hz": 200.0,
+  "rig": "/Users/user/objpose/settings/rig_261022_gyro.json",
+  "topic": "/xsens/imu/data",
+  "zero_rate_updates": 15
+ },
+ "input_kind": "converted",
+ "load_atlas": "",
+ "localization": false,
+ "map_segments": [
+  {
+   "first_t_ns": 1792575141506636544,
+   "last_t_ns": 1792575205620655360,
+   "map_id": 0,
+   "ok_frames": 1924
+  },
+  {
+   "first_t_ns": 1792575208688046336,
+   "last_t_ns": 1792575313244502272,
+   "map_id": 1,
+   "ok_frames": 3137
+  }
+ ],
+ "non_monotonic": 0,
+ "offset_ns": 0,
+ "ok_frames": 5061,
+ "ok_not_vo_frames": 5061,
+ "ok_not_vo_ratio": 0.9823369565217391,
+ "ok_ratio": 0.9823369565217391,
+ "pace": 0.0,
+ "prep_ms_mean": 0.31276112150621044,
+ "processed": 5152,
+ "save_atlas": "",
+ "session": "/Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_kiuk/SLAM",
+ "settings": "/Users/user/objpose/settings/orbslam3_260826_dark_nf2000.yaml",
+ "states": {
+  "NO_IMAGES_YET": 1,
+  "OK": 5061,
+  "RECENTLY_LOST": 90
+ },
+ "time_domain": "colour header stamp",
+ "time_source": "header",
+ "track_ms": {
+  "max": 70.604084,
+  "mean": 8.080827037461159,
+  "over_33ms": 1,
+  "p50": 7.633917,
+  "p95": 12.393209,
+  "p99": 15.909417
+ },
+ "trajectory": "TUM T_world_camera, state OK only, clock = time_source (+ offset_ns)",
+ "wall_s": 43.3078795
+}

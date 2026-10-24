@@ -1,0 +1,12 @@
+{"messages": 1909, "unique_header_stamps": 1909, "scans_used": 1909, "dt_ms": {"median": 100.861, "std": 0.095, "min": 99.94, "max": 101.68}}
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/261024_map/../260901/bigeight/kiss_gt.py:78: RuntimeWarning: divide by zero encountered in matmul
+  cloud.append((T[:3, :3] @ p.T).T + T[:3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/261024_map/../260901/bigeight/kiss_gt.py:78: RuntimeWarning: overflow encountered in matmul
+  cloud.append((T[:3, :3] @ p.T).T + T[:3, 3])
+/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/261024_map/../260901/bigeight/kiss_gt.py:78: RuntimeWarning: invalid value encountered in matmul
+  cloud.append((T[:3, :3] @ p.T).T + T[:3, 3])
+  0/1909
+  500/1909
+  1000/1909
+  1500/1909
+{"messages": 1909, "unique_header_stamps": 1909, "scans_used": 1909, "dt_ms": {"median": 100.861, "std": 0.095, "min": 99.94, "max": 101.68}, "ms_per_scan": 44.9, "path_m": 65.23, "return_error_cm": 8.0, "total_abs_yaw_deg": 1655.8, "net_yaw_deg": 368.3, "map_preview_points": 34502}
