@@ -1,0 +1,2 @@
+orb_live                     ATE   87.8 cm (max  380.0)  rot 30.84 deg | drift pos rmse  100.1 max  435.0 final  207.0 cm  yaw rmse 32.17 max 111.04 tilt rmse  0.99 | RPE10s  96.0 cm 35.42 deg  RPE1s 10.75 cm 8.848 deg
+orb_opt                      ATE   27.4 cm (max   80.1)  rot  2.30 deg | drift pos rmse   36.3 max  101.9 final   84.7 cm  yaw rmse  2.11 max  7.22 tilt rmse  1.01 | RPE10s  30.5 cm  2.75 deg  RPE1s  3.41 cm 0.619 deg

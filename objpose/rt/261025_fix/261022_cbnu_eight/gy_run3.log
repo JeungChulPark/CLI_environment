@@ -1,0 +1,100 @@
+[slam_stream] time-source=header domain=colour header stamp offset_ns=0 non_monotonic=0
+[slam_stream] /Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_eight/SLAM/SLAM_0.db3 | 6413 frames | color 640x480 fx=386.813 | depth fx=386.813 | t=(0.000000,0.000000,0.000000) | units=0.001
+[slam_stream] converted bag: 6413 pairs (inexact 0, max dt 0.000 ms, unpaired colour 0 depth 0) K fx=386.813 fy=386.242 cx=322.784 cy=250.280 D=[-0.056362 0.067728 0.000344 0.000891 -0.022403] plumb_bob, depth pre-aligned
+[slam_stream] gyro aid: /Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_eight/SLAM/../imu/xsens_20261021_172431.db3 /xsens/imu/data | 42761 samples 200.0 Hz | start bias (rig, camera frame) -0.00122 0.00207 -0.00143 rad/s | zero-rate update on | imu-cam -0.71 ms
+[slam_stream] settings override Gyro.Use: 1
+
+ORB-SLAM3 Copyright (C) 2017-2020 Carlos Campos, Richard Elvira, Juan J. Gómez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+ORB-SLAM2 Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+This program comes with ABSOLUTELY NO WARRANTY;
+This is free software, and you are welcome to redistribute it
+under certain conditions. See LICENSE.txt.
+
+Input sensor was set to: RGB-D
+Loading settings from /tmp/slam_stream_34951_settings.yaml
+	-Loaded camera 1
+Camera.newHeight optional parameter does not exist...
+Camera.newWidth optional parameter does not exist...
+	-Loaded image info
+	-Loaded RGB-D calibration
+	-Loaded ORB settings
+Viewer.imageViewScale optional parameter does not exist...
+	-Loaded viewer settings
+System.LoadAtlasFromFile optional parameter does not exist...
+System.SaveAtlasToFile optional parameter does not exist...
+	-Loaded Atlas settings
+System.thFarPoints optional parameter does not exist...
+	-Loaded misc parameters
+----------------------------------
+SLAM settings: 
+	-Camera 1 parameters (Pinhole): [ 386.813 386.242 322.784 250.28 ]
+	-Camera 1 distortion parameters: [  -0.056362 0.067728 0.000344 0.000891 -0.022403 ]
+	-Original image size: [ 640 , 480 ]
+	-Current image size: [ 640 , 480 ]
+	-Sequence FPS: 30
+	-RGB-D depth map factor: 1000
+	-Features per image: 2000
+	-ORB scale factor: 1.2
+	-ORB number of scales: 8
+	-Initial FAST threshold: 20
+	-Min FAST threshold: 7
+
+
+Loading ORB Vocabulary. This could take a while...
+Vocabulary loaded!
+
+Initialization of Atlas from scratch 
+Creation of new map with id: 0
+Creation of new map with last KF id: 0
+Seq. Name: 
+Gyro aid: on, sigma frame 0.0005 rad, keyframe 0.0005 rad + 0.0002 rad/sqrt(s) + 0.0001 rad/s + 0.001 x angle, max gap 10 s
+There are 1 cameras in the atlas
+Camera 0 is pinhole
+First KF:0; Map init KF:0
+New Map created with 1850 points
+[slam_stream] gyro bias update #1 at 3.00 s: bias (camera frame) -0.00116 0.00224 -0.00143 rad/s
+[slam_stream] gyro bias update #2 at 6.06 s: bias (camera frame) -0.00106 0.00229 -0.00147 rad/s
+[slam_stream] 500/6413 ok=500 track mean 7.46 ms
+[slam_stream] gyro bias update #3 at 32.40 s: bias (camera frame) -0.00112 0.00206 -0.00143 rad/s
+[slam_stream] 1000/6413 ok=1000 track mean 7.31 ms
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=214|matched_id=46|dt_s=34.209|loop_vs_gyro_deg=0.783|current_vs_gyro_deg=1.754|limit_deg=5.684|verdict=ok
+LOOP_GAP|cur_id=214|matched_id=46|ts_cur=1792571136.363925|ts_matched=1792571102.154965|cur_xyz=-0.234469,0.050260,1.545488|matched_xyz=-1.521589,0.090892,1.590220|gap_m=1.288538|sim3t=-1.191658,-0.016106,0.979380|sim3_scale=1.000000|corr_m=0.129113|resid_m=1.203561
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] 1500/6413 ok=1500 track mean 7.27 ms
+[slam_stream] gyro bias update #4 at 51.24 s: bias (camera frame) -0.00113 0.00201 -0.00142 rad/s
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] 2000/6413 ok=2000 track mean 7.16 ms
+[slam_stream] gyro bias update #5 at 69.91 s: bias (camera frame) -0.00122 0.00258 -0.00147 rad/s
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=296|matched_id=1|dt_s=71.643|loop_vs_gyro_deg=1.313|current_vs_gyro_deg=2.679|limit_deg=6.433|verdict=ok
+LOOP_GAP|cur_id=296|matched_id=1|ts_cur=1792571164.904333|ts_matched=1792571093.261341|cur_xyz=-0.570597,0.091319,-1.041519|matched_xyz=0.000582,0.004249,0.073496|gap_m=1.255821|sim3t=-0.300513,0.031557,0.967621|sim3_scale=1.000000|corr_m=0.229076|resid_m=1.076746
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] 2500/6413 ok=2500 track mean 7.38 ms
+[slam_stream] gyro bias update #6 at 84.21 s: bias (camera frame) -0.00104 0.00251 -0.00147 rad/s
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] 3000/6413 ok=3000 track mean 7.67 ms
+[slam_stream] gyro bias update #7 at 116.02 s: bias (camera frame) -0.00105 0.00275 -0.00154 rad/s
+[slam_stream] 3500/6413 ok=3500 track mean 7.93 ms
+[slam_stream] 4000/6413 ok=4000 track mean 7.86 ms
+[slam_stream] 4500/6413 ok=4500 track mean 7.99 ms
+[slam_stream] gyro bias update #8 at 152.50 s: bias (camera frame) -0.00059 0.00249 -0.00174 rad/s
+[slam_stream] gyro bias update #9 at 155.53 s: bias (camera frame) -0.00060 0.00249 -0.00177 rad/s
+[slam_stream] gyro bias update #10 at 164.53 s: bias (camera frame) -0.00068 0.00251 -0.00173 rad/s
+[slam_stream] 5000/6413 ok=5000 track mean 8.28 ms
+[slam_stream] 5500/6413 ok=5500 track mean 8.55 ms
+[slam_stream] gyro bias update #11 at 188.27 s: bias (camera frame) -0.00073 0.00251 -0.00175 rad/s
+[slam_stream] gyro bias update #12 at 191.74 s: bias (camera frame) -0.00079 0.00244 -0.00166 rad/s
+[slam_stream] 6000/6413 ok=6000 track mean 8.57 ms
+[slam_stream] gyro bias update #13 at 204.51 s: bias (camera frame) -0.00081 0.00244 -0.00167 rad/s
+[slam_stream] done: 6413 processed, 6413 ok, wall 62.4 s
+[slam_stream] gyro aid: 6412 frames with gyro, 1 without | 12822 pose priors, 15556 keyframe edges | 13 zero-rate updates, final bias -0.00081 0.00244 -0.00167 rad/s
+Shutdown
+Shutdown: waiting for background threads (localMapper=busy, loopCloser=busy, GBA=idle) ...
+Shutdown: background threads stopped after 30 ms.
+
+Saving camera trajectory to /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/261025_fix/261022_cbnu_eight/gy_run3.txt.optimized.txt ...

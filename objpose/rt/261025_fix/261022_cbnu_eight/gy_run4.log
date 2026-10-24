@@ -1,0 +1,217 @@
+[slam_stream] time-source=header domain=colour header stamp offset_ns=0 non_monotonic=0
+[slam_stream] /Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_eight/SLAM/SLAM_0.db3 | 6413 frames | color 640x480 fx=386.813 | depth fx=386.813 | t=(0.000000,0.000000,0.000000) | units=0.001
+[slam_stream] converted bag: 6413 pairs (inexact 0, max dt 0.000 ms, unpaired colour 0 depth 0) K fx=386.813 fy=386.242 cx=322.784 cy=250.280 D=[-0.056362 0.067728 0.000344 0.000891 -0.022403] plumb_bob, depth pre-aligned
+[slam_stream] gyro aid: /Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_eight/SLAM/../imu/xsens_20261021_172431.db3 /xsens/imu/data | 42761 samples 200.0 Hz | start bias (rig, camera frame) -0.00122 0.00207 -0.00143 rad/s | zero-rate update on | imu-cam -0.71 ms
+[slam_stream] settings override Gyro.Use: 1
+
+ORB-SLAM3 Copyright (C) 2017-2020 Carlos Campos, Richard Elvira, Juan J. Gómez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+ORB-SLAM2 Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+This program comes with ABSOLUTELY NO WARRANTY;
+This is free software, and you are welcome to redistribute it
+under certain conditions. See LICENSE.txt.
+
+Input sensor was set to: RGB-D
+Loading settings from /tmp/slam_stream_37735_settings.yaml
+	-Loaded camera 1
+Camera.newHeight optional parameter does not exist...
+Camera.newWidth optional parameter does not exist...
+	-Loaded image info
+	-Loaded RGB-D calibration
+	-Loaded ORB settings
+Viewer.imageViewScale optional parameter does not exist...
+	-Loaded viewer settings
+System.LoadAtlasFromFile optional parameter does not exist...
+System.SaveAtlasToFile optional parameter does not exist...
+	-Loaded Atlas settings
+System.thFarPoints optional parameter does not exist...
+	-Loaded misc parameters
+----------------------------------
+SLAM settings: 
+	-Camera 1 parameters (Pinhole): [ 386.813 386.242 322.784 250.28 ]
+	-Camera 1 distortion parameters: [  -0.056362 0.067728 0.000344 0.000891 -0.022403 ]
+	-Original image size: [ 640 , 480 ]
+	-Current image size: [ 640 , 480 ]
+	-Sequence FPS: 30
+	-RGB-D depth map factor: 1000
+	-Features per image: 2000
+	-ORB scale factor: 1.2
+	-ORB number of scales: 8
+	-Initial FAST threshold: 20
+	-Min FAST threshold: 7
+
+
+Loading ORB Vocabulary. This could take a while...
+Vocabulary loaded!
+
+Initialization of Atlas from scratch 
+Creation of new map with id: 0
+Creation of new map with last KF id: 0
+Seq. Name: 
+Gyro aid: on, sigma frame 0.0005 rad, keyframe 0.0005 rad + 0.0002 rad/sqrt(s) + 0.0001 rad/s + 0.001 x angle, max gap 10 s
+There are 1 cameras in the atlas
+Camera 0 is pinhole
+First KF:0; Map init KF:0
+New Map created with 1850 points
+[slam_stream] gyro bias update #1 at 3.00 s: bias (camera frame) -0.00122 0.00222 -0.00143 rad/s
+[slam_stream] gyro bias update #2 at 6.06 s: bias (camera frame) -0.00107 0.00235 -0.00150 rad/s
+[slam_stream] 500/6413 ok=500 track mean 7.37 ms
+[slam_stream] gyro bias update #3 at 32.40 s: bias (camera frame) -0.00117 0.00213 -0.00145 rad/s
+[slam_stream] 1000/6413 ok=1000 track mean 7.26 ms
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=228|matched_id=44|dt_s=34.909|loop_vs_gyro_deg=2.711|current_vs_gyro_deg=1.779|limit_deg=5.698|verdict=ok
+LOOP_GAP|cur_id=228|matched_id=44|ts_cur=1792571136.630677|ts_matched=1792571101.721550|cur_xyz=-0.260849,0.065391,1.512558|matched_xyz=-1.356369,0.082735,1.632875|gap_m=1.102243|sim3t=-1.546003,-0.013363,0.886475|sim3_scale=1.000000|corr_m=0.368493|resid_m=0.771591
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] 1500/6413 ok=1500 track mean 7.16 ms
+[slam_stream] gyro bias update #4 at 52.17 s: bias (camera frame) -0.00113 0.00247 -0.00143 rad/s
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] 2000/6413 ok=2000 track mean 6.99 ms
+[slam_stream] gyro bias update #5 at 69.91 s: bias (camera frame) -0.00115 0.00292 -0.00144 rad/s
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=296|matched_id=1|dt_s=71.643|loop_vs_gyro_deg=1.298|current_vs_gyro_deg=3.696|limit_deg=6.433|verdict=ok
+LOOP_GAP|cur_id=296|matched_id=1|ts_cur=1792571164.904333|ts_matched=1792571093.261341|cur_xyz=-0.607850,0.115130,-1.069155|matched_xyz=0.002260,0.003334,0.072988|gap_m=1.299701|sim3t=-0.374134,0.051811,0.973997|sim3_scale=1.000000|corr_m=0.260765|resid_m=1.110591
+Local Mapping STOP
+Local Mapping RELEASE
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] 2500/6413 ok=2500 track mean 7.28 ms
+[slam_stream] gyro bias update #6 at 85.28 s: bias (camera frame) -0.00097 0.00271 -0.00129 rad/s
+[slam_stream] 3000/6413 ok=3000 track mean 7.58 ms
+[slam_stream] gyro bias update #7 at 116.06 s: bias (camera frame) -0.00076 0.00284 -0.00142 rad/s
+[slam_stream] 3500/6413 ok=3500 track mean 7.69 ms
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=507|matched_id=200|dt_s=83.755|loop_vs_gyro_deg=7.192|current_vs_gyro_deg=5.309|limit_deg=6.675|verdict=VETO
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=509|matched_id=221|dt_s=78.653|loop_vs_gyro_deg=3.962|current_vs_gyro_deg=5.271|limit_deg=6.573|verdict=ok
+LOOP_GAP|cur_id=509|matched_id=221|ts_cur=1792571211.916554|ts_matched=1792571133.263127|cur_xyz=-0.035605,0.011652,0.624714|matched_xyz=0.320243,0.170531,2.574161|gap_m=1.988018|sim3t=0.476680,0.006525,0.565579|sim3_scale=1.000000|corr_m=0.232271|resid_m=1.866391
+Local Mapping STOP
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Local Mapping RELEASE
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Fail to track local map!
+Creation of new map with id: 1
+Stored map with ID: 0
+Creation of new map with last KF id: 511
+First KF:511; Map init KF:511
+New Map created with 1444 points
+*Merge detected
+Local Mapping STOP
+Change to map with id: 0
+Local Mapping RELEASE
+Local Mapping RELEASE
+Merge finished!
+[slam_stream] 4000/6413 ok=3909 track mean 7.88 ms
+[slam_stream] 4500/6413 ok=4409 track mean 8.01 ms
+[slam_stream] gyro bias update #8 at 152.27 s: bias (camera frame) -0.00086 0.00279 -0.00142 rad/s
+[slam_stream] gyro bias update #9 at 155.30 s: bias (camera frame) -0.00116 0.00276 -0.00143 rad/s
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] gyro bias update #10 at 164.83 s: bias (camera frame) -0.00134 0.00271 -0.00136 rad/s
+[slam_stream] 5000/6413 ok=4909 track mean 8.10 ms
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] 5500/6413 ok=5409 track mean 8.06 ms
+[slam_stream] gyro bias update #11 at 188.34 s: bias (camera frame) -0.00143 0.00294 -0.00146 rad/s
+[slam_stream] gyro bias update #12 at 191.71 s: bias (camera frame) -0.00178 0.00304 -0.00142 rad/s
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=769|matched_id=262|dt_s=132.500|loop_vs_gyro_deg=5.976|current_vs_gyro_deg=8.660|limit_deg=7.650|verdict=ok
+LOOP_GAP|cur_id=769|matched_id=262|ts_cur=1792571286.768736|ts_matched=1792571154.268401|cur_xyz=-4.300969,0.392051,-0.670516|matched_xyz=-4.061501,-0.092703,-1.107042|gap_m=0.694900|sim3t=-4.337771,-0.105296,0.045266|sim3_scale=1.000000|corr_m=0.715166|resid_m=0.139908
+Local Mapping STOP
+[slam_stream] 6000/6413 ok=5909 track mean 7.95 ms
+Local Mapping RELEASE
+[slam_stream] done: 6413 processed, 6322 ok, wall 57.6 s
+[slam_stream] gyro aid: 6412 frames with gyro, 1 without | 12640 pose priors, 14471 keyframe edges | 12 zero-rate updates, final bias -0.00178 0.00304 -0.00142 rad/s
+Shutdown
+Shutdown: waiting for background threads (localMapper=busy, loopCloser=busy, GBA=running) ...
+Shutdown: background threads stopped after 19625 ms.
+
+Saving camera trajectory to /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/261025_fix/261022_cbnu_eight/gy_run4.txt.optimized.txt ...

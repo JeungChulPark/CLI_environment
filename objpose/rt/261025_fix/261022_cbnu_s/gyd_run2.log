@@ -1,0 +1,80 @@
+[slam_stream] time-source=header domain=colour header stamp offset_ns=0 non_monotonic=0
+[slam_stream] /Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_s/SLAM/SLAM_0.db3 | 1779 frames | color 640x480 fx=386.392 | depth fx=386.392 | t=(0.000000,0.000000,0.000000) | units=0.001
+[slam_stream] converted bag: 1779 pairs (inexact 0, max dt 0.000 ms, unpaired colour 1 depth 0) K fx=386.392 fy=385.822 cx=322.784 cy=250.280 D=[-0.056362 0.067728 0.000344 0.000891 -0.022403] plumb_bob, depth pre-aligned
+[slam_stream] gyro aid: /Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_s/SLAM/../imu/xsens_20261021_182550.db3 /xsens/imu/data | 37543 samples 200.0 Hz | start bias (rig, camera frame) -0.00122 0.00207 -0.00143 rad/s | zero-rate update on | imu-cam -0.71 ms
+[slam_stream] settings override RGBD.DepthMapFactor: 925.0
+[slam_stream] settings override Gyro.Use: 1
+
+ORB-SLAM3 Copyright (C) 2017-2020 Carlos Campos, Richard Elvira, Juan J. Gómez, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+ORB-SLAM2 Copyright (C) 2014-2016 Raúl Mur-Artal, José M.M. Montiel and Juan D. Tardós, University of Zaragoza.
+This program comes with ABSOLUTELY NO WARRANTY;
+This is free software, and you are welcome to redistribute it
+under certain conditions. See LICENSE.txt.
+
+Input sensor was set to: RGB-D
+Loading settings from /tmp/slam_stream_34413_settings.yaml
+	-Loaded camera 1
+Camera.newHeight optional parameter does not exist...
+Camera.newWidth optional parameter does not exist...
+	-Loaded image info
+	-Loaded RGB-D calibration
+	-Loaded ORB settings
+Viewer.imageViewScale optional parameter does not exist...
+	-Loaded viewer settings
+System.LoadAtlasFromFile optional parameter does not exist...
+System.SaveAtlasToFile optional parameter does not exist...
+	-Loaded Atlas settings
+System.thFarPoints optional parameter does not exist...
+	-Loaded misc parameters
+----------------------------------
+SLAM settings: 
+	-Camera 1 parameters (Pinhole): [ 386.392 385.822 322.784 250.28 ]
+	-Camera 1 distortion parameters: [  -0.056362 0.067728 0.000344 0.000891 -0.022403 ]
+	-Original image size: [ 640 , 480 ]
+	-Current image size: [ 640 , 480 ]
+	-Sequence FPS: 30
+	-RGB-D depth map factor: 925
+	-Features per image: 2000
+	-ORB scale factor: 1.2
+	-ORB number of scales: 8
+	-Initial FAST threshold: 20
+	-Min FAST threshold: 7
+
+
+Loading ORB Vocabulary. This could take a while...
+Vocabulary loaded!
+
+Initialization of Atlas from scratch 
+Creation of new map with id: 0
+Creation of new map with last KF id: 0
+Seq. Name: 
+Gyro aid: on, sigma frame 0.0005 rad, keyframe 0.0005 rad + 0.0002 rad/sqrt(s) + 0.0001 rad/s + 0.001 x angle, max gap 10 s
+There are 1 cameras in the atlas
+Camera 0 is pinhole
+First KF:0; Map init KF:0
+New Map created with 1981 points
+[slam_stream] gyro bias update #1 at 3.00 s: bias (camera frame) -0.00095 0.00185 -0.00126 rad/s
+[slam_stream] gyro bias update #2 at 6.03 s: bias (camera frame) -0.00109 0.00195 -0.00123 rad/s
+[slam_stream] 500/1779 ok=500 track mean 6.79 ms
+[slam_stream] 1000/1779 ok=1000 track mean 6.85 ms
+[slam_stream] gyro bias update #3 at 36.11 s: bias (camera frame) -0.00069 0.00196 -0.00084 rad/s
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=201|matched_id=43|dt_s=28.205|loop_vs_gyro_deg=1.615|current_vs_gyro_deg=4.065|limit_deg=5.564|verdict=ok
+LOOP_GAP|cur_id=201|matched_id=43|ts_cur=1792574813.437900|ts_matched=1792574785.232400|cur_xyz=5.471724,0.246320,2.828711|matched_xyz=2.282947,0.133168,1.674518|gap_m=3.393120|sim3t=5.605246,0.211131,2.367923|sim3_scale=1.000000|corr_m=0.090809|resid_m=3.314687
+Local Mapping STOP
+Local Mapping RELEASE
+[slam_stream] gyro bias update #4 at 49.51 s: bias (camera frame) -0.00047 0.00207 -0.00101 rad/s
+[slam_stream] 1500/1779 ok=1500 track mean 6.57 ms
+Local Mapping STOP
+Local Mapping RELEASE
+*Loop detected
+GYRO_LOOP_CHECK|cur_id=276|matched_id=1|dt_s=53.711|loop_vs_gyro_deg=4.467|current_vs_gyro_deg=0.961|limit_deg=6.074|verdict=ok
+LOOP_GAP|cur_id=276|matched_id=1|ts_cur=1792574827.707513|ts_matched=1792574773.996769|cur_xyz=3.137956,0.058214,-0.033541|matched_xyz=0.014329,0.020845,0.561238|gap_m=3.179969|sim3t=-1.469926,-0.077021,2.418887|sim3_scale=1.000000|corr_m=0.395081|resid_m=2.892984
+Local Mapping STOP
+[slam_stream] done: 1779 processed, 1779 ok, wall 12.4 s
+[slam_stream] gyro aid: 1779 frames with gyro, 0 without | 3556 pose priors, 2235 keyframe edges | 4 zero-rate updates, final bias -0.00047 0.00207 -0.00101 rad/s
+Shutdown
+Shutdown: waiting for background threads (localMapper=busy, loopCloser=busy, GBA=idle) ...
+Shutdown: background threads stopped after 1950 ms.
+
+Saving camera trajectory to /Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/261025_fix/261022_cbnu_s/gyd_run2.txt.optimized.txt ...
