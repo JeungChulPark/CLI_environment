@@ -1,0 +1,54 @@
+{
+ "cam": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/261025_fix/261022_cbnu_digut/base_run3.txt.optimized.txt",
+ "lidar": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/261025_fix/261022_cbnu_digut/reps_pgo/kiss/kiss_tum.txt",
+ "imu": "",
+ "time": {
+  "lidar_minus_cam_s": -0.006652933841852741,
+  "corr_cl": 0.9909354941927376,
+  "meaning": "an event stamped t on the camera clock is stamped t + tau on the other sensor's clock"
+ },
+ "T_lidar_cam": [
+  [
+   -0.9335958854930017,
+   0.008293250995686008,
+   0.3582316911978345,
+   0.12966492262640586
+  ],
+  [
+   -0.35817141711102585,
+   -0.05111908077791109,
+   -0.932255370349295,
+   -0.30893472998759364
+  ],
+  [
+   0.01058104698116688,
+   -0.998658130477264,
+   0.05069496894602451,
+   -0.357
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "T_lidar_cam_fit": {
+  "windows": 735,
+  "win_s": 2.0,
+  "rot_resid_deg_rms": 1.1999544994330644,
+  "trans_resid_m_rms": 0.11823041808770192,
+  "note": "lever arm along the (vertical) rotation axis is unobservable in planar motion; regularised to 0",
+  "cam_z_in_lidar": [
+   0.3582316911978345,
+   -0.932255370349295,
+   0.05069496894602451
+  ],
+  "cam_y_in_lidar": [
+   0.008293250995686008,
+   -0.05111908077791109,
+   -0.998658130477264
+  ],
+  "cam_z_fit_m": 1.8513402861105637
+ }
+}

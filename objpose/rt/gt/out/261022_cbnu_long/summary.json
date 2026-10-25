@@ -1,0 +1,135 @@
+{
+ "session": "/Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_long",
+ "args": {
+  "session": "/Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_long",
+  "out": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/out/261022_cbnu_long",
+  "rig": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/rig_261022.json",
+  "deskew": "cv",
+  "gravity": false,
+  "gravity_sigma_deg": 0.5,
+  "threads": 3,
+  "submap_w": 10,
+  "loop_radius": 4.0,
+  "loop_gap_s": 15.0,
+  "min_inlier": 0.5,
+  "max_rms": 0.08,
+  "redo_odom": false,
+  "no_checks": false
+ },
+ "odometry": {
+  "messages": 1170,
+  "scans": 1170,
+  "deskew": "cv",
+  "ms_per_scan": 118.69
+ },
+ "path_m": 41.16,
+ "duration_s": 117.9,
+ "keyframes": 82,
+ "loops": {
+  "candidates": 48,
+  "accepted": 47,
+  "fwbw_cm_median": 0.58,
+  "fwbw_deg_median": 0.046,
+  "corr_cm_median": 0.8,
+  "corr_cm_max": 19.1,
+  "downweighted": 0
+ },
+ "pgo_minus_odom_cm": {
+  "median": 9.0,
+  "max": 11.4,
+  "end": 11.2
+ },
+ "start_end_gap_cm": {
+  "odom": 44.5,
+  "pgo": 41.6
+ },
+ "heldout_loops": {
+  "pgo_heldout_cm": {
+   "n": 47,
+   "median": 0.88,
+   "rms": 2.95,
+   "p90": 3.79,
+   "max": 12.02
+  },
+  "pgo_heldout_deg": {
+   "n": 47,
+   "median": 0.1,
+   "rms": 0.18,
+   "p90": 0.26,
+   "max": 0.48
+  },
+  "odom_cm": {
+   "n": 47,
+   "median": 0.78,
+   "rms": 4.37,
+   "p90": 1.92,
+   "max": 19.07
+  },
+  "odom_deg": {
+   "n": 47,
+   "median": 0.11,
+   "rms": 0.22,
+   "p90": 0.24,
+   "max": 0.84
+  }
+ },
+ "start_end_heldout_cm": {
+  "edges": 4,
+  "pgo_median": 3.56,
+  "odom_median": 4.9
+ },
+ "planes_odom": {
+  "other_pass": {
+   "n": 8913,
+   "median_cm": 0.87,
+   "p90_cm": 2.43
+  },
+  "same_pass": {
+   "n": 11828,
+   "median_cm": 0.53,
+   "p90_cm": 1.59
+  }
+ },
+ "planes_pgo": {
+  "other_pass": {
+   "n": 9757,
+   "median_cm": 0.94,
+   "p90_cm": 2.65
+  },
+  "same_pass": {
+   "n": 11836,
+   "median_cm": 0.53,
+   "p90_cm": 1.6
+  }
+ },
+ "tilt_vs_gravity": {
+  "odom": {
+   "raw": {
+    "median_deg": 1.169,
+    "p90_deg": 1.52,
+    "max_deg": 2.225
+   },
+   "cal": {
+    "median_deg": 0.367,
+    "p90_deg": 0.794,
+    "max_deg": 1.316
+   },
+   "mount_corr_deg": 1.067
+  },
+  "pgo": {
+   "raw": {
+    "median_deg": 1.133,
+    "p90_deg": 1.722,
+    "max_deg": 2.596
+   },
+   "cal": {
+    "median_deg": 0.354,
+    "p90_deg": 0.722,
+    "max_deg": 1.313
+   },
+   "mount_corr_deg": 1.061
+  },
+  "fitted": false
+ },
+ "wall_s": 192.2
+}

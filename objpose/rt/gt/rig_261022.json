@@ -1,0 +1,54 @@
+{
+ "what": "261022 LiDAR-camera-IMU rig for rt/gt/pseudo_gt.py (gravity check / imu deskew)",
+ "T_lidar_cam": [
+  [
+   -0.9369103809200434,
+   0.006150074233596314,
+   0.34951554287496267,
+   0.11209209148281846
+  ],
+  [
+   -0.34934802886519145,
+   -0.052069980881186216,
+   -0.9355451201406791,
+   -0.3613258819459607
+  ],
+  [
+   0.012445595697432726,
+   -0.9986245008400073,
+   0.05093342193277304,
+   -0.357
+  ],
+  [
+   0.0,
+   0.0,
+   0.0,
+   1.0
+  ]
+ ],
+ "T_lidar_cam_source": "mean of 28 per-run fits rt/261025_fix/*/reps/rig_gyd_run*.json (max spread 0.24 deg; z pinned -0.357)",
+ "R_cam_imu": [
+  [
+   -0.010367669081352393,
+   0.9999280205838688,
+   -0.0060386330444865965
+  ],
+  [
+   -0.013821765906215477,
+   0.005895076094155988,
+   0.9998870970590019
+  ],
+  [
+   0.9998507239708603,
+   0.010449963113356275,
+   0.013759652825422075
+  ]
+ ],
+ "R_cam_imu_source": "settings/rig_261022_gyro.json (fitted on digut)",
+ "time": {
+  "lidar_minus_cam_s": 0.0006133512542247995,
+  "imu_minus_cam_s": -0.0007131560636387478,
+  "imu_minus_lidar_s": -0.0013265073178635473,
+  "meaning": "an event stamped t on the camera clock is stamped t + tau on the other sensor's clock"
+ }
+}

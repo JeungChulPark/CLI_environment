@@ -5,8 +5,10 @@ camera height pinned), and print mean / min / max ATE per variant. Writes reps/<
 
     ~/objpose/lidar/venv/bin/python eval_reps.py [--dir DIR] [sessions...]      (default: digut kiuk)
 --dir: another directory with the same layout (../261025_fix: the race-fixed build); reps.json goes there.
+--ref pgo: score against the LiDAR pseudo-GT (rt/gt/out/<session>/pgo_tum.txt) instead of KISS; per-run files go
+           to reps_pgo/ and the table to reps_pgo.json.
 """
-import json, sys, contextlib, io
+import json, os, sys, contextlib, io
 from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "261017_new"))
@@ -26,15 +28,24 @@ def run_file(O, v, r):
 
 def main():
     a = sys.argv[1:]
-    base = HERE
-    if a[:1] == ["--dir"]:
-        base, a = (HERE / a[1]).resolve(), a[2:]
+    base, ref = HERE, "kiss"
+    while a[:1] in (["--dir"], ["--ref"]):
+        if a[0] == "--dir":
+            base = (HERE / a[1]).resolve()
+        else:
+            ref = a[1]
+        a = a[2:]
+    tag = "" if ref == "kiss" else f"_{ref}"
     sess = a or ["digut", "kiuk"]
     out = {}
     for s in sess:
-        name = f"261022_cbnu_{s}"; O = base / name; R = O / "reps"; R.mkdir(exist_ok=True)
-        if not (R / "kiss").exists():
-            (R / "kiss").symlink_to("../kiss")  # fit_eval looks for <dir>/kiss/kiss_tum.txt
+        name = f"261022_cbnu_{s}"; O = base / name; R = O / f"reps{tag}"; R.mkdir(exist_ok=True)
+        if not (R / "kiss").exists():  # fit_eval looks for <dir>/kiss/kiss_tum.txt
+            if ref == "kiss":
+                (R / "kiss").symlink_to("../kiss")
+            else:
+                (R / "kiss").mkdir()
+                (R / "kiss" / "kiss_tum.txt").symlink_to(os.path.relpath(HERE.parent / "gt" / "out" / name / "pgo_tum.txt", R / "kiss"))
         out[s] = {}
         for v, label in VARIANTS:
             rows = []
@@ -52,7 +63,7 @@ def main():
                     "ate_cm": round(E["runs"][k]["ate"]["pos_cm"]["rmse"], 2), "ate_max_cm": round(E["runs"][k]["ate"]["pos_cm"]["max"], 2),
                     "final_cm": round(E["runs"][k]["drift"]["pos_cm_final"], 2)} for k in ("live", "opt")}})
             out[s][v] = rows
-    (base / "reps.json").write_text(json.dumps(out, indent=1))
+    (base / f"reps{tag}.json").write_text(json.dumps(out, indent=1))
     print(f"{'session':8} {'variant':30} {'ok':>5}  ATE live cm (mean min..max)   ATE opt cm (mean min..max)")
     for s, V in out.items():
         for v, label in VARIANTS:

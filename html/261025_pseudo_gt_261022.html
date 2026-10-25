@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>261022 세션 라이다 pseudo-GT (2026-10-25)</title><style>
+:root{--paper:#EDF1F6;--surface:#FFFFFF;--surface-2:#F6F9FC;--line:#C6D2DE;--line-soft:#DDE5EC;--ink:#11202F;--ink-2:#425568;
+--muted:#5A6D80;--accent:#2a78d6;--accent-fill:#E3EEFA;--code:#EEF2F6;
+--sans:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",-apple-system,"Helvetica Neue",Arial,sans-serif;
+--mono:ui-monospace,SFMono-Regular,Menlo,"Cascadia Mono",Consolas,"D2Coding",monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0D1620;--surface:#15202C;--surface-2:#1A2734;--line:#28394A;
+--line-soft:#223142;--ink:#E3EBF3;--ink-2:#B3C3D1;--muted:#90A4B6;--accent:#5A9FEA;--accent-fill:#16283B;--code:#1E2C3A}}
+:root[data-theme="dark"]{--paper:#0D1620;--surface:#15202C;--surface-2:#1A2734;--line:#28394A;--line-soft:#223142;--ink:#E3EBF3;
+--ink-2:#B3C3D1;--muted:#90A4B6;--accent:#5A9FEA;--accent-fill:#16283B;--code:#1E2C3A}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.7 var(--sans)}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 16px 64px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px}
+nav{position:sticky;top:16px;align-self:start;font-size:13px;max-height:calc(100vh - 32px);overflow:auto}
+nav b{display:block;color:var(--muted);font-weight:600;margin-bottom:6px}
+nav a{display:block;color:var(--ink-2);text-decoration:none;padding:3px 8px;border-left:2px solid var(--line-soft)}
+nav a:hover{color:var(--accent);border-left-color:var(--accent)}
+nav .back{margin-bottom:12px;border:0;padding-left:0;color:var(--accent)}
+main{background:var(--surface);border:1px solid var(--line-soft);border-radius:10px;padding:28px 36px;min-width:0}
+h1{font-size:26px;line-height:1.35;margin:0 0 18px;padding-bottom:14px;border-bottom:2px solid var(--line)}
+h2{font-size:20px;margin:40px 0 12px;padding-top:6px;border-top:1px solid var(--line-soft)}
+h3{font-size:16.5px;margin:26px 0 8px;color:var(--ink-2)}
+p,li{color:var(--ink)}strong{color:var(--ink)}a{color:var(--accent)}
+code{font:13px/1.5 var(--mono);background:var(--code);padding:1px 5px;border-radius:4px;word-break:break-word}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow:auto}pre code{background:none;padding:0}
+.tbl{overflow-x:auto;margin:12px 0 18px;border:1px solid var(--line-soft);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th{background:var(--surface-2);color:var(--ink-2);font-weight:600;text-align:left;white-space:nowrap}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+tr:last-child td{border-bottom:0}td strong{color:var(--accent)}
+img{max-width:100%;height:auto;border:1px solid var(--line-soft);border-radius:8px;background:#fff;margin:8px 0}
+blockquote{margin:12px 0;padding:8px 14px;border-left:3px solid var(--accent);background:var(--accent-fill);border-radius:0 6px 6px 0}
+.meta{color:var(--muted);font-size:13px;margin:-8px 0 18px}
+@media (max-width:860px){.wrap{grid-template-columns:1fr}nav{position:static;max-height:none}main{padding:20px 16px}}
+</style></head>
+<body><div class="wrap"><nav><a class="back" href="261018_index.html">← 문서 목록</a><b>목차</b><a href="#준비">준비</a><a href="#표-1-기준-자체의-일관성-kiss-pseudo-gt">표 1. 기준 자체의 일관성 (KISS → pseudo-GT)</a><a href="#표-2-수정-빌드-orb-slam3-run-을-두-기준으로-채점-opt-ate-cm-4회-평균-괄호는-최솟값">표 2. 수정 빌드 ORB-SLAM3 run 을 두 기준으로 채점 (opt ATE cm, 4회 평균, 괄호는 최솟값)</a><a href="#남은-것">남은 것</a></nav>
+<main><h1>261022 세션 라이다 pseudo-GT (2026-10-25)</h1>
+<p>261022_cbnu 7개 세션에 260901·260915 와 같은 pseudo-GT 파이프라인(<code>rt/gt/pseudo_gt.py</code>, 방법은 <code>own_gt_261017.md</code> §1)을 돌렸다.
+지금까지 261022 의 채점 기준은 KISS-ICP 오도메트리(<code>rt/261024_map/&lt;세션&gt;/kiss/kiss_tum.txt</code>)였다. 이번 pseudo-GT 는 같은 오도메트리에
+라이다 루프(양방향 ICP 확인)와 포즈 그래프 최적화를 더한 비인과적 기준이다.</p>
+<p>결과 <code>objpose/rt/gt/out/261022_cbnu_&lt;세션&gt;/</code> (<code>pgo_tum.txt</code> = 새 기준, <code>odom_tum.txt</code>, <code>loops.json</code>, <code>summary.json</code>)
+· 재채점 <code>objpose/rt/261025_fix/reps_pgo.json</code>, 런별 <code>261025_fix/&lt;세션&gt;/reps_pgo/</code></p>
+<pre><code class="language-bash">RIG=$PWD/objpose/rt/gt/rig_261022.json bash objpose/rt/gt/run_all.sh 261022_cbnu_digut ...      # 세션당 5~8 분
+RIG=... DATA=$PWD/objpose/rt/gt/stage bash objpose/rt/gt/run_all.sh 261022_cbnu_s                 # 복구한 라이다
+~/objpose/lidar/venv/bin/python objpose/rt/gt/table.py                                            # 표 1
+cd objpose/rt/261024_map &amp;&amp; ~/objpose/lidar/venv/bin/python eval_reps.py --dir ../261025_fix --ref pgo eight long ...   # 표 2
+</code></pre>
+<h2 id="준비">준비</h2>
+<ul>
+<li><strong>rig</strong> <code>rt/gt/rig_261022.json</code>: 중력 검사(가속도계)에 라이다–IMU 회전과 시간차가 필요하다. 261022 에는 라이다–카메라 보정값이 따로 없어서,
+  수정 빌드 28개 run(7 세션 × 주력+깊이 4회)에서 각각 맞춘 <code>T_lidar_cam</code> 의 평균을 썼다. 28개는 서로 0.24° 안에서 같다.
+  <code>R_cam_imu</code> 는 <code>settings/rig_261022_gyro.json</code>, 시간차 imu−lidar = −1.3 ms.</li>
+<li><strong>cbnu_s</strong>: 원래 라이다 bag 이 손상돼 <code>Dataset/261022_cbnu_s/lidar_recovered/</code>(0~148.6 s)를 <code>rt/gt/stage/261022_cbnu_s/lidar</code> 로 연결해 썼다.
+  카메라는 0~59.3 s 만 남아 있으므로 ORB 채점은 그 구간만 쓴다.</li>
+<li><code>run_all.sh</code> 에 <code>RIG</code> 환경변수를 추가했고, <code>eval_reps.py</code> 에 <code>--ref pgo</code>(KISS 대신 pseudo-GT 로 채점)를 추가했다.</li>
+</ul>
+<h2 id="표-1-기준-자체의-일관성-kiss-pseudo-gt">표 1. 기준 자체의 일관성 (KISS → pseudo-GT)</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>세션</th>
+<th>경로 m / 시간 s</th>
+<th>루프 수락/후보</th>
+<th>ICP 정·역 불일치 cm</th>
+<th>보류 루프 위치 오차 cm med / p90 / max (KISS → PGO)</th>
+<th>보류 루프 회전 ° p90</th>
+<th>시작·끝 보류 cm</th>
+<th>다른 회차 평면 잔차 cm med / p90 (센서 바닥)</th>
+<th>중력 대비 기울기 ° med / p90</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>digut</td>
+<td>65.2 / 192</td>
+<td>286/297</td>
+<td>0.77</td>
+<td>1.38 / 2.40 / 17.5 → <strong>0.74 / 1.34 / 10.7</strong></td>
+<td>0.34 → 0.23</td>
+<td>8.32 → <strong>1.55</strong></td>
+<td>1.00 / 2.68 → 0.99 / 2.52 (0.55 / 1.61)</td>
+<td>0.49 / 0.88 → 0.45 / 0.83</td>
+</tr>
+<tr>
+<td>eight</td>
+<td>78.4 / 214</td>
+<td>387/410</td>
+<td>0.61</td>
+<td>8.47 / 11.17 / 12.3 → <strong>0.68 / 1.48 / 7.0</strong></td>
+<td>0.47 → 0.23</td>
+<td>10.56 → <strong>0.92</strong></td>
+<td>0.91 / 2.27 → 0.94 / 2.32 (0.56 / 1.63)</td>
+<td>0.45 / 0.93 → 0.42 / 0.87</td>
+</tr>
+<tr>
+<td>kiuk</td>
+<td>51.9 / 172</td>
+<td>354/358</td>
+<td>0.66</td>
+<td>0.90 / 1.70 / 13.9 → <strong>0.63 / 1.36 / 7.4</strong></td>
+<td>0.38 → 0.19</td>
+<td>1.22 → 1.17</td>
+<td>0.90 / 2.39 → 0.91 / 2.35 (0.55 / 1.60)</td>
+<td>0.47 / 0.81 → 0.44 / 0.82</td>
+</tr>
+<tr>
+<td>kiuk_obchange</td>
+<td>78.8 / 252</td>
+<td>188/189</td>
+<td>0.48</td>
+<td>0.79 / 1.59 / 13.5 → <strong>0.60 / 1.26 / 11.8</strong></td>
+<td>0.24 → 0.16</td>
+<td>1.11 → 0.79</td>
+<td>0.83 / 2.33 → 0.85 / 2.34 (0.54 / 1.57)</td>
+<td>0.49 / 0.83 → 0.47 / 0.82</td>
+</tr>
+<tr>
+<td>long</td>
+<td>41.2 / 118</td>
+<td>47/48</td>
+<td>0.58</td>
+<td>0.78 / 1.92 / 19.1 → 0.88 / 3.79 / 12.0</td>
+<td>0.24 → 0.26</td>
+<td>4.90 → 3.56</td>
+<td>0.87 / 2.43 → 0.94 / 2.65 (0.53 / 1.60)</td>
+<td>0.37 / 0.79 → 0.35 / 0.72</td>
+</tr>
+<tr>
+<td>long_obchange</td>
+<td>61.5 / 172</td>
+<td>145/146</td>
+<td>0.52</td>
+<td>0.80 / 1.58 / 16.3 → <strong>0.58 / 1.72 / 9.2</strong></td>
+<td>0.22 → 0.21</td>
+<td>7.59 → <strong>1.83</strong></td>
+<td>0.87 / 2.44 → 0.91 / 2.53 (0.54 / 1.60)</td>
+<td>0.39 / 0.81 → 0.35 / 0.86</td>
+</tr>
+<tr>
+<td>s (복구 라이다)</td>
+<td>49.7 / 149</td>
+<td>271/283</td>
+<td>0.67</td>
+<td>1.06 / 2.68 / 8.1 → <strong>0.63 / 1.34 / 5.9</strong></td>
+<td>0.85 → 0.22</td>
+<td>2.03 → 0.86</td>
+<td>0.95 / 2.57 → 0.92 / 2.31 (0.54 / 1.57)</td>
+<td>0.46 / 0.96 → 0.42 / 0.79</td>
+</tr>
+</tbody>
+</table></div>
+<p>(루프 에지는 일곱 세션 모두 Cauchy 재가중에서 버려진 것이 0 개. 보정량 최대 8~19 cm.)</p>
+<p>읽는 법
+- <strong>6개 세션은 pseudo-GT 가 KISS 보다 낫다.</strong> 보류 루프 p90 이 1.6~11 cm → 1.3~1.7 cm, 회전 p90 이 절반 가까이 준다.
+- <strong>eight 는 KISS 가 실제로 틀려 있었다.</strong> 재방문 지점에서 KISS 오차가 중앙값 8.5 cm, 시작·끝 10.6 cm 였고, pseudo-GT 는 0.7 cm / 0.9 cm 로 맞춘다.
+  digut·long_obchange 도 시작·끝 오차가 8.3 → 1.6 cm, 7.6 → 1.8 cm 로 줄었다.
+- <strong>long 은 믿음이 가장 약하다.</strong> 재방문이 적어 루프가 47개뿐이고, 보류 루프 p90 이 KISS(1.9 cm)보다 pseudo-GT(3.8 cm)가 나쁘다.
+  루프 한 묶음을 빼면 남은 루프로 궤적을 충분히 묶지 못한다는 뜻이다. long 은 KISS 와 pseudo-GT 둘 다 cm 수준 차이를 가릴 정도로 정확하진 않다.
+- 지도 선명도(다른 회차 평면 잔차)와 중력 기울기는 거의 그대로다. 원래 오도메트리가 크게 틀리지 않았다는 뜻이다.
+- 시작·끝 거리(KISS 와 PGO 모두 kiuk_obchange 92 cm, s 3 m 등)는 로봇이 실제로 출발점과 다른 곳에 섰다는 뜻이고, 기준의 오차가 아니다.</p>
+<h3 id="pseudo-gt-가-kiss-를-어디서-옮겼나">pseudo-GT 가 KISS 를 어디서 옮겼나</h3>
+<p>두 궤적의 차이(위치 중앙값 2~12 cm)는 거의 다 <strong>출발 후 처음 약 10 초</strong>에 생긴다. 이 구간에서 pseudo-GT 의 자세가 KISS 보다 0.5° 정도 더 돌아가고,
+그 뒤로는 두 궤적이 강체 정렬 후 중앙값 0.5~1 cm 안에서 같다(eight 만 4.7 cm — 위의 실제 드리프트).
+즉 KISS 가 출발(정지 → 가속) 직후에 쌓은 0.5° 회전 오차를 출발점 재방문 루프가 바로잡은 것이고, 시작·끝 보류 검사가 그 보정이 맞다고 말한다.
+다만 처음 1~3 초 정지 구간에서 pseudo-GT 가 1~2 cm 움직이는 것은 키프레임 보정량을 시간으로 보간한 결과다(정지 중에는 키프레임이 없음).
+ORB 채점 정렬에 미치는 영향은 무시할 만하다.</p>
+<h2 id="표-2-수정-빌드-orb-slam3-run-을-두-기준으로-채점-opt-ate-cm-4회-평균-괄호는-최솟값">표 2. 수정 빌드 ORB-SLAM3 run 을 두 기준으로 채점 (opt ATE cm, 4회 평균, 괄호는 최솟값)</h2>
+<p>채점 방식은 KISS 때와 같다(run 마다 자기 최적화 궤적으로 rig 를 맞추고 카메라 높이 −0.357 m 고정, <code>eval_traj.py</code>). 기준만 바꿨다.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>세션</th>
+<th>수정본</th>
+<th>+깊이</th>
+<th>+자이로(주력)</th>
+<th>주력+깊이</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>eight</td>
+<td>29.9 → 29.6</td>
+<td>10.0 → <strong>7.2</strong> (8.1 → 5.0)</td>
+<td>31.5 → 31.6</td>
+<td>12.8 → <strong>10.2</strong> (12.0 → 9.1)</td>
+</tr>
+<tr>
+<td>long</td>
+<td>13.6 → 13.4</td>
+<td>4.1 → <strong>3.0</strong> (3.7 → 2.6)</td>
+<td>14.0 → 13.8</td>
+<td>4.0 → <strong>3.0</strong> (3.6 → 2.6)</td>
+</tr>
+<tr>
+<td>long_obchange</td>
+<td>15.4 → 15.3</td>
+<td>3.6 → 3.0</td>
+<td>15.3 → 15.2</td>
+<td>3.6 → 2.9</td>
+</tr>
+<tr>
+<td>kiuk_obchange</td>
+<td>13.3 → 13.6</td>
+<td>5.7 → 5.4</td>
+<td>12.8 → 13.1</td>
+<td>5.7 → 5.4</td>
+</tr>
+<tr>
+<td>s</td>
+<td>20.0 → 20.2</td>
+<td>5.0 → 4.8</td>
+<td>17.3 → 17.4</td>
+<td>4.6 → 4.4</td>
+</tr>
+<tr>
+<td>digut</td>
+<td>58.5 → 58.4</td>
+<td>80.1 → 79.8</td>
+<td>18.7 → 18.8</td>
+<td>13.1 → 12.7 (7.7 → 7.2)</td>
+</tr>
+<tr>
+<td>kiuk</td>
+<td>19.9 → 20.1</td>
+<td>8.2 → 8.0</td>
+<td>18.0 → 18.2</td>
+<td>4.3 → <strong>3.8</strong> (3.8 → 3.3)</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>결론은 바뀌지 않는다.</strong> 깊이보정 2~4배, 자이로는 digut 에서만 크게 듣는다는 순위가 두 기준에서 같다.</li>
+<li>깊이보정을 안 한 run 은 0.3 cm 이하로만 바뀐다. 오차의 대부분이 깊이 스케일(8 %)이라 기준의 cm 차이가 묻힌다.</li>
+<li><strong>깊이보정한 run 은 기준 오차가 드러날 만큼 정확해서 숫자가 내려간다.</strong> eight 10.0 → 7.2 cm(KISS 드리프트가 그대로 ORB 오차로 잡히고 있었다),
+  long·long_obchange 3.6~4.1 → 3.0 cm, kiuk 주력+깊이 4.3 → 3.8 cm.</li>
+<li>long 은 위 표 1 의 이유로 3.0 cm 라는 숫자 자체를 cm 단위까지 믿기는 어렵다.</li>
+</ul>
+<h2 id="남은-것">남은 것</h2>
+<ul>
+<li>261022 의 옛 결과(261024_map run1, 업스트림 run)는 아직 KISS 기준이다. <code>build_map_data.py</code>(3D 지도 페이지)도 KISS 를 쓴다.</li>
+<li><code>--gravity</code>(가속도계 기울기 사전정보)와 <code>--deskew imu</code> 는 이번에 쓰지 않았다. 중력 기울기가 이미 0.35~0.47° 라 이득이 작을 것으로 본다.</li>
+</ul><p class="meta">원본: <code>objpose/docs/lidar_pseudo_gt_261022_261025.md</code></p></main></div></body></html>

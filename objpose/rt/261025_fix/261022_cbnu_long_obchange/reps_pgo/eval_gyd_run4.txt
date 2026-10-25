@@ -1,0 +1,2 @@
+live                         ATE    9.5 cm (max   62.9)  rot  0.76 deg | drift pos rmse   11.9 max   67.7 final    4.9 cm  yaw rmse  0.59 max  3.80 tilt rmse  0.41 | RPE10s  13.9 cm  1.03 deg  RPE1s  6.47 cm 0.438 deg
+opt                          ATE    3.0 cm (max   23.0)  rot  0.35 deg | drift pos rmse    3.9 max   24.2 final    1.1 cm  yaw rmse  0.19 max  1.49 tilt rmse  0.25 | RPE10s   4.3 cm  0.45 deg  RPE1s  1.96 cm 0.281 deg

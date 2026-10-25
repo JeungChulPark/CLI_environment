@@ -1,0 +1,135 @@
+{
+ "session": "/Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_kiuk_obchange",
+ "args": {
+  "session": "/Users/user/Documents/DefenseMeta/Dataset/261022_cbnu_kiuk_obchange",
+  "out": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/out/261022_cbnu_kiuk_obchange",
+  "rig": "/Users/user/Documents/DefenseMeta/CLI_environment/objpose/rt/gt/rig_261022.json",
+  "deskew": "cv",
+  "gravity": false,
+  "gravity_sigma_deg": 0.5,
+  "threads": 3,
+  "submap_w": 10,
+  "loop_radius": 4.0,
+  "loop_gap_s": 15.0,
+  "min_inlier": 0.5,
+  "max_rms": 0.08,
+  "redo_odom": false,
+  "no_checks": false
+ },
+ "odometry": {
+  "messages": 2500,
+  "scans": 2500,
+  "deskew": "cv",
+  "ms_per_scan": 135.77
+ },
+ "path_m": 78.75,
+ "duration_s": 252.0,
+ "keyframes": 134,
+ "loops": {
+  "candidates": 189,
+  "accepted": 188,
+  "fwbw_cm_median": 0.48,
+  "fwbw_deg_median": 0.054,
+  "corr_cm_median": 0.8,
+  "corr_cm_max": 13.5,
+  "downweighted": 0
+ },
+ "pgo_minus_odom_cm": {
+  "median": 2.3,
+  "max": 3.4,
+  "end": 1.9
+ },
+ "start_end_gap_cm": {
+  "odom": 93.7,
+  "pgo": 92.1
+ },
+ "heldout_loops": {
+  "pgo_heldout_cm": {
+   "n": 188,
+   "median": 0.6,
+   "rms": 1.42,
+   "p90": 1.26,
+   "max": 11.76
+  },
+  "pgo_heldout_deg": {
+   "n": 188,
+   "median": 0.07,
+   "rms": 0.13,
+   "p90": 0.16,
+   "max": 0.74
+  },
+  "odom_cm": {
+   "n": 188,
+   "median": 0.79,
+   "rms": 1.74,
+   "p90": 1.59,
+   "max": 13.52
+  },
+  "odom_deg": {
+   "n": 188,
+   "median": 0.1,
+   "rms": 0.17,
+   "p90": 0.24,
+   "max": 0.84
+  }
+ },
+ "start_end_heldout_cm": {
+  "edges": 5,
+  "pgo_median": 0.79,
+  "odom_median": 1.11
+ },
+ "planes_odom": {
+  "other_pass": {
+   "n": 6382,
+   "median_cm": 0.83,
+   "p90_cm": 2.33
+  },
+  "same_pass": {
+   "n": 11426,
+   "median_cm": 0.54,
+   "p90_cm": 1.57
+  }
+ },
+ "planes_pgo": {
+  "other_pass": {
+   "n": 6642,
+   "median_cm": 0.85,
+   "p90_cm": 2.34
+  },
+  "same_pass": {
+   "n": 11417,
+   "median_cm": 0.54,
+   "p90_cm": 1.57
+  }
+ },
+ "tilt_vs_gravity": {
+  "odom": {
+   "raw": {
+    "median_deg": 0.467,
+    "p90_deg": 0.888,
+    "max_deg": 1.697
+   },
+   "cal": {
+    "median_deg": 0.49,
+    "p90_deg": 0.826,
+    "max_deg": 1.734
+   },
+   "mount_corr_deg": 0.177
+  },
+  "pgo": {
+   "raw": {
+    "median_deg": 0.466,
+    "p90_deg": 0.901,
+    "max_deg": 1.767
+   },
+   "cal": {
+    "median_deg": 0.475,
+    "p90_deg": 0.818,
+    "max_deg": 1.73
+   },
+   "mount_corr_deg": 0.159
+  },
+  "fitted": false
+ },
+ "wall_s": 464.4
+}
