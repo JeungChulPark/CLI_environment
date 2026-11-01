@@ -34,7 +34,9 @@
 #include <nlohmann/json.hpp>
 #include <sqlite3.h>
 
-#include "raw_session.h"
+#include <stdexcept>
+
+#include "cdr_reader.h"
 
 struct GyroAid {
   std::vector<long long> t_ns;             // IMU header stamps

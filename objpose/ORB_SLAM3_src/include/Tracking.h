@@ -20,6 +20,7 @@
 #ifndef TRACKING_H
 #define TRACKING_H
 
+#include <atomic>
 #include <opencv2/core/core.hpp>
 #include <opencv2/features2d/features2d.hpp>
 
@@ -237,7 +238,13 @@ protected:
     bool TrackWithMotionModel();
     bool PredictStateIMU();
 
-    bool Relocalization();
+    bool Relocalization(long maxCandKFId = -1);   // maxCandKFId >= 0: only keyframes with mnId <= it are candidates
+    bool PostLoopRelocCheck();                    // see Optimizer::sPostLoopRelocM
+    int mnPostLoopFramesLeft{0};
+    long mnPostLoopMaxKF{-1};
+public:
+    std::atomic<long> mnPostLoopArmKF{-1};       // set by LoopClosing::CorrectLoop: candidate id limit for the post-loop check
+protected:
 
     void UpdateLocalMap();
     void UpdateLocalPoints();

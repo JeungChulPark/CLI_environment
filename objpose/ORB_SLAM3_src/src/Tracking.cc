@@ -18,6 +18,7 @@
 
 
 #include "Tracking.h"
+#include <iomanip>
 
 #include "ORBmatcher.h"
 #include "FrameDrawer.h"
@@ -83,6 +84,30 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
             nG = fPerf["Gyro.MaxGapS"];    if(!nG.empty() && nG.isReal()) Optimizer::sGyroMaxGapS = (double)nG;
             nG = fPerf["Gyro.LoopVetoDeg"];  if(!nG.empty() && nG.isReal()) Optimizer::sGyroLoopVetoDeg = (double)nG;
             nG = fPerf["Gyro.LoopVetoRate"]; if(!nG.empty() && nG.isReal()) Optimizer::sGyroLoopVetoRate = (double)nG;
+            nG = fPerf["Loop.FalseMinCorrM"]; if(!nG.empty() && nG.isReal()) Optimizer::sLoopFalseMinCorrM = (double)nG;
+            nG = fPerf["Loop.FalseResidFrac"]; if(!nG.empty() && nG.isReal()) Optimizer::sLoopFalseResidFrac = (double)nG;
+            nG = fPerf["Loop.MaxGapM"]; if(!nG.empty() && nG.isReal()) Optimizer::sLoopMaxGapM = (double)nG;
+            nG = fPerf["Loop.EarlyUnlock"]; if(!nG.empty() && (nG.isReal() || nG.isInt())) Optimizer::sLoopEarlyUnlock = (int)(double)nG;
+            if(Optimizer::sLoopEarlyUnlock)
+                std::cout << "Loop early unlock: on, Tracking resumes before the essential-graph optimization" << std::endl;
+            nG = fPerf["Loop.PostLoopRelocM"]; if(!nG.empty() && nG.isReal()) Optimizer::sPostLoopRelocM = (double)nG;
+            nG = fPerf["Loop.PostLoopRelocFrames"]; if(!nG.empty() && (nG.isReal() || nG.isInt())) Optimizer::sPostLoopRelocFrames = (int)(double)nG;
+            nG = fPerf["Loop.PostLoopRelocStride"]; if(!nG.empty() && (nG.isReal() || nG.isInt())) Optimizer::sPostLoopRelocStride = std::max(1, (int)(double)nG);
+            nG = fPerf["Loop.PostLoopOldKF"]; if(!nG.empty() && (nG.isReal() || nG.isInt())) Optimizer::sPostLoopOldKF = (int)(double)nG;
+            if(Optimizer::sPostLoopRelocM > 0)
+                std::cout << "Post-loop relocalization check: on, jump if off by > " << Optimizer::sPostLoopRelocM << " m, for "
+                          << Optimizer::sPostLoopRelocFrames << " frames every " << Optimizer::sPostLoopRelocStride << ", keyframes >= " << Optimizer::sPostLoopOldKF << " ids older" << std::endl;
+            if(Optimizer::sLoopMaxGapM > 0)
+                std::cout << "Loop gap limit: on, loops closed more than " << Optimizer::sLoopMaxGapM << " m apart are deferred" << std::endl;
+            nG = fPerf["Loop.Sim3DepthK"]; if(!nG.empty() && nG.isReal()) Optimizer::sSim3DepthK = (double)nG;
+            nG = fPerf["Loop.Sim3DepthMinSigma"]; if(!nG.empty() && nG.isReal()) Optimizer::sSim3DepthMinSigma = (double)nG;
+            nG = fPerf["Loop.Sim3DepthMaxZ"]; if(!nG.empty() && nG.isReal()) Optimizer::sSim3DepthMaxZ = (double)nG;
+            if(Optimizer::sSim3DepthK > 0)
+                std::cout << "Sim3 depth residuals: on, sigma max(" << Optimizer::sSim3DepthMinSigma << ", " << Optimizer::sSim3DepthK
+                          << " z^2) m, z < " << Optimizer::sSim3DepthMaxZ << " m" << std::endl;
+            if(Optimizer::sLoopFalseMinCorrM > 0)
+                std::cout << "False-loop veto: on, correction > " << Optimizer::sLoopFalseMinCorrM << " m with residual < "
+                          << Optimizer::sLoopFalseResidFrac << " x gap" << std::endl;
             if(Optimizer::sGyroUse)
                 std::cout << "Gyro aid: on, sigma frame " << Optimizer::sGyroSigmaFrame << " rad, keyframe "
                           << Optimizer::sGyroSigmaKF << " rad + " << Optimizer::sGyroSigmaARW << " rad/sqrt(s) + "
@@ -1936,7 +1961,15 @@ void Tracking::Track()
     }
     mbCreatedMap = false;
 
-    // Get Map Mutex -> Map cannot be changed
+    // Wait out a running loop correction (LoopClosing::mMutexLoopCorrection), then get Map Mutex -> Map cannot be changed
+    unique_lock<mutex> lockLoopCorrection;
+    if(mpLoopClosing)
+    {
+        const auto tw0 = std::chrono::steady_clock::now();
+        lockLoopCorrection = unique_lock<mutex>(mpLoopClosing->mMutexLoopCorrection);
+        const double wms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - tw0).count();
+        if(wms > 100) cout << "LOOPLOCK_WAIT_MS|frame=" << mCurrentFrame.mnId << "|ms=" << std::fixed << std::setprecision(1) << wms << endl;
+    }
     unique_lock<mutex> lock(pCurrentMap->mMutexMapUpdate);
 
     mbMapUpdated = false;
@@ -2217,6 +2250,18 @@ void Tracking::Track()
             }
             if(!bOK)
                 cout << "Fail to track local map!" << endl;
+            if(Optimizer::sPostLoopRelocM > 0)
+            {
+                const long arm = mnPostLoopArmKF.exchange(-1);
+                if(arm >= 0) { mnPostLoopMaxKF = arm; mnPostLoopFramesLeft = Optimizer::sPostLoopRelocFrames; }
+                if(mnPostLoopFramesLeft > 0)
+                {
+                    if(bOK && mState == OK && mnPostLoopFramesLeft % Optimizer::sPostLoopRelocStride == 0)
+                        PostLoopRelocCheck();   // decrements
+                    else
+                        --mnPostLoopFramesLeft;
+                }
+            }
         }
         else
         {
@@ -3828,7 +3873,7 @@ void Tracking::UpdateLocalKeyFrames()
     }
 }
 
-bool Tracking::Relocalization()
+bool Tracking::Relocalization(long maxCandKFId)
 {
     Verbose::PrintMess("Starting relocalization", Verbose::VERBOSITY_NORMAL);
     // Compute Bag of Words Vector
@@ -3837,6 +3882,13 @@ bool Tracking::Relocalization()
     // Relocalization is performed when tracking is lost
     // Track Lost: Query KeyFrame Database for keyframe candidates for relocalisation
     vector<KeyFrame*> vpCandidateKFs = mpKeyFrameDB->DetectRelocalizationCandidates(&mCurrentFrame, mpAtlas->GetCurrentMap());
+    if(maxCandKFId >= 0)
+    {
+        vector<KeyFrame*> vOld;
+        for(KeyFrame* pKF : vpCandidateKFs)
+            if(pKF && !pKF->isBad() && (long)pKF->mnId <= maxCandKFId) vOld.push_back(pKF);
+        vpCandidateKFs.swap(vOld);
+    }
 
     // --- diagnosis instrumentation ----------------------------------------
     // Which stage loses a relocalization attempt?
@@ -4066,6 +4118,43 @@ bool Tracking::Relocalization()
         return true;
     }
 
+}
+
+bool Tracking::PostLoopRelocCheck()
+{
+    // After a loop correction the current pose can land metres off while tracking stays "OK" against the
+    // just-corrected local map. Relocalize this frame against keyframes from well before the loop region
+    // (the first pass) and jump there if the two poses disagree; keep the tracked pose otherwise.
+    --mnPostLoopFramesLeft;
+    Frame backup(mCurrentFrame);
+    const unsigned long lastReloc = mnLastRelocFrameId;
+    const Eigen::Vector3f cTrack = mCurrentFrame.GetCameraCenter();
+    const bool ok = Relocalization(mnPostLoopMaxKF);
+    if(!ok)
+    {
+        mCurrentFrame = backup; mnLastRelocFrameId = lastReloc;
+        if(mnPostLoopFramesLeft == 0) cout << "POSTLOOP_RELOC|frame=" << mCurrentFrame.mnId << "|verdict=nomatch" << endl;
+        return false;
+    }
+    const double d = (mCurrentFrame.GetCameraCenter() - cTrack).norm();
+    if(d <= Optimizer::sPostLoopRelocM)
+    {
+        cout << "POSTLOOP_RELOC|frame=" << mCurrentFrame.mnId << "|ts=" << std::fixed << std::setprecision(6) << mCurrentFrame.mTimeStamp
+             << "|diff_m=" << std::setprecision(3) << d << "|verdict=consistent" << endl;
+        mCurrentFrame = backup; mnLastRelocFrameId = lastReloc;   // keep checking: the pose can drift off a few s after the loop
+        return false;
+    }
+    // jump: refine against the local map around the relocalized pose
+    mbVelocity = false;
+    if(!TrackLocalMap())
+    {
+        cout << "POSTLOOP_RELOC|frame=" << mCurrentFrame.mnId << "|diff_m=" << d << "|verdict=localmap_fail_keep" << endl;
+        mCurrentFrame = backup; mnLastRelocFrameId = lastReloc;
+        return false;
+    }
+    cout << "POSTLOOP_RELOC|frame=" << mCurrentFrame.mnId << "|ts=" << std::fixed << std::setprecision(6) << mCurrentFrame.mTimeStamp
+         << "|diff_m=" << std::setprecision(3) << d << "|verdict=JUMP" << endl;
+    return true;
 }
 
 void Tracking::Reset(bool bLocMap)

@@ -34,6 +34,8 @@
 #include <opencv2/core.hpp>
 #include <sqlite3.h>
 
+#include "cdr_reader.h"
+
 // A rosbag2 .db3 left in WAL mode cannot be opened read-only unless its -wal/-shm companions are
 // present: sqlite needs the shared-memory index and may not create it without write access. Most of
 // the 260901 bags have no companions (only bigeightcircle does, from an earlier read-write open), so
@@ -237,34 +239,6 @@ static void depth_to_color(const Session& s, const Aligner& aligner, const uint1
 static const char* CONV_COLOR = "/camera/camera/color/image_raw";
 static const char* CONV_DEPTH = "/camera/camera/aligned_depth_to_color/image_raw";
 static const char* CONV_CINFO = "/camera/camera/color/camera_info";
-
-// Minimal CDR reader (little/big endian encapsulation; alignment relative to the 4-byte header).
-struct CdrReader {
-  const std::vector<uint8_t>& b;
-  size_t o = 4;
-  bool le;
-  explicit CdrReader(const std::vector<uint8_t>& blob) : b(blob) { le = blob.size() > 1 && blob[1] == 1; }
-  void align(size_t n) { size_t r = (o - 4) % n; if (r) o += n - r; }
-  template <typename T> T get() {
-    align(sizeof(T));
-    T v;
-    std::memcpy(&v, b.data() + o, sizeof(T));
-    if (!le) {
-      uint8_t tmp[sizeof(T)];
-      std::memcpy(tmp, &v, sizeof(T));
-      std::reverse(tmp, tmp + sizeof(T));
-      std::memcpy(&v, tmp, sizeof(T));
-    }
-    o += sizeof(T);
-    return v;
-  }
-  std::string str() {
-    uint32_t n = get<uint32_t>();
-    std::string s(reinterpret_cast<const char*>(b.data() + o), n ? n - 1 : 0);
-    o += n;
-    return s;
-  }
-};
 
 static bool has_topic(const std::string& db3, const char* topic) {
   sqlite3* db = nullptr;

@@ -78,6 +78,13 @@ public:
         return mbFinishedGBA;
     }   
 
+    // Held by CorrectLoop() from the first keyframe / map point correction until the essential graph is written back,
+    // and by Tracking::Track() for each frame, so no frame is tracked against a half-corrected map. Without it the
+    // frames tracked during a correction stored their pose relative to a reference keyframe in a mix of old and new
+    // coordinates, and the saved trajectory flipped back and forth by the correction size (261022 eight, ~0.9 m).
+    // Always taken before Map::mMutexMapUpdate.
+    std::mutex mMutexLoopCorrection;
+
     void RequestFinish();
 
     bool isFinished();

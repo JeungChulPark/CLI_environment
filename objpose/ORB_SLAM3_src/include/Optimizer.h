@@ -91,6 +91,19 @@ public:
     static double sGyroLoopVetoDeg;    // loop closure veto: allowed disagreement with the gyro, deg (+ rate*dt); <=0 disables
     static double sGyroLoopVetoRate;   // deg/s
     static long   sGyroLoopVetoed;
+    static double sLoopFalseMinCorrM;  // false-loop veto (261031): refuse a loop whose correction exceeds this (m) while it
+    static double sLoopFalseResidFrac; // leaves the keyframe within this fraction of the pre-loop gap of the matched one; <=0 disables
+    static long   sLoopFalseVetoed;
+    static double sPostLoopRelocM;     // after a loop correction, re-localize against old keyframes and jump if the tracked pose is off by more than this (m); <=0 disables
+    static int sPostLoopRelocFrames;   // ... over this many frames after the loop (keeps checking after a consistent result)
+    static int sPostLoopRelocStride;   // ... trying every this many frames
+    static int sPostLoopOldKF;         // ... using only keyframes at least this many ids older than the loop's current keyframe
+    static int sLoopEarlyUnlock;       // 1: let Tracking resume before the essential-graph optimization of a loop correction (it stalled 3-12 s)
+    static double sLoopMaxGapM;        // defer loops whose keyframes sit farther apart than this (m) before correction; <=0 disables
+    static long   sLoopGapVetoed;
+    static double sSim3DepthK;         // RGB-D depth residuals in OptimizeSim3 (261031): sigma = max(sSim3DepthMinSigma, K z^2) m; <=0 disables
+    static double sSim3DepthMinSigma;
+    static double sSim3DepthMaxZ;      // points measured farther than this (m) get no depth residual
     static long   sGyroPriorEdges;   // diagnostics: edges added so far
     static long   sGyroKFEdges;
 

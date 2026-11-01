@@ -28,7 +28,8 @@ case "$backend" in
     exec "$ROOT/build_rtab/rtab_stream" "${args[@]}"
     ;;
   orbslam3)
-    export DYLD_LIBRARY_PATH="$ROOT/build:$ROOT/deps/install/lib:/opt/homebrew/opt/opencv@4/lib:/opt/homebrew/opt/libomp/lib${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}"
+    B="${ORB_BUILD:-$ROOT/build}"   # ORB_BUILD: another build dir to test (e.g. ~/objpose/build_fix)
+    export DYLD_LIBRARY_PATH="$B:$ROOT/deps/install/lib:/opt/homebrew/opt/opencv@4/lib:/opt/homebrew/opt/libomp/lib${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}"
     has_settings=0; has_vocab=0
     for arg in "${args[@]}"; do
       [ "$arg" = "--settings" ] && has_settings=1
@@ -37,7 +38,7 @@ case "$backend" in
     extra=()
     [ $has_settings = 0 ] && extra+=(--settings "$ROOT/settings/orbslam3_260826_dark_nf2000.yaml")
     [ $has_vocab = 0 ] && extra+=(--vocab "$ROOT/Vocabulary/ORBvoc.txt")
-    exec "$ROOT/build/slam_stream" "${extra[@]}" "${args[@]}"
+    exec "$B/slam_stream" "${extra[@]}" "${args[@]}"
     ;;
   *)
     echo "unknown --slam $backend (orbslam3|rtabmap)" >&2

@@ -21,6 +21,10 @@ a.card small{display:block;color:var(--muted);font-size:12.5px;margin-top:6px}
 <h1>SLAM 실험 문서</h1>
 <p class="sub">2026-10-17 ~ 18 · ORB-SLAM3 수정본·자이로 보조 검증, 실데이터 SLAM 비교</p>
 
+<a class="card" href="261101_main_config.html"><b>새 주력 설정 orb-gyro-fl-dp (2026-11-01)</b>
+<span>build_fl ORB-SLAM3 + 자이로 + 루프 수정 다섯 가지(EarlyUnlock, PostLoopReloc, 거짓 루프 거부 3.0/0.25, 먼 루프 미루기 2 m, 깊이보정 1035). 실행 명령, 각 수정이 고친 문제, PC 측정 40회 연속 통과(1029 all 14.9~19.3 cm, 1030 all 14.7~23.8 cm).</span>
+<small>원본 objpose/docs/main_config_261101.md</small></a>
+
 <a class="card" href="261018_openloris_gyro_report.html"><b>OpenLORIS-Scene 실험 보고서</b>
 <span>원본 ORB-SLAM3 vs 수정본 vs 수정본+자이로. 모션캡처·라이다 GT로 office·home·corridor를 평가했다. 자이로를 켜면 Sim(3) ATE가 office −30%, home −14~21%, corridor −19~33% 줄었다. 크래시 수정과 한계도 정리했다.</span>
 <small>원본 orbslam_ws/openloris/report_261018.md</small></a>

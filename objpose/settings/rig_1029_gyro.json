@@ -1,0 +1,52 @@
+{
+ "dataset": "",
+ "cam": "/Users/user/objpose/rt/261030_rig/1029_etri_library_middle_2_slam_orb_tum.txt.optimized.txt",
+ "imu": "/Users/user/objpose/rt/261030_rig/1029_etri_library_middle_2_imu.npz",
+ "gyro_bias_rad_s": [
+  -0.0012041265070421765,
+  -0.0008954816657964899,
+  0.001644110200568967
+ ],
+ "acc_mean": [
+  0.4308074126422248,
+  -0.06870607909588636,
+  -9.786831051346221
+ ],
+ "time": {
+  "imu_minus_cam_s": -0.001999340723157736,
+  "corr_ci": 0.9994244394687709,
+  "meaning": "an event stamped t on the camera clock is stamped t + tau on the other sensor's clock"
+ },
+ "R_cam_imu": [
+  [
+   -0.0014389902530972942,
+   0.9999065531908282,
+   -0.013594638394931469
+  ],
+  [
+   -0.003550875008567822,
+   0.01358945755650462,
+   0.9999013540994899
+  ],
+  [
+   0.9999926602699267,
+   0.0014871211643350257,
+   0.0035309880936598703
+  ]
+ ],
+ "R_cam_imu_fit": {
+  "n": 19393,
+  "n_moving": 13717,
+  "singular_values": [
+   1225.694298635607,
+   0.22503019921998116,
+   0.15988308322314837
+  ],
+  "kabsch_vs_refined_deg": 0.04266225377491398,
+  "resid_rms_rad_s": 0.00662765067387873,
+  "rate_rms_rad_s": 0.2514684449006814,
+  "still_frac": 0.23869437425875314
+ },
+ "method": "calib_gyro_261022.py (|w| time shift, Kabsch + joint R/bias least squares)",
+ "note": "2026-10-31: 1029_etri_library_middle_2 alone (mapping fit poor: corr 0.959); SLAM camera 419222301870"
+}

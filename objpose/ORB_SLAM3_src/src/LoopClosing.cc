@@ -291,6 +291,42 @@ void LoopClosing::Run()
                         }
                     }
 
+                    // FALSE-LOOP VETO (objpose 2026-10-31): a loop that pulls the current keyframe metres onto a matched
+                    // keyframe that sat about as far away (correction ~ gap, small residual) glues two distinct places
+                    // together, e.g. repeated bookshelves of the same heading, which the gyro veto cannot see. Same
+                    // quantities as the LOOP_GAP log below.
+                    // LOOP GAP LIMIT (objpose 2026-10-31): a loop between keyframes metres apart is matched on few, mostly far
+                    // points and lands 0.3-1.6 m off along the optical axis; refuse it and let a nearer keyframe close the loop.
+                    if (bGoodLoop && Optimizer::sLoopMaxGapM > 0)
+                    {
+                        const double gap = (mpCurrentKF->GetCameraCenter() - mpLoopMatchedKF->GetCameraCenter()).norm();
+                        const bool veto = gap > Optimizer::sLoopMaxGapM;
+                        std::cout << std::fixed << std::setprecision(3) << "LOOP_GAP_CHECK|cur_id=" << mpCurrentKF->mnId
+                                  << "|matched_id=" << mpLoopMatchedKF->mnId << "|gap_m=" << gap << "|limit_m=" << Optimizer::sLoopMaxGapM
+                                  << "|verdict=" << (veto ? "DEFER" : "ok") << std::endl;
+                        if (veto) { bGoodLoop = false; Optimizer::sLoopGapVetoed++; }
+                    }
+
+                    if (bGoodLoop && Optimizer::sLoopFalseMinCorrM > 0)
+                    {
+                        Eigen::Vector3f cc = mpCurrentKF->GetCameraCenter();
+                        Eigen::Vector3f mc = mpLoopMatchedKF->GetCameraCenter();
+                        Eigen::Matrix3d Rcorr = mg2oLoopScw.rotation().toRotationMatrix();
+                        Eigen::Vector3d Ccorr = -(Rcorr.transpose() * mg2oLoopScw.translation()) / mg2oLoopScw.scale();
+                        const double gap = (cc - mc).norm();
+                        const double corr = (Ccorr.cast<float>() - cc).norm();
+                        const double resid = (Ccorr.cast<float>() - mc).norm();
+                        const bool veto = corr > Optimizer::sLoopFalseMinCorrM && resid < Optimizer::sLoopFalseResidFrac * gap;
+                        std::cout << std::fixed << std::setprecision(3) << "FALSE_LOOP_CHECK|cur_id=" << mpCurrentKF->mnId
+                                  << "|matched_id=" << mpLoopMatchedKF->mnId << "|gap_m=" << gap << "|corr_m=" << corr
+                                  << "|resid_m=" << resid << "|verdict=" << (veto ? "VETO" : "ok") << std::endl;
+                        if (veto)
+                        {
+                            bGoodLoop = false;
+                            Optimizer::sLoopFalseVetoed++;
+                        }
+                    }
+
                     if (bGoodLoop) {
 
                         mvpLoopMapPoints = mvpLoopMPs;
@@ -1066,6 +1102,10 @@ void LoopClosing::CorrectLoop()
     // LocalMapping only stops with an empty queue; this catches a keyframe Tracking queued just after RequestStop()
     mpLocalMapper->EmptyQueue();
 
+    // Pause Tracking until the essential graph is written back (see mMutexLoopCorrection)
+    unique_lock<mutex> lockTracking(mMutexLoopCorrection);
+    const auto tLC0 = std::chrono::steady_clock::now();
+
     // Ensure current keyframe is updated
     //cout << "Start updating connections" << endl;
     //assert(mpCurrentKF->GetMap()->CheckEssentialGraph());
@@ -1205,6 +1245,7 @@ void LoopClosing::CorrectLoop()
     // Project MapPoints observed in the neighborhood of the loop keyframe
     // into the current keyframe and neighbors using corrected poses.
     // Fuse duplications.
+    const auto tLC1 = std::chrono::steady_clock::now();
     SearchAndFuse(CorrectedSim3, mvpLoopMapPoints);
 
     // After the MapPoint fusion, new links in the covisibility graph will appear attaching both sides of the loop
@@ -1240,6 +1281,15 @@ void LoopClosing::CorrectLoop()
         double timeFusion = std::chrono::duration_cast<std::chrono::duration<double,std::milli> >(time_EndFusion - time_StartFusion).count();
         vdLoopFusion_ms.push_back(timeFusion);
 #endif
+    const auto tLC2 = std::chrono::steady_clock::now();
+    // The current keyframe, its neighbours and their map points are already corrected and fused, LocalMapping is stopped
+    // (no new keyframes) and the graph result is written under mMutexMapUpdate: Tracking can go on during the optimization.
+    double lockMs = -1;
+    if(Optimizer::sLoopEarlyUnlock)
+    {
+        lockMs = std::chrono::duration<double, std::milli>(tLC2 - tLC0).count();
+        lockTracking.unlock();
+    }
     //cout << "Optimize essential graph" << endl;
     if(pLoopMap->IsInertial() && pLoopMap->isImuInitialized())
     {
@@ -1258,10 +1308,28 @@ void LoopClosing::CorrectLoop()
 #endif
 
     mpAtlas->InformNewBigChange();
+    {
+        const auto tLC3 = std::chrono::steady_clock::now();
+        auto ms = [](std::chrono::steady_clock::time_point a, std::chrono::steady_clock::time_point b) { return std::chrono::duration<double, std::milli>(b - a).count(); };
+        if(lockMs < 0) lockMs = ms(tLC0, tLC3);
+        cout << "LOOP_TIMING|cur_id=" << mpCurrentKF->mnId << std::fixed << std::setprecision(1) << "|correct_ms=" << ms(tLC0, tLC1)
+             << "|fuse_ms=" << ms(tLC1, tLC2) << "|eg_ms=" << ms(tLC2, tLC3) << "|n_kf=" << pLoopMap->KeyFramesInMap()
+             << "|early_unlock=" << Optimizer::sLoopEarlyUnlock << "|tracking_blocked_ms=" << lockMs << endl;
+    }
+
+    if(Optimizer::sPostLoopRelocM > 0)
+    {
+        const long lim = (long)mpCurrentKF->mnId - Optimizer::sPostLoopOldKF;
+        if(lim >= 0) mpTracker->mnPostLoopArmKF = lim;
+        cout << "POSTLOOP_ARM|cur_id=" << mpCurrentKF->mnId << "|max_cand_kf=" << lim << endl;
+    }
 
     // Add loop edge
     mpLoopMatchedKF->AddLoopEdge(mpCurrentKF);
     mpCurrentKF->AddLoopEdge(mpLoopMatchedKF);
+
+    // Every keyframe and map point is now in corrected coordinates; Tracking may resume
+    if(lockTracking.owns_lock()) lockTracking.unlock();
 
     // Launch a new thread to perform Global Bundle Adjustment (Only if few keyframes, if not it would take too much time)
     if(!pLoopMap->isImuInitialized() || (pLoopMap->KeyFramesInMap()<200 && mpAtlas->CountMaps()==1))

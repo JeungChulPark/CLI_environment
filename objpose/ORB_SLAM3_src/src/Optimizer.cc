@@ -21,6 +21,7 @@
 
 
 #include <complex>
+#include <iomanip>
 
 #include <Eigen/StdVector>
 #include <Eigen/Dense>
@@ -60,6 +61,19 @@ double Optimizer::sGyroMaxGapS = 10.0;
 double Optimizer::sGyroLoopVetoDeg = 5.0;   // genuine loops measured 1.3-2.6 deg at 42 s (roll/pitch included); false ones >> 10 deg
 double Optimizer::sGyroLoopVetoRate = 0.02;
 long   Optimizer::sGyroLoopVetoed = 0;
+double Optimizer::sLoopFalseMinCorrM = 0.0;   // off by default; 1029_etri_library_all false loops: corr 5.7-6.2 m, resid 0.2-0.3 m of gap 5.8-6.1 m
+double Optimizer::sLoopFalseResidFrac = 0.25;
+long   Optimizer::sLoopFalseVetoed = 0;
+double Optimizer::sPostLoopRelocM = 0.0;   // off by default; 1029 all live: after the start loop the current pose sat 1.6-2.1 m off for 70 s unless tracking happened to fail and relocalize
+int Optimizer::sPostLoopRelocFrames = 300;   // ~10 s at 30 fps: in 1029 all r5 the pose was right 0.17 s after the loop and 2 m off 3 s later
+int Optimizer::sPostLoopRelocStride = 5;
+int Optimizer::sPostLoopOldKF = 100;
+int Optimizer::sLoopEarlyUnlock = 0;   // off by default; 1029 all live: Tracking waited 3.4-11.7 s on mMutexLoopCorrection right after the start loop, 102-351 frames dropped
+double Optimizer::sLoopMaxGapM = 0.0;   // off by default; start-revisit loops closed 3.2-4.4 m apart land 0.3-1.6 m off, 0.2-1.1 m apart ones within 3 cm
+long   Optimizer::sLoopGapVetoed = 0;
+double Optimizer::sSim3DepthK = 0.0;          // off by default; start-revisit loops in 1029/1030 etri_library land 0.3-1.3 m
+double Optimizer::sSim3DepthMinSigma = 0.02;  // too far forward along the optical axis with reprojection-only OptimizeSim3
+double Optimizer::sSim3DepthMaxZ = 6.0;
 long   Optimizer::sGyroPriorEdges = 0;
 long   Optimizer::sGyroKFEdges = 0;
 bool sortByVal(const pair<MapPoint*, int> &a, const pair<MapPoint*, int> &b)
@@ -2189,6 +2203,25 @@ void Optimizer::OptimizeEssentialGraph(KeyFrame* pCurKF, vector<KeyFrame*> &vpFi
     }
 }
 
+// RGB-D depth residual for OptimizeSim3 (objpose 2026-10-31): the reprojection edges alone barely constrain the
+// translation along the optical axis when the matched points are far and central (looking down a shelf aisle), so
+// add the measured depth of each match: error = z of the point mapped into the observing keyframe - measured depth.
+// bInverse: the point X lives in KF1 and is mapped by S21 = S12^-1 into KF2.
+class EdgeSim3Depth : public g2o::BaseUnaryEdge<1, double, ORB_SLAM3::VertexSim3Expmap>
+{
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    Eigen::Vector3d X; bool bInverse = false;
+    bool read(std::istream&) { return false; }
+    bool write(std::ostream&) const { return false; }
+    void computeError()
+    {
+        const ORB_SLAM3::VertexSim3Expmap* v = static_cast<const ORB_SLAM3::VertexSim3Expmap*>(_vertices[0]);
+        const g2o::Sim3 S = bInverse ? v->estimate().inverse() : v->estimate();
+        _error[0] = S.map(X)(2) - _measurement;
+    }
+};
+
 int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &vpMatches1, g2o::Sim3 &g2oS12, const float th2,
                             const bool bFixScale, Eigen::Matrix<double,7,7> &mAcumHessian, const bool bAllPoints)
 {
@@ -2223,6 +2256,8 @@ int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &
     const vector<MapPoint*> vpMapPoints1 = pKF1->GetMapPointMatches();
     vector<ORB_SLAM3::EdgeSim3ProjectXYZ*> vpEdges12;
     vector<ORB_SLAM3::EdgeInverseSim3ProjectXYZ*> vpEdges21;
+    vector<EdgeSim3Depth*> vpDepth12, vpDepth21;   // aligned with vpEdges12/21, NULL when no depth
+    int nDepth0 = 0;
     vector<size_t> vnIndexEdge;
     vector<bool> vbIsInKF2;
 
@@ -2373,6 +2408,34 @@ int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &
         rk2->setDelta(deltaHuber);
         optimizer.addEdge(e21);
 
+        // depth residuals (RGB-D keyframes only: mvDepth > 0)
+        EdgeSim3Depth* d12 = NULL; EdgeSim3Depth* d21 = NULL;
+        if (sSim3DepthK > 0)
+        {
+            const float z1 = (i < (int)pKF1->mvDepth.size()) ? pKF1->mvDepth[i] : -1.f;
+            if (z1 > 0 && z1 < sSim3DepthMaxZ)
+            {
+                d12 = new EdgeSim3Depth(); d12->X = P3D2c.cast<double>(); d12->bInverse = false;
+                d12->setVertex(0, vSim3); d12->setMeasurement(z1);
+                const double s = std::max(sSim3DepthMinSigma, sSim3DepthK * z1 * z1);
+                d12->setInformation(Eigen::Matrix<double,1,1>::Identity() / (s * s));
+                g2o::RobustKernelHuber* rk = new g2o::RobustKernelHuber; rk->setDelta(sqrt(3.84)); d12->setRobustKernel(rk);
+                optimizer.addEdge(d12);
+            }
+            const float z2 = (inKF2 && i2 < (int)pKF2->mvDepth.size()) ? pKF2->mvDepth[i2] : -1.f;
+            if (z2 > 0 && z2 < sSim3DepthMaxZ)
+            {
+                d21 = new EdgeSim3Depth(); d21->X = P3D1c.cast<double>(); d21->bInverse = true;
+                d21->setVertex(0, vSim3); d21->setMeasurement(z2);
+                const double s = std::max(sSim3DepthMinSigma, sSim3DepthK * z2 * z2);
+                d21->setInformation(Eigen::Matrix<double,1,1>::Identity() / (s * s));
+                g2o::RobustKernelHuber* rk = new g2o::RobustKernelHuber; rk->setDelta(sqrt(3.84)); d21->setRobustKernel(rk);
+                optimizer.addEdge(d21);
+            }
+        }
+        vpDepth12.push_back(d12); vpDepth21.push_back(d21);
+        nDepth0 += (d12 != NULL) + (d21 != NULL);
+
         vpEdges12.push_back(e12);
         vpEdges21.push_back(e21);
         vnIndexEdge.push_back(i);
@@ -2402,6 +2465,8 @@ int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &
             optimizer.removeEdge(e21);
             vpEdges12[i]=static_cast<ORB_SLAM3::EdgeSim3ProjectXYZ*>(NULL);
             vpEdges21[i]=static_cast<ORB_SLAM3::EdgeInverseSim3ProjectXYZ*>(NULL);
+            if (vpDepth12[i]) { optimizer.removeEdge(vpDepth12[i]); vpDepth12[i] = NULL; }
+            if (vpDepth21[i]) { optimizer.removeEdge(vpDepth21[i]); vpDepth21[i] = NULL; }
             nBad++;
 
             if(!vbIsInKF2[i])
@@ -2414,6 +2479,8 @@ int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &
         //Check if remove the robust adjustment improve the result
         e12->setRobustKernel(0);
         e21->setRobustKernel(0);
+        // depth edges stay (Huber only): a start-revisit loop arrives ~1 m off along the optical axis, which is exactly
+        // when every depth residual looks like an outlier after the first pass
     }
 
     int nMoreIterations;
@@ -2452,6 +2519,14 @@ int Optimizer::OptimizeSim3(KeyFrame *pKF1, KeyFrame *pKF2, vector<MapPoint *> &
 
     // Recover optimized Sim3
     g2o::VertexSim3Expmap* vSim3_recov = static_cast<g2o::VertexSim3Expmap*>(optimizer.vertex(0));
+    if (sSim3DepthK > 0)
+    {
+        int nd = 0; for (size_t i = 0; i < vpDepth12.size(); i++) nd += (vpDepth12[i] != NULL) + (vpDepth21[i] != NULL);
+        const g2o::Sim3 &S = vSim3_recov->estimate();
+        std::cout << std::fixed << std::setprecision(3) << "SIM3_DEPTH|kf1=" << pKF1->mnId << "|kf2=" << pKF2->mnId << "|inliers=" << nIn
+                  << "|depth_edges=" << nd << "|depth_edges0=" << nDepth0 << "|t12=" << S.translation()(0) << "," << S.translation()(1) << "," << S.translation()(2)
+                  << "|t12_before=" << g2oS12.translation()(0) << "," << g2oS12.translation()(1) << "," << g2oS12.translation()(2) << std::endl;
+    }
     g2oS12= vSim3_recov->estimate();
 
     return nIn;
